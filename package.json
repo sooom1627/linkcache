@@ -8,7 +8,12 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md}\"",
+    "format:fix": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
+    "lint": "expo lint",
+    "lint:fix": "expo lint --fix",
+    "check": "pnpm format && pnpm lint && pnpm typecheck"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",

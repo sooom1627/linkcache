@@ -38,22 +38,6 @@ const config = {
   // TypeScript + JSX + Decorators のパーサーを有効化
   importOrderParserPlugins: ["typescript", "jsx", "decorators-legacy"],
 
-  // TypeScript 5.x を明示
-  importOrderTypeScriptVersion: "5.0.0",
-
-  // importグループ間に空行を追加
-  importOrderSeparation: true,
-
-  // import順序をアルファベット順にソート（大文字小文字を区別しない）
-  importOrderSortSpecifiers: true,
-  importOrderCaseInsensitive: true,
-
-  // 組み込みモジュールを最初にグループ化
-  importOrderBuiltinModulesToTop: true,
-
-  // type importを通常のimportと分離
-  importOrderTypeImportsToTop: true,
-
   // ===== Prettierフォーマット設定 (2025年推奨) =====
   // シングルクォート（React/JSでは一般的だが、プロジェクト次第）
   singleQuote: false, // ダブルクォート推奨（TypeScript/React 19標準）

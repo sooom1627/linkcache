@@ -84,7 +84,10 @@ module.exports = [
 
       // ===== TypeScript関連 =====
       // 未使用の変数を警告しますが、_で始まる引数は無視
-      "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { argsIgnorePattern: "^_" },
+      ],
       // 配列型の指定方法に関するルールを無効化
       "@typescript-eslint/array-type": "off",
       // typeとinterfaceの使用を強制しない
