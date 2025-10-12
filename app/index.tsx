@@ -12,7 +12,7 @@ export default function Index() {
   const testConnection = async () => {
     try {
       const { data, error } = await supabase.from("_test").select("*").limit(1);
-      if (error && error.message.includes('relation "_test" does not exist')) {
+      if (error && error.message.includes("public._test")) {
         console.log("✅ Supabase接続成功（テーブルが存在しないだけ）");
       } else if (error) {
         console.log("❌ エラー:", error);
