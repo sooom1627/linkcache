@@ -148,7 +148,8 @@ module.exports = [
           // エクスポートされるComponentは必ずPascalCase
           // サービスクライアント（supabase, queryClient等）はcamelCase許可
           filter: {
-            regex: "^(use|create|get|fetch|handle|on)[A-Z]|^(supabase|api|client|config|store)",
+            regex:
+              "^(use|create|get|fetch|handle|on)[A-Z]|^(supabase|api|client|config|store)",
             match: false,
           },
         },
