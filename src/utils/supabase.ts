@@ -5,26 +5,33 @@ import { createClient } from "@supabase/supabase-js";
 import { config } from "@/src/config";
 
 /**
- * Supabase公式推奨のSecureStore実装
- * @see https://supabase.com/docs/guides/getting-started/tutorials/with-expo-react-native
+ * Supabase公式推奨のSecureStoreAdapter実装
+ * @see https://supabase.com/docs/guides/auth/quickstarts/with-expo-react-native-social-auth
  *
- * SecureStoreを使用して、認証トークンを安全に保存します。
+ * Expo SecureStoreを使用して、認証セッションを安全に保存します。
  * - iOS: Keychain Services
  * - Android: Keystore system
  *
- * 制限事項:
- * - 保存可能なデータサイズは2048バイトまで
- * - Supabaseの認証トークンは通常この範囲内
+ * 注意事項:
+ * - SecureStoreには2048バイトの制限があります
+ * - Supabaseの認証トークンは通常この範囲内に収まります
+ * - 万が一制限を超える場合は警告を表示します
  */
 const ExpoSecureStoreAdapter = {
   getItem: (key: string) => {
     return SecureStore.getItemAsync(key);
   },
   setItem: (key: string, value: string) => {
-    SecureStore.setItemAsync(key, value);
+    if (value.length > 2048) {
+      console.warn(
+        `Value being stored in SecureStore is larger than 2048 bytes (${value.length} bytes). ` +
+          "It may not be stored successfully. Consider using a different storage solution.",
+      );
+    }
+    return SecureStore.setItemAsync(key, value);
   },
   removeItem: (key: string) => {
-    SecureStore.deleteItemAsync(key);
+    return SecureStore.deleteItemAsync(key);
   },
 };
 
