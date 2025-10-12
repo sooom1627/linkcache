@@ -1,8 +1,7 @@
+import Constants from "expo-constants";
 import * as SecureStore from "expo-secure-store";
 
 import { createClient } from "@supabase/supabase-js";
-
-import { config } from "@/src/config";
 
 /**
  * Supabase公式推奨のSecureStoreAdapter実装
@@ -35,15 +34,20 @@ const ExpoSecureStoreAdapter = {
   },
 };
 
-export const supabase = createClient(
-  config.supabaseUrl,
-  config.supabaseAnonKey,
-  {
-    auth: {
-      storage: ExpoSecureStoreAdapter,
-      autoRefreshToken: true,
-      persistSession: true,
-      detectSessionInUrl: false,
-    },
+const supabaseUrl = Constants.expoConfig?.extra?.supabaseUrl as string;
+const supabaseAnonKey = Constants.expoConfig?.extra?.supabaseAnonKey as string;
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error(
+    "Missing Supabase environment variables. Please check your .env.local file.",
+  );
+}
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    storage: ExpoSecureStoreAdapter,
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: false,
   },
-);
+});

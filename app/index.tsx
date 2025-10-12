@@ -1,6 +1,29 @@
+import { useEffect } from "react";
+
 import { Text, View } from "react-native";
 
+import { supabase } from "@/src/utils/supabase";
+
 export default function Index() {
+  useEffect(() => {
+    testConnection();
+  }, []);
+
+  const testConnection = async () => {
+    try {
+      const { data, error } = await supabase.from("_test").select("*").limit(1);
+      if (error && error.message.includes('relation "_test" does not exist')) {
+        console.log("✅ Supabase接続成功（テーブルが存在しないだけ）");
+      } else if (error) {
+        console.log("❌ エラー:", error);
+      } else {
+        console.log("✅ Supabase接続成功:", data);
+      }
+    } catch (err) {
+      console.log("❌ 接続エラー:", err);
+    }
+  };
+
   return (
     <View
       style={{
