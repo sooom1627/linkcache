@@ -144,4 +144,23 @@ alwaysApply: true
   - Best Practices Demonstrate adherence to best practices in performance, security, and maintainability.
   - **Simplicity Focus**: Prefer straightforward implementations over complex architectures. Question every abstraction.
   - **Practical Solutions**: Choose approaches that solve current problems effectively rather than theoretical ideal solutions.
+
+Git Commit Messages
+When generating git commit messages:
+- **ALWAYS use a prefix** (feat, fix, docs, style, refactor, perf, test, chore)
+- Keep the main message under 50 characters INCLUDING the prefix
+- Use imperative mood after the prefix
+- Be specific but concise
+- No periods at the end
+- Format: `prefix: message`
+- **Language**: Always use English for commit messages
+
+Git commit Prefix Rules (Angular Convention):
+- `feat:` A new feature
+- `fix:` A bug fix
+- `docs:` Documentation only changes
+- `style:` Changes that do not affect the meaning of the code (formatting, missing semi-colons, etc)
+- `refactor:` A code change that neither fixes a bug nor adds a feature
+- `perf:` A code change that improves performance
+- `test:` Adding missing or correcting existing tests
       
