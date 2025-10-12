@@ -144,10 +144,11 @@ module.exports = [
         {
           selector: "variable",
           modifiers: ["exported"],
-          format: ["PascalCase"],
+          format: ["PascalCase", "camelCase"],
           // エクスポートされるComponentは必ずPascalCase
+          // サービスクライアント（supabase, queryClient等）はcamelCase許可
           filter: {
-            regex: "^(use|create|get|fetch|handle|on)[A-Z]",
+            regex: "^(use|create|get|fetch|handle|on)[A-Z]|^(supabase|api|client|config|store)",
             match: false,
           },
         },
@@ -215,12 +216,6 @@ module.exports = [
           // const API_BASE_URL = '' (UPPER_CASE)
           // const config = {} (camelCase)
           // const UserComponent = () => {} (PascalCase)
-        },
-        // 12. グローバル定数（必ずUPPER_CASE）
-        {
-          selector: "variable",
-          modifiers: ["const", "global"],
-          format: ["UPPER_CASE"],
         },
         // 13. オブジェクトリテラルのプロパティ（制約なし）
         {
