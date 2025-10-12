@@ -6,6 +6,7 @@ const tseslint = require("@typescript-eslint/eslint-plugin");
 const tsparser = require("@typescript-eslint/parser");
 const react = require("eslint-plugin-react");
 const importPlugin = require("eslint-plugin-import");
+const tailwindcss = require("eslint-plugin-tailwindcss");
 
 module.exports = [
   // グローバルな無視パターン
@@ -62,6 +63,7 @@ module.exports = [
       "@typescript-eslint": tseslint,
       react: react,
       import: importPlugin,
+      tailwindcss: tailwindcss,
     },
     settings: {
       react: {
@@ -75,6 +77,13 @@ module.exports = [
         node: {
           extensions: [".js", ".jsx", ".ts", ".tsx"],
         },
+      },
+      tailwindcss: {
+        // Tailwind設定ファイルの場所
+        config: "tailwind.config.js",
+        // NativeWindではclassName属性を使用
+        callees: ["classnames", "clsx", "cn"],
+        classRegex: "^className$",
       },
     },
     rules: {
@@ -274,6 +283,20 @@ module.exports = [
       ],
       // import文の重複を警告
       "import/no-duplicates": "error",
+
+      // ===== Tailwind CSS (NativeWind) 関連 =====
+      // クラス名の順序はPrettierで自動整形されるため無効化
+      "tailwindcss/classnames-order": "off",
+      // 負の値の記法を統一（-m-4 より -mt-4 を推奨）
+      "tailwindcss/enforces-negative-arbitrary-values": "warn",
+      // 短縮記法の使用を推奨（mx-4 my-4 より m-4 を推奨）
+      "tailwindcss/enforces-shorthand": "warn",
+      // 矛盾するクラス名を検出（flex flex-col と flex-row など）
+      "tailwindcss/no-contradicting-classname": "error",
+      // カスタムクラス名の使用を制限（NativeWindでは基本的にTailwindクラスのみ使用）
+      "tailwindcss/no-custom-classname": "warn",
+      // 不要な任意値を警告（text-[16px] より text-base を推奨）
+      "tailwindcss/no-unnecessary-arbitrary-value": "warn",
 
       // ===== 未定義型のチェック =====
       // any型の使用を警告
