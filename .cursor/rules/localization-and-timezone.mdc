@@ -1,0 +1,329 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# 多言語設定とタイムゾーン対応ルール
+
+## 概要
+
+このプロジェクトでは、expo-localizationを中心とした統一的なアプローチで多言語対応とタイムゾーン処理を実装します。フェーズ3でTanStack React Queryと連携したデータ処理レイヤーが完成し、実用的なタイムゾーン対応が可能になりました。
+
+## 基本方針
+
+1. **expo-localization を活用**: デバイス設定（言語、タイムゾーン）の取得に使用
+2. **i18next で翻訳管理**: 型安全性と豊富な機能を活用
+3. **dayjs で時間処理**: 軽量なライブラリでタイムゾーン変換を実装
+4. **データベースはUTC**: Supabaseには常にUTCで保存し、表示時に変換
+5. **TanStack React Query**: データフェッチ時のタイムゾーン変換を統合
+6. **タイムゾーン対応フック**: 専用フックで自動変換とキャッシュ管理
+
+## 設計決定
+
+- **言語設定**: ユーザーが変更可能（ja/en）
+- **タイムゾーン**: 端末設定と同一（変更不可）
+- **時間表示**: 24時間表示で統一
+- **通貨**: 現在は未対応（将来的な拡張に備えた構造）
+- **データ変換**: 自動でタイムスタンプフィールドを変換
+
+## ファイル構造
+
+```
+src/
+├── shared/
+│   ├── localization/               # 国際化関連
+│   │   ├── i18n.ts                # i18next設定
+│   │   ├── translations/          # 翻訳ファイル
+│   │   │   ├── ja/               # 日本語
+│   │   │   │   ├── common.json
+│   │   │   │   └── auth.json
+│   │   │   └── en/               # 英語
+│   │   │       ├── common.json
+│   │   │       └── auth.json
+│   │   └── hooks/
+│   │       └── useTranslation.ts  # 翻訳フック
+│   ├── utils/
+│   │   ├── device-settings.ts     # expo-localization統合
+│   │   ├── datetime.ts            # 時間処理ユーティリティ
+│   │   └── query-timezone.ts      # TanStack React Query連携ユーティリティ
+│   ├── hooks/
+│   │   ├── useDateTime.ts         # リアルタイム時間管理フック
+│   │   └── useTimezoneQuery.ts    # タイムゾーン対応クエリフック
+│   └── stores/
+│       └── settingsStore.ts       # 設定管理（言語設定のみ変更可能）
+├── docs/
+│   └── TIMEZONE_IMPLEMENTATION_GUIDE.md  # 実装ガイド
+```
+
+## 実装済みコンポーネント
+
+### 1. 基礎ユーティリティ
+
+#### デバイス設定取得 - [device-settings.ts](mdc:src/shared/utils/device-settings.ts)
+```typescript
+export const getDeviceSettings = () => {
+  const [locale] = getLocales();
+  const [calendar] = getCalendars();
+  
+  return {
+    language: locale.languageCode,
+    region: locale.regionCode,
+    timeZone: calendar.timeZone  // 端末設定に固定
+  };
+};
+```
+
+#### 時間処理 - [datetime.ts](mdc:src/shared/utils/datetime.ts)
+```typescript
+// UTCからローカル時刻への変換
+export const formatUTCToLocal = (utcDate: string | Date | Dayjs, format?: string) => {
+  const { timezone } = getTimezoneInfo();
+  return dayjs.utc(utcDate).tz(timezone).format(format || DATE_FORMATS.DISPLAY_DATETIME);
+};
+
+// 相対時間表示
+export const getRelativeTime = (utcDate: string | Date | Dayjs): string => {
+  return dayjs.utc(utcDate).local().fromNow();
+};
+```
+
+### 2. TanStack React Query連携 - [query-timezone.ts](mdc:src/shared/utils/query-timezone.ts)
+
+#### クエリキー管理
+```typescript
+// タイムゾーン情報を含むクエリキーを生成
+export function createTimezoneQueryKey(baseKey: string[], includeTimezone: boolean = true): string[]
+```
+
+#### 日付範囲変換
+```typescript
+// ローカル日付をUTC範囲に変換
+export function getUTCDateRange(localStartDate: Date | Dayjs, localEndDate: Date | Dayjs)
+```
+
+#### データ変換
+```typescript
+// データ配列のタイムスタンプフィールドを変換
+export function transformTimestampsToLocal<T extends Record<string, unknown>>(
+  data: T[],
+  timestampFields: (keyof T)[]
+): (T & Record<string, Dayjs>)[]
+```
+
+### 3. タイムゾーン対応フック - [useTimezoneQuery.ts](mdc:src/shared/hooks/useTimezoneQuery.ts)
+
+#### 基本クエリ
+```typescript
+// タイムゾーン対応の基本クエリフック
+export function useTimezoneQuery<TData = unknown, TError = Error>(
+  baseQueryKey: string[],
+  queryFn: () => Promise<TData>,
+  options?: Omit<UseQueryOptions<TData, TError>, 'queryKey' | 'queryFn'>
+)
+```
+
+#### 日付範囲クエリ
+```typescript
+// 日付範囲フィルター対応
+export function useDateRangeQuery<TData = unknown, TError = Error>()
+
+// 便利なヘルパー
+export function useTodayQuery()
+export function useWeekQuery()
+export function useMonthQuery()
+```
+
+#### ヘルパー関数
+```typescript
+// フォーマット関連
+export const timezoneHelpers = {
+  formatUTCToLocal: (utcDate, format?) => string,
+  getRelativeTime: (utcDate) => string,
+  isToday: (utcDate) => boolean,
+  convertToUTC: (localDateTime) => string,
+};
+
+// データ変換関連
+export const dataHelpers = {
+  transformTimestamps: (data[], timestampFields[]) => transformedData[],
+  transformSingleTimestamp: (data, timestampFields[]) => transformedData,
+};
+```
+
+### 4. リアルタイム時間管理 - [useDateTime.ts](mdc:src/shared/hooks/useDateTime.ts)
+
+```typescript
+// 自動更新付きの時間管理
+export function useDateTime(options?: DateTimeOptions): DateTimeState & DateTimeUtils
+
+// 相対時間表示（自動更新）
+export function useRelativeTime(utcTimestamp: string | Date | Dayjs | null): string
+
+// フォーマット済み時刻表示
+export function useFormattedTime(utcTimestamp: string | Date | Dayjs | null, format?: string): string
+```
+
+## 推奨実装パターン
+
+### 基本的なデータ取得
+
+```typescript
+// src/features/example/hooks/useExampleData.ts
+import { useTimezoneQuery, dataHelpers } from '@shared/hooks/useTimezoneQuery';
+import { exampleApi } from '../api/example.api';
+
+export function useExampleData() {
+  return useTimezoneQuery(
+    ['example', 'data'],
+    async () => {
+      const data = await exampleApi.getAll();
+      // タイムスタンプフィールドを自動変換
+      return dataHelpers.transformTimestamps(data, ['createdAt', 'updatedAt']);
+    }
+  );
+}
+```
+
+### 日付範囲での検索
+
+```typescript
+// 今日のデータ取得
+export function useTodayData() {
+  return useTodayQuery(
+    ['example', 'today'],
+    async (params) => {
+      const data = await exampleApi.getByDateRange(params);
+      return dataHelpers.transformTimestamps(data, ['createdAt']);
+    }
+  );
+}
+```
+
+### API層での実装
+
+```typescript
+// src/features/example/api/example.api.ts
+import { supabase } from '@/services/supabase/client';
+import type { DateFilterParams } from '@shared/utils/query-timezone';
+
+export const exampleApi = {
+  async getByDateRange(params: DateFilterParams) {
+    let query = supabase.from('examples').select('*');
+
+    // UTC範囲でフィルタリング
+    if (params.startDate) {
+      query = query.gte('created_at', params.startDate);
+    }
+    if (params.endDate) {
+      query = query.lte('created_at', params.endDate);
+    }
+
+    const { data, error } = await query.order('created_at', { ascending: false });
+    if (error) throw error;
+    return data;
+  },
+};
+```
+
+### 表示コンポーネントでの使用
+
+```typescript
+// 自動変換されたタイムスタンプを表示
+export function ExampleList() {
+  const { data: examples, isLoading } = useExampleData();
+
+  return (
+    <View>
+      {examples?.map((example) => (
+        <View key={example.id}>
+          <Text>{example.title}</Text>
+          {/* 自動変換されたローカル時刻 */}
+          <Text>作成日時: {example.localCreatedAt}</Text>
+          {/* 相対時間 */}
+          <Text>{example.createdAtRelative}</Text>
+        </View>
+      ))}
+    </View>
+  );
+}
+```
+
+## ベストプラクティス
+
+### ✅ 推奨
+
+```typescript
+// ✅ タイムゾーン対応フックを使用
+const { data } = useTimezoneQuery(['data'], fetchData);
+
+// ✅ 日付範囲検索にヘルパーを使用
+const { data } = useTodayQuery(['today'], fetchTodayData);
+
+// ✅ データ変換を活用
+const transformedData = dataHelpers.transformTimestamps(rawData, ['createdAt']);
+
+// ✅ ヘルパー関数を使用
+const localTime = timezoneHelpers.formatUTCToLocal(utcTime);
+const relativeTime = timezoneHelpers.getRelativeTime(utcTime);
+```
+
+### ❌ 避けるべき
+
+```typescript
+// ❌ 直接useQueryを使用（タイムゾーン情報がキーに含まれない）
+const { data } = useQuery(['data'], fetchData);
+
+// ❌ 手動でのタイムゾーン変換
+const localTime = dayjs(utcTime).local().format();
+
+// ❌ ローカル時刻でのAPI検索
+const { data } = await api.getByDate(localDate); // UTC変換が必要
+```
+
+## 変換結果の例
+
+元のデータ:
+```json
+{
+  "id": "123",
+  "title": "Example",
+  "created_at": "2024-01-01T12:00:00Z"
+}
+```
+
+`dataHelpers.transformTimestamps(data, ['created_at'])` 適用後:
+```json
+{
+  "id": "123",
+  "title": "Example", 
+  "created_at": "2024-01-01T12:00:00Z",
+  "localCreatedAt": "2024/01/01 21:00",
+  "created_atRelative": "2時間前"
+}
+```
+
+## 注意事項
+
+1. **データベースは常にUTC**: Supabaseへの保存・クエリは必ずUTCで行う
+2. **表示は24時間形式**: ユーザー設定に関わらず24時間表示で統一
+3. **タイムゾーンは端末設定**: ユーザーが変更できるのは言語のみ
+4. **自動キャッシュ管理**: タイムゾーン情報がクエリキーに含まれ、適切に無効化される
+5. **型安全性**: TypeScriptで完全に型付けされた実装
+
+## 参考ファイル
+
+### 基礎実装
+- [i18n設定](mdc:src/shared/localization/i18n.ts)
+- [デバイス設定ユーティリティ](mdc:src/shared/utils/device-settings.ts)
+- [時間処理ユーティリティ](mdc:src/shared/utils/datetime.ts)
+- [設定ストア](mdc:src/shared/stores/settingsStore.ts)
+
+### タイムゾーン対応（フェーズ3実装）
+- [TanStack React Query連携ユーティリティ](mdc:src/shared/utils/query-timezone.ts)
+- [タイムゾーン対応クエリフック](mdc:src/shared/hooks/useTimezoneQuery.ts)
+- [リアルタイム時間管理フック](mdc:src/shared/hooks/useDateTime.ts)
+- [実装ガイド](mdc:docs/TIMEZONE_IMPLEMENTATION_GUIDE.md)
+
+### エクスポート
+- [共通ユーティリティエクスポート](mdc:src/shared/utils/index.ts)
+- [共通フックエクスポート](mdc:src/shared/hooks/index.ts)

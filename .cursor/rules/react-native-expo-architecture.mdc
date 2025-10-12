@@ -1,0 +1,393 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# React Native Expo Architecture Rules
+
+## プロジェクト概要
+
+このプロジェクトはReact Native Expoを使用したモバイルアプリケーションです。シンプルで実践的なアーキテクチャを採用し、開発効率を重視しています。
+
+## アーキテクチャ原則
+
+1. **Featureベース構造**: 機能単位でコードを整理
+2. **シンプルな層構造**: 過度な抽象化を避け、必要最小限の層で構成
+3. **Functionベース**: React Hooksとカスタムフックを中心とした実装
+4. **Expo SDK活用**: Expoのマネージドワークフローを最大限活用
+5. **Expo慣例との併用**: アセットやルーティングはExpo慣例を尊重
+6. **シンプリシティ・ファースト**: 理論よりも実用性を重視（詳細は[Simplicity-First Design Rules](mdc:.cursor/rules/simplicity-first-design.mdc)参照）
+
+## ディレクトリ構造
+
+プロジェクトの主要なディレクトリ構造は以下の通りです
+
+```
+links-share-app/
+├── app/                # Expo Routerのルーティング（Expo慣例）
+├── assets/             # 画像、フォント等（Expo慣例）
+├── src/
+│   ├── features/       # 機能ごとのモジュール
+│   │   └── [feature-name]/
+│   │       ├── api/         # API呼び出し関数
+│   │       ├── contexts/    # Feature固有のContext（必要に応じて）
+│   │       ├── hooks/       # カスタムフック（ロジック）
+│   │       ├── components/  # UIコンポーネント
+│   │       ├── docs/        # featue配下のドキュメントフォルダ
+│   │       ├── screens/     # 画面コンポーネント
+│   │       ├── types/       # 型定義
+│   │       └── index.ts     # エクスポート
+│   ├── shared/         # 共通モジュール
+│   │   ├── components/ # 共通UIコンポーネント
+│   │   ├── hooks/      # 共通フック
+│   │   ├── types/      # 共通型定義
+│   │   └── utils/      # ユーティリティ
+│   ├── services/       # 外部サービス連携
+│   └── config/         # 設定・環境変数
+├── docs/               # ドキュメント
+└── 設定ファイル群
+```
+
+**重要**: Expo慣例を尊重し、`app/`（ルーティング）と`assets/`（アセット）はルートレベルに保持しています。
+
+## 開発フロー
+
+### Phase 1: 機能の分解と計画
+
+1. Feature内の個別機能を特定し優先順位付け
+2. 依存関係を整理
+3. 実装の優先度と順番を決定
+
+### Phase 2: 機能単位の4ステップ開発
+実装したいユーザーストーリーに分割し、ユーザーストーリー単位で下記を実装。全ての機能を一度に実装することはしない。
+#### Step 1: データ層の実装
+対象フォルダ: src/features/[機能名]/types/, src/features/[機能名]/api/
+実装内容:
+- 型定義 (types/): その機能に必要最小限のインターフェースと型を定義
+- API関数 (api/): その機能で使用するAPIエンドポイントとの通信を実装
+
+#### Step 2: ロジック層の実装
+対象フォルダ: src/features/[機能名]/hooks/
+実装内容:
+- カスタムフック (hooks/): その機能のビジネスロジックと状態管理を実装
+
+#### Step 3: UI層の実装
+対象フォルダ: src/features/[機能名]/components/, src/features/[機能名]/screens/
+実装内容:
+- UIコンポーネント (components/): その機能の表示に必要なコンポーネントを実装
+- 画面コンポーネント (screens/): 機能を統合した画面レベルのコンポーネント
+
+#### Step 4: ルーティングと統合
+対象フォルダ: app/, src/features/[機能名]/index.ts
+実装内容:
+- Expo Router (app/): 画面ルーティングの追加
+- エクスポート統合 (index.ts): 実装した機能をfeatureレベルでエクスポート
+
+### Phase 3: 検証と次機能準備
+- 動作確認: 実装した機能の動作テスト
+- 簡易テスト作成: 必要に応じて単体テスト作成
+- 次機能の計画: 次に実装する機能の検討
+
+### 重要なポイント
+
+- 型定義の段階的拡張: 全ての型を最初に定義せず、必要に応じて追加・拡張
+- API関数の単機能実装: 一つの機能に必要なAPI関数のみを実装
+- フックの責任分離: データ取得、状態管理、UI状態を適切に分離
+- コンポーネントの再利用性: 次の機能でも使えるよう適度に抽象化
+- 早期統合: 各機能完成後すぐにルーティングまで含めて動作確認
+
+## 状態管理とデータ取得
+
+### 原則
+- **Context API + React Query**: グローバル状態管理にはContext APIを使用し、サーバー状態管理にはReact Queryを採用
+- **APIロジックの分離**: すべてのAPI呼び出しは`api/`フォルダに集約
+- **カスタムフックの活用**: ビジネスロジックはカスタムフックに実装
+
+### 実装パターン
+
+#### API関数の実装 (`api/`フォルダ)
+```typescript
+// src/features/auth/api/auth.api.ts
+export const login = async (credentials: LoginCredentials): Promise<AuthResponse> => {
+  const { data, error } = await supabase.auth.signInWithPassword(credentials);
+  if (error) throw error;
+  return data;
+};
+```
+
+#### React Queryを使用したカスタムフック
+```typescript
+// src/features/auth/hooks/useAuthQueries.ts
+export const useLoginMutation = () => {
+  return useMutation({
+    mutationFn: login,
+    onSuccess: (data) => {
+      // 成功時の処理
+    },
+  });
+};
+```
+
+#### Context APIによる状態管理
+```typescript
+// src/features/auth/contexts/AuthContext.tsx
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState<User | null>(null);
+  
+  return (
+    <AuthContext.Provider value={{ user, setUser }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+```
+
+#### 統合フックの実装
+```typescript
+// src/features/auth/hooks/useAuth.ts
+export const useAuth = () => {
+  const context = useAuthContext();
+  const queries = useAuthQueries();
+  
+  return {
+    ...context,
+    ...queries,
+  };
+};
+```
+
+## コーディング規約
+
+### ファイル命名規則
+- **コンポーネント**: PascalCase (例: `LinkCard.tsx`)
+- **フック**: camelCase with "use" prefix (例: `useLinks.ts`)
+- **API関数**: camelCase with "api" suffix (例: `links.api.ts`)
+- **型定義**: camelCase with "types" suffix (例: `link.types.ts`)
+- **Context**: PascalCase with "Context" suffix (例: `AuthContext.tsx`)
+
+### インポート順序
+1. React/React Native
+2. Expo関連
+3. 外部ライブラリ（React Queryなど）
+4. 内部モジュール（@features, @shared, @services）
+5. 相対パス
+6. スタイル/アセット
+
+### 必須の実装パターン
+
+#### API呼び出し
+```typescript
+// ❌ 避ける: コンポーネント内での直接的なfetch
+const Component = () => {
+  useEffect(() => {
+    fetch('/api/data')...
+  }, []);
+};
+
+// ❌ 避ける: フック内でのSupabase直接呼び出し
+const useData = () => {
+  const { data } = await supabase.from('table').select();
+};
+
+// ✅ 推奨: API関数とReact Queryを使用
+const Component = () => {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['data'],
+    queryFn: fetchData,
+  });
+};
+```
+
+#### 型定義
+```typescript
+// ❌ 避ける: anyの使用
+const handleData = (data: any) => {};
+
+// ✅ 推奨: 明確な型定義
+const handleData = (data: DataType) => {};
+```
+
+## ファイルサイズとモジュール分割
+
+⚠️ **重要**: 過度な分割は複雑さを生む原因となります。詳細な判断基準は[Simplicity-First Design Rules](mdc:.cursor/rules/simplicity-first-design.mdc)を参照してください。
+
+### ファイルサイズの目安
+- **理想**: 50-200行（可読性と保守性のバランス）
+- **許容**: 200-300行（複雑なロジックの場合）
+- **要リファクタリング**: 300行以上（単一責任の原則に違反している可能性）
+
+### ファイル分割の原則
+
+#### 1. 単一責任の原則
+各ファイルは1つの明確な責任を持つべきです：
+- **API操作**: CRUD操作、エラーハンドリング、外部サービス連携など機能別に分離
+- **フック**: データ取得、状態管理、副作用処理など目的別に分離
+- **コンポーネント**: UI要素、フォーム処理、表示ロジックなど責任別に分離
+
+#### 2. 関連性によるグルーピング
+```
+feature/
+├── api/
+│   ├── core-operations.ts     # 基本的なCRUD操作
+│   ├── external-operations.ts # 外部サービス連携操作
+│   ├── error-handling.ts      # エラーハンドリング
+│   └── index.ts              # 統合エクスポート
+├── hooks/
+│   ├── data/                 # データ取得・操作関連
+│   │   ├── useDataQuery.ts
+│   │   └── useDataMutation.ts
+│   ├── ui/                   # UI状態管理関連
+│   │   ├── useFormState.ts
+│   │   └── useModalState.ts
+│   └── index.ts              # 統合エクスポート
+```
+
+#### 3. 階層化によるモジュール分割
+- **低レベル**: 基本操作（CRUD、バリデーション）
+- **中レベル**: ビジネスロジック（複合操作、ワークフロー）
+- **高レベル**: UI統合（画面固有のロジック）
+
+### 分割の判断基準
+
+#### ファイル分割が必要な場合
+1. **行数**: 300行を超える
+2. **責任**: 複数の異なる責任を持つ
+3. **変更頻度**: 異なる理由で変更される部分が混在
+4. **テスト**: 独立してテストしたい機能が混在
+5. **再利用**: 他の場所で再利用したい機能が含まれる
+
+⚠️ **注意**: 「統合フックが必要になる分割」は避けてください。詳細は[Simplicity-First Design Rules](mdc:.cursor/rules/simplicity-first-design.mdc)の「危険信号」を参照。
+
+#### 分割手法
+```typescript
+// ❌ 避ける: 大きな単一ファイル
+// useComplexFeature.ts (500行)
+export const useComplexFeature = () => {
+  // データ取得ロジック (100行)
+  // UI状態管理 (100行)
+  // 外部サービス連携 (150行)
+  // フォーム処理 (150行)
+};
+
+// ✅ 推奨: 責任別分割
+// hooks/data/useFeatureData.ts (100行)
+export const useFeatureData = () => { /* データ取得・キャッシュ */ };
+
+// hooks/ui/useFeatureUI.ts (100行)
+export const useFeatureUI = () => { /* UI状態管理 */ };
+
+// hooks/operations/useFeatureOperations.ts (150行)
+export const useFeatureOperations = () => { /* 外部サービス連携・複雑な処理 */ };
+
+// hooks/forms/useFeatureForms.ts (150行)
+export const useFeatureForms = () => { /* フォーム状態・バリデーション */ };
+
+// hooks/useFeature.ts (50行)
+export const useFeature = () => {
+  // 各フックを統合
+  return { 
+    ...useFeatureData(), 
+    ...useFeatureUI(), 
+    ...useFeatureOperations(), 
+    ...useFeatureForms() 
+  };
+};
+```
+
+### 後方互換性の維持
+モジュール分割時は既存のAPIを壊さないよう注意：
+
+```typescript
+// 統合エクスポート用のindex.ts
+export * from './modules/module1';
+export * from './modules/module2';
+export * from './modules/module3';
+
+// 既存の使用法を維持
+export { useOriginalHook } from './hooks/useFeature';
+```
+
+### モジュール間の依存関係
+- **循環依存の禁止**: モジュール間で循環参照しない
+- **明確な依存方向**: 高レベル → 低レベルの一方向依存
+- **インターフェースの活用**: 具象クラスではなくインターフェースに依存
+
+## スタイリング
+
+NativeWindを使用してTailwind CSSクラスでスタイリングします：
+
+```typescript
+// ✅ 推奨: NativeWindクラス
+<View className="flex-1 bg-white p-4">
+  <Text className="text-lg font-bold">Title</Text>
+</View>
+
+// ❌ 避ける: インラインスタイル
+<View style={{ flex: 1, backgroundColor: 'white', padding: 16 }}>
+```
+
+## Expo固有の考慮事項
+
+### 必須ライブラリ
+- **ナビゲーション**: expo-router（ファイルベースルーティング）
+- **画像処理**: expo-image
+- **セキュアストレージ**: expo-secure-store
+- **環境変数**: expo-constants
+- **状態管理**: Context API + React Query（TanStack Query）
+
+### 禁止事項
+- Expo SDKに含まれていないネイティブモジュールの使用
+- React NavigationではなくExpo Routerを使用すること
+- フック内でのAPI直接呼び出し（必ずapi/フォルダ経由で実装）
+
+## エラーハンドリング
+
+すべてのカスタムフックでエラーハンドリングを実装：
+
+```typescript
+// React Queryを使用した場合
+const { data, isLoading, error } = useQuery({
+  queryKey: ['data'],
+  queryFn: fetchData,
+});
+
+// 手動実装の場合
+const useData = () => {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  
+  // 実装...
+  
+  return { data, loading, error };
+};
+```
+
+## パフォーマンス最適化
+
+- React.memoを適切に使用
+- FlatListを大量のリストに使用
+- expo-imageで画像を最適化
+- 不要な再レンダリングを避ける
+- React Queryのキャッシュ戦略を活用
+
+## 型定義の参照
+
+共通型定義は `src/shared/types/` に配置し、機能固有の型は各feature内の `types/` に配置：
+
+```typescript
+// 共通型定義の使用
+import type { CommonType } from '@shared/types';
+
+// 機能固有型の使用
+import type { LinkType } from '../types/link.types';
+```
+
+## 参考ドキュメント
+
+
+- [Simplicity-First Design Rules](mdc:.cursor/rules/simplicity-first-design.mdc) - シンプリシティ・ファースト設計原則
+
+## 日本語での応答
+
+開発者への応答は常に日本語で行い、実装を最小限かつシンプルに保つこと。仕様決定時は選択肢と理由を整理して確認を取ること。

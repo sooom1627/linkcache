@@ -1,0 +1,326 @@
+---
+description: 
+globs: **.test.*
+alwaysApply: false
+---
+# プロジェクトテスト戦略
+
+このプロジェクトでは、シンプルで実践的なテスト戦略を採用しています。過度なテストカバレッジよりも、重要な機能の動作保証を重視します。
+
+## 基本方針
+
+```
+テスト対象の優先順位：
+1. ビジネスロジックを持つもの → テストする
+2. 複雑な処理を持つもの → テストする
+3. それ以外 → テストしない
+```
+
+## シンプリシティ・ファースト原則
+
+### テストサイズの制御
+- 単一テストファイルは100行以下を目指す
+- 複雑すぎるテストは分割せず、重要な部分のみに絞る
+- エラーハンドリングテストは避け、正常系に集中する
+
+### モック・セットアップの簡素化
+- 複雑なモック設定は避ける
+- 必要最小限のモックのみ作成
+- テストごとの個別設定より共通設定を優先
+
+### 外部ライブラリテスト時の注意点
+- React Query使用時は適切なクリーンアップを実装
+- QueryClientのキャッシュクリアを必須とする
+- Jest exit問題を防ぐためafterEachでリソース解放
+
+## ディレクトリごとのテスト方針
+
+### 1. src/features/ - Feature別モジュール
+
+各featureディレクトリ内でテストを管理します：
+
+```
+src/features/[feature-name]/
+├── __tests__/              # すべてのテストを集約
+│   ├── context/            # 状態管理のテスト（必須）
+│   ├── hooks/             # カスタムフックのテスト（複雑なロジックのみ）
+│   ├── integration/       # 統合テスト（主要フロー1-2個）
+│   └── test-utils.tsx     # Feature固有のテストユーティリティ
+├── __mocks__/              # モックファイル
+├── context/
+├── hooks/
+├── components/
+├── screens/
+└── types/
+```
+
+**テストすべきもの：**
+- **context** - ビジネスロジックの中心（必須）
+- **hooks** - 複雑なロジックがある場合のみ
+- **統合テスト** - 主要なユーザーフロー（1-2個）
+
+**テスト不要なもの：**
+- 単純なUIコンポーネント
+- 型定義
+- 単純なユーティリティ関数
+- getterのみのカスタムフック
+
+### 2. src/services/ - 外部サービス
+
+**方針：テストは原則不要**
+- 外部サービスのラッパーのため、実装詳細のテストは意味がない
+- 必要なのはモックの提供のみ
+- `__mocks__/` ディレクトリにモックを配置
+
+```
+src/services/
+├── __mocks__/             # 他のテストで使用するモック
+│   └── supabase.mock.ts
+└── supabase/
+```
+
+### 3. src/shared/ - 共通コンポーネント・ユーティリティ
+
+**方針：複雑なロジックのみテスト**
+- UIコンポーネント → テスト不要
+- 単純なユーティリティ → テスト不要
+- 複雑な計算・変換ロジック → 必要に応じてテスト
+
+テストが必要な場合は、対象ファイルと同じ階層に配置：
+```
+src/shared/utils/
+├── dateFormatter.ts
+└── dateFormatter.test.ts  # 複雑なロジックがある場合のみ
+```
+
+### 4. app/ - ルーティング・アプリ初期化
+
+**方針：現在作成されているテストは維持**
+- 既存の`__tests__/`内のテストは保持
+- 新規追加は原則不要
+- アプリ初期化やナビゲーションの重要な動作確認に使用
+
+```
+app/
+└── __tests__/
+    ├── navigation/
+    ├── app-basic.test.tsx
+    ├── app-initialization.test.tsx
+    └── test-utils.tsx
+```
+
+## テストの優先順位
+
+### Phase 1: 基礎テスト（最重要）
+- Zustandストアの単体テスト
+- 複雑なビジネスロジックのテスト
+
+### Phase 2: ロジックテスト（重要）
+- フォームバリデーション
+- エラーハンドリング
+- 複雑な状態管理フック
+
+### Phase 3: 統合テスト（必要に応じて）
+- 主要なユーザーフロー
+- 認証フローなどの重要な機能
+
+## モック戦略
+
+シンプルなモックを心がけます：
+
+```typescript
+// ❌ 避ける: 過度に複雑なモック
+const complexMock = createMockWithAllMethods();
+
+// ✅ 推奨: 必要最小限のモック
+jest.mock('@/services/api', () => ({
+  apiClient: {
+    get: jest.fn(),
+    post: jest.fn(),
+  }
+}));
+```
+
+## React Query使用時の必須対応
+
+### キャッシュクリーンアップ
+```typescript
+afterEach(() => {
+  if (queryClient) {
+    queryClient.clear();
+    queryClient.getQueryCache().clear();
+    queryClient.getMutationCache().clear();
+  }
+});
+```
+
+### テスト用QueryClient設定
+```typescript
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { 
+      retry: false,
+      staleTime: 0,
+      gcTime: 0,
+    },
+  },
+});
+```
+
+## テストファイルの命名規則
+
+- ユニットテスト: `[ファイル名].test.ts`
+- 統合テスト: `[機能名]-flow.test.tsx`
+- テストユーティリティ: `test-utils.tsx`
+- モック: `[サービス名].mock.ts`
+
+## 実装例
+
+### Store テストの例
+
+```typescript
+// src/features/[feature]/__tests__/stores/[storeName].test.ts
+import { act, renderHook } from '@testing-library/react-native';
+import { useFeatureStore } from '../../stores/featureStore';
+
+describe('featureStore', () => {
+  beforeEach(() => {
+    // ストアをリセット
+    useFeatureStore.setState({ /* 初期状態 */ });
+  });
+
+  it('重要なアクションが正しく動作する', async () => {
+    const { result } = renderHook(() => useFeatureStore());
+    
+    await act(async () => {
+      await result.current.someAction();
+    });
+    
+    expect(result.current.someState).toBe(expectedValue);
+  });
+});
+```
+
+### Hook テストの例
+
+```typescript
+// src/features/[feature]/__tests__/hooks/useFeature.test.ts
+import { renderHook, act } from '@testing-library/react-native';
+import { useFeature } from '../../hooks/useFeature';
+
+describe('useFeature', () => {
+  it('バリデーションエラーを正しく処理する', () => {
+    const { result } = renderHook(() => useFeature());
+    
+    act(() => {
+      result.current.updateField('email', 'invalid');
+    });
+    
+    expect(result.current.errors.email).toBeDefined();
+  });
+});
+```
+
+### Service モックの例
+
+```typescript
+// src/services/__mocks__/supabase.mock.ts
+export const mockSupabaseClient = {
+  auth: {
+    signIn: jest.fn(),
+    signOut: jest.fn(),
+    getSession: jest.fn(),
+  },
+  from: jest.fn(() => ({
+    select: jest.fn(),
+    insert: jest.fn(),
+    update: jest.fn(),
+  })),
+};
+```
+
+## テスト実行
+
+```bash
+# 全てのテスト
+npm test
+
+# Feature別のテスト
+npm test -- src/features/[feature-name]/__tests__
+
+# カバレッジレポート付き
+npm run test:coverage
+```
+
+## アンチパターン
+
+### ❌ 避けるべきこと
+
+1. **100%カバレッジを目指す**
+   - 意味のないテストが増える
+   - メンテナンスコストが上がる
+
+2. **実装の詳細をテストする**
+   - 内部実装が変わるとテストが壊れる
+   - リファクタリングが困難になる
+
+3. **過度なモック**
+   - テストが複雑になる
+   - 実際の動作と乖離する
+
+4. **スナップショットテストの乱用**
+   - 変更の度に更新が必要
+   - 何をテストしているか不明確
+
+5. **複雑すぎるテストファイル**
+   - 100行を超えるテストファイルは分割を検討
+   - エラーケースよりも正常系に集中
+
+### ✅ 推奨されること
+
+1. **ユーザー視点でテストする**
+   - 実際の使用方法に沿ったテスト
+   - 統合テストで実際のフローを確認
+
+2. **重要な機能に集中する**
+   - ビジネスロジック
+   - エラーハンドリング
+   - ユーザー入力の検証
+
+3. **テストを読みやすく保つ**
+   - わかりやすいテスト名
+   - 適切なコメント
+   - DRYよりも明確さを優先
+
+4. **適切なリソース管理**
+   - 外部ライブラリ使用時のクリーンアップ
+   - Jest exit問題の回避
+
+## 新しいFeatureでのテスト追加手順
+
+1. `src/features/[feature-name]/__tests__/` ディレクトリを作成
+2. 必要なサブディレクトリを作成（stores/, hooks/, integration/）
+3. ストアのテストから始める
+4. 複雑なフックがあればテストを追加
+5. 主要なフローの統合テストを1つ作成
+
+## カバレッジ目標（参考値）
+
+複雑になりすぎないよう、以下を目安とします：
+
+- **Features (stores)**: 70-80%
+- **Features (hooks)**: 60%（複雑なもののみ）
+- **Services**: モックの提供が主（カバレッジ不問）
+- **Shared**: 50%（複雑なユーティリティのみ）
+- **全体**: 50-60%（無理に上げない）
+
+## 参考実装
+
+実際の実装例は [auth feature のテスト](mdc:src/features/auth/__tests__) を参照してください：
+
+- [authStore.test.ts](mdc:src/features/auth/__tests__/stores/authStore.test.ts) - ストアテストの例
+- [useLoginForm.test.ts](mdc:src/features/auth/__tests__/hooks/useLoginForm.test.ts) - フックテストの例
+- [auth-flow.test.tsx](mdc:src/features/auth/__tests__/integration/auth-flow.test.tsx) - 統合テストの例
+- [test-utils.tsx](mdc:src/features/auth/__tests__/test-utils.tsx) - テストユーティリティの例
+
+これらの方針に従うことで、保守性が高く、価値のあるテストスイートを維持できます。

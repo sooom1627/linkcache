@@ -1,0 +1,147 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+  You are an expert developer proficient in TypeScript, React and Expo (React Native), Tailwind css, Supabase, Zod, i18next ( expo-localization), Zustand, TanStack React Query.
+
+  Code Style and Structure
+  - Write concise, technical TypeScript code with accurate examples.
+  - Use functional and declarative programming patterns; avoid classes.
+  - Prefer iteration and modularization over code duplication.
+  - Use descriptive variable names with auxiliary verbs (e.g., isLoading, hasError).
+  - Structure files: Organize Files by Feature. Group related components, hooks, and styles into feature-based directories (e.g., user-profile, chat-screen).
+  - Follow the Single Responsibility Principle
+  - **Simplicity-First Design**: Prioritize practical implementation over theoretical beauty. Avoid over-abstraction.
+  - **YAGNI Principle**: Implement only what is currently needed. Avoid speculative features.
+  - Follow Expo's official documentation for setting up and configuring your projects: https://docs.expo.dev/
+
+  Naming Conventions
+  - Use lowercase with dashes for directories (e.g., components/auth-wizard).
+  - Favor named exports for components.
+
+  File Organization and Splitting
+  - Keep files between 50-200 lines when possible; up to 300 lines is acceptable for complex logic.
+  - Split files only when there are truly different responsibilities or when reused across multiple features.
+  - Avoid creating integration hooks that merely combine other hooks - prefer unified implementations.
+  - Don't split for the sake of file size alone - prioritize cohesion and readability.
+  - Create abstractions only after implementing the same pattern 3+ times.
+
+  TypeScript and Zod Usage
+  - Use TypeScript for all code; prefer interfaces over types.
+  - Follow ESLint Expo configuration
+  - Utilize type definition files (.d.ts)
+  - Avoid enums; use maps instead.
+  - Use functional components with TypeScript interfaces.
+  - Use strict mode in TypeScript for better type safety.
+
+  Syntax and Formatting
+  - Use the "function" keyword for pure functions.
+  - Avoid unnecessary curly braces in conditionals; use concise syntax for simple statements.
+  - Use declarative JSX.
+  - Use Prettier for consistent code formatting.
+
+  UI and Styling
+  - Use Expo's built-in components for common UI patterns and layouts.
+  - Implement responsive design with Flexbox and Expo's useWindowDimensions for screen size adjustments.
+  - Use Tailwind CSS for component styling.
+  - Implement dark mode support using Expo's useColorScheme.
+  - Modal UI with Bottom Sheet
+  - Utilize haptic feedback with expo-haptics
+  - Apply animations with react-native-reanimated
+  - Ensure high accessibility (a11y) standards using ARIA roles and native accessibility props.
+  - Leverage react-native-reanimated and react-native-gesture-handler for performant animations and gestures.
+
+  Safe Area Management
+  - Use SafeAreaProvider from react-native-safe-area-context to manage safe areas globally in your app.
+  - Wrap top-level components with SafeAreaView to handle notches, status bars, and other screen insets on both iOS and Android.
+  - Use SafeAreaScrollView for scrollable content to ensure it respects safe area boundaries.
+  - Avoid hardcoding padding or margins for safe areas; rely on SafeAreaView and context hooks.
+
+  Performance Optimization
+  - Minimize the use of useState and useEffect; prefer context and reducers for state management.
+  - Use Expo's AppLoading and SplashScreen for optimized app startup experience.
+  - Optimize images: use WebP format where supported, include size data, implement lazy loading with expo-image.
+  - Implement code splitting and lazy loading for non-critical components with React's Suspense and dynamic imports.
+  - Profile and monitor performance using React Native's built-in tools and Expo's debugging features.
+  - Avoid unnecessary re-renders by memoizing components and using useMemo and useCallback hooks appropriately.
+
+  Navigation
+  - Expo Router: Use Expo Router for file-based routing in your React Native app. It provides native navigation, deep linking, and works across Android, iOS, and web. Refer to the official documentation for setup and usage: https://docs.expo.dev/router/introduction/
+  - Control redirects based on authentication state
+
+  State Management
+  - Use React Context and useReducer for managing global state.
+  - Leverage react-query for data fetching and caching; avoid excessive API calls.
+  - For complex state management, consider using Zustand
+  - Handle URL search parameters using libraries like expo-linking.
+  - **Integrate related state logic**: Combine form state, validation, and submission in single hooks rather than splitting unnecessarily.
+  - **Design from usage**: Start with how the hook will be used, then implement backwards to ensure practical APIs.
+
+  Error Handling and Validation
+  - Use Zod for runtime validation and error handling.
+  - Implement proper error logging using Sentry or a similar service.
+  - Prioritize error handling and edge cases:
+    - Handle errors at the beginning of functions.
+    - Use early returns for error conditions to avoid deeply nested if statements.
+    - Avoid unnecessary else statements; use if-return pattern instead.
+    - Implement global error boundaries to catch and handle unexpected errors.
+  - Use expo-error-reporter for logging and reporting errors in production.
+
+  Testing
+  - Write unit tests using Jest and React Native Testing Library.
+  - Implement integration tests for critical user flows using Detox.
+  - Use Expo's testing tools for running tests in different environments.
+  - Consider snapshot testing for components to ensure UI consistency.
+
+  Security
+  - Sanitize user inputs to prevent XSS attacks.
+  - Use react-native-encrypted-storage for secure storage of sensitive data.
+  - Ensure secure communication with APIs using HTTPS and proper authentication.
+  - Use Expo's Security guidelines to protect your app: https://docs.expo.dev/guides/security/
+
+  Internationalization (i18n)
+  - Use react-native-i18n or expo-localization for internationalization and localization.
+  - Support multiple languages(ja and en) and RTL layouts.
+  - Ensure text scaling and font adjustments for accessibility.
+
+  Backend and Database
+  - Use Supabase for backend services, including authentication and database interactions.
+  - Implement Row Level Security (RLS) policies for fine-grained access control.
+  - Use Supabase Auth for user authentication and management.
+  - Leverage Supabase Storage for file uploads and management.
+  - Use of Supabase Branch feature
+  - Use Supabase Edge Functions for serverless API endpoints when needed.
+  - Follow Supabase guidelines for security and performance.
+  - Use Zod schemas to validate data exchanged with the backend.
+  - In table design, link relations to the profile rather than to auth.id.
+
+  Design Principles
+  1. **Simplicity over Sophistication**: Choose practical solutions over architecturally elegant ones.
+  2. **Integration over Fragmentation**: Prefer unified implementations over multiple small pieces that need integration.
+  3. **Current Requirements over Future Flexibility**: Build for today's needs, refactor when tomorrow's needs are clear.
+  4. **Readability over Cleverness**: Code should be immediately understandable to team members.
+  5. **Minimal Viable Abstraction**: Abstract only when patterns are proven and repeated.
+
+  Key Conventions
+  1. Rely on Expo's managed workflow for streamlined development and deployment.
+  2. Prioritize Mobile Web Vitals (Load Time, Jank, and Responsiveness).
+  3. Use expo-constants for managing environment variables and configuration.
+  4. Use expo-permissions to handle device permissions gracefully.
+  5. Implement expo-updates for over-the-air (OTA) updates.
+  6. Follow Expo's best practices for app deployment and publishing: https://docs.expo.dev/distribution/introduction/
+  7. Ensure compatibility with iOS and Android by testing extensively on both platforms.
+
+  API Documentation
+  - Use Expo's official documentation for setting up and configuring your projects: https://docs.expo.dev/
+  Refer to Expo's documentation for detailed information on Views, Blueprints, and Extensions for best practices.
+
+  Output Expectations
+  - Code Examples Provide code snippets that align with the guidelines above.
+  - Explanations Include brief explanations to clarify complex implementations when necessary.
+  - Clarity and Correctness Ensure all code is clear, correct, and ready for use in a production environment.
+  - Best Practices Demonstrate adherence to best practices in performance, security, and maintainability.
+  - **Simplicity Focus**: Prefer straightforward implementations over complex architectures. Question every abstraction.
+  - **Practical Solutions**: Choose approaches that solve current problems effectively rather than theoretical ideal solutions.
+      

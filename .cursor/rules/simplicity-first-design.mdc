@@ -1,0 +1,304 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Simplicity-First Design Rules
+
+## 概要
+
+React Native Expoプロジェクトにおける「シンプリシティ・ファースト設計」の原則と実践指針。過度な抽象化を避け、実用的で保守しやすいコードを書くためのルール集。
+
+## 🎯 基本原則
+
+### 1. シンプリシティ・ファースト
+**「複雑にできることを、いかにシンプルに実装するか」を常に考える**
+
+- ❌ 理論的に美しい設計
+- ✅ 実用的でわかりやすい設計
+- ❌ 将来の拡張性を過度に考慮
+- ✅ 現在の要件を確実に満たす
+
+### 2. YAGNI原則の徹底
+**「You Aren't Gonna Need It（それは必要にならない）」**
+
+- 現在使わない機能は実装しない
+- 仮想的な要件に基づく設計は避ける
+- 必要になった時に追加する
+
+### 3. 実用性重視
+**「使われない抽象化は負債である」**
+
+- 1つの場所でしか使わない抽象化は作らない
+- 共通化は3回以上使う時に検討する
+- インターフェースは実際の使用例から設計する
+
+## 🚨 危険信号：過度な抽象化の警告サイン
+
+### ファイル・モジュール分割の警告サイン
+
+```typescript
+// ❌ 危険：分割しすぎ
+hooks/
+├── useFormState.ts          // 50行
+├── useFormValidation.ts     // 100行
+├── useFormSubmission.ts     // 80行
+├── useFormIntegration.ts    // 150行 ← 他を統合するだけ
+└── index.ts
+
+// ✅ 適切：統合されたシンプルな実装
+hooks/
+└── useProfileForm.ts        // 190行（全機能統合）
+```
+
+### 複雑な依存関係の警告サイン
+
+```typescript
+// ❌ 危険：複雑な相互依存
+const useFormIntegration = () => {
+  const formState = useFormState();
+  const validation = useFormValidation({
+    onError: (error) => formState.setError(error) // 循環依存的
+  });
+  const submission = useFormSubmission({
+    validate: validation.validate,
+    data: formState.data,
+    onSuccess: () => formState.reset() // 複雑な連携
+  });
+  // ...
+};
+
+// ✅ 適切：単一フック内での統合
+const useProfileForm = () => {
+  const [formData, setFormData] = useState(/*...*/);
+  const [errors, setErrors] = useState(/*...*/);
+  
+  const validateAndSubmit = async () => {
+    // 全てが1つのスコープ内で完結
+  };
+};
+```
+
+### 型の複雑さの警告サイン
+
+```typescript
+// ❌ 危険：過度に複雑な型定義
+interface UseFormIntegratedReturn extends FormState, FormActions, ValidationState, SubmissionState {
+  // 多数のインターフェース継承
+}
+
+// ✅ 適切：実用的でフラットな型定義
+interface UseProfileFormReturn {
+  formData: ProfileFormData;
+  isValid: boolean;
+  updateField: (field: string, value: string) => void;
+  submitForm: () => Promise<boolean>;
+  // 必要な項目のみ
+}
+```
+
+## 📏 分割判断基準
+
+### ファイル分割の基準
+
+**分割すべき場合：**
+- ファイルが300行を明確に超える
+- **異なる責任領域**が混在している
+- **独立してテストしたい**機能がある
+- **他のフィーチャーでも使う**可能性が高い
+
+**分割すべきでない場合：**
+- 単純にファイルサイズが大きいだけ
+- 分割後に**統合フックが必要**になる
+- **1つの機能として密結合**している
+- **分割することで可読性が下がる**
+
+### 抽象化の基準
+
+**抽象化すべき場合：**
+- **3回以上**同じパターンを実装した
+- **明確に独立した責任**を持つ
+- **テストしやすくなる**
+- **型安全性が向上する**
+
+**抽象化すべきでない場合：**
+- **理論的にきれいに見える**だけ
+- **将来使うかもしれない**程度
+- **1-2箇所でしか使わない**
+- **抽象化の方が複雑になる**
+
+## 🛠️ 実践ガイドライン
+
+### 1. 実装前の判断プロセス
+
+```
+1. この機能は本当に必要か？ (YAGNI チェック)
+2. 既存のコードで十分対応できないか？
+3. 分割することで本当に改善されるか？
+4. 統合フックが必要になってしまわないか？
+5. 3つ以上の場所で使われる予定があるか？
+```
+
+### 2. コード設計のチェックリスト
+
+**フック設計：**
+- [ ] 1つのフックで完結している
+- [ ] 外部からの使用が直感的
+- [ ] 複雑な初期化オプションが不要
+- [ ] エラーハンドリングが統合されている
+- [ ] 型定義がシンプル
+
+**ファイル構成：**
+- [ ] ファイル名から機能が明確
+- [ ] import/export が複雑でない
+- [ ] 循環依存がない
+- [ ] 他ファイルとの結合度が低い
+
+### 3. リファクタリング指針
+
+**複雑になった時の対処：**
+
+1. **統合を検討する**
+   ```typescript
+   // 複数のフックが密結合している場合
+   // → 1つのフックに統合
+   ```
+
+2. **不要な抽象化を削除する**
+   ```typescript
+   // 使われていない抽象化
+   // → 削除して直接実装
+   ```
+
+3. **型定義を簡素化する**
+   ```typescript
+   // 複雑な型継承
+   // → フラットな型定義
+   ```
+
+## 📋 具体的事例：Phase 3での教訓
+
+### 問題のあった実装パターン
+
+```typescript
+// ❌ 複雑すぎた実装
+hooks/forms/
+├── useProfileForm.ts           // 基本状態管理
+├── useFormValidation.ts        // バリデーション専用
+├── useHandleValidation.ts      // ハンドル専用バリデーション
+└── useProfileFormIntegrated.ts // 上記3つを統合（270行！）
+
+// 結果：
+// - 統合フックしか使われない
+// - 複雑な型エラー多発
+// - 保守性の低下
+```
+
+### 改善後のシンプル実装
+
+```typescript
+// ✅ シンプルで実用的な実装
+hooks/forms/
+└── useProfileForm.ts          // 190行で全機能統合
+
+// 利点：
+// - 1つのフックで完結
+// - 型エラーなし
+// - 直感的な使用方法
+// - 高い保守性
+```
+
+### 設計判断の改善点
+
+**Before（理論重視）:**
+- バリデーション機能を分離 → 再利用性
+- ハンドル専用ロジックを分離 → 単一責任
+- 統合フックで全てを組み合わせ → 柔軟性
+
+**After（実用重視）:**
+- 必要な機能を1つのフックに統合 → シンプルさ
+- 実際の使用方法から逆算した設計 → 使いやすさ
+- 過度な分離を避ける → 保守性
+
+## 🎯 成功パターンの例
+
+### 適切な統合フック設計
+
+```typescript
+// ✅ 良い例：useProfileForm
+export function useProfileForm() {
+  // 状態管理
+  const [formData, setFormData] = useState(/*...*/);
+  
+  // 外部依存（既存フック活用）
+  const { updateProfile } = useUpdateProfile();
+  const handleChecker = useCheckHandle(/*...*/);
+  
+  // 統合されたロジック
+  const updateField = useCallback((field, value) => {
+    setFormData(/*...*/);
+    // バリデーション
+    // ハンドルチェック
+    // エラーハンドリング
+    // 全て1つの場所で
+  }, []);
+  
+  return {
+    // シンプルで使いやすいAPI
+    formData,
+    isValid,
+    updateField,
+    submitForm
+  };
+}
+
+// 使用側
+const { formData, updateField, submitForm } = useProfileForm();
+// 直感的で追加の統合不要
+```
+
+### 適切な分割例
+
+```typescript
+// ✅ 良い例：明確に独立した責任
+api/modules/
+├── profile-crud.ts      // プロフィールCRUD（独立性高）
+├── image-operations.ts  // 画像処理（独立性高）
+└── error-handling.ts    // エラー処理（汎用性高）
+
+// 各モジュールは：
+// - 他モジュールに依存しない
+// - 明確な責任境界がある
+// - 3つ以上の場所で使用される
+```
+
+## 🔄 継続的改善
+
+### 定期レビューポイント
+
+**フィーチャー完了時レビュー：**
+- [ ] 当初の分割方針は正しかったか？
+- [ ] 実際の使用方法と設計が一致しているか？
+- [ ] 不要な複雑さが残っていないか？
+
+### 改善アクション
+
+**複雑さを発見した場合：**
+1. 影響範囲を確認
+2. シンプル化の方針を決定
+3. 段階的にリファクタリング実行
+4. 設計判断を記録・共有
+
+---
+
+## 🎓 まとめ
+
+「複雑にできることを、いかにシンプルに実装するか」
+
+- **理論よりも実用性**を重視する
+- **YAGNI原則**を徹底する
+- **過度な抽象化**を避ける
+- **実際の使用方法**から設計する
+- **継続的な見直し**を行う
+
+このルールに従うことで、保守しやすく、理解しやすく、変更に強いコードベースを維持できます。
