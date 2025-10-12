@@ -12,6 +12,7 @@ const config = {
   importOrder: [
     // 1. React関連（最優先）
     "^(react/(.*)$)|^(react$)",
+    "",
     "^(react-native/(.*)$)|^(react-native$)",
     "",
     // 2. Expo関連

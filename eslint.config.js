@@ -269,7 +269,7 @@ module.exports = [
               position: "before",
             },
           ],
-          pathGroupsExcludedImportTypes: ["react", "react-native"],
+          pathGroupsExcludedImportTypes: [],
           "newlines-between": "always",
           alphabetize: {
             order: "asc",
