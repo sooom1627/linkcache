@@ -235,48 +235,8 @@ module.exports = [
       ],
 
       // ===== Import順序 =====
-      "import/order": [
-        "error",
-        {
-          groups: [
-            "builtin", // Node.js組み込みモジュール
-            "external", // node_modulesのパッケージ
-            "internal", // プロジェクト内のエイリアス (@/*)
-            ["parent", "sibling"], // 親・兄弟ディレクトリ
-            "index", // index.ts
-            "object",
-            "type", // 型インポート
-          ],
-          pathGroups: [
-            {
-              pattern: "react",
-              group: "external",
-              position: "before",
-            },
-            {
-              pattern: "react-native",
-              group: "external",
-              position: "before",
-            },
-            {
-              pattern: "expo-*",
-              group: "external",
-              position: "before",
-            },
-            {
-              pattern: "@/**",
-              group: "internal",
-              position: "before",
-            },
-          ],
-          pathGroupsExcludedImportTypes: [],
-          "newlines-between": "always",
-          alphabetize: {
-            order: "asc",
-            caseInsensitive: true,
-          },
-        },
-      ],
+      // Prettierの@ianvs/prettier-plugin-sort-importsに任せるため無効化
+      "import/order": "off",
       // import文の重複を警告
       "import/no-duplicates": "error",
 

@@ -1,9 +1,18 @@
 import { Stack } from "expo-router";
 
+import { SafeAreaProvider } from "react-native-safe-area-context";
+
+import { useAuthSession } from "@/src/features/auth/hooks/useAuthSession";
+import { QueryProvider } from "@/src/shared/providers/QueryProvider";
+
 import "../assets/styles/global.css";
 
-export default function RootLayout() {
-  const isAuthenticated = false;
+function RootNavigator() {
+  const { isAuthenticated, isLoading } = useAuthSession();
+
+  if (isLoading) {
+    return null;
+  }
 
   return (
     <Stack
@@ -20,5 +29,15 @@ export default function RootLayout() {
         <Stack.Screen name="create-account" options={{ headerShown: false }} />
       </Stack.Protected>
     </Stack>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <QueryProvider>
+      <SafeAreaProvider>
+        <RootNavigator />
+      </SafeAreaProvider>
+    </QueryProvider>
   );
 }
