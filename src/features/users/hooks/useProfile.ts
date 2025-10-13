@@ -2,7 +2,6 @@ import type { PostgrestError } from "@supabase/supabase-js";
 import { useQuery } from "@tanstack/react-query";
 
 import { getMyProfile } from "../api";
-import { userQueryKeys } from "../constants/queryKeys";
 import type { UserProfile } from "../types/users.types";
 
 /**
@@ -24,7 +23,7 @@ import type { UserProfile } from "../types/users.types";
  */
 export function useProfile() {
   return useQuery<UserProfile | null, PostgrestError>({
-    queryKey: userQueryKeys.profile(),
+    queryKey: ["profile"],
     queryFn: getMyProfile,
     retry: 1,
   });

@@ -15,7 +15,7 @@ const providerConfig = {
   google: {
     icon: "google" as const,
     iconFamily: "AntDesign" as const,
-    label: "Continue with Google",
+    label: "Googleで続ける",
     bgColor: "bg-white",
     textColor: "text-gray-800",
     iconColor: "#1f2937",
@@ -33,7 +33,7 @@ const providerConfig = {
   apple: {
     icon: "apple" as const,
     iconFamily: "FontAwesome" as const,
-    label: "Continue with Apple",
+    label: "Appleで続ける",
     bgColor: "bg-zinc-800",
     textColor: "text-white",
     iconColor: "white",
@@ -60,6 +60,7 @@ export default function SocialMediaButton({
       accessibilityRole="button"
       accessibilityLabel={`${config.label} button`}
       accessibilityState={{ disabled: isDisabled, busy: loading }}
+
     >
       <View className="absolute left-4">
         {config.iconFamily === "AntDesign" ? (

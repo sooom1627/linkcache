@@ -51,11 +51,14 @@ export default function SocialOauthSection({
     [onError, onSuccess, signInWithOAuth],
   );
 
+
+export default function SocialOauthSection() {
+
   return (
     <View className="flex w-full flex-col items-center justify-center gap-4">
       <View className="flex w-full flex-col items-center justify-center gap-2">
         <Text className="text-zinc-700">
-          {title} with your favorite social media account.
+          SignIn with your favorite social media account.
         </Text>
       </View>
       <View className="flex w-full flex-col items-center gap-4">
