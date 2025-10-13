@@ -22,7 +22,8 @@ export default function CreateAccount() {
           [{ text: "OK", onPress: () => router.replace("/sign-in") }],
         );
       } else {
-        router.replace("/(tabs)");
+        // プロフィール設定画面へ遷移
+        router.replace("/setup-profile");
       }
     },
     onError: (error) => {
