@@ -1,4 +1,4 @@
-import { Alert, View } from "react-native";
+import { Alert, KeyboardAvoidingView, View } from "react-native";
 
 import { useRouter } from "expo-router";
 
@@ -34,40 +34,42 @@ export default function SignIn() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <View className="mx-8 flex flex-1 flex-col items-start justify-center">
-        {/* SignIn Title */}
-        <AuthTitleSection
-          title="SignIn"
-          subtitle="New here?"
-          link="/create-account"
-          linkText="Create an account"
-        />
+      <KeyboardAvoidingView behavior="padding" className="flex-1">
+        <View className="mx-8 flex flex-1 flex-col items-start justify-center">
+          {/* SignIn Title */}
+          <AuthTitleSection
+            title="SignIn"
+            subtitle="New here?"
+            link="/create-account"
+            linkText="Create an account"
+          />
 
-        {/* SignIn Form */}
-        <FormSection
-          emailConfig={{
-            name: "email",
-            placeholder: "Email",
-            textContentType: "emailAddress",
-            autoCapitalize: "none",
-          }}
-          passwordConfig={{
-            name: "password",
-            placeholder: "Password",
-            textContentType: "password",
-            autoCapitalize: "none",
-            secureTextEntry: true,
-          }}
-          buttonTitle="SignIn"
-          onSubmit={handleSignIn}
-        />
+          {/* SignIn Form */}
+          <FormSection
+            emailConfig={{
+              name: "email",
+              placeholder: "Email",
+              textContentType: "emailAddress",
+              autoCapitalize: "none",
+            }}
+            passwordConfig={{
+              name: "password",
+              placeholder: "Password",
+              textContentType: "password",
+              autoCapitalize: "none",
+              secureTextEntry: true,
+            }}
+            buttonTitle="SignIn"
+            onSubmit={handleSignIn}
+          />
 
-        {/* Divider */}
-        <Divider text="or" />
+          {/* Divider */}
+          <Divider text="or" />
 
-        {/* SignIn with Social Media */}
-        <SocialOauthSection />
-      </View>
+          {/* SignIn with Social Media */}
+          <SocialOauthSection />
+        </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

@@ -1,4 +1,4 @@
-import { Alert, View } from "react-native";
+import { Alert, KeyboardAvoidingView, View } from "react-native";
 
 import { useRouter } from "expo-router";
 
@@ -42,40 +42,42 @@ export default function CreateAccount() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <View className="mx-8 flex flex-1 flex-col items-start justify-center">
-        {/* Create Account Title */}
-        <AuthTitleSection
-          title="Create Account"
-          subtitle="Already have an account?"
-          link="/sign-in"
-          linkText="SignIn"
-        />
+      <KeyboardAvoidingView behavior="padding" className="flex-1">
+        <View className="mx-8 flex flex-1 flex-col items-start justify-center">
+          {/* Create Account Title */}
+          <AuthTitleSection
+            title="Create Account"
+            subtitle="Already have an account?"
+            link="/sign-in"
+            linkText="SignIn"
+          />
 
-        {/* Create Account Form */}
-        <FormSection
-          emailConfig={{
-            name: "email",
-            placeholder: "Email",
-            textContentType: "emailAddress",
-            autoCapitalize: "none",
-          }}
-          passwordConfig={{
-            name: "password",
-            placeholder: "Password",
-            textContentType: "newPassword",
-            autoCapitalize: "none",
-            secureTextEntry: true,
-          }}
-          buttonTitle="Create Account"
-          onSubmit={handleCreateAccount}
-        />
+          {/* Create Account Form */}
+          <FormSection
+            emailConfig={{
+              name: "email",
+              placeholder: "Email",
+              textContentType: "emailAddress",
+              autoCapitalize: "none",
+            }}
+            passwordConfig={{
+              name: "password",
+              placeholder: "Password",
+              textContentType: "newPassword",
+              autoCapitalize: "none",
+              secureTextEntry: true,
+            }}
+            buttonTitle="Create Account"
+            onSubmit={handleCreateAccount}
+          />
 
-        {/* Divider */}
-        <Divider text="or" />
+          {/* Divider */}
+          <Divider text="or" />
 
-        {/* SignIn with Social Media */}
-        <SocialOauthSection />
-      </View>
+          {/* SignIn with Social Media */}
+          <SocialOauthSection />
+        </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
