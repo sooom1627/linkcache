@@ -1,6 +1,8 @@
 import { useState } from "react";
 
-import { View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
+
+import { Eye, EyeClosed, Lock, Mail } from "lucide-react-native";
 
 import { FormButton, FormInput } from "@/src/shared/components/forms";
 
@@ -31,6 +33,7 @@ export default function FormSection({
     Partial<Record<keyof AuthFormSection, string>>
   >({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleFieldChange = (field: keyof AuthFormSection, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -72,16 +75,34 @@ export default function FormSection({
         value={formData.email}
         onChangeText={(value) => handleFieldChange("email", value)}
         error={errors.email}
+        leftIcon={<Mail size={16} color="#6B7280" />}
       />
 
       <FormInput
         placeholder={passwordConfig.placeholder}
         textContentType={passwordConfig.textContentType}
         autoCapitalize={passwordConfig.autoCapitalize}
-        secureTextEntry={passwordConfig.secureTextEntry}
+        secureTextEntry={!showPassword && passwordConfig.secureTextEntry}
         value={formData.password}
         onChangeText={(value) => handleFieldChange("password", value)}
         error={errors.password}
+        leftIcon={<Lock size={16} color="#6B7280" />}
+        rightIcon={
+          passwordConfig.secureTextEntry ? (
+            <TouchableOpacity
+              onPress={() => setShowPassword(!showPassword)}
+              accessibilityLabel={
+                showPassword ? "Hide password" : "Show password"
+              }
+            >
+              {showPassword ? (
+                <EyeClosed size={20} color="#6B7280" />
+              ) : (
+                <Eye size={20} color="#6B7280" />
+              )}
+            </TouchableOpacity>
+          ) : undefined
+        }
       />
 
       <FormButton

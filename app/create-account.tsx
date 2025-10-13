@@ -1,8 +1,11 @@
-import { Alert, View } from "react-native";
+import { Alert, KeyboardAvoidingView, Platform, View } from "react-native";
 
 import { useRouter } from "expo-router";
 
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 import { useSignUp } from "@/src/features/auth/hooks/useSignUp";
 import AuthTitleSection from "@/src/features/auth/screens/AuthTitleSection";
@@ -13,7 +16,8 @@ import Divider from "@/src/shared/components/layout/Divider";
 
 export default function CreateAccount() {
   const router = useRouter();
-  const { mutate: signUp } = useSignUp({
+  const insets = useSafeAreaInsets();
+  const { mutateAsync: signUp } = useSignUp({
     onSuccess: (data) => {
       if (!data.session) {
         Alert.alert(
@@ -22,7 +26,7 @@ export default function CreateAccount() {
           [{ text: "OK", onPress: () => router.replace("/sign-in") }],
         );
       } else {
-        router.replace("/setup-profile");
+        router.replace("/(protected)/setup-profile");
       }
     },
     onError: (error) => {
@@ -33,8 +37,8 @@ export default function CreateAccount() {
     },
   });
 
-  const handleCreateAccount = (data: AuthFormSection) => {
-    signUp({
+  const handleCreateAccount = async (data: AuthFormSection) => {
+    await signUp({
       email: data.email,
       password: data.password,
     });
@@ -42,40 +46,46 @@ export default function CreateAccount() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <View className="mx-8 flex flex-1 flex-col items-start justify-center">
-        {/* Create Account Title */}
-        <AuthTitleSection
-          title="Create Account"
-          subtitle="Already have an account?"
-          link="/sign-in"
-          linkText="SignIn"
-        />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        keyboardVerticalOffset={insets.top}
+        className="flex-1"
+      >
+        <View className="mx-8 flex flex-1 flex-col items-start justify-center">
+          {/* Create Account Title */}
+          <AuthTitleSection
+            title="Create Account"
+            subtitle="Already have an account?"
+            link="/sign-in"
+            linkText="SignIn"
+          />
 
-        {/* Create Account Form */}
-        <FormSection
-          emailConfig={{
-            name: "email",
-            placeholder: "Email",
-            textContentType: "emailAddress",
-            autoCapitalize: "none",
-          }}
-          passwordConfig={{
-            name: "password",
-            placeholder: "Password",
-            textContentType: "newPassword",
-            autoCapitalize: "none",
-            secureTextEntry: true,
-          }}
-          buttonTitle="Create Account"
-          onSubmit={handleCreateAccount}
-        />
+          {/* Create Account Form */}
+          <FormSection
+            emailConfig={{
+              name: "email",
+              placeholder: "Email",
+              textContentType: "emailAddress",
+              autoCapitalize: "none",
+            }}
+            passwordConfig={{
+              name: "password",
+              placeholder: "Password",
+              textContentType: "newPassword",
+              autoCapitalize: "none",
+              secureTextEntry: true,
+            }}
+            buttonTitle="Create Account"
+            onSubmit={handleCreateAccount}
+          />
 
-        {/* Divider */}
-        <Divider text="or" />
+          {/* Divider */}
+          <Divider text="or" />
 
-        {/* SignIn with Social Media */}
-        <SocialOauthSection />
-      </View>
+          {/* SignIn with Social Media */}
+          <SocialOauthSection title="SignUp" />
+        </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

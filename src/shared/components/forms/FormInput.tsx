@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 import { Text, TextInput, View, type TextInputProps } from "react-native";
 
 interface FormInputProps {
@@ -10,11 +12,16 @@ interface FormInputProps {
   textContentType?: TextInputProps["textContentType"];
   autoCapitalize?: TextInputProps["autoCapitalize"];
   secureTextEntry?: boolean;
+  keyboardType?: TextInputProps["keyboardType"];
+  autoCorrect?: TextInputProps["autoCorrect"];
+  leftIcon?: ReactNode;
+  rightIcon?: ReactNode;
 }
 
 /**
  * Auth & User系フォーム専用の入力コンポーネント
  * Zodバリデーションエラーやヘルパーテキスト（重複チェック結果など）の表示に対応
+ * アイコンを左右に配置可能
  */
 export default function FormInput({
   placeholder,
@@ -26,25 +33,45 @@ export default function FormInput({
   textContentType,
   autoCapitalize = "none",
   secureTextEntry = false,
+  keyboardType,
+  autoCorrect,
+  leftIcon,
+  rightIcon,
 }: FormInputProps) {
   return (
     <View className="w-full">
-      <TextInput
-        placeholder={placeholder}
-        value={value}
-        onChangeText={onChangeText}
-        textContentType={textContentType}
-        autoCapitalize={autoCapitalize}
-        secureTextEntry={secureTextEntry}
-        className={`w-full rounded-md bg-zinc-200 p-4 ${
+      {/* Input container with icons */}
+      <View
+        className={`flex-row items-center rounded-md bg-zinc-200 ${
           error ? "border border-red-500" : ""
         }`}
-        accessibilityLabel={placeholder}
-        accessibilityHint={helperText}
-        accessibilityValue={{ text: value }}
-      />
+      >
+        {/* Left Icon */}
+        {leftIcon && <View className="ml-4">{leftIcon}</View>}
+
+        {/* Text Input */}
+        <TextInput
+          placeholder={placeholder}
+          value={value}
+          onChangeText={onChangeText}
+          textContentType={textContentType}
+          autoCapitalize={autoCapitalize}
+          secureTextEntry={secureTextEntry}
+          keyboardType={keyboardType}
+          autoCorrect={autoCorrect}
+          className={`flex-1 p-4 ${leftIcon ? "pl-2" : ""} ${rightIcon ? "pr-2" : ""}`}
+          accessibilityLabel={placeholder}
+          accessibilityHint={helperText}
+          accessibilityValue={secureTextEntry ? undefined : { text: value }}
+        />
+
+        {/* Right Icon */}
+        {rightIcon && <View className="mr-4">{rightIcon}</View>}
+      </View>
+
       {/* エラーメッセージ表示 */}
       {error && <Text className="mt-1 text-sm text-red-600">{error}</Text>}
+
       {/* ヘルパーテキスト表示（エラーがない場合のみ） */}
       {!error && helperText && (
         <Text className={`mt-1 text-sm ${helperTextColor}`}>{helperText}</Text>
