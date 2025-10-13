@@ -2,43 +2,38 @@ import { Stack } from "expo-router";
 
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
-import { useAuthSession } from "@/src/features/auth/hooks/useAuthSession";
+import { useAuthSession } from "@/src/features/auth";
 import { QueryProvider } from "@/src/shared/providers/QueryProvider";
 
 import "../assets/styles/global.css";
 
-function RootNavigator() {
-  const { isAuthenticated, isLoading } = useAuthSession();
-
-  if (isLoading) {
-    return null;
-  }
-
-  return (
-    <Stack
-      screenOptions={{
-        contentStyle: { backgroundColor: "white", flex: 1 },
-        animation: "fade",
-        headerShown: false,
-      }}
-    >
-      <Stack.Protected guard={isAuthenticated}>
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="setup-profile" />
-      </Stack.Protected>
-      <Stack.Protected guard={!isAuthenticated}>
-        <Stack.Screen name="sign-in" />
-        <Stack.Screen name="create-account" />
-      </Stack.Protected>
-    </Stack>
-  );
-}
-
+/**
+ * ルートレイアウト
+ * 認証状態に基づくリダイレクトは(protected)/_layout.tsxが担当
+ */
 export default function RootLayout() {
+  const { isAuthenticated } = useAuthSession();
   return (
     <QueryProvider>
       <SafeAreaProvider>
-        <RootNavigator />
+        <Stack
+          screenOptions={{
+            contentStyle: { backgroundColor: "white", flex: 1 },
+            animation: "fade",
+            headerShown: false,
+          }}
+        >
+          {/* 保護されたルート */}
+          <Stack.Protected guard={isAuthenticated}>
+            <Stack.Screen name="(protected)" />
+          </Stack.Protected>
+
+          {/* 非保護ルート */}
+          <Stack.Protected guard={!isAuthenticated}>
+            <Stack.Screen name="sign-in" />
+            <Stack.Screen name="create-account" />
+          </Stack.Protected>
+        </Stack>
       </SafeAreaProvider>
     </QueryProvider>
   );

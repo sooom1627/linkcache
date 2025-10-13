@@ -15,7 +15,7 @@ export default function SignIn() {
   const router = useRouter();
   const { mutateAsync: signIn } = useSignIn({
     onSuccess: () => {
-      router.replace("/(tabs)");
+      router.replace("/(protected)/(tabs)");
     },
     onError: (error) => {
       const friendlyMessage = error.message.includes("invalid credentials")
