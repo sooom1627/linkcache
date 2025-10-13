@@ -13,7 +13,7 @@ import Divider from "@/src/shared/components/layout/Divider";
 
 export default function SignIn() {
   const router = useRouter();
-  const { mutate: signIn } = useSignIn({
+  const { mutateAsync: signIn } = useSignIn({
     onSuccess: () => {
       router.replace("/(tabs)");
     },
@@ -23,7 +23,7 @@ export default function SignIn() {
   });
 
   const handleSignIn = async (data: AuthFormSection) => {
-    signIn({
+    await signIn({
       email: data.email,
       password: data.password,
     });

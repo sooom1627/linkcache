@@ -9,7 +9,7 @@ SOLID原則に従い、APIレイヤーとHooksレイヤーに分離した設計�
 
 ## アーキテクチャ
 
-```
+```text
 src/features/auth/
 ├── api/                    # APIレイヤー
 │   ├── auth.api.ts        # 認証操作（サインイン/サインアップ/サインアウト）
