@@ -10,12 +10,11 @@ export default function LogoutButton() {
   const router = useRouter();
   const { mutate: signOut, isPending } = useSignOut({
     onSuccess: () => {
-      Alert.alert("Success", "Logged out successfully", [
-        { text: "OK", onPress: () => router.replace("/sign-in") },
-      ]);
+      Alert.alert("Success", "Logged out successfully");
+      router.replace("/sign-in");
     },
-    onError: (error) => {
-      Alert.alert("Error", error.message);
+    onError: () => {
+      Alert.alert("Error", "Something went wrong. Please try again.");
     },
   });
 
