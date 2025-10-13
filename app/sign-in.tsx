@@ -1,8 +1,11 @@
-import { Alert, KeyboardAvoidingView, View } from "react-native";
+import { Alert, KeyboardAvoidingView, Platform, View } from "react-native";
 
 import { useRouter } from "expo-router";
 
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 import { useSignIn } from "@/src/features/auth/hooks/useSignIn";
 import AuthTitleSection from "@/src/features/auth/screens/AuthTitleSection";
@@ -13,6 +16,7 @@ import Divider from "@/src/shared/components/layout/Divider";
 
 export default function SignIn() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { mutateAsync: signIn } = useSignIn({
     onSuccess: () => {
       router.replace("/(protected)/(tabs)");
@@ -34,11 +38,15 @@ export default function SignIn() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <KeyboardAvoidingView behavior="padding" className="flex-1">
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        keyboardVerticalOffset={insets.top}
+        className="flex-1"
+      >
         <View className="mx-8 flex flex-1 flex-col items-start justify-center">
           {/* SignIn Title */}
           <AuthTitleSection
-            title="SignIn"
+            title="Sign In"
             subtitle="New here?"
             link="/create-account"
             linkText="Create an account"
@@ -59,7 +67,7 @@ export default function SignIn() {
               autoCapitalize: "none",
               secureTextEntry: true,
             }}
-            buttonTitle="SignIn"
+            buttonTitle="Sign In"
             onSubmit={handleSignIn}
           />
 
@@ -67,7 +75,7 @@ export default function SignIn() {
           <Divider text="or" />
 
           {/* SignIn with Social Media */}
-          <SocialOauthSection title="SignIn" />
+          <SocialOauthSection title="Sign In" />
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>

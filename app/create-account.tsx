@@ -1,8 +1,11 @@
-import { Alert, KeyboardAvoidingView, View } from "react-native";
+import { Alert, KeyboardAvoidingView, Platform, View } from "react-native";
 
 import { useRouter } from "expo-router";
 
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 import { useSignUp } from "@/src/features/auth/hooks/useSignUp";
 import AuthTitleSection from "@/src/features/auth/screens/AuthTitleSection";
@@ -13,6 +16,7 @@ import Divider from "@/src/shared/components/layout/Divider";
 
 export default function CreateAccount() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { mutate: signUp } = useSignUp({
     onSuccess: (data) => {
       if (!data.session) {
@@ -22,7 +26,7 @@ export default function CreateAccount() {
           [{ text: "OK", onPress: () => router.replace("/sign-in") }],
         );
       } else {
-        router.replace("/setup-profile");
+        router.replace("/(protected)/setup-profile");
       }
     },
     onError: (error) => {
@@ -42,7 +46,11 @@ export default function CreateAccount() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <KeyboardAvoidingView behavior="padding" className="flex-1">
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        keyboardVerticalOffset={insets.top}
+        className="flex-1"
+      >
         <View className="mx-8 flex flex-1 flex-col items-start justify-center">
           {/* Create Account Title */}
           <AuthTitleSection
