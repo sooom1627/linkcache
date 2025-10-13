@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-import { ActivityIndicator } from "react-native";
+import { ActivityIndicator, Text } from "react-native";
 
 import { Slot, useRouter, useSegments } from "expo-router";
 
@@ -15,47 +15,55 @@ import { useProfile } from "@/src/features/users";
  */
 export default function ProtectedLayout() {
   const router = useRouter();
-  const segments = useSegments();
+  const segments = useSegments() as string[];
   const { session, isLoading: isSessionLoading } = useAuthSession();
-  const { data: profile, isLoading: isProfileLoading } = useProfile();
+  const {
+    data: profile,
+    isLoading: isProfileLoading,
+    isError: isProfileError,
+  } = useProfile();
+
+  const isLoading = isSessionLoading || isProfileLoading;
+  const isOnSetupProfile = segments.includes("setup-profile");
+  const shouldGoSignIn = !session;
+  const shouldGoSetupProfile =
+    !!session && !profile && !isProfileError && !isOnSetupProfile;
+  const shouldGoTabs = !!session && !!profile && isOnSetupProfile;
 
   useEffect(() => {
-    // ローディング中は何もしない
-    if (isSessionLoading || isProfileLoading) return;
+    if (isLoading) return;
 
-    const inProtected = segments[0] === "(protected)";
-
-    // 未認証の場合、サインイン画面へリダイレクト
-    if (!session && inProtected) {
+    if (shouldGoSignIn) {
       router.replace("/sign-in");
       return;
     }
 
-    // 認証済みだがプロフィール未設定の場合
-    if (session && !profile) {
-      // setup-profile画面以外にいる場合、setup-profileへリダイレクト
-      const isOnSetupProfile = (segments as string[]).includes("setup-profile");
-      if (!isOnSetupProfile) {
-        router.replace("/(protected)/setup-profile");
-      }
+    if (shouldGoSetupProfile) {
+      router.replace("/(protected)/setup-profile");
       return;
     }
 
-    // 認証済み & プロフィール設定済みの場合
-    if (session && profile) {
-      // setup-profile画面にいる場合、メイン画面へリダイレクト
-      const isOnSetupProfile = (segments as string[]).includes("setup-profile");
-      if (isOnSetupProfile) {
-        router.replace("/(protected)/(tabs)");
-      }
+    if (shouldGoTabs) {
+      router.replace("/(protected)/(tabs)");
     }
-  }, [session, profile, isSessionLoading, isProfileLoading, segments, router]);
+  }, [isLoading, shouldGoSignIn, shouldGoSetupProfile, shouldGoTabs, router]);
 
-  // ローディング中は何も表示しない
-  if (isSessionLoading || isProfileLoading) {
+  if (isLoading) {
     return (
       <SafeAreaView className="flex-1 items-center justify-center bg-white">
         <ActivityIndicator size="large" color="#0000ff" />
+      </SafeAreaView>
+    );
+  }
+
+  if (shouldGoSignIn || shouldGoSetupProfile || shouldGoTabs) {
+    return null;
+  }
+
+  if (session && isProfileError) {
+    return (
+      <SafeAreaView className="flex-1 items-center justify-center bg-white">
+        <Text>プロフィールの読み込みに失敗しました。</Text>
       </SafeAreaView>
     );
   }

@@ -3,6 +3,7 @@ import { Alert } from "react-native";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { SetupProfileScreen } from "@/src/features/users";
+import { userQueryKeys } from "@/src/features/users/constants/queryKeys";
 
 /**
  * プロフィール設定画面のエントリーポイント
@@ -14,7 +15,7 @@ export default function SetupProfile() {
   // 成功時のコールバック
   const handleSuccess = () => {
     // プロフィールキャッシュを無効化
-    queryClient.invalidateQueries({ queryKey: ["profile"] });
+    queryClient.invalidateQueries({ queryKey: userQueryKeys.profile() });
     Alert.alert("Success", "Profile created successfully!");
     // リダイレクトは(protected)/_layout.tsxが自動的に処理
   };
