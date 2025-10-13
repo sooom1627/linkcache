@@ -1,5 +1,6 @@
 import { KeyboardAvoidingView, Text, View } from "react-native";
 
+import { AtSign, UserRound } from "lucide-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { FormButton, FormInput } from "@/src/shared/components/forms";
@@ -73,6 +74,7 @@ export function SetupProfileScreen({
               error={errors.user_id}
               helperText={userIdHelper?.text}
               helperTextColor={userIdHelper?.color}
+              leftIcon={<AtSign size={16} color="#6B7280" />}
             />
           </View>
 
@@ -83,6 +85,7 @@ export function SetupProfileScreen({
               value={username}
               onChangeText={setUsername}
               error={errors.username}
+              leftIcon={<UserRound size={16} color="#6B7280" />}
             />
           </View>
 

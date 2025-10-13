@@ -2,6 +2,8 @@ import { useState } from "react";
 
 import { View } from "react-native";
 
+import { Lock, Mail } from "lucide-react-native";
+
 import { FormButton, FormInput } from "@/src/shared/components/forms";
 
 import {
@@ -72,6 +74,7 @@ export default function FormSection({
         value={formData.email}
         onChangeText={(value) => handleFieldChange("email", value)}
         error={errors.email}
+        leftIcon={<Mail size={16} color="#6B7280" />}
       />
 
       <FormInput
@@ -82,6 +85,7 @@ export default function FormSection({
         value={formData.password}
         onChangeText={(value) => handleFieldChange("password", value)}
         error={errors.password}
+        leftIcon={<Lock size={16} color="#6B7280" />}
       />
 
       <FormButton
