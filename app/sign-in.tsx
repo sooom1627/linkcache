@@ -18,7 +18,10 @@ export default function SignIn() {
       router.replace("/(tabs)");
     },
     onError: (error) => {
-      Alert.alert("Sign In Failed", error.message);
+      const friendlyMessage = error.message.includes("invalid credentials")
+        ? "Invalid email or password. Please try again."
+        : "Sign in failed. Please try again.";
+      Alert.alert("Sign In Failed", friendlyMessage);
     },
   });
 

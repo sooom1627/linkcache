@@ -39,6 +39,9 @@ export default function FormInput({
         className={`w-full rounded-md bg-zinc-200 p-4 ${
           error ? "border border-red-500" : ""
         }`}
+        accessibilityLabel={placeholder}
+        accessibilityHint={helperText}
+        accessibilityValue={{ text: value }}
       />
       {/* エラーメッセージ表示 */}
       {error && <Text className="mt-1 text-sm text-red-600">{error}</Text>}

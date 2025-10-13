@@ -26,7 +26,10 @@ export default function CreateAccount() {
       }
     },
     onError: (error) => {
-      Alert.alert("Sign Up Failed", error.message);
+      const friendlyMessage = error.message.includes("already registered")
+        ? "This email address is already registered. Please use a different email address."
+        : "Account creation failed. Please try again.";
+      Alert.alert("Sign Up Failed", friendlyMessage);
     },
   });
 

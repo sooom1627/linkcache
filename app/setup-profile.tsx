@@ -101,18 +101,16 @@ export default function SetupProfile() {
       return;
     }
 
-    // user_id重複チェック
-    if (isUserIdAvailable === false) {
-      Alert.alert(
-        "User ID Taken",
-        "This user ID is already taken. Please choose another one.",
-      );
-      return;
-    }
-
-    // 重複チェックがまだ完了していない場合
-    if (isCheckingUserId) {
-      Alert.alert("Please Wait", "Checking user ID availability...");
+    // user_id可用性チェック（undefined、false、またはチェック中の場合は送信不可）
+    if (isUserIdAvailable !== true) {
+      if (isCheckingUserId) {
+        Alert.alert("Please Wait", "Checking user ID availability...");
+      } else {
+        Alert.alert(
+          "User ID Unavailable",
+          "This user ID is already taken or unavailable. Please choose another one.",
+        );
+      }
       return;
     }
 
@@ -145,7 +143,7 @@ export default function SetupProfile() {
   const isSubmitDisabled =
     isPending ||
     isCheckingUserId ||
-    isUserIdAvailable === false ||
+    isUserIdAvailable !== true ||
     userId.length < 4 ||
     username.length < 4 ||
     !!errors.user_id ||

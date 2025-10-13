@@ -21,6 +21,9 @@ export default function FormButton({
       className={`w-full items-center justify-center rounded-md p-4 ${
         disabled ? "bg-zinc-400" : "bg-zinc-800"
       }`}
+      accessibilityRole="button"
+      accessibilityLabel={title}
+      accessibilityState={{ disabled }}
     >
       <Text className="text-base font-semibold text-white">{title}</Text>
     </TouchableOpacity>
