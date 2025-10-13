@@ -1,5 +1,7 @@
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 
+import type { PostgrestError } from "@supabase/supabase-js";
+
 import type { ProfileSetupErrors } from "../types/ProfileSetupSchema";
 import { ProfileSetupSchema } from "../types/ProfileSetupSchema";
 
@@ -8,7 +10,7 @@ import { useCreateProfile } from "./useCreateProfile";
 
 export interface UseProfileSetupProps {
   onSuccess?: () => void;
-  onError?: (error: Error) => void;
+  onError?: (error: PostgrestError) => void;
 }
 
 export interface UseProfileSetupReturn {
@@ -18,7 +20,7 @@ export interface UseProfileSetupReturn {
   setUsername: Dispatch<SetStateAction<string>>;
   errors: ProfileSetupErrors;
   isCheckingUserId: boolean;
-  checkError: unknown;
+  checkError: PostgrestError | null;
   isUserIdAvailable: boolean | undefined;
   isPending: boolean;
   handleSubmit: () => void;
