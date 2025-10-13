@@ -5,6 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { FormButton, FormInput } from "@/src/shared/components/forms";
 
+import LogoutButton from "../../auth/components/LogoutButton";
 import type { UseProfileSetupReturn } from "../hooks";
 import { useProfileSetup } from "../hooks";
 import { getUserIdHelperText, isSubmitEnabled } from "../utils";
@@ -55,17 +56,17 @@ export function SetupProfileScreen({
   return (
     <SafeAreaView className="flex-1 bg-white">
       <KeyboardAvoidingView behavior="padding" className="flex-1">
-        <View className="mx-8 flex flex-1 flex-col justify-center">
+        <View className="mx-8 flex flex-1 flex-col justify-center gap-8">
           {/* Title */}
-          <View className="mb-8">
+          <View className="w-full">
             <Text className="mb-2 text-3xl font-bold">Setup Your Profile</Text>
             <Text className="text-gray-600">
               Choose your unique user ID and display name
             </Text>
           </View>
 
-          {/* User ID Input */}
-          <View className="mb-4">
+          {/* User ID & Username Input */}
+          <View className="w-full gap-4">
             <FormInput
               placeholder="User ID (4-32 characters)"
               value={userId}
@@ -76,10 +77,6 @@ export function SetupProfileScreen({
               helperTextColor={userIdHelper?.color}
               leftIcon={<AtSign size={16} color="#6B7280" />}
             />
-          </View>
-
-          {/* Username Input */}
-          <View className="mb-8">
             <FormInput
               placeholder="Display Name (4-32 characters)"
               value={username}
@@ -95,6 +92,11 @@ export function SetupProfileScreen({
             onPress={handleSubmit}
             disabled={!submitEnabled}
           />
+
+          {/* Logout Button */}
+          <View className="w-full">
+            <LogoutButton />
+          </View>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>

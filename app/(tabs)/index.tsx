@@ -1,32 +1,10 @@
-import { Alert, Text, View } from "react-native";
-
-import { useRouter } from "expo-router";
+import { Text, View } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { useSignOut } from "@/src/features/auth/hooks/useSignOut";
-import { FormButton } from "@/src/shared/components/forms";
+import LogoutButton from "@/src/features/auth/components/LogoutButton";
 
 export default function Index() {
-  const router = useRouter();
-  const { mutate: signOut, isPending } = useSignOut({
-    onSuccess: () => {
-      Alert.alert("Success", "Logged out successfully", [
-        { text: "OK", onPress: () => router.replace("/sign-in") },
-      ]);
-    },
-    onError: (error) => {
-      Alert.alert("Error", error.message);
-    },
-  });
-
-  const handleLogout = () => {
-    Alert.alert("Logout", "Are you sure you want to logout?", [
-      { text: "Cancel", style: "cancel" },
-      { text: "Logout", onPress: () => signOut(), style: "destructive" },
-    ]);
-  };
-
   return (
     <SafeAreaView className="flex-1">
       <View className="flex-1 items-center justify-center p-4">
@@ -37,11 +15,7 @@ export default function Index() {
 
         {/* Logout Button */}
         <View className="w-full">
-          <FormButton
-            title={isPending ? "Logging out..." : "Logout"}
-            onPress={handleLogout}
-            disabled={isPending}
-          />
+          <LogoutButton />
         </View>
       </View>
     </SafeAreaView>
