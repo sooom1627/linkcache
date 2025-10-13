@@ -22,3 +22,11 @@ export const ProfileSetupSchema = z.object({
  * プロフィール設定フォームの型
  */
 export type ProfileSetupForm = z.infer<typeof ProfileSetupSchema>;
+
+/**
+ * プロフィール設定フォームのエラー型
+ */
+export interface ProfileSetupErrors {
+  user_id?: string;
+  username?: string;
+}

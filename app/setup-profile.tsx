@@ -13,6 +13,7 @@ import {
   useCreateProfile,
   useProfile,
 } from "@/src/features/users";
+import type { ProfileSetupErrors } from "@/src/features/users/types/ProfileSetupSchema";
 import { FormButton, FormInput } from "@/src/shared/components/forms";
 
 export default function SetupProfile() {
@@ -20,11 +21,7 @@ export default function SetupProfile() {
   const queryClient = useQueryClient();
   const [userId, setUserId] = useState("");
   const [username, setUsername] = useState("");
-  const [shouldCheckUserId, setShouldCheckUserId] = useState(false);
-  const [errors, setErrors] = useState<{
-    user_id?: string;
-    username?: string;
-  }>({});
+  const [errors, setErrors] = useState<ProfileSetupErrors>({});
 
   // プロフィール設定済みチェック
   const { data: profile, isLoading: isProfileLoading } = useProfile();
@@ -34,7 +31,7 @@ export default function SetupProfile() {
     data: isUserIdAvailable,
     isLoading: isCheckingUserId,
     error: checkError,
-  } = useCheckUserId(userId, shouldCheckUserId);
+  } = useCheckUserId(userId, true);
 
   // プロフィール作成
   const { mutate: createProfile, isPending } = useCreateProfile({
@@ -57,15 +54,6 @@ export default function SetupProfile() {
     }
   }, [profile, isProfileLoading, router]);
 
-  // user_id入力時の重複チェック制御
-  useEffect(() => {
-    if (userId.length >= 4 && /^[a-zA-Z0-9_]+$/.test(userId)) {
-      setShouldCheckUserId(true);
-    } else {
-      setShouldCheckUserId(false);
-    }
-  }, [userId]);
-
   // リアルタイムZodバリデーション
   useEffect(() => {
     // 初期状態（両方空）ではエラーを表示しない
@@ -74,7 +62,7 @@ export default function SetupProfile() {
       return;
     }
 
-    const newErrors: { user_id?: string; username?: string } = {};
+    const newErrors: ProfileSetupErrors = {};
 
     // user_idのバリデーション
     if (userId.length > 0) {
@@ -104,9 +92,9 @@ export default function SetupProfile() {
     });
 
     if (!result.success) {
-      const newErrors: { user_id?: string; username?: string } = {};
+      const newErrors: ProfileSetupErrors = {};
       result.error.issues.forEach((issue) => {
-        const field = issue.path[0] as "user_id" | "username";
+        const field = issue.path[0] as keyof ProfileSetupErrors;
         newErrors[field] = issue.message;
       });
       setErrors(newErrors);
@@ -134,7 +122,7 @@ export default function SetupProfile() {
 
   // ヘルパーテキストの生成（user_id用）
   const getUserIdHelperText = () => {
-    if (!shouldCheckUserId) return undefined;
+    if (userId.length < 4) return undefined;
 
     if (isCheckingUserId) {
       return { text: "Checking availability...", color: "text-gray-500" };
