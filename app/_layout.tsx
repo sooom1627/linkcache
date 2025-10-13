@@ -19,14 +19,16 @@ function RootNavigator() {
       screenOptions={{
         contentStyle: { backgroundColor: "white", flex: 1 },
         animation: "fade",
+        headerShown: false,
       }}
     >
       <Stack.Protected guard={isAuthenticated}>
         <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="setup-profile" />
       </Stack.Protected>
       <Stack.Protected guard={!isAuthenticated}>
-        <Stack.Screen name="sign-in" options={{ headerShown: false }} />
-        <Stack.Screen name="create-account" options={{ headerShown: false }} />
+        <Stack.Screen name="sign-in" />
+        <Stack.Screen name="create-account" />
       </Stack.Protected>
     </Stack>
   );

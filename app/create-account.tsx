@@ -22,7 +22,6 @@ export default function CreateAccount() {
           [{ text: "OK", onPress: () => router.replace("/sign-in") }],
         );
       } else {
-        // プロフィール設定画面へ遷移
         router.replace("/setup-profile");
       }
     },
@@ -31,7 +30,7 @@ export default function CreateAccount() {
     },
   });
 
-  const handleCreateAccount = async (data: AuthFormSection) => {
+  const handleCreateAccount = (data: AuthFormSection) => {
     signUp({
       email: data.email,
       password: data.password,

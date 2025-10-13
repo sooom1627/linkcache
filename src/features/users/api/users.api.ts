@@ -43,6 +43,33 @@ export async function createProfile(
 }
 
 /**
+ * 現在のユーザーのプロフィールを取得
+ * @returns プロフィール情報（存在しない場合はnull）
+ * @throws {PostgrestError} データベースエラーが発生した場合
+ */
+export async function getMyProfile(): Promise<UserProfile | null> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return null;
+  }
+
+  const { data, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("id", user.id)
+    .maybeSingle<UserProfile>();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
+
+/**
  * user_idの重複チェック
  * @param userId - チェックするuser_id
  * @returns 利用可能な場合はtrue、既に使用されている場合はfalse

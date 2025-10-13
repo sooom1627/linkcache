@@ -1,20 +1,23 @@
 import { useEffect, useState } from "react";
 
-import { Alert, Text, View } from "react-native";
+import { Alert, KeyboardAvoidingView, Text, View } from "react-native";
 
 import { useRouter } from "expo-router";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import {
   ProfileSetupSchema,
   useCheckUserId,
   useCreateProfile,
+  useProfile,
 } from "@/src/features/users";
 import { FormButton, FormInput } from "@/src/shared/components/forms";
 
 export default function SetupProfile() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [userId, setUserId] = useState("");
   const [username, setUsername] = useState("");
   const [shouldCheckUserId, setShouldCheckUserId] = useState(false);
@@ -22,6 +25,9 @@ export default function SetupProfile() {
     user_id?: string;
     username?: string;
   }>({});
+
+  // プロフィール設定済みチェック
+  const { data: profile, isLoading: isProfileLoading } = useProfile();
 
   // user_id重複チェック
   const {
@@ -33,6 +39,8 @@ export default function SetupProfile() {
   // プロフィール作成
   const { mutate: createProfile, isPending } = useCreateProfile({
     onSuccess: () => {
+      // プロフィールキャッシュを無効化
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
       Alert.alert("Success", "Profile created successfully!", [
         { text: "OK", onPress: () => router.replace("/(tabs)") },
       ]);
@@ -41,6 +49,13 @@ export default function SetupProfile() {
       Alert.alert("Profile Setup Failed", error.message);
     },
   });
+
+  // プロフィール設定済みの場合はメイン画面へリダイレクト
+  useEffect(() => {
+    if (!isProfileLoading && profile) {
+      router.replace("/(tabs)");
+    }
+  }, [profile, isProfileLoading, router]);
 
   // user_id入力時の重複チェック制御
   useEffect(() => {
@@ -148,47 +163,54 @@ export default function SetupProfile() {
     !!errors.user_id ||
     !!errors.username;
 
+  // ローディング中またはプロフィール設定済みの場合は何も表示しない
+  if (isProfileLoading || profile) {
+    return null;
+  }
+
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <View className="mx-8 flex flex-1 flex-col justify-center">
-        {/* Title */}
-        <View className="mb-8">
-          <Text className="mb-2 text-3xl font-bold">Setup Your Profile</Text>
-          <Text className="text-gray-600">
-            Choose your unique user ID and display name
-          </Text>
-        </View>
+      <KeyboardAvoidingView behavior="padding" className="flex-1">
+        <View className="mx-8 flex flex-1 flex-col justify-center">
+          {/* Title */}
+          <View className="mb-8">
+            <Text className="mb-2 text-3xl font-bold">Setup Your Profile</Text>
+            <Text className="text-gray-600">
+              Choose your unique user ID and display name
+            </Text>
+          </View>
 
-        {/* User ID Input */}
-        <View className="mb-4">
-          <FormInput
-            placeholder="User ID (4-32 characters)"
-            value={userId}
-            onChangeText={setUserId}
-            autoCapitalize="none"
-            error={errors.user_id}
-            helperText={userIdHelper?.text}
-            helperTextColor={userIdHelper?.color}
+          {/* User ID Input */}
+          <View className="mb-4">
+            <FormInput
+              placeholder="User ID (4-32 characters)"
+              value={userId}
+              onChangeText={setUserId}
+              autoCapitalize="none"
+              error={errors.user_id}
+              helperText={userIdHelper?.text}
+              helperTextColor={userIdHelper?.color}
+            />
+          </View>
+
+          {/* Username Input */}
+          <View className="mb-8">
+            <FormInput
+              placeholder="Display Name (4-32 characters)"
+              value={username}
+              onChangeText={setUsername}
+              error={errors.username}
+            />
+          </View>
+
+          {/* Submit Button */}
+          <FormButton
+            title={isPending ? "Creating..." : "Complete Setup"}
+            onPress={handleSubmit}
+            disabled={isSubmitDisabled}
           />
         </View>
-
-        {/* Username Input */}
-        <View className="mb-8">
-          <FormInput
-            placeholder="Display Name (4-32 characters)"
-            value={username}
-            onChangeText={setUsername}
-            error={errors.username}
-          />
-        </View>
-
-        {/* Submit Button */}
-        <FormButton
-          title={isPending ? "Creating..." : "Complete Setup"}
-          onPress={handleSubmit}
-          disabled={isSubmitDisabled}
-        />
-      </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

@@ -2,9 +2,9 @@ import { Text, TouchableOpacity, View } from "react-native";
 
 import { AntDesign, FontAwesome } from "@expo/vector-icons";
 
-type Provider = "google" | "apple";
+export type Provider = "google" | "apple";
 
-interface SocialMediaButtonProps {
+export interface SocialMediaButtonProps {
   provider: Provider;
   onPress: () => void;
 }
