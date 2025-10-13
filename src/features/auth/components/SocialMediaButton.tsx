@@ -6,6 +6,7 @@ type Provider = "google" | "apple";
 
 interface SocialMediaButtonProps {
   provider: Provider;
+  onPress: () => void;
 }
 
 const providerConfig = {
@@ -29,12 +30,14 @@ const providerConfig = {
 
 export default function SocialMediaButton({
   provider,
+  onPress,
 }: SocialMediaButtonProps) {
   const config = providerConfig[provider];
 
   return (
     <TouchableOpacity
       className={`w-full flex-row items-center justify-center rounded-lg p-4 ${config.bgColor} ${config.borderColor}`}
+      onPress={onPress}
     >
       <View className="absolute left-4">
         {config.iconFamily === "AntDesign" ? (

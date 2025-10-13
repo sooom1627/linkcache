@@ -13,8 +13,8 @@ export default function SocialOauthSection() {
         </Text>
       </View>
       <View className="flex w-full flex-col items-center gap-4">
-        <SocialMediaButton provider="google" />
-        <SocialMediaButton provider="apple" />
+        <SocialMediaButton provider="google" onPress={() => void 0} />
+        <SocialMediaButton provider="apple" onPress={() => void 0} />
       </View>
     </View>
   );
