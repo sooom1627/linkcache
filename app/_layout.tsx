@@ -6,13 +6,15 @@ export default function RootLayout() {
   const isAuthenticated = false;
 
   return (
-    <Stack>
+    <Stack
+      screenOptions={{ contentStyle: { backgroundColor: "white", flex: 1 } }}
+    >
       <Stack.Protected guard={isAuthenticated}>
         <Stack.Screen name="(tabs)" />
       </Stack.Protected>
       <Stack.Protected guard={!isAuthenticated}>
-        <Stack.Screen name="sign-in" />
-        <Stack.Screen name="create-account" />
+        <Stack.Screen name="sign-in" options={{ headerShown: false }} />
+        <Stack.Screen name="create-account" options={{ headerShown: false }} />
       </Stack.Protected>
     </Stack>
   );

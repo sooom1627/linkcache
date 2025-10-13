@@ -2,7 +2,7 @@ import { useEffect } from "react";
 
 import { Text, View } from "react-native";
 
-import { supabase } from "@/src/utils/supabase";
+import { supabase } from "@/src/shared/utils/supabase";
 
 export default function Index() {
   useEffect(() => {
