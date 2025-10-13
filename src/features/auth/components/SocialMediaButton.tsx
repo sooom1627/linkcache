@@ -16,6 +16,7 @@ const providerConfig = {
     label: "Googleで続ける",
     bgColor: "bg-white",
     textColor: "text-gray-800",
+    iconColor: "#1f2937",
     borderColor: "border border-gray-300",
   },
   apple: {
@@ -24,6 +25,7 @@ const providerConfig = {
     label: "Appleで続ける",
     bgColor: "bg-zinc-800",
     textColor: "text-white",
+    iconColor: "white",
     borderColor: "",
   },
 };
@@ -43,17 +45,9 @@ export default function SocialMediaButton({
     >
       <View className="absolute left-4">
         {config.iconFamily === "AntDesign" ? (
-          <AntDesign
-            name={config.icon}
-            size={20}
-            color={config.textColor.includes("white") ? "white" : "#1f2937"}
-          />
+          <AntDesign name={config.icon} size={20} color={config.iconColor} />
         ) : (
-          <FontAwesome
-            name={config.icon}
-            size={20}
-            color={config.textColor.includes("white") ? "white" : "#1f2937"}
-          />
+          <FontAwesome name={config.icon} size={20} color={config.iconColor} />
         )}
       </View>
       <Text className={`font-semibold ${config.textColor}`}>
