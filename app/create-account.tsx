@@ -75,7 +75,7 @@ export default function CreateAccount() {
           <Divider text="or" />
 
           {/* SignIn with Social Media */}
-          <SocialOauthSection />
+          <SocialOauthSection title="SignUp" />
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>

@@ -67,7 +67,7 @@ export default function SignIn() {
           <Divider text="or" />
 
           {/* SignIn with Social Media */}
-          <SocialOauthSection />
+          <SocialOauthSection title="SignIn" />
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
