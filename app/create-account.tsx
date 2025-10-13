@@ -17,7 +17,7 @@ import Divider from "@/src/shared/components/layout/Divider";
 export default function CreateAccount() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { mutate: signUp } = useSignUp({
+  const { mutateAsync: signUp } = useSignUp({
     onSuccess: (data) => {
       if (!data.session) {
         Alert.alert(
@@ -37,8 +37,8 @@ export default function CreateAccount() {
     },
   });
 
-  const handleCreateAccount = (data: AuthFormSection) => {
-    signUp({
+  const handleCreateAccount = async (data: AuthFormSection) => {
+    await signUp({
       email: data.email,
       password: data.password,
     });
