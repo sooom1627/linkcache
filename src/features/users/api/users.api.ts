@@ -29,10 +29,14 @@ export async function createProfile(
       username: profile.username,
     })
     .select()
-    .single();
+    .single<UserProfile>();
 
   if (error) {
     throw error;
+  }
+
+  if (!data) {
+    throw new Error("Failed to create profile");
   }
 
   return data;

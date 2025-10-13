@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Alert, Text, View } from "react-native";
 
@@ -6,13 +6,12 @@ import { useRouter } from "expo-router";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import AuthButton from "@/src/features/auth/components/AuthButton";
-import AuthInput from "@/src/features/auth/components/AuthInput";
 import {
   ProfileSetupSchema,
   useCheckUserId,
   useCreateProfile,
 } from "@/src/features/users";
+import { FormButton, FormInput } from "@/src/shared/components/forms";
 
 export default function SetupProfile() {
   const router = useRouter();
@@ -43,46 +42,59 @@ export default function SetupProfile() {
     },
   });
 
-  // user_id入力時の重複チェック
+  // user_id入力時の重複チェック制御
   useEffect(() => {
-    if (userId.length >= 4) {
+    if (userId.length >= 4 && /^[a-zA-Z0-9_]+$/.test(userId)) {
       setShouldCheckUserId(true);
     } else {
       setShouldCheckUserId(false);
     }
   }, [userId]);
 
-  // フォームのバリデーション
-  const validateForm = useCallback((): boolean => {
-    try {
-      ProfileSetupSchema.parse({
-        user_id: userId,
-        username,
-      });
+  // リアルタイムZodバリデーション
+  useEffect(() => {
+    // 初期状態（両方空）ではエラーを表示しない
+    if (userId.length === 0 && username.length === 0) {
       setErrors({});
-      return true;
-    } catch (error) {
-      if (error instanceof Error && "issues" in error) {
-        const zodError = error as {
-          issues: Array<{ path: string[]; message: string }>;
-        };
-        const newErrors: { user_id?: string; username?: string } = {};
-
-        zodError.issues.forEach((issue) => {
-          const field = issue.path[0] as "user_id" | "username";
-          newErrors[field] = issue.message;
-        });
-
-        setErrors(newErrors);
-      }
-      return false;
+      return;
     }
+
+    const newErrors: { user_id?: string; username?: string } = {};
+
+    // user_idのバリデーション
+    if (userId.length > 0) {
+      const result = ProfileSetupSchema.shape.user_id.safeParse(userId);
+      if (!result.success) {
+        newErrors.user_id = result.error.issues[0]?.message;
+      }
+    }
+
+    // usernameのバリデーション
+    if (username.length > 0) {
+      const result = ProfileSetupSchema.shape.username.safeParse(username);
+      if (!result.success) {
+        newErrors.username = result.error.issues[0]?.message;
+      }
+    }
+
+    setErrors(newErrors);
   }, [userId, username]);
 
   // 送信処理
   const handleSubmit = () => {
-    // バリデーション
-    if (!validateForm()) {
+    // 最終バリデーション
+    const result = ProfileSetupSchema.safeParse({
+      user_id: userId,
+      username,
+    });
+
+    if (!result.success) {
+      const newErrors: { user_id?: string; username?: string } = {};
+      result.error.issues.forEach((issue) => {
+        const field = issue.path[0] as "user_id" | "username";
+        newErrors[field] = issue.message;
+      });
+      setErrors(newErrors);
       return;
     }
 
@@ -105,13 +117,36 @@ export default function SetupProfile() {
     createProfile({ user_id: userId, username });
   };
 
+  // ヘルパーテキストの生成（user_id用）
+  const getUserIdHelperText = () => {
+    if (!shouldCheckUserId) return undefined;
+
+    if (isCheckingUserId) {
+      return { text: "Checking availability...", color: "text-gray-500" };
+    }
+
+    if (checkError) {
+      return { text: "Error checking availability", color: "text-red-600" };
+    }
+
+    if (isUserIdAvailable) {
+      return { text: "✓ Available", color: "text-green-600" };
+    }
+
+    return { text: "✗ Already taken", color: "text-red-600" };
+  };
+
+  const userIdHelper = getUserIdHelperText();
+
   // 送信ボタンの有効/無効判定
   const isSubmitDisabled =
     isPending ||
     isCheckingUserId ||
     isUserIdAvailable === false ||
     userId.length < 4 ||
-    username.length < 4;
+    username.length < 4 ||
+    !!errors.user_id ||
+    !!errors.username;
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -126,51 +161,29 @@ export default function SetupProfile() {
 
         {/* User ID Input */}
         <View className="mb-4">
-          <AuthInput
+          <FormInput
             placeholder="User ID (4-32 characters)"
             value={userId}
             onChangeText={setUserId}
             autoCapitalize="none"
+            error={errors.user_id}
+            helperText={userIdHelper?.text}
+            helperTextColor={userIdHelper?.color}
           />
-          {/* エラーメッセージ */}
-          {errors.user_id && (
-            <Text className="mt-1 text-sm text-red-600">{errors.user_id}</Text>
-          )}
-          {/* 重複チェック結果表示 */}
-          {shouldCheckUserId && !errors.user_id && (
-            <View className="mt-2">
-              {isCheckingUserId ? (
-                <Text className="text-sm text-gray-500">
-                  Checking availability...
-                </Text>
-              ) : checkError ? (
-                <Text className="text-sm text-red-600">
-                  Error checking availability
-                </Text>
-              ) : isUserIdAvailable ? (
-                <Text className="text-sm text-green-600">✓ Available</Text>
-              ) : (
-                <Text className="text-sm text-red-600">✗ Already taken</Text>
-              )}
-            </View>
-          )}
         </View>
 
         {/* Username Input */}
         <View className="mb-8">
-          <AuthInput
+          <FormInput
             placeholder="Display Name (4-32 characters)"
             value={username}
             onChangeText={setUsername}
+            error={errors.username}
           />
-          {/* エラーメッセージ */}
-          {errors.username && (
-            <Text className="mt-1 text-sm text-red-600">{errors.username}</Text>
-          )}
         </View>
 
         {/* Submit Button */}
-        <AuthButton
+        <FormButton
           title={isPending ? "Creating..." : "Complete Setup"}
           onPress={handleSubmit}
           disabled={isSubmitDisabled}

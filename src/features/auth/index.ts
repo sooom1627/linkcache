@@ -55,8 +55,6 @@ export * from "./hooks";
 export * from "./types";
 
 // Components
-export * from "./components/AuthButton";
-export * from "./components/AuthInput";
 export * from "./components/SocialMediaButton";
 
 // Screens

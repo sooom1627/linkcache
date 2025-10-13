@@ -1,9 +1,9 @@
 import { useState } from "react";
 
-import { Text, View } from "react-native";
+import { View } from "react-native";
 
-import AuthButton from "../components/AuthButton";
-import AuthInput from "../components/AuthInput";
+import { FormButton, FormInput } from "@/src/shared/components/forms";
+
 import {
   AuthFormSectionSchema,
   type AuthFormFieldConfig,
@@ -64,41 +64,30 @@ export default function FormSection({
 
   return (
     <View className="mb-8 flex w-full flex-col gap-4">
-      <View>
-        <AuthInput
-          placeholder={emailConfig.placeholder}
-          textContentType={emailConfig.textContentType}
-          autoCapitalize={emailConfig.autoCapitalize}
-          secureTextEntry={emailConfig.secureTextEntry}
-          value={formData.email}
-          onChangeText={(value) => handleFieldChange("email", value)}
-          error={errors.email}
-        />
-        {errors.email && (
-          <Text className="mt-1 text-sm text-red-600">{errors.email}</Text>
-        )}
-      </View>
+      <FormInput
+        placeholder={emailConfig.placeholder}
+        textContentType={emailConfig.textContentType}
+        autoCapitalize={emailConfig.autoCapitalize}
+        secureTextEntry={emailConfig.secureTextEntry}
+        value={formData.email}
+        onChangeText={(value) => handleFieldChange("email", value)}
+        error={errors.email}
+      />
 
-      <View>
-        <AuthInput
-          placeholder={passwordConfig.placeholder}
-          textContentType={passwordConfig.textContentType}
-          autoCapitalize={passwordConfig.autoCapitalize}
-          secureTextEntry={passwordConfig.secureTextEntry}
-          value={formData.password}
-          onChangeText={(value) => handleFieldChange("password", value)}
-          error={errors.password}
-        />
-        {errors.password && (
-          <Text className="mt-1 text-sm text-red-600">{errors.password}</Text>
-        )}
-      </View>
+      <FormInput
+        placeholder={passwordConfig.placeholder}
+        textContentType={passwordConfig.textContentType}
+        autoCapitalize={passwordConfig.autoCapitalize}
+        secureTextEntry={passwordConfig.secureTextEntry}
+        value={formData.password}
+        onChangeText={(value) => handleFieldChange("password", value)}
+        error={errors.password}
+      />
 
-      <AuthButton
-        title={buttonTitle}
+      <FormButton
+        title={isSubmitting ? "Loading..." : buttonTitle}
         onPress={handleSubmit}
         disabled={isSubmitting}
-        isLoading={isSubmitting}
       />
     </View>
   );

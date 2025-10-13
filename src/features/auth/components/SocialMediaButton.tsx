@@ -22,7 +22,7 @@ const providerConfig = {
     icon: "apple" as const,
     iconFamily: "FontAwesome" as const,
     label: "Appleで続ける",
-    bgColor: "bg-black",
+    bgColor: "bg-zinc-800",
     textColor: "text-white",
     borderColor: "",
   },
