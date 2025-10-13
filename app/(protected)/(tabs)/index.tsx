@@ -1,4 +1,4 @@
-import { Text, View } from "react-native";
+import { ActivityIndicator, Text, View } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -6,8 +6,29 @@ import LogoutButton from "@/src/features/auth/components/LogoutButton";
 import { useProfile } from "@/src/features/users";
 
 export default function Index() {
-  const { data: profile } = useProfile();
+  const { data: profile, isLoading, error } = useProfile();
 
+  if (isLoading) {
+    return (
+      <SafeAreaView className="flex-1">
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator size="large" />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (error) {
+    return (
+      <SafeAreaView className="flex-1">
+        <View className="flex-1 items-center justify-center p-4">
+          <Text className="text-center text-red-600">
+            プロフィールの読み込みに失敗しました
+          </Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
   return (
     <SafeAreaView className="flex-1">
       <View className="flex-1 items-center justify-center p-4">
