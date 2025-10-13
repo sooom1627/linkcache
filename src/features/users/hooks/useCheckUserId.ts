@@ -30,7 +30,7 @@ export function useCheckUserId(userId: string, enabled: boolean = true) {
     queryKey: ["check-user-id", userId],
     queryFn: () => checkUserIdAvailability(userId),
     enabled: enabled && userId.length >= 4,
-    staleTime: 0, // 常に最新の状態をチェック
+    staleTime: 5000, // 5秒間キャッシュして不要な再取得を防ぐ
     retry: 1, // エラー時のリトライ回数を1回に制限
   });
 }
