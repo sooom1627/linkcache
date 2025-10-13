@@ -62,7 +62,7 @@ export default function FormInput({
           className={`flex-1 p-4 ${leftIcon ? "pl-2" : ""} ${rightIcon ? "pr-2" : ""}`}
           accessibilityLabel={placeholder}
           accessibilityHint={helperText}
-          accessibilityValue={{ text: value }}
+          accessibilityValue={secureTextEntry ? undefined : { text: value }}
         />
 
         {/* Right Icon */}
