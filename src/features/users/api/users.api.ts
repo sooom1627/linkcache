@@ -1,6 +1,23 @@
+import type { PostgrestError } from "@supabase/supabase-js";
+
 import { supabase } from "@/src/shared/utils/supabase";
 
 import type { CreateProfileRequest, UserProfile } from "../types/users.types";
+
+/**
+ * PostgrestErrorと互換性のあるカスタムエラーを作成
+ */
+function createPostgrestError(
+  message: string,
+  code: string = "PGRST301",
+): PostgrestError {
+  return {
+    message,
+    details: message,
+    hint: "",
+    code,
+  } as PostgrestError;
+}
 
 /**
  * プロフィールを作成
@@ -17,7 +34,7 @@ export async function createProfile(
   } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error("User not authenticated");
+    throw createPostgrestError("User not authenticated", "AUTH001");
   }
 
   // プロフィールをINSERT
@@ -36,7 +53,7 @@ export async function createProfile(
   }
 
   if (!data) {
-    throw new Error("Failed to create profile");
+    throw createPostgrestError("Failed to create profile", "PGRST116");
   }
 
   return data;

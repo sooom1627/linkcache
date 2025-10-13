@@ -28,22 +28,15 @@ export default function Index() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          padding: 20,
-        }}
-      >
+    <SafeAreaView className="flex-1">
+      <View className="flex-1 items-center justify-center p-4">
         <Text className="mb-4 text-2xl font-bold">Home Screen</Text>
         <Text className="mb-8 text-center text-gray-600">
           You are logged in!
         </Text>
 
         {/* Logout Button */}
-        <View style={{ width: "100%" }}>
+        <View className="w-full">
           <FormButton
             title={isPending ? "Logging out..." : "Logout"}
             onPress={handleLogout}
