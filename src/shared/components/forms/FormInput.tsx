@@ -12,6 +12,8 @@ interface FormInputProps {
   textContentType?: TextInputProps["textContentType"];
   autoCapitalize?: TextInputProps["autoCapitalize"];
   secureTextEntry?: boolean;
+  keyboardType?: TextInputProps["keyboardType"];
+  autoCorrect?: TextInputProps["autoCorrect"];
   leftIcon?: ReactNode;
   rightIcon?: ReactNode;
 }
@@ -31,6 +33,8 @@ export default function FormInput({
   textContentType,
   autoCapitalize = "none",
   secureTextEntry = false,
+  keyboardType,
+  autoCorrect,
   leftIcon,
   rightIcon,
 }: FormInputProps) {
@@ -53,6 +57,8 @@ export default function FormInput({
           textContentType={textContentType}
           autoCapitalize={autoCapitalize}
           secureTextEntry={secureTextEntry}
+          keyboardType={keyboardType}
+          autoCorrect={autoCorrect}
           className={`flex-1 p-4 ${leftIcon ? "pl-2" : ""} ${rightIcon ? "pr-2" : ""}`}
           accessibilityLabel={placeholder}
           accessibilityHint={helperText}

@@ -1,7 +1,10 @@
-import { KeyboardAvoidingView, Text, View } from "react-native";
+import { KeyboardAvoidingView, Platform, Text, View } from "react-native";
 
 import { AtSign, UserRound } from "lucide-react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 import { FormButton, FormInput } from "@/src/shared/components/forms";
 
@@ -22,6 +25,7 @@ export function SetupProfileScreen({
   onSuccess,
   onError,
 }: SetupProfileScreenProps) {
+  const insets = useSafeAreaInsets();
   const {
     userId,
     setUserId,
@@ -55,7 +59,11 @@ export function SetupProfileScreen({
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <KeyboardAvoidingView behavior="padding" className="flex-1">
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        keyboardVerticalOffset={insets.top}
+        className="flex-1"
+      >
         <View className="mx-8 flex flex-1 flex-col justify-center gap-8">
           {/* Title */}
           <View className="w-full">
@@ -71,6 +79,8 @@ export function SetupProfileScreen({
               placeholder="User ID (4-32 characters)"
               value={userId}
               onChangeText={setUserId}
+              keyboardType="default"
+              autoCorrect={false}
               autoCapitalize="none"
               error={errors.user_id}
               helperText={userIdHelper?.text}
@@ -81,6 +91,9 @@ export function SetupProfileScreen({
               placeholder="Display Name (4-32 characters)"
               value={username}
               onChangeText={setUsername}
+              keyboardType="default"
+              autoCorrect={false}
+              autoCapitalize="none"
               error={errors.username}
               leftIcon={<UserRound size={16} color="#6B7280" />}
             />

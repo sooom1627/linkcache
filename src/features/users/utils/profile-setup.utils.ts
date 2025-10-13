@@ -37,12 +37,13 @@ export function isSubmitEnabled(
   username: string,
   errors: ProfileSetupErrors,
 ): boolean {
+  const MIN_ID_OR_USERNAME_LENGTH = 4;
   return (
     !isPending &&
     !isCheckingUserId &&
     isUserIdAvailable === true &&
-    userId.length >= 4 &&
-    username.length >= 4 &&
+    userId.length >= MIN_ID_OR_USERNAME_LENGTH &&
+    username.length >= MIN_ID_OR_USERNAME_LENGTH &&
     !errors.user_id &&
     !errors.username
   );

@@ -1,6 +1,10 @@
 import { useEffect } from "react";
 
+import { ActivityIndicator } from "react-native";
+
 import { Slot, useRouter, useSegments } from "expo-router";
+
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAuthSession } from "@/src/features/auth";
 import { useProfile } from "@/src/features/users";
@@ -49,7 +53,11 @@ export default function ProtectedLayout() {
 
   // ローディング中は何も表示しない
   if (isSessionLoading || isProfileLoading) {
-    return null;
+    return (
+      <SafeAreaView className="flex-1 items-center justify-center bg-white">
+        <ActivityIndicator size="large" color="#0000ff" />
+      </SafeAreaView>
+    );
   }
 
   return <Slot />;

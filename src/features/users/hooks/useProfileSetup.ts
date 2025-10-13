@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 
 import type { ProfileSetupErrors } from "../types/ProfileSetupSchema";
 import { ProfileSetupSchema } from "../types/ProfileSetupSchema";
@@ -13,9 +13,9 @@ export interface UseProfileSetupProps {
 
 export interface UseProfileSetupReturn {
   userId: string;
-  setUserId: React.Dispatch<React.SetStateAction<string>>;
+  setUserId: Dispatch<SetStateAction<string>>;
   username: string;
-  setUsername: React.Dispatch<React.SetStateAction<string>>;
+  setUsername: Dispatch<SetStateAction<string>>;
   errors: ProfileSetupErrors;
   isCheckingUserId: boolean;
   checkError: unknown;
