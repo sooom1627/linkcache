@@ -11,12 +11,14 @@ function createPostgrestError(
   message: string,
   code: string = "PGRST301",
 ): PostgrestError {
-  return {
+  const error: PostgrestError = {
+    name: "PostgrestError",
     message,
     details: message,
     hint: "",
     code,
-  } as PostgrestError;
+  };
+  return error;
 }
 
 /**
