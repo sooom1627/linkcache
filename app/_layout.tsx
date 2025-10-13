@@ -7,7 +7,10 @@ export default function RootLayout() {
 
   return (
     <Stack
-      screenOptions={{ contentStyle: { backgroundColor: "white", flex: 1 } }}
+      screenOptions={{
+        contentStyle: { backgroundColor: "white", flex: 1 },
+        animation: "fade",
+      }}
     >
       <Stack.Protected guard={isAuthenticated}>
         <Stack.Screen name="(tabs)" />
