@@ -30,7 +30,7 @@ export default function Index() {
     );
   }
   return (
-    <SafeAreaView className="flex-1">
+    <SafeAreaView className="flex-1 bg-zinc-500">
       <View className="flex-1 items-center justify-center p-4">
         <Text className="mb-4 text-2xl font-bold">Home Screen</Text>
         <Text className="mb-8 text-center text-gray-600">
