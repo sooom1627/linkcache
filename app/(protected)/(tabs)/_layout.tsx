@@ -2,15 +2,30 @@ import { useEffect } from "react";
 
 import { View } from "react-native";
 
-import { useRouter } from "expo-router";
+import { usePathname, useRouter } from "expo-router";
 import { TabList, Tabs, TabSlot, TabTrigger } from "expo-router/ui";
-import { Ionicons } from "@expo/vector-icons";
+
+import { House, Layers2, List } from "lucide-react-native";
+import Animated, {
+  FadeIn,
+  FadeOut,
+  useAnimatedStyle,
+  withTiming,
+} from "react-native-reanimated";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useProfile } from "@/src/features/users";
+
+const tabs = [
+  { name: "index", href: "/" as const, icon: House },
+  { name: "link-list", href: "/link-list" as const, icon: List },
+  { name: "swipes", href: "/swipes" as const, icon: Layers2 },
+] as const;
 
 export default function TabsLayout() {
   const { data: profile, isLoading } = useProfile();
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     if (isLoading) {
@@ -28,22 +43,70 @@ export default function TabsLayout() {
     return null;
   }
 
+  // アニメーションスタイル
+  const createTabStyle = (isActive: boolean) =>
+    useAnimatedStyle(() => ({
+      backgroundColor: withTiming(
+        isActive ? "rgba(0,0,0,0.1)" : "rgba(0,0,0,0)",
+        {
+          duration: 200,
+        },
+      ),
+      transform: [
+        {
+          scale: withTiming(isActive ? 1.05 : 1, {
+            duration: 200,
+          }),
+        },
+      ],
+    }));
+
   return (
-    <Tabs>
-      <TabSlot />
-      <TabList asChild={true} className="absolute bottom-10 mx-10 w-full">
-        <View className="w-10/12 flex-row items-center justify-around rounded-full bg-white/50 px-10 py-4">
-          <TabTrigger name="index" href="/" className="">
-            <Ionicons name="home-outline" size={24} color="currentColor" />
-          </TabTrigger>
-          <TabTrigger name="link-list" href="/link-list" className="">
-            <Ionicons name="newspaper-outline" size={24} color="currentColor" />
-          </TabTrigger>
-          <TabTrigger name="swipes" href="/swipes" className="">
-            <Ionicons name="sparkles-outline" size={24} color="currentColor" />
-          </TabTrigger>
-        </View>
-      </TabList>
-    </Tabs>
+    <SafeAreaView className="flex-1 bg-white/60">
+      <Tabs>
+        <Animated.View
+          key={pathname}
+          entering={FadeIn.duration(300)}
+          exiting={FadeOut.duration(200)}
+          className="flex-1"
+        >
+          <TabSlot />
+        </Animated.View>
+        <TabList asChild={true} className="absolute inset-x-6 bottom-0">
+          <View
+            className="flex-row items-center justify-around self-center rounded-full border border-zinc-800/30 bg-zinc-100/90 p-2"
+            style={{
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.3,
+              shadowRadius: 12,
+              elevation: 8,
+            }}
+          >
+            {tabs.map((tab) => {
+              const isActive = pathname === tab.href;
+              const tabStyle = createTabStyle(isActive);
+              const Icon = tab.icon;
+
+              return (
+                <TabTrigger
+                  key={tab.name}
+                  name={tab.name}
+                  href={tab.href}
+                  className="flex-1"
+                >
+                  <Animated.View
+                    style={tabStyle}
+                    className="flex-1 items-center justify-center rounded-full py-3"
+                  >
+                    <Icon color={isActive ? "#18181b" : "#a1a1aa"} />
+                  </Animated.View>
+                </TabTrigger>
+              );
+            })}
+          </View>
+        </TabList>
+      </Tabs>
+    </SafeAreaView>
   );
 }
