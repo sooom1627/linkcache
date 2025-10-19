@@ -4,6 +4,7 @@ import { ScrollView, View } from "react-native";
 
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import CustomSafeArea from "./CustomSafeArea";
 import Header from "./Header";
 
 interface ScreenContainerProps {
@@ -28,23 +29,27 @@ export function ScreenContainer({
 
   if (scrollable) {
     return (
-      <ScrollView
-        className="flex-1"
-        style={{ paddingTop: insets.top }}
-        contentContainerClassName="grow"
-        keyboardShouldPersistTaps="handled"
-        keyboardDismissMode="on-drag"
-      >
-        <Header />
-        <View className={contentClassName}>{children}</View>
-      </ScrollView>
+      <CustomSafeArea>
+        <ScrollView
+          className="flex-1"
+          style={{ paddingTop: insets.top }}
+          contentContainerClassName="grow"
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
+        >
+          <Header />
+          <View className={contentClassName}>{children}</View>
+        </ScrollView>
+      </CustomSafeArea>
     );
   }
 
   return (
-    <View className="flex-1" style={{ paddingTop: insets.top }}>
-      <Header />
-      <View className={contentClassName}>{children}</View>
-    </View>
+    <CustomSafeArea>
+      <View className="flex-1" style={{ paddingTop: insets.top }}>
+        <Header />
+        <View className={contentClassName}>{children}</View>
+      </View>
+    </CustomSafeArea>
   );
 }

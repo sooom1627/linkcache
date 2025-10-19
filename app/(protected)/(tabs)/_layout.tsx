@@ -10,7 +10,6 @@ import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useProfile } from "@/src/features/users";
-import CustomSafeArea from "@/src/shared/components/layout/CsutomSafeArea";
 import type { TabItem } from "@/src/shared/types/Tabs.types";
 
 const tabs: TabItem[] = [
@@ -67,9 +66,7 @@ export default function TabsLayout() {
           exiting={FadeOut.duration(200)}
           className="flex-1"
         >
-          <CustomSafeArea>
-            <TabSlot />
-          </CustomSafeArea>
+          <TabSlot />
         </Animated.View>
         <TabList asChild={true}>
           <View
