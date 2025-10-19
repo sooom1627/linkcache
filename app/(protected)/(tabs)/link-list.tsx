@@ -26,9 +26,13 @@ const sampleData = [
 
 export default function LinkList() {
   return (
-    <ScreenContainer scrollable={false} centerContent={false} noPaddingBottom>
+    <ScreenContainer
+      scrollable={false}
+      centerContent={false}
+      noPaddingBottom
+      headerTitle="Link List"
+    >
       <View className="flex-col items-center justify-center gap-4">
-        <Text className="text-2xl font-bold">Link List</Text>
         <Text className="text-center text-gray-600">
           This is the link list screen.
         </Text>

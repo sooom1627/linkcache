@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 
-import { ScrollView, View } from "react-native";
+import { View } from "react-native";
 
+import Animated from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import CustomSafeArea from "./CustomSafeArea";
@@ -12,10 +13,12 @@ interface ScreenContainerProps {
   scrollable?: boolean;
   centerContent?: boolean;
   noPaddingBottom?: boolean;
+  headerTitle?: string;
 }
 
 export function ScreenContainer({
   children,
+  headerTitle = "Hello, User",
   scrollable = true,
   centerContent = true,
   noPaddingBottom = false,
@@ -30,25 +33,30 @@ export function ScreenContainer({
   if (scrollable) {
     return (
       <CustomSafeArea>
-        <ScrollView
+        <Header title={headerTitle} insetTop={insets.top} />
+        <Animated.ScrollView
           className="flex-1"
           style={{ paddingTop: insets.top }}
           contentContainerClassName="grow"
+          scrollEventThrottle={16}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag"
         >
-          <Header />
-          <View className={contentClassName}>{children}</View>
-        </ScrollView>
+          <View className={contentClassName} style={{ paddingTop: insets.top }}>
+            {children}
+          </View>
+        </Animated.ScrollView>
       </CustomSafeArea>
     );
   }
 
   return (
     <CustomSafeArea>
+      <Header title={headerTitle} insetTop={insets.top} />
       <View className="flex-1" style={{ paddingTop: insets.top }}>
-        <Header />
-        <View className={contentClassName}>{children}</View>
+        <View className={contentClassName} style={{ paddingTop: insets.top }}>
+          {children}
+        </View>
       </View>
     </CustomSafeArea>
   );

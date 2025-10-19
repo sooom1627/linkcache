@@ -37,9 +37,8 @@ export default function Index() {
     );
   }
   return (
-    <ScreenContainer>
-      <Text className="text-2xl font-bold">Home Screen</Text>
-      <Text className="mb-8 text-center text-gray-600">You are logged in!</Text>
+    <ScreenContainer headerTitle={`Hello, ${profile?.username}`}>
+      <Text className="text-center text-gray-600">You are logged in!</Text>
       <Text className="text-center text-gray-600">
         @{profile?.user_id || "..."} / {profile?.username || "..."}
       </Text>
