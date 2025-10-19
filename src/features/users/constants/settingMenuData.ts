@@ -2,13 +2,12 @@ import type { ComponentType } from "react";
 
 import type { LucideProps } from "lucide-react-native";
 import {
-  Clock,
+  Earth,
   File,
   HelpCircle,
   Info,
   KeyRound,
   Lock,
-  MapPin,
   UserRound,
 } from "lucide-react-native";
 
@@ -44,13 +43,8 @@ export const createSettingMenuData = (
         iconProps: ICON_PROPS,
       },
       {
-        title: "Timezone",
-        icon: Clock,
-        iconProps: ICON_PROPS,
-      },
-      {
-        title: "Location",
-        icon: MapPin,
+        title: "Timezone & Location",
+        icon: Earth,
         iconProps: ICON_PROPS,
       },
     ],
