@@ -1,50 +1,55 @@
-import { ActivityIndicator } from "react-native";
-
 import { Stack } from "expo-router";
 
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-
-import { useAuthSession } from "@/src/features/auth";
-import { QueryProvider } from "@/src/shared/providers/QueryProvider";
+import { useAuth } from "@/src/features/auth";
+import { LoadingScreen } from "@/src/shared/components/LoadingScreen";
+import { AppProviders, UIProviders } from "@/src/shared/providers";
 
 import "../assets/styles/global.css";
 
 /**
  * ルートレイアウト
+ *
+ * プロバイダー構成:
+ * - UIProviders: プラットフォーム固有のUI機能（ジェスチャー、キーボード、セーフエリア、ボトムシート）
+ * - AppProviders: ビジネスロジック（データ取得、認証状態管理、モーダル管理）
+ *
  * 認証状態に基づくリダイレクトは(protected)/_layout.tsxが担当
  */
-export default function RootLayout() {
-  const { isAuthenticated, isLoading } = useAuthSession();
+function RootNavigator() {
+  const { isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
-    return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator size="large" color="#0000ff" />
-      </SafeAreaView>
-    );
+    return <LoadingScreen />;
   }
-  return (
-    <QueryProvider>
-      <SafeAreaProvider>
-        <Stack
-          screenOptions={{
-            contentStyle: { backgroundColor: "white", flex: 1 },
-            animation: "fade",
-            headerShown: false,
-          }}
-        >
-          {/* 保護されたルート */}
-          <Stack.Protected guard={isAuthenticated}>
-            <Stack.Screen name="(protected)" />
-          </Stack.Protected>
 
-          {/* 非保護ルート */}
-          <Stack.Protected guard={!isAuthenticated}>
-            <Stack.Screen name="sign-in" />
-            <Stack.Screen name="create-account" />
-          </Stack.Protected>
-        </Stack>
-      </SafeAreaProvider>
-    </QueryProvider>
+  return (
+    <Stack
+      screenOptions={{
+        contentStyle: { backgroundColor: "white", flex: 1 },
+        animation: "fade",
+        headerShown: false,
+      }}
+    >
+      {/* 保護されたルート */}
+      <Stack.Protected guard={isAuthenticated}>
+        <Stack.Screen name="(protected)" />
+      </Stack.Protected>
+
+      {/* 非保護ルート */}
+      <Stack.Protected guard={!isAuthenticated}>
+        <Stack.Screen name="sign-in" />
+        <Stack.Screen name="create-account" />
+      </Stack.Protected>
+    </Stack>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <UIProviders>
+      <AppProviders>
+        <RootNavigator />
+      </AppProviders>
+    </UIProviders>
   );
 }

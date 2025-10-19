@@ -17,8 +17,8 @@ export default function AuthTitleSection({
 }: AuthTitleSectionProps) {
   return (
     <View className="mb-8 flex w-full flex-col gap-2">
-      <Text className="text-4xl font-bold text-zinc-800">{title}</Text>
-      <Text className="text-zinc-700">
+      <Text className="text-4xl font-bold text-slate-800">{title}</Text>
+      <Text className="text-slate-700">
         {subtitle}{" "}
         <Link href={link} className="text-blue-500 underline">
           {linkText}

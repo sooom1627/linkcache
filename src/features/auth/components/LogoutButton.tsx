@@ -6,10 +6,21 @@ import { FormButton } from "@/src/shared/components/forms";
 
 import { useSignOut } from "../hooks";
 
-export default function LogoutButton() {
+interface LogoutButtonProps {
+  disabledColor?: string;
+  enabledColor?: string;
+  onLogoutSuccess?: () => void;
+}
+
+export default function LogoutButton({
+  disabledColor,
+  enabledColor,
+  onLogoutSuccess,
+}: LogoutButtonProps) {
   const router = useRouter();
   const { mutate: signOut, isPending } = useSignOut({
     onSuccess: () => {
+      onLogoutSuccess?.();
       Alert.alert("Success", "Logged out successfully");
       router.replace("/sign-in");
     },
@@ -30,6 +41,8 @@ export default function LogoutButton() {
         title={isPending ? "Logging out..." : "Logout"}
         onPress={handleLogout}
         disabled={isPending}
+        disabledColor={disabledColor}
+        enabledColor={enabledColor}
       />
     </View>
   );

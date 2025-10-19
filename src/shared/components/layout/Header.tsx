@@ -5,6 +5,8 @@ import { router } from "expo-router";
 
 import { ArrowLeft, UserRound } from "lucide-react-native";
 
+import { useModal } from "@/src/shared/providers";
+
 export interface HeaderProps {
   title: string;
   topComponent?: boolean;
@@ -15,6 +17,7 @@ export default function Header({
   title = "Hello, User",
   topComponent = true,
 }: HeaderProps) {
+  const { openModal } = useModal();
   return (
     <View
       className="absolute inset-x-0 top-0 z-50"
@@ -31,16 +34,24 @@ export default function Header({
       >
         {topComponent ? (
           <View className="flex-row items-center justify-start gap-4 px-4 py-2">
-            <View className="rounded-full bg-zinc-200 p-4">
+            <TouchableOpacity
+              onPress={() => openModal("setting")}
+              className="rounded-full bg-slate-200 p-4"
+              hitSlop={10}
+              activeOpacity={0.8}
+              accessibilityLabel="Profile"
+              accessibilityRole="button"
+              accessibilityHint="Open settings"
+            >
               <UserRound size={16} color="black" />
-            </View>
-            <Text className="text-2xl font-bold text-zinc-700">{title}</Text>
+            </TouchableOpacity>
+            <Text className="text-2xl font-bold text-slate-700">{title}</Text>
           </View>
         ) : (
           <View className="flex-row items-center justify-start gap-4 px-4 py-2">
             <TouchableOpacity
               onPress={() => router.back()}
-              className="rounded-full bg-zinc-200 p-4"
+              className="rounded-full bg-slate-200 p-4"
               hitSlop={10}
               activeOpacity={0.8}
               accessibilityLabel="Back"
