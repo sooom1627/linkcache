@@ -10,17 +10,13 @@ import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useProfile } from "@/src/features/users";
-import type { TabPath, Tabs as TabsType } from "@/src/shared/types/Tabs.types";
+import type { TabItem } from "@/src/shared/types/Tabs.types";
 
-const tabs: TabsType = [
-  { name: "index", href: "/" as TabPath, icon: House },
-  { name: "swipes", href: "/swipes" as TabPath, icon: Layers2 },
-  { name: "link-list", href: "/link-list" as TabPath, icon: List },
-  {
-    name: "dashboard",
-    href: "/dashboard" as TabPath,
-    icon: ChartNoAxesCombined,
-  },
+const tabs: TabItem[] = [
+  { name: "index", href: "/", icon: House },
+  { name: "swipes", href: "/swipes", icon: Layers2 },
+  { name: "link-list", href: "/link-list", icon: List },
+  { name: "dashboard", href: "/dashboard", icon: ChartNoAxesCombined },
 ];
 
 export default function TabsLayout() {
@@ -76,6 +72,7 @@ export default function TabsLayout() {
                   name={tab.name}
                   href={tab.href}
                   className="flex-1"
+                  accessibilityLabel={tab.name}
                 >
                   <View
                     className={`items-center justify-center rounded-full px-6 py-4 ${isActive ? "bg-zinc-100" : ""}`}
