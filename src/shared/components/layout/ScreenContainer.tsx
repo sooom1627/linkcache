@@ -15,7 +15,7 @@ export function ScreenContainer({
   centerContent = true,
   noPaddingBottom = false,
 }: ScreenContainerProps) {
-  const paddingBottom = noPaddingBottom ? "" : "pb-12";
+  const paddingBottom = noPaddingBottom ? "" : "pb-28";
   const contentClassName = centerContent
     ? `flex-1 flex-col items-center gap-4 ${paddingBottom} pt-4`.trim()
     : `flex-1 flex-col gap-4 ${paddingBottom} pt-4`.trim();

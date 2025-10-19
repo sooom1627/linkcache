@@ -37,7 +37,7 @@ export default function LinkList() {
         className="flex-1"
         data={sampleData}
         keyExtractor={(it) => String(it.id)}
-        contentContainerClassName="pb-12"
+        contentContainerClassName="pb-28"
         renderItem={({ item }) => (
           <View className="mb-4 rounded-lg bg-gray-100 p-4">
             <Text className="text-lg font-bold">{item.title}</Text>

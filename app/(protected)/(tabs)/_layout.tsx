@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 import { View } from "react-native";
 
@@ -7,7 +7,10 @@ import { TabList, Tabs, TabSlot, TabTrigger } from "expo-router/ui";
 
 import { ChartNoAxesCombined, House, Layers2, List } from "lucide-react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 import { useProfile } from "@/src/features/users";
 import type { TabItem } from "@/src/shared/types/Tabs.types";
@@ -19,10 +22,27 @@ const tabs: TabItem[] = [
   { name: "dashboard", href: "/dashboard", icon: ChartNoAxesCombined },
 ];
 
+const tabBarStyle = {
+  width: 260,
+  justifyContent: "space-between" as const,
+  shadowColor: "#000",
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.1,
+  shadowRadius: 8,
+  elevation: 4,
+};
+
 export default function TabsLayout() {
   const { data: profile, isLoading } = useProfile();
   const router = useRouter();
   const pathname = usePathname();
+
+  const insets = useSafeAreaInsets();
+
+  const dynamicTabBarStyle = useMemo(
+    () => ({ ...tabBarStyle, bottom: insets.bottom }),
+    [insets.bottom],
+  );
 
   useEffect(() => {
     if (isLoading) {
@@ -41,7 +61,7 @@ export default function TabsLayout() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white/60">
+    <SafeAreaView className="flex-1 bg-white/60" edges={["top"]}>
       <Tabs>
         <Animated.View
           key={pathname}
@@ -51,16 +71,10 @@ export default function TabsLayout() {
         >
           <TabSlot />
         </Animated.View>
-        <TabList asChild={true} className="absolute inset-x-12 bottom-0">
+        <TabList asChild={true}>
           <View
-            className="w-fit flex-row items-center justify-around gap-4 self-center rounded-full bg-white/95 p-2"
-            style={{
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.1,
-              shadowRadius: 8,
-              elevation: 4,
-            }}
+            className="absolute flex-row items-center self-center rounded-full bg-white/95 p-2"
+            style={dynamicTabBarStyle}
           >
             {tabs.map((tab) => {
               const isActive = pathname === tab.href;
@@ -71,11 +85,10 @@ export default function TabsLayout() {
                   key={tab.name}
                   name={tab.name}
                   href={tab.href}
-                  className="flex-1"
                   accessibilityLabel={tab.name}
                 >
                   <View
-                    className={`items-center justify-center rounded-full px-6 py-4 ${isActive ? "bg-zinc-100" : ""}`}
+                    className={`items-center justify-center rounded-full px-4 py-3 ${isActive ? "bg-zinc-100" : ""}`}
                   >
                     <Icon
                       color={isActive ? "#000000" : "#9ca3af"}

@@ -4,7 +4,7 @@ import { ScreenContainer } from "@/src/shared/components/layout/ScreenContainer"
 
 export default function Swipes() {
   return (
-    <ScreenContainer scrollable={true} noPaddingBottom>
+    <ScreenContainer scrollable={true}>
       <Text className="mb-4 text-2xl font-bold">Swipes</Text>
       <Text className="mb-8 text-center text-gray-600">
         This is the swipes screen.
