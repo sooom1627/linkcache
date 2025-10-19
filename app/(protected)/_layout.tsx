@@ -39,12 +39,12 @@ export default function ProtectedLayout() {
     }
 
     if (shouldGoSetupProfile) {
-      router.replace("/(protected)/setup-profile");
+      router.replace("/setup-profile");
       return;
     }
 
     if (shouldGoTabs) {
-      router.replace("/(protected)/(tabs)");
+      router.replace("/");
     }
   }, [isLoading, shouldGoSignIn, shouldGoSetupProfile, shouldGoTabs, router]);
 
