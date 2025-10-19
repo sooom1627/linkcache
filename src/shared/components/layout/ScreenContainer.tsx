@@ -2,6 +2,10 @@ import type { ReactNode } from "react";
 
 import { ScrollView, View } from "react-native";
 
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import Header from "./Header";
+
 interface ScreenContainerProps {
   children: ReactNode;
   scrollable?: boolean;
@@ -17,24 +21,29 @@ export function ScreenContainer({
 }: ScreenContainerProps) {
   const paddingBottom = noPaddingBottom ? "" : "pb-28";
   const contentClassName = centerContent
-    ? `flex-1 flex-col items-center gap-4 ${paddingBottom} pt-4`.trim()
-    : `flex-1 flex-col gap-4 ${paddingBottom} pt-4`.trim();
+    ? `flex-1 flex-col items-center gap-4 ${paddingBottom} pt-4 px-4`.trim()
+    : `flex-1 flex-col gap-4 ${paddingBottom} pt-4 px-4`.trim();
+
+  const insets = useSafeAreaInsets();
 
   if (scrollable) {
     return (
       <ScrollView
         className="flex-1"
-        contentContainerClassName="grow px-4"
+        style={{ paddingTop: insets.top }}
+        contentContainerClassName="grow"
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
       >
+        <Header />
         <View className={contentClassName}>{children}</View>
       </ScrollView>
     );
   }
 
   return (
-    <View className="flex-1 px-4">
+    <View className="flex-1" style={{ paddingTop: insets.top }}>
+      <Header />
       <View className={contentClassName}>{children}</View>
     </View>
   );

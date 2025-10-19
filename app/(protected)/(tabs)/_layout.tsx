@@ -7,12 +7,10 @@ import { TabList, Tabs, TabSlot, TabTrigger } from "expo-router/ui";
 
 import { ChartNoAxesCombined, House, Layers2, List } from "lucide-react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useProfile } from "@/src/features/users";
+import CustomSafeArea from "@/src/shared/components/layout/CsutomSafeArea";
 import type { TabItem } from "@/src/shared/types/Tabs.types";
 
 const tabs: TabItem[] = [
@@ -61,7 +59,7 @@ export default function TabsLayout() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white/60" edges={["top"]}>
+    <View className="flex-1 bg-white/60">
       <Tabs>
         <Animated.View
           key={pathname}
@@ -69,7 +67,9 @@ export default function TabsLayout() {
           exiting={FadeOut.duration(200)}
           className="flex-1"
         >
-          <TabSlot />
+          <CustomSafeArea>
+            <TabSlot />
+          </CustomSafeArea>
         </Animated.View>
         <TabList asChild={true}>
           <View
@@ -102,6 +102,6 @@ export default function TabsLayout() {
           </View>
         </TabList>
       </Tabs>
-    </SafeAreaView>
+    </View>
   );
 }
