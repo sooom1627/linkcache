@@ -1,4 +1,6 @@
-import { ScrollView, Text, View } from "react-native";
+import { Text, View } from "react-native";
+
+import { ScreenContainer } from "@/src/shared/components/layout/ScreenContainer";
 
 const sampleData = [
   {
@@ -55,22 +57,20 @@ const sampleData = [
 
 export default function Swipes() {
   return (
-    <ScrollView className="flex-1 px-4">
-      <View className="flex-1 items-center pb-12 pt-4">
-        <Text className="mb-4 text-2xl font-bold">Swipes</Text>
-        <Text className="mb-8 text-center text-gray-600">
-          This is the swipes screen.
-        </Text>
-        {sampleData.map((item) => (
-          <View
-            key={item.id}
-            className="my-10 flex-row items-center justify-around gap-4"
-          >
-            <Text className="text-2xl font-bold">{item.title}</Text>
-            <Text className="text-sm text-gray-500">{item.description}</Text>
-          </View>
-        ))}
-      </View>
-    </ScrollView>
+    <ScreenContainer>
+      <Text className="mb-4 text-2xl font-bold">Swipes</Text>
+      <Text className="mb-8 text-center text-gray-600">
+        This is the swipes screen.
+      </Text>
+      {sampleData.map((item) => (
+        <View
+          key={item.id}
+          className="my-10 flex-row items-center justify-around gap-4"
+        >
+          <Text className="text-2xl font-bold">{item.title}</Text>
+          <Text className="text-sm text-gray-500">{item.description}</Text>
+        </View>
+      ))}
+    </ScreenContainer>
   );
 }
