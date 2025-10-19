@@ -37,12 +37,18 @@ export default function Index() {
     );
   }
   return (
-    <ScreenContainer>
-      <Text className="text-2xl font-bold">Home Screen</Text>
-      <Text className="mb-8 text-center text-gray-600">You are logged in!</Text>
+    <ScreenContainer headerTitle={`Hello, ${profile?.username}`}>
+      <Text className="text-center text-gray-600">You are logged in!</Text>
       <Text className="text-center text-gray-600">
         @{profile?.user_id || "..."} / {profile?.username || "..."}
       </Text>
+
+      {Array.from({ length: 25 }).map((_, index) => (
+        <View key={index} className="mb-4">
+          <Text className="text-lg font-bold">Swipe {index + 1}</Text>
+          <Text className="text-sm text-gray-500">Description {index + 1}</Text>
+        </View>
+      ))}
 
       {/* Logout Button */}
       <View className="w-full">

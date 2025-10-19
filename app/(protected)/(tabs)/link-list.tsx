@@ -26,18 +26,17 @@ const sampleData = [
 
 export default function LinkList() {
   return (
-    <ScreenContainer scrollable={false} centerContent={false} noPaddingBottom>
-      <View className="flex-col items-center justify-center gap-4">
-        <Text className="text-2xl font-bold">Link List</Text>
-        <Text className="text-center text-gray-600">
-          This is the link list screen.
-        </Text>
-      </View>
+    <ScreenContainer
+      scrollable={false}
+      centerContent={false}
+      noPaddingBottom
+      headerTitle="Link List"
+    >
       <FlashList
         className="flex-1"
         data={sampleData}
         keyExtractor={(it) => String(it.id)}
-        contentContainerClassName="pb-28"
+        contentContainerClassName="pt-16 pb-28"
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
           <View className="mb-4 rounded-lg bg-gray-100 p-4">

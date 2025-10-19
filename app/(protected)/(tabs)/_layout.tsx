@@ -61,7 +61,7 @@ export default function TabsLayout() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white/60" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-white" edges={["top", "right", "left"]}>
       <Tabs>
         <Animated.View
           key={pathname}
@@ -73,7 +73,7 @@ export default function TabsLayout() {
         </Animated.View>
         <TabList asChild={true}>
           <View
-            className="absolute flex-row items-center self-center rounded-full bg-white/90 p-2"
+            className="absolute z-50 flex-row items-center self-center rounded-full bg-white/90 p-2"
             style={dynamicTabBarStyle}
           >
             {tabs.map((tab) => {
