@@ -39,7 +39,7 @@ interface MenuSection {
 
 export const SettingModal = forwardRef<BottomSheetModal, SettingModalProps>(
   ({ onClose }, ref) => {
-    const { openProfileEdit } = useModal();
+    const { openModal } = useModal();
 
     const menuData: MenuSection[] = [
       {
@@ -49,7 +49,7 @@ export const SettingModal = forwardRef<BottomSheetModal, SettingModalProps>(
             title: "Profile",
             icon: <UserRound size={16} color="#6B7280" />,
             onPress: () => {
-              openProfileEdit();
+              openModal("profileEdit");
             },
           },
           {

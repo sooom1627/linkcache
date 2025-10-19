@@ -1,5 +1,5 @@
 import type { PropsWithChildren } from "react";
-import { createContext, useCallback, useContext } from "react";
+import { createContext, useCallback, useContext, useMemo } from "react";
 
 import type { BottomSheetModal } from "@gorhom/bottom-sheet";
 
@@ -9,41 +9,33 @@ import type { BottomSheetModal } from "@gorhom/bottom-sheet";
 export type ModalType = "setting" | "profileEdit";
 
 /**
+ * モーダルRefsの型定義
+ */
+export type ModalRefs = Record<
+  ModalType,
+  React.RefObject<BottomSheetModal | null>
+>;
+
+/**
  * モーダルコンテキストの型定義
  */
 interface ModalContextType {
   /**
-   * 設定モーダルを開く
+   * 指定したモーダルを開く
+   * @param modalType - 開くモーダルの種類
    */
-  openSetting: () => void;
+  openModal: (modalType: ModalType) => void;
 
   /**
-   * 設定モーダルを閉じる
+   * 指定したモーダルを閉じる
+   * @param modalType - 閉じるモーダルの種類
    */
-  closeSetting: () => void;
-
-  /**
-   * プロフィール編集モーダルを開く
-   */
-  openProfileEdit: () => void;
-
-  /**
-   * プロフィール編集モーダルを閉じる
-   */
-  closeProfileEdit: () => void;
+  closeModal: (modalType: ModalType) => void;
 
   /**
    * 全てのモーダルを閉じる
    */
-  closeAll: () => void;
-}
-
-/**
- * モーダルRefsの型定義
- */
-export interface ModalRefs {
-  settingModalRef: React.RefObject<BottomSheetModal | null>;
-  profileEditModalRef: React.RefObject<BottomSheetModal | null>;
+  closeAllModals: () => void;
 }
 
 /**
@@ -58,51 +50,43 @@ export function ModalContextProvider({
   children,
   refs,
 }: PropsWithChildren<{ refs: ModalRefs }>) {
-  const { settingModalRef, profileEditModalRef } = refs;
+  /**
+   * 指定したモーダルを開く
+   */
+  const openModal = useCallback(
+    (modalType: ModalType) => {
+      refs[modalType]?.current?.present();
+    },
+    [refs],
+  );
 
   /**
-   * 設定モーダルを開く
+   * 指定したモーダルを閉じる
    */
-  const openSetting = useCallback(() => {
-    settingModalRef.current?.present();
-  }, [settingModalRef]);
-
-  /**
-   * 設定モーダルを閉じる
-   */
-  const closeSetting = useCallback(() => {
-    settingModalRef.current?.dismiss();
-  }, [settingModalRef]);
-
-  /**
-   * プロフィール編集モーダルを開く
-   */
-  const openProfileEdit = useCallback(() => {
-    profileEditModalRef.current?.present();
-  }, [profileEditModalRef]);
-
-  /**
-   * プロフィール編集モーダルを閉じる
-   */
-  const closeProfileEdit = useCallback(() => {
-    profileEditModalRef.current?.dismiss();
-  }, [profileEditModalRef]);
+  const closeModal = useCallback(
+    (modalType: ModalType) => {
+      refs[modalType]?.current?.dismiss();
+    },
+    [refs],
+  );
 
   /**
    * 全てのモーダルを閉じる
    */
-  const closeAll = useCallback(() => {
-    settingModalRef.current?.dismiss();
-    profileEditModalRef.current?.dismiss();
-  }, [settingModalRef, profileEditModalRef]);
+  const closeAllModals = useCallback(() => {
+    (Object.keys(refs) as ModalType[]).forEach((modalType) => {
+      refs[modalType]?.current?.dismiss();
+    });
+  }, [refs]);
 
-  const value: ModalContextType = {
-    openSetting,
-    closeSetting,
-    openProfileEdit,
-    closeProfileEdit,
-    closeAll,
-  };
+  const value: ModalContextType = useMemo(
+    () => ({
+      openModal,
+      closeModal,
+      closeAllModals,
+    }),
+    [openModal, closeModal, closeAllModals],
+  );
 
   return (
     <ModalContext.Provider value={value}>{children}</ModalContext.Provider>
@@ -117,10 +101,10 @@ export function ModalContextProvider({
  * @example
  * ```tsx
  * function MyComponent() {
- *   const { openSetting, closeSetting } = useModal();
+ *   const { openModal, closeModal } = useModal();
  *
  *   return (
- *     <Button onPress={openSetting}>設定を開く</Button>
+ *     <Button onPress={() => openModal("setting")}>設定を開く</Button>
  *   );
  * }
  * ```

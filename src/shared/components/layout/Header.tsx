@@ -17,7 +17,7 @@ export default function Header({
   title = "Hello, User",
   topComponent = true,
 }: HeaderProps) {
-  const { openSetting } = useModal();
+  const { openModal } = useModal();
   return (
     <View
       className="absolute inset-x-0 top-0 z-50"
@@ -35,7 +35,7 @@ export default function Header({
         {topComponent ? (
           <View className="flex-row items-center justify-start gap-4 px-4 py-2">
             <TouchableOpacity
-              onPress={openSetting}
+              onPress={() => openModal("setting")}
               className="rounded-full bg-slate-200 p-4"
               hitSlop={10}
               activeOpacity={0.8}
