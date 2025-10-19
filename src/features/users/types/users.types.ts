@@ -22,3 +22,12 @@ export interface CreateProfileRequest {
 export interface CheckUserIdResponse {
   isAvailable: boolean;
 }
+
+/**
+ * プロフィール更新リクエスト
+ */
+export interface UpdateProfileRequest {
+  id: string;
+  user_id: string;
+  username: string;
+}
