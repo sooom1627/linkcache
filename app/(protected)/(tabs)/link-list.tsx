@@ -38,6 +38,7 @@ export default function LinkList() {
         data={sampleData}
         keyExtractor={(it) => String(it.id)}
         contentContainerClassName="pb-28"
+        showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
           <View className="mb-4 rounded-lg bg-gray-100 p-4">
             <Text className="text-lg font-bold">{item.title}</Text>
