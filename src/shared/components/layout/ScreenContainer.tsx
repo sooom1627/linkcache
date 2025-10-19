@@ -3,7 +3,6 @@ import type { ReactNode } from "react";
 import { View } from "react-native";
 
 import Animated from "react-native-reanimated";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import CustomSafeArea from "./CustomSafeArea";
 import Header from "./Header";
@@ -32,16 +31,10 @@ export function ScreenContainer({
     ? `flex-1 flex-col items-center gap-4 ${paddingBottom} pt-2 px-4`.trim()
     : `flex-1 flex-col gap-4 ${paddingBottom} pt-2 px-4`.trim();
 
-  const insets = useSafeAreaInsets();
-
   if (scrollable) {
     return (
       <CustomSafeArea>
-        <Header
-          title={headerTitle}
-          topInset={insets.top}
-          topComponent={topComponent}
-        />
+        <Header title={headerTitle} topComponent={topComponent} />
         <Animated.ScrollView
           className="flex-1"
           style={{ paddingTop: HEADER_HEIGHT }}
@@ -58,11 +51,7 @@ export function ScreenContainer({
 
   return (
     <CustomSafeArea>
-      <Header
-        title={headerTitle}
-        topInset={insets.top}
-        topComponent={topComponent}
-      />
+      <Header title={headerTitle} topComponent={topComponent} />
       <View className="flex-1">
         <View className={contentClassName}>{children}</View>
       </View>

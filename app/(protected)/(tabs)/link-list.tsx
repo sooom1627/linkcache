@@ -36,7 +36,7 @@ export default function LinkList() {
         className="flex-1"
         data={sampleData}
         keyExtractor={(it) => String(it.id)}
-        contentContainerClassName="pb-28 pt-16"
+        contentContainerClassName="pt-16 pb-28"
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
           <View className="mb-4 rounded-lg bg-gray-100 p-4">

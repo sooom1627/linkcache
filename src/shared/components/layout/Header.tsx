@@ -8,19 +8,17 @@ import { ArrowLeft, UserRound } from "lucide-react-native";
 export interface HeaderProps {
   title: string;
   topComponent?: boolean;
-  topInset?: number;
 }
 const HEADER_HEIGHT = 64;
 
 export default function Header({
   title = "Hello, User",
   topComponent = true,
-  topInset = 0,
 }: HeaderProps) {
   return (
     <View
-      className="absolute inset-x-0 top-0 z-10"
-      style={{ paddingTop: topInset, height: HEADER_HEIGHT }}
+      className="absolute inset-x-0 top-0 z-50"
+      style={{ height: HEADER_HEIGHT }}
     >
       <LinearGradient
         colors={[
@@ -43,6 +41,11 @@ export default function Header({
             <TouchableOpacity
               onPress={() => router.back()}
               className="rounded-full bg-zinc-200 p-4"
+              hitSlop={10}
+              activeOpacity={0.8}
+              accessibilityLabel="Back"
+              accessibilityRole="button"
+              accessibilityHint="Go back to the previous screen"
             >
               <ArrowLeft size={16} color="black" />
             </TouchableOpacity>
