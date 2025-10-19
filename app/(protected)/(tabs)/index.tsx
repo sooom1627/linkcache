@@ -1,27 +1,34 @@
-import { ActivityIndicator, Text, View } from "react-native";
+import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 
 import LogoutButton from "@/src/features/auth/components/LogoutButton";
 import { useProfile } from "@/src/features/users";
 import { ScreenContainer } from "@/src/shared/components/layout/ScreenContainer";
 
 export default function Index() {
-  const { data: profile, isLoading, error } = useProfile();
+  const { data: profile, isLoading, error, refetch } = useProfile();
 
   if (isLoading) {
     return (
-      <View className="flex-1 items-center justify-center">
+      <ScreenContainer scrollable={false}>
         <ActivityIndicator size="large" />
-      </View>
+      </ScreenContainer>
     );
   }
 
   if (error) {
     return (
-      <View className="flex-1 items-center p-4">
+      <ScreenContainer scrollable={false}>
         <Text className="text-center text-red-600">
           プロフィールの読み込みに失敗しました
         </Text>
-      </View>
+        <TouchableOpacity
+          onPress={() => {
+            refetch();
+          }}
+        >
+          <Text>再読み込み</Text>
+        </TouchableOpacity>
+      </ScreenContainer>
     );
   }
   return (
