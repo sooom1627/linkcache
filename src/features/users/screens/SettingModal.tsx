@@ -16,7 +16,7 @@ import {
 
 import { ScrollableBottomSheetModal } from "@/src/shared/components/modals";
 import ModalHeader from "@/src/shared/components/modals/ModalHeader";
-import { useModal } from "@/src/shared/providers";
+import { useModal } from "@/src/shared/providers/ModalContext";
 
 import LogoutButton from "../../auth/components/LogoutButton";
 import SettingItem from "../components/setting/SettingItem";

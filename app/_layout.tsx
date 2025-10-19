@@ -1,67 +1,49 @@
-import {
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
-} from "react-native";
-
 import { Stack } from "expo-router";
 
-import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-
 import { useAuthSession } from "@/src/features/auth";
-import { ModalProvider, QueryProvider } from "@/src/shared/providers";
+import { LoadingScreen } from "@/src/shared/components/LoadingScreen";
+import { AppProviders, UIProviders } from "@/src/shared/providers";
 
 import "../assets/styles/global.css";
 
 /**
  * ルートレイアウト
+ *
+ * プロバイダー構成:
+ * - UIProviders: プラットフォーム固有のUI機能（ジェスチャー、キーボード、セーフエリア、ボトムシート）
+ * - AppProviders: ビジネスロジック（データ取得、モーダル管理）
+ *
  * 認証状態に基づくリダイレクトは(protected)/_layout.tsxが担当
  */
 export default function RootLayout() {
   const { isAuthenticated, isLoading } = useAuthSession();
 
   if (isLoading) {
-    return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator size="large" color="#0000ff" />
-      </SafeAreaView>
-    );
+    return <LoadingScreen />;
   }
-  return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        className="flex-1"
-      >
-        <QueryProvider>
-          <SafeAreaProvider>
-            <BottomSheetModalProvider>
-              <ModalProvider>
-                <Stack
-                  screenOptions={{
-                    contentStyle: { backgroundColor: "white", flex: 1 },
-                    animation: "fade",
-                    headerShown: false,
-                  }}
-                >
-                  {/* 保護されたルート */}
-                  <Stack.Protected guard={isAuthenticated}>
-                    <Stack.Screen name="(protected)" />
-                  </Stack.Protected>
 
-                  {/* 非保護ルート */}
-                  <Stack.Protected guard={!isAuthenticated}>
-                    <Stack.Screen name="sign-in" />
-                    <Stack.Screen name="create-account" />
-                  </Stack.Protected>
-                </Stack>
-              </ModalProvider>
-            </BottomSheetModalProvider>
-          </SafeAreaProvider>
-        </QueryProvider>
-      </KeyboardAvoidingView>
-    </GestureHandlerRootView>
+  return (
+    <UIProviders>
+      <AppProviders>
+        <Stack
+          screenOptions={{
+            contentStyle: { backgroundColor: "white", flex: 1 },
+            animation: "fade",
+            headerShown: false,
+          }}
+        >
+          {/* 保護されたルート */}
+          <Stack.Protected guard={isAuthenticated}>
+            <Stack.Screen name="(protected)" />
+          </Stack.Protected>
+
+          {/* 非保護ルート */}
+          <Stack.Protected guard={!isAuthenticated}>
+            <Stack.Screen name="sign-in" />
+            <Stack.Screen name="create-account" />
+          </Stack.Protected>
+        </Stack>
+      </AppProviders>
+    </UIProviders>
   );
 }
