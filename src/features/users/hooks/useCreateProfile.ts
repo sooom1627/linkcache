@@ -1,6 +1,7 @@
 import type { PostgrestError } from "@supabase/supabase-js";
 import { useMutation } from "@tanstack/react-query";
 
+import { useAuth } from "../../auth";
 import { createProfile } from "../api";
 import type { CreateProfileRequest, UserProfile } from "../types/users.types";
 
@@ -27,8 +28,10 @@ export function useCreateProfile(options?: {
   onSuccess?: (data: UserProfile) => void;
   onError?: (error: PostgrestError) => void;
 }) {
+  const { user } = useAuth();
+
   return useMutation<UserProfile, PostgrestError, CreateProfileRequest>({
-    mutationFn: createProfile,
+    mutationFn: (profile) => createProfile(user?.id ?? "", profile),
     onSuccess: options?.onSuccess,
     onError: options?.onError,
   });

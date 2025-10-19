@@ -27,27 +27,20 @@ function createPostgrestError(
 
 /**
  * プロフィールを作成
+ * @param userId - 認証されたユーザーのID
  * @param profile - 作成するプロフィール情報
  * @returns 作成されたプロフィール
  * @throws {PostgrestError} データベースエラーが発生した場合
  */
 export async function createProfile(
+  userId: string,
   profile: CreateProfileRequest,
 ): Promise<UserProfile> {
-  // 現在認証されているユーザーを取得
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    throw createPostgrestError("User not authenticated", "AUTH001");
-  }
-
   // プロフィールをINSERT
   const { data, error } = await supabase
     .from("users")
     .insert({
-      id: user.id,
+      id: userId,
       user_id: profile.user_id,
       username: profile.username,
     })
@@ -67,27 +60,29 @@ export async function createProfile(
 
 /**
  * プロフィールを更新
+ * @param userId - 認証されたユーザーのID
  * @param profile - 更新するプロフィール情報
  * @returns 更新されたプロフィール
  * @throws {PostgrestError} データベースエラーが発生した場合
  */
 export async function updateProfile(
+  userId: string,
   profile: UpdateProfileRequest,
 ): Promise<UserProfile> {
   const { user_id, username } = profile;
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
+  if (!userId) {
     throw createPostgrestError("User not authenticated", "AUTH001");
+  }
+
+  if (!user_id || !username) {
+    throw createPostgrestError("User ID and username are required", "PGRST116");
   }
 
   const { data, error } = await supabase
     .from("users")
     .update({ user_id, username, updated_at: new Date().toISOString() })
-    .eq("id", user.id)
+    .eq("id", userId)
     .select()
     .single<UserProfile>();
 
