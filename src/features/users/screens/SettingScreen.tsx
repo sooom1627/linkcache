@@ -8,6 +8,7 @@ import {
   File,
   HelpCircle,
   Info,
+  KeyRound,
   Lock,
   MapPin,
   UserRound,
@@ -40,19 +41,23 @@ interface MenuSection {
 
 const menuData: MenuSection[] = [
   {
-    menuTitle: "User",
+    menuTitle: "Your Account",
     menuItems: [
       {
-        title: "Your Profile",
+        title: "Profile",
         icon: <UserRound size={16} color="#6B7280" />,
       },
       {
-        title: "Location",
-        icon: <MapPin size={16} color="#6B7280" />,
+        title: "Password",
+        icon: <KeyRound size={16} color="#6B7280" />,
       },
       {
         title: "Timezone",
         icon: <Clock size={16} color="#6B7280" />,
+      },
+      {
+        title: "Location",
+        icon: <MapPin size={16} color="#6B7280" />,
       },
     ],
   },
