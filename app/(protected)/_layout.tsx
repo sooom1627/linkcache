@@ -39,7 +39,7 @@ export default function ProtectedLayout() {
     }
 
     if (shouldGoSetupProfile) {
-      router.replace("/setup-profile");
+      router.replace("/users/setup");
       return;
     }
 

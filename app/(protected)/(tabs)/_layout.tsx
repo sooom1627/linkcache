@@ -51,7 +51,7 @@ export default function TabsLayout() {
 
     // プロフィールが未設定の場合、setup-profileへリダイレクト
     if (!profile) {
-      router.replace("/setup-profile");
+      router.replace("/users/setup");
     }
   }, [profile, isLoading, router]);
 
