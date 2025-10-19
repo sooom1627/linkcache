@@ -3,10 +3,11 @@ import type { ReactNode } from "react";
 import { View } from "react-native";
 
 import Animated from "react-native-reanimated";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import CustomSafeArea from "./CustomSafeArea";
 import Header from "./Header";
+
+const HEADER_HEIGHT = 64;
 
 interface ScreenContainerProps {
   children: ReactNode;
@@ -28,23 +29,19 @@ export function ScreenContainer({
     ? `flex-1 flex-col items-center gap-4 ${paddingBottom} pt-4 px-4`.trim()
     : `flex-1 flex-col gap-4 ${paddingBottom} pt-4 px-4`.trim();
 
-  const insets = useSafeAreaInsets();
-
   if (scrollable) {
     return (
       <CustomSafeArea>
-        <Header title={headerTitle} insetTop={insets.top} />
+        <Header title={headerTitle} />
         <Animated.ScrollView
           className="flex-1"
-          style={{ paddingTop: insets.top }}
+          style={{ paddingTop: HEADER_HEIGHT }}
           contentContainerClassName="grow"
           scrollEventThrottle={16}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag"
         >
-          <View className={contentClassName} style={{ paddingTop: insets.top }}>
-            {children}
-          </View>
+          <View className={contentClassName}>{children}</View>
         </Animated.ScrollView>
       </CustomSafeArea>
     );
@@ -52,11 +49,9 @@ export function ScreenContainer({
 
   return (
     <CustomSafeArea>
-      <Header title={headerTitle} insetTop={insets.top} />
-      <View className="flex-1" style={{ paddingTop: insets.top }}>
-        <View className={contentClassName} style={{ paddingTop: insets.top }}>
-          {children}
-        </View>
+      <Header title={headerTitle} />
+      <View className="flex-1" style={{ paddingTop: HEADER_HEIGHT }}>
+        <View className={contentClassName}>{children}</View>
       </View>
     </CustomSafeArea>
   );
