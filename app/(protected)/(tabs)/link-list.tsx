@@ -32,16 +32,11 @@ export default function LinkList() {
       noPaddingBottom
       headerTitle="Link List"
     >
-      <View className="flex-col items-center justify-center gap-4">
-        <Text className="text-center text-gray-600">
-          This is the link list screen.
-        </Text>
-      </View>
       <FlashList
         className="flex-1"
         data={sampleData}
         keyExtractor={(it) => String(it.id)}
-        contentContainerClassName="pb-28"
+        contentContainerClassName="pb-28 pt-16"
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
           <View className="mb-4 rounded-lg bg-gray-100 p-4">

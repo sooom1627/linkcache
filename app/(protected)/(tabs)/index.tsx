@@ -43,6 +43,13 @@ export default function Index() {
         @{profile?.user_id || "..."} / {profile?.username || "..."}
       </Text>
 
+      {Array.from({ length: 25 }).map((_, index) => (
+        <View key={index} className="mb-4">
+          <Text className="text-lg font-bold">Swipe {index + 1}</Text>
+          <Text className="text-sm text-gray-500">Description {index + 1}</Text>
+        </View>
+      ))}
+
       {/* Logout Button */}
       <View className="w-full">
         <LogoutButton />

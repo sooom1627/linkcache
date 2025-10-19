@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { View } from "react-native";
 
 import Animated from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import CustomSafeArea from "./CustomSafeArea";
 import Header from "./Header";
@@ -15,6 +16,7 @@ interface ScreenContainerProps {
   centerContent?: boolean;
   noPaddingBottom?: boolean;
   headerTitle?: string;
+  topComponent?: boolean;
 }
 
 export function ScreenContainer({
@@ -23,16 +25,23 @@ export function ScreenContainer({
   scrollable = true,
   centerContent = true,
   noPaddingBottom = false,
+  topComponent = true,
 }: ScreenContainerProps) {
   const paddingBottom = noPaddingBottom ? "" : "pb-28";
   const contentClassName = centerContent
-    ? `flex-1 flex-col items-center gap-4 ${paddingBottom} pt-4 px-4`.trim()
-    : `flex-1 flex-col gap-4 ${paddingBottom} pt-4 px-4`.trim();
+    ? `flex-1 flex-col items-center gap-4 ${paddingBottom} pt-2 px-4`.trim()
+    : `flex-1 flex-col gap-4 ${paddingBottom} pt-2 px-4`.trim();
+
+  const insets = useSafeAreaInsets();
 
   if (scrollable) {
     return (
       <CustomSafeArea>
-        <Header title={headerTitle} />
+        <Header
+          title={headerTitle}
+          topInset={insets.top}
+          topComponent={topComponent}
+        />
         <Animated.ScrollView
           className="flex-1"
           style={{ paddingTop: HEADER_HEIGHT }}
@@ -49,8 +58,12 @@ export function ScreenContainer({
 
   return (
     <CustomSafeArea>
-      <Header title={headerTitle} />
-      <View className="flex-1" style={{ paddingTop: HEADER_HEIGHT }}>
+      <Header
+        title={headerTitle}
+        topInset={insets.top}
+        topComponent={topComponent}
+      />
+      <View className="flex-1">
         <View className={contentClassName}>{children}</View>
       </View>
     </CustomSafeArea>

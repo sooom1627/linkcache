@@ -22,8 +22,28 @@ export default function CustomSafeArea({
 
   return (
     <>
+      <View
+        className="pointer-events-none absolute inset-x-0 top-0"
+        style={{
+          height: insets.top,
+          zIndex: 10,
+        }}
+        pointerEvents="none"
+      >
+        <LinearGradient
+          colors={[
+            "rgba(255, 255, 255, 1)",
+            "rgba(255, 255, 255, 0.9)",
+            "rgba(255, 255, 255, 0.0)",
+          ]}
+          locations={[0, 0.6, 1]}
+          style={{ flex: 1 }}
+        />
+      </View>
       {/* Main content with SafeArea padding */}
-      <View className="flex-1">{children}</View>
+      <View className="flex-1" style={{ paddingTop: insets.top }}>
+        {children}
+      </View>
 
       {/* Bottom decorative gradient overlay */}
       <View
