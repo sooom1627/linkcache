@@ -24,7 +24,7 @@ export function ScreenContainer({
     return (
       <ScrollView
         className="flex-1"
-        contentContainerClassName="px-4"
+        contentContainerClassName="grow px-4"
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
       >
