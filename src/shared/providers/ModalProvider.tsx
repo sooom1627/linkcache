@@ -54,16 +54,15 @@ const MODAL_CONFIGS: ModalConfig[] = [
  */
 export function ModalProvider({ children }: PropsWithChildren) {
   // 各モーダルのrefを動的に生成
+  const settingRef = useRef<BottomSheetModal | null>(null);
+  const profileEditRef = useRef<BottomSheetModal | null>(null);
+
   const modalRefs = useMemo(
-    () =>
-      MODAL_CONFIGS.reduce(
-        (acc, { type }) => {
-          acc[type] = useRef<BottomSheetModal | null>(null);
-          return acc;
-        },
-        {} as Record<ModalType, React.RefObject<BottomSheetModal | null>>,
-      ),
-    [],
+    () => ({
+      setting: settingRef,
+      profileEdit: profileEditRef,
+    }),
+    [settingRef, profileEditRef],
   );
 
   // refsオブジェクトをメモ化
