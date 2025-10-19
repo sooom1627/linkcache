@@ -45,12 +45,22 @@ export function ModalProvider({ children }: PropsWithChildren) {
     [],
   );
 
+  // すべてのモーダルを閉じる関数
+  const closeAllModals = useCallback(() => {
+    settingModalRef.current?.dismiss();
+    profileEditModalRef.current?.dismiss();
+  }, []);
+
   return (
     <ModalContextProvider refs={refs}>
       {children}
 
       {/* モーダルコンポーネント - アプリ全体で1インスタンス */}
-      <SettingModal ref={settingModalRef} onClose={closeSetting} />
+      <SettingModal
+        ref={settingModalRef}
+        onClose={closeSetting}
+        onCloseAll={closeAllModals}
+      />
       <ProfileEditModal ref={profileEditModalRef} onClose={closeProfileEdit} />
 
       {/* 将来的に他のモーダルを追加 */}

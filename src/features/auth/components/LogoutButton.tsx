@@ -9,15 +9,18 @@ import { useSignOut } from "../hooks";
 interface LogoutButtonProps {
   disabledColor?: string;
   enabledColor?: string;
+  onLogoutSuccess?: () => void;
 }
 
 export default function LogoutButton({
   disabledColor,
   enabledColor,
+  onLogoutSuccess,
 }: LogoutButtonProps) {
   const router = useRouter();
   const { mutate: signOut, isPending } = useSignOut({
     onSuccess: () => {
+      onLogoutSuccess?.();
       Alert.alert("Success", "Logged out successfully");
       router.replace("/sign-in");
     },

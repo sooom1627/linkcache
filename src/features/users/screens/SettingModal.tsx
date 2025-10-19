@@ -24,6 +24,7 @@ import SettingMenuSection from "../components/setting/SettingMenuSection";
 
 interface SettingModalProps {
   onClose?: () => void;
+  onCloseAll?: () => void;
 }
 
 interface MenuItem {
@@ -38,7 +39,7 @@ interface MenuSection {
 }
 
 export const SettingModal = forwardRef<BottomSheetModal, SettingModalProps>(
-  ({ onClose }, ref) => {
+  ({ onClose, onCloseAll }, ref) => {
     const { openModal } = useModal();
 
     const menuData: MenuSection[] = [
@@ -126,6 +127,7 @@ export const SettingModal = forwardRef<BottomSheetModal, SettingModalProps>(
             <LogoutButton
               disabledColor="bg-red-400"
               enabledColor="bg-red-500"
+              onLogoutSuccess={onCloseAll}
             />
           </View>
         </View>
