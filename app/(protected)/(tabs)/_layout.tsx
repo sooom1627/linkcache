@@ -73,7 +73,7 @@ export default function TabsLayout() {
         </Animated.View>
         <TabList asChild={true}>
           <View
-            className="absolute flex-row items-center self-center rounded-full bg-white/95 p-2"
+            className="absolute flex-row items-center self-center rounded-full bg-white/90 p-2"
             style={dynamicTabBarStyle}
           >
             {tabs.map((tab) => {
@@ -88,7 +88,7 @@ export default function TabsLayout() {
                   accessibilityLabel={tab.name}
                 >
                   <View
-                    className={`items-center justify-center rounded-full px-4 py-3 ${isActive ? "bg-zinc-100" : ""}`}
+                    className={`items-center justify-center rounded-full p-4 ${isActive ? "bg-zinc-100" : ""}`}
                   >
                     <Icon
                       color={isActive ? "#000000" : "#9ca3af"}
