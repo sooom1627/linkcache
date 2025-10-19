@@ -10,13 +10,18 @@ import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useProfile } from "@/src/features/users";
+import type { TabPath, Tabs as TabsType } from "@/src/shared/types/Tabs.types";
 
-const tabs = [
-  { name: "index", href: "/" as const, icon: House },
-  { name: "swipes", href: "/swipes" as const, icon: Layers2 },
-  { name: "link-list", href: "/link-list" as const, icon: List },
-  { name: "dashboard", href: "/dashboard" as const, icon: ChartNoAxesCombined },
-] as const;
+const tabs: TabsType = [
+  { name: "index", href: "/" as TabPath, icon: House },
+  { name: "swipes", href: "/swipes" as TabPath, icon: Layers2 },
+  { name: "link-list", href: "/link-list" as TabPath, icon: List },
+  {
+    name: "dashboard",
+    href: "/dashboard" as TabPath,
+    icon: ChartNoAxesCombined,
+  },
+];
 
 export default function TabsLayout() {
   const { data: profile, isLoading } = useProfile();
