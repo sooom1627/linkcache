@@ -26,7 +26,7 @@ export default function CreateAccount() {
           [{ text: "OK", onPress: () => router.replace("/sign-in") }],
         );
       } else {
-        router.replace("/(protected)/setup-profile");
+        router.replace("/setup-profile");
       }
     },
     onError: (error) => {

@@ -39,12 +39,12 @@ export default function ProtectedLayout() {
     }
 
     if (shouldGoSetupProfile) {
-      router.replace("/(protected)/setup-profile");
+      router.replace("/setup-profile");
       return;
     }
 
     if (shouldGoTabs) {
-      router.replace("/(protected)/(tabs)");
+      router.replace("/");
     }
   }, [isLoading, shouldGoSignIn, shouldGoSetupProfile, shouldGoTabs, router]);
 
@@ -62,7 +62,7 @@ export default function ProtectedLayout() {
 
   if (session && isProfileError) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-white">
+      <SafeAreaView className="relative flex-1 items-center justify-center bg-white">
         <Text>プロフィールの読み込みに失敗しました。</Text>
       </SafeAreaView>
     );

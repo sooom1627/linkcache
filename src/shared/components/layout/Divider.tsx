@@ -1,6 +1,4 @@
-import { View } from "react-native";
-
-import { Text } from "@react-navigation/elements";
+import { Text, View } from "react-native";
 
 export default function Divider({ text = "" }: { text: string }) {
   return (

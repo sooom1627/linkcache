@@ -19,7 +19,7 @@ export default function SignIn() {
   const insets = useSafeAreaInsets();
   const { mutateAsync: signIn } = useSignIn({
     onSuccess: () => {
-      router.replace("/(protected)/(tabs)");
+      router.replace("/");
     },
     onError: (error) => {
       const friendlyMessage = error.message.includes("invalid credentials")
