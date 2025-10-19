@@ -6,6 +6,7 @@
  * ## 構成
  * - **API**: Supabase Authとの通信を行う関数群
  * - **Hooks**: React Queryを使用した認証操作のカスタムフック
+ * - **Context**: 認証状態をグローバルに管理するコンテキスト
  * - **Types**: 認証関連の型定義
  * - **Components**: 認証UIコンポーネント
  * - **Screens**: 認証画面コンポーネント
@@ -29,21 +30,24 @@
  * }
  * ```
  *
- * ### 認証状態の監視
+ * ### 認証状態の使用（推奨）
  * ```tsx
- * import { useAuthSession } from '@/features/auth';
+ * import { useAuth } from '@/features/auth';
  *
  * function App() {
- *   const { session, authState, user } = useAuthSession();
+ *   const { session, authState, user, isAuthenticated, isLoading } = useAuth();
  *
- *   if (authState === 'loading') {
+ *   if (isLoading) {
  *     return <LoadingScreen />;
  *   }
  *
- *   return session ? <AuthenticatedApp /> : <LoginScreen />;
+ *   return isAuthenticated ? <AuthenticatedApp /> : <LoginScreen />;
  * }
  * ```
  */
+
+// Context & Hooks
+export * from "./context/AuthContext";
 
 // API Functions
 export * from "./api";

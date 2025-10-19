@@ -62,11 +62,11 @@ export function ModalProvider({ children }: PropsWithChildren) {
       setting: settingRef,
       profileEdit: profileEditRef,
     }),
-    [settingRef, profileEditRef],
+    [],
   );
 
   // refsオブジェクトをメモ化
-  const refs: ModalRefs = useMemo(() => modalRefs, [modalRefs]);
+  const refs: ModalRefs = modalRefs;
 
   // 各モーダルのclose関数を動的に生成
   const closeHandlers = useMemo(

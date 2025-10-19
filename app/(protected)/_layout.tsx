@@ -6,7 +6,7 @@ import { Slot, useRouter, useSegments } from "expo-router";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { useAuthSession } from "@/src/features/auth";
+import { useAuth } from "@/src/features/auth";
 import { useProfile } from "@/src/features/users";
 
 /**
@@ -16,7 +16,7 @@ import { useProfile } from "@/src/features/users";
 export default function ProtectedLayout() {
   const router = useRouter();
   const segments = useSegments() as string[];
-  const { session, isLoading: isSessionLoading } = useAuthSession();
+  const { session, isLoading: isSessionLoading } = useAuth();
   const {
     data: profile,
     isLoading: isProfileLoading,

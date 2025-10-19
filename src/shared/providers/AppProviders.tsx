@@ -3,6 +3,8 @@ import type { PropsWithChildren } from "react";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
+import { AuthProvider } from "@/src/features/auth";
+
 import { ModalProvider } from "./ModalProvider";
 
 /**
@@ -30,6 +32,7 @@ const queryClient = new QueryClient({
  *
  * ビジネスロジックとアプリケーション機能を提供:
  * - データフェッチング・キャッシュ管理（Query）
+ * - 認証状態管理（Auth）
  * - ボトムシートモーダル（BottomSheet）
  * - グローバルモーダル管理（Modal）
  *
@@ -37,14 +40,14 @@ const queryClient = new QueryClient({
  *
  * プロバイダーの順序:
  * 1. QueryClientProvider - データ取得・キャッシュ管理の基盤
- * 2. BottomSheetModalProvider - モーダルUIの基盤（QueryClientに依存する可能性があるため内側）
- * 3. ModalProvider - グローバルモーダル管理（上記両方に依存）
+ * 2. AuthProvider - 認証状態管理（QueryClientの外側でも機能するが、ここに配置）
+ * 3. BottomSheetModalProvider - モーダルUIの基盤（QueryClient/Authに依存する可能性があるため内側）
+ * 4. ModalProvider - グローバルモーダル管理（上記すべてに依存）
  *
  * 将来的な拡張候補:
  * - テーマプロバイダー（Theme）
  * - 国際化プロバイダー（i18n）
  * - 通知プロバイダー（Notification）
- * - 認証状態プロバイダー（Auth）
  *
  * @example
  * ```tsx
@@ -59,9 +62,11 @@ const queryClient = new QueryClient({
 export function AppProviders({ children }: PropsWithChildren) {
   return (
     <QueryClientProvider client={queryClient}>
-      <BottomSheetModalProvider>
-        <ModalProvider>{children}</ModalProvider>
-      </BottomSheetModalProvider>
+      <AuthProvider>
+        <BottomSheetModalProvider>
+          <ModalProvider>{children}</ModalProvider>
+        </BottomSheetModalProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
