@@ -1,6 +1,6 @@
-import { forwardRef, useCallback, useState } from "react";
+import { forwardRef, useCallback, useEffect, useRef, useState } from "react";
 
-import { Text, View } from "react-native";
+import { Text, View, type TextInput } from "react-native";
 
 import type { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { AtSign, UserRound } from "lucide-react-native";
@@ -31,6 +31,16 @@ export const ProfileEditModal = forwardRef<
   const [userId, setUserId] = useState<string>(profile?.user_id ?? "");
   const [username, setUsername] = useState<string>(profile?.username ?? "");
 
+  // フォーム入力のref
+  const usernameInputRef = useRef<TextInput>(null);
+
+  useEffect(() => {
+    if (profile) {
+      setUserId(profile.user_id);
+      setUsername(profile.username);
+    }
+  }, [profile]);
+
   const handleUpdateProfile = useCallback(() => {
     updateProfile({
       user_id: userId,
@@ -45,20 +55,28 @@ export const ProfileEditModal = forwardRef<
       enablePanDownToClose={false}
     >
       <View className="flex-1 gap-4 px-4 pb-4">
-        <ModalHeader title="Profile Edit" onClose={onClose ?? noop} />
+        <ModalHeader title="Update Your Profile" onClose={onClose ?? noop} />
         {/* User ID & Username Input */}
         <View className="w-full gap-4">
-          <Text>User ID & Username</Text>
+          <View className="w-full">
+            <Text className="text-slate-500">
+              Update your user ID and display name
+            </Text>
+          </View>
           <FormInput
-            placeholder="User ID"
+            placeholder="User ID (4-32 characters)"
             value={userId}
             onChangeText={setUserId}
             keyboardType="default"
             autoCapitalize="none"
             autoCorrect={false}
             leftIcon={<AtSign size={16} color="#6B7280" />}
+            returnKeyType="next"
+            onSubmitEditing={() => usernameInputRef.current?.focus()}
+            blurOnSubmit={false}
           />
           <FormInput
+            ref={usernameInputRef}
             placeholder="Username"
             value={username}
             onChangeText={setUsername}
@@ -66,6 +84,8 @@ export const ProfileEditModal = forwardRef<
             autoCapitalize="none"
             autoCorrect={false}
             leftIcon={<UserRound size={16} color="#6B7280" />}
+            returnKeyType="done"
+            onSubmitEditing={handleUpdateProfile}
           />
         </View>
         <FormButton

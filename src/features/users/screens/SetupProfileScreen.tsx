@@ -1,4 +1,6 @@
-import { Text, View } from "react-native";
+import { useRef } from "react";
+
+import { Text, View, type TextInput } from "react-native";
 
 import { AtSign, UserRound } from "lucide-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -34,6 +36,9 @@ export function SetupProfileScreen({
     isPending,
     handleSubmit,
   }: UseProfileSetupReturn = useProfileSetup({ onSuccess, onError });
+
+  // フォーム入力のref
+  const usernameInputRef = useRef<TextInput>(null);
 
   // user_idヘルパーテキスト
   const userIdHelper = getUserIdHelperText(
@@ -77,8 +82,12 @@ export function SetupProfileScreen({
             helperText={userIdHelper?.text}
             helperTextColor={userIdHelper?.color}
             leftIcon={<AtSign size={16} color="#6B7280" />}
+            returnKeyType="next"
+            onSubmitEditing={() => usernameInputRef.current?.focus()}
+            blurOnSubmit={false}
           />
           <FormInput
+            ref={usernameInputRef}
             placeholder="Display Name (4-32 characters)"
             value={username}
             onChangeText={setUsername}
@@ -87,6 +96,8 @@ export function SetupProfileScreen({
             autoCapitalize="none"
             error={errors.username}
             leftIcon={<UserRound size={16} color="#6B7280" />}
+            returnKeyType="done"
+            onSubmitEditing={handleSubmit}
           />
         </View>
 
