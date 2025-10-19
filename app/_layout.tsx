@@ -1,4 +1,8 @@
-import { ActivityIndicator } from "react-native";
+import {
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 
 import { Stack } from "expo-router";
 
@@ -27,32 +31,37 @@ export default function RootLayout() {
   }
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <QueryProvider>
-        <SafeAreaProvider>
-          <BottomSheetModalProvider>
-            <ModalProvider>
-              <Stack
-                screenOptions={{
-                  contentStyle: { backgroundColor: "white", flex: 1 },
-                  animation: "fade",
-                  headerShown: false,
-                }}
-              >
-                {/* 保護されたルート */}
-                <Stack.Protected guard={isAuthenticated}>
-                  <Stack.Screen name="(protected)" />
-                </Stack.Protected>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        className="flex-1"
+      >
+        <QueryProvider>
+          <SafeAreaProvider>
+            <BottomSheetModalProvider>
+              <ModalProvider>
+                <Stack
+                  screenOptions={{
+                    contentStyle: { backgroundColor: "white", flex: 1 },
+                    animation: "fade",
+                    headerShown: false,
+                  }}
+                >
+                  {/* 保護されたルート */}
+                  <Stack.Protected guard={isAuthenticated}>
+                    <Stack.Screen name="(protected)" />
+                  </Stack.Protected>
 
-                {/* 非保護ルート */}
-                <Stack.Protected guard={!isAuthenticated}>
-                  <Stack.Screen name="sign-in" />
-                  <Stack.Screen name="create-account" />
-                </Stack.Protected>
-              </Stack>
-            </ModalProvider>
-          </BottomSheetModalProvider>
-        </SafeAreaProvider>
-      </QueryProvider>
+                  {/* 非保護ルート */}
+                  <Stack.Protected guard={!isAuthenticated}>
+                    <Stack.Screen name="sign-in" />
+                    <Stack.Screen name="create-account" />
+                  </Stack.Protected>
+                </Stack>
+              </ModalProvider>
+            </BottomSheetModalProvider>
+          </SafeAreaProvider>
+        </QueryProvider>
+      </KeyboardAvoidingView>
     </GestureHandlerRootView>
   );
 }

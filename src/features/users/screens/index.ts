@@ -1,2 +1,2 @@
-export * from "./SettingScreen";
+export * from "./SettingModal";
 export * from "./SetupProfileScreen";

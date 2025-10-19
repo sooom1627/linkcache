@@ -16,22 +16,20 @@ import {
 
 import { ScrollableBottomSheetModal } from "@/src/shared/components/modals";
 import ModalHeader from "@/src/shared/components/modals/ModalHeader";
+import { useModal } from "@/src/shared/providers";
 
 import LogoutButton from "../../auth/components/LogoutButton";
 import SettingItem from "../components/setting/SettingItem";
 import SettingMenuSection from "../components/setting/SettingMenuSection";
 
-interface SettingScreenProps {
-  email?: string;
-  phoneNumber?: string;
-  subscription?: string;
-  language?: string;
+interface SettingModalProps {
   onClose?: () => void;
 }
 
 interface MenuItem {
   title: string;
   icon: React.ReactNode;
+  onPress?: () => void;
 }
 
 interface MenuSection {
@@ -39,53 +37,57 @@ interface MenuSection {
   menuItems: MenuItem[];
 }
 
-const menuData: MenuSection[] = [
-  {
-    menuTitle: "Your Account",
-    menuItems: [
-      {
-        title: "Profile",
-        icon: <UserRound size={16} color="#6B7280" />,
-      },
-      {
-        title: "Password",
-        icon: <KeyRound size={16} color="#6B7280" />,
-      },
-      {
-        title: "Timezone",
-        icon: <Clock size={16} color="#6B7280" />,
-      },
-      {
-        title: "Location",
-        icon: <MapPin size={16} color="#6B7280" />,
-      },
-    ],
-  },
-  {
-    menuTitle: "App Information",
-    menuItems: [
-      {
-        title: "Help",
-        icon: <HelpCircle size={16} color="#6B7280" />,
-      },
-      {
-        title: "Privacy Policy",
-        icon: <Lock size={16} color="#6B7280" />,
-      },
-      {
-        title: "Terms of Service",
-        icon: <File size={16} color="#6B7280" />,
-      },
-      {
-        title: "Version",
-        icon: <Info size={16} color="#6B7280" />,
-      },
-    ],
-  },
-];
-
-export const SettingScreen = forwardRef<BottomSheetModal, SettingScreenProps>(
+export const SettingModal = forwardRef<BottomSheetModal, SettingModalProps>(
   ({ onClose }, ref) => {
+    const { openProfileEdit } = useModal();
+
+    const menuData: MenuSection[] = [
+      {
+        menuTitle: "Your Account",
+        menuItems: [
+          {
+            title: "Profile",
+            icon: <UserRound size={16} color="#6B7280" />,
+            onPress: () => {
+              openProfileEdit();
+            },
+          },
+          {
+            title: "Password",
+            icon: <KeyRound size={16} color="#6B7280" />,
+          },
+          {
+            title: "Timezone",
+            icon: <Clock size={16} color="#6B7280" />,
+          },
+          {
+            title: "Location",
+            icon: <MapPin size={16} color="#6B7280" />,
+          },
+        ],
+      },
+      {
+        menuTitle: "App Information",
+        menuItems: [
+          {
+            title: "Help",
+            icon: <HelpCircle size={16} color="#6B7280" />,
+          },
+          {
+            title: "Privacy Policy",
+            icon: <Lock size={16} color="#6B7280" />,
+          },
+          {
+            title: "Terms of Service",
+            icon: <File size={16} color="#6B7280" />,
+          },
+          {
+            title: "Version",
+            icon: <Info size={16} color="#6B7280" />,
+          },
+        ],
+      },
+    ];
     return (
       <ScrollableBottomSheetModal
         ref={ref}
@@ -93,7 +95,7 @@ export const SettingScreen = forwardRef<BottomSheetModal, SettingScreenProps>(
         enablePanDownToClose={false}
       >
         <View className="flex-1 gap-4 px-4 pb-4">
-          {/* ヘッダー */}
+          {/* Header */}
           <ModalHeader
             title="Settings"
             onClose={
@@ -104,13 +106,14 @@ export const SettingScreen = forwardRef<BottomSheetModal, SettingScreenProps>(
             }
           />
 
+          {/* Menu Items */}
           {menuData.map((menu) => (
             <SettingMenuSection key={menu.menuTitle} title={menu.menuTitle}>
               {menu.menuItems.map((item) => (
                 <SettingItem
                   key={item.title}
                   title={item.title}
-                  onPress={() => {}}
+                  onPress={item.onPress ?? (() => {})}
                 >
                   {item.icon}
                 </SettingItem>
@@ -118,7 +121,7 @@ export const SettingScreen = forwardRef<BottomSheetModal, SettingScreenProps>(
             </SettingMenuSection>
           ))}
 
-          {/* ログアウトボタン */}
+          {/* Logout Button */}
           <View className="w-full">
             <LogoutButton
               disabledColor="bg-red-400"
@@ -131,4 +134,4 @@ export const SettingScreen = forwardRef<BottomSheetModal, SettingScreenProps>(
   },
 );
 
-SettingScreen.displayName = "SettingScreen";
+SettingModal.displayName = "SettingModal";

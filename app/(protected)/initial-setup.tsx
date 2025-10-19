@@ -6,10 +6,10 @@ import { SetupProfileScreen } from "@/src/features/users";
 import { userQueryKeys } from "@/src/features/users/constants/queryKeys";
 
 /**
- * プロフィール設定画面のエントリーポイント
+ * プロフィール初期設定画面のエントリーポイント
  * リダイレクト処理は(protected)/_layout.tsxが担当
  */
-export default function SetupProfile() {
+export default function InitialSetup() {
   const queryClient = useQueryClient();
 
   // 成功時のコールバック

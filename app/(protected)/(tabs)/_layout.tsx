@@ -49,9 +49,9 @@ export default function TabsLayout() {
       return;
     }
 
-    // プロフィールが未設定の場合、setup-profileへリダイレクト
+    // プロフィールが未設定の場合、initial-setupへリダイレクト
     if (!profile) {
-      router.replace("/users/setup");
+      router.replace("/initial-setup");
     }
   }, [profile, isLoading, router]);
 

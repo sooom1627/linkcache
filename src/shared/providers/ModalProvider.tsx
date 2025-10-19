@@ -1,39 +1,12 @@
 import type { PropsWithChildren } from "react";
-import { createContext, useCallback, useContext, useRef } from "react";
+import { useRef } from "react";
 
 import type { BottomSheetModal } from "@gorhom/bottom-sheet";
 
-import { SettingScreen } from "@/src/features/users";
+import { ProfileEditModal } from "@/src/features/users/screens/ProfileEditModal";
+import { SettingModal } from "@/src/features/users/screens/SettingModal";
 
-/**
- * モーダルの種類
- */
-export type ModalType = "setting";
-
-/**
- * モーダルコンテキストの型定義
- */
-interface ModalContextType {
-  /**
-   * 設定モーダルを開く
-   */
-  openSetting: () => void;
-
-  /**
-   * 設定モーダルを閉じる
-   */
-  closeSetting: () => void;
-
-  /**
-   * 全てのモーダルを閉じる
-   */
-  closeAll: () => void;
-}
-
-/**
- * モーダルコンテキスト
- */
-const ModalContext = createContext<ModalContextType | undefined>(undefined);
+import { ModalContextProvider } from "./ModalContext";
 
 /**
  * モーダルプロバイダー
@@ -50,71 +23,27 @@ const ModalContext = createContext<ModalContextType | undefined>(undefined);
 export function ModalProvider({ children }: PropsWithChildren) {
   // 各モーダルのref
   const settingModalRef = useRef<BottomSheetModal>(null);
+  const profileEditModalRef = useRef<BottomSheetModal>(null);
 
-  /**
-   * 設定モーダルを開く
-   */
-  const openSetting = useCallback(() => {
-    settingModalRef.current?.present();
-  }, []);
-
-  /**
-   * 設定モーダルを閉じる
-   */
-  const closeSetting = useCallback(() => {
-    settingModalRef.current?.dismiss();
-  }, []);
-
-  /**
-   * 全てのモーダルを閉じる
-   */
-  const closeAll = useCallback(() => {
-    settingModalRef.current?.dismiss();
-    // 将来的に他のモーダルも追加
-  }, []);
-
-  const value: ModalContextType = {
-    openSetting,
-    closeSetting,
-    closeAll,
-  };
+  const closeSettings = () => settingModalRef.current?.dismiss();
+  const closeProfileEdit = () => profileEditModalRef.current?.dismiss();
 
   return (
-    <ModalContext.Provider value={value}>
+    <ModalContextProvider
+      refs={{
+        settingModalRef,
+        profileEditModalRef,
+      }}
+    >
       {children}
 
       {/* モーダルコンポーネント - アプリ全体で1インスタンス */}
-      <SettingScreen ref={settingModalRef} onClose={closeSetting} />
+      <SettingModal ref={settingModalRef} onClose={closeSettings} />
+      <ProfileEditModal ref={profileEditModalRef} onClose={closeProfileEdit} />
 
       {/* 将来的に他のモーダルを追加 */}
       {/* <FilterModal ref={filterModalRef} onClose={closeFilter} /> */}
       {/* <ConfirmModal ref={confirmModalRef} onClose={closeConfirm} /> */}
-    </ModalContext.Provider>
+    </ModalContextProvider>
   );
-}
-
-/**
- * モーダルコンテキストを使用するカスタムフック
- *
- * @throws {Error} ModalProvider の外で使用された場合
- *
- * @example
- * ```tsx
- * function MyComponent() {
- *   const { openSetting, closeSetting } = useModal();
- *
- *   return (
- *     <Button onPress={openSetting}>設定を開く</Button>
- *   );
- * }
- * ```
- */
-export function useModal(): ModalContextType {
-  const context = useContext(ModalContext);
-
-  if (context === undefined) {
-    throw new Error("useModal must be used within a ModalProvider");
-  }
-
-  return context;
 }

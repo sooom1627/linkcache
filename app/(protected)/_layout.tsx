@@ -24,7 +24,7 @@ export default function ProtectedLayout() {
   } = useProfile();
 
   const isLoading = isSessionLoading || isProfileLoading;
-  const isOnSetupProfile = segments.includes("setup-profile");
+  const isOnSetupProfile = segments.includes("initial-setup");
   const shouldGoSignIn = !session;
   const shouldGoSetupProfile =
     !!session && !profile && !isProfileError && !isOnSetupProfile;
@@ -39,7 +39,7 @@ export default function ProtectedLayout() {
     }
 
     if (shouldGoSetupProfile) {
-      router.replace("/users/setup");
+      router.replace("/initial-setup");
       return;
     }
 
