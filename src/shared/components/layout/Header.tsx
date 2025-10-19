@@ -10,18 +10,17 @@ export interface HeaderProps {
   topComponent?: boolean;
   topInset?: number;
 }
+const HEADER_HEIGHT = 64;
 
 export default function Header({
   title = "Hello, User",
   topComponent = true,
   topInset = 0,
 }: HeaderProps) {
-  const HEADER_HEIGHT = 64;
-
   return (
     <View
-      className="absolute inset-x-0 top-0 z-10 h-16"
-      style={{ paddingTop: topInset }}
+      className="absolute inset-x-0 top-0 z-10"
+      style={{ paddingTop: topInset, height: HEADER_HEIGHT }}
     >
       <LinearGradient
         colors={[

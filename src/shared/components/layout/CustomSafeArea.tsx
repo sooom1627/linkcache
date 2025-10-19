@@ -52,7 +52,6 @@ export default function CustomSafeArea({
           height: insets.bottom + bottomExtra,
           zIndex: 10,
         }}
-        pointerEvents="none"
       >
         <LinearGradient
           colors={["rgba(255, 255, 255, 0)", "rgba(255, 255, 255, 0.9)"]}
