@@ -5,21 +5,17 @@ import { View } from "react-native";
 import { usePathname, useRouter } from "expo-router";
 import { TabList, Tabs, TabSlot, TabTrigger } from "expo-router/ui";
 
-import { House, Layers2, List } from "lucide-react-native";
-import Animated, {
-  FadeIn,
-  FadeOut,
-  useAnimatedStyle,
-  withTiming,
-} from "react-native-reanimated";
+import { ChartNoAxesCombined, House, Layers2, List } from "lucide-react-native";
+import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useProfile } from "@/src/features/users";
 
 const tabs = [
   { name: "index", href: "/" as const, icon: House },
-  { name: "link-list", href: "/link-list" as const, icon: List },
   { name: "swipes", href: "/swipes" as const, icon: Layers2 },
+  { name: "link-list", href: "/link-list" as const, icon: List },
+  { name: "dashboard", href: "/dashboard" as const, icon: ChartNoAxesCombined },
 ] as const;
 
 export default function TabsLayout() {
@@ -43,24 +39,6 @@ export default function TabsLayout() {
     return null;
   }
 
-  // アニメーションスタイル
-  const createTabStyle = (isActive: boolean) =>
-    useAnimatedStyle(() => ({
-      backgroundColor: withTiming(
-        isActive ? "rgba(0,0,0,0.1)" : "rgba(0,0,0,0)",
-        {
-          duration: 200,
-        },
-      ),
-      transform: [
-        {
-          scale: withTiming(isActive ? 1.05 : 1, {
-            duration: 200,
-          }),
-        },
-      ],
-    }));
-
   return (
     <SafeAreaView className="flex-1 bg-white/60">
       <Tabs>
@@ -72,20 +50,19 @@ export default function TabsLayout() {
         >
           <TabSlot />
         </Animated.View>
-        <TabList asChild={true} className="absolute inset-x-6 bottom-0">
+        <TabList asChild={true} className="absolute inset-x-12 bottom-0">
           <View
-            className="flex-row items-center justify-around self-center rounded-full border border-zinc-800/30 bg-zinc-100/90 p-2"
+            className="w-fit flex-row items-center justify-around gap-4 self-center rounded-full bg-white/95 p-2"
             style={{
               shadowColor: "#000",
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.3,
-              shadowRadius: 12,
-              elevation: 8,
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.1,
+              shadowRadius: 8,
+              elevation: 4,
             }}
           >
             {tabs.map((tab) => {
               const isActive = pathname === tab.href;
-              const tabStyle = createTabStyle(isActive);
               const Icon = tab.icon;
 
               return (
@@ -95,12 +72,15 @@ export default function TabsLayout() {
                   href={tab.href}
                   className="flex-1"
                 >
-                  <Animated.View
-                    style={tabStyle}
-                    className="flex-1 items-center justify-center rounded-full py-3"
+                  <View
+                    className={`items-center justify-center rounded-full px-6 py-4 ${isActive ? "bg-zinc-100" : ""}`}
                   >
-                    <Icon color={isActive ? "#18181b" : "#a1a1aa"} />
-                  </Animated.View>
+                    <Icon
+                      color={isActive ? "#000000" : "#9ca3af"}
+                      size={20}
+                      strokeWidth={isActive ? 2 : 1.5}
+                    />
+                  </View>
                 </TabTrigger>
               );
             })}
