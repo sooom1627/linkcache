@@ -22,11 +22,16 @@ export default function Index() {
           プロフィールの読み込みに失敗しました
         </Text>
         <TouchableOpacity
+          className="mt-4 rounded-lg bg-blue-500 px-6 py-3"
+          accessibilityRole="button"
+          accessibilityLabel="プロフィールを再読み込み"
           onPress={() => {
             refetch();
           }}
         >
-          <Text>再読み込み</Text>
+          <Text className="text-center font-semibold text-white">
+            再読み込み
+          </Text>
         </TouchableOpacity>
       </ScreenContainer>
     );
