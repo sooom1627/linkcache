@@ -20,12 +20,13 @@ export function useUpdateProfile(): UseMutationResult<
 
   return useMutation<UserProfile, PostgrestError, UpdateProfileRequest>({
     mutationFn: updateProfile,
-    onSuccess: () => {
-      queryClient.removeQueries({ queryKey: userQueryKeys.all });
+    onSuccess: (data) => {
+      queryClient.setQueryData(userQueryKeys.profile(), data);
       Alert.alert("Success", "Profile updated successfully");
     },
     onError: (error) => {
-      Alert.alert("Error", error.message);
+      Alert.alert("Error", "Failed to update profile");
+      console.error("Error updating profile", error);
     },
   });
 }

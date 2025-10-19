@@ -27,7 +27,6 @@ export interface CheckUserIdResponse {
  * プロフィール更新リクエスト
  */
 export interface UpdateProfileRequest {
-  id: string;
   user_id: string;
   username: string;
 }
