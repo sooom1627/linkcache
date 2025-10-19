@@ -2,10 +2,12 @@ import { ActivityIndicator } from "react-native";
 
 import { Stack } from "expo-router";
 
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 import { useAuthSession } from "@/src/features/auth";
-import { QueryProvider } from "@/src/shared/providers/QueryProvider";
+import { ModalProvider, QueryProvider } from "@/src/shared/providers";
 
 import "../assets/styles/global.css";
 
@@ -24,27 +26,33 @@ export default function RootLayout() {
     );
   }
   return (
-    <QueryProvider>
-      <SafeAreaProvider>
-        <Stack
-          screenOptions={{
-            contentStyle: { backgroundColor: "white", flex: 1 },
-            animation: "fade",
-            headerShown: false,
-          }}
-        >
-          {/* 保護されたルート */}
-          <Stack.Protected guard={isAuthenticated}>
-            <Stack.Screen name="(protected)" />
-          </Stack.Protected>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <QueryProvider>
+        <SafeAreaProvider>
+          <BottomSheetModalProvider>
+            <ModalProvider>
+              <Stack
+                screenOptions={{
+                  contentStyle: { backgroundColor: "white", flex: 1 },
+                  animation: "fade",
+                  headerShown: false,
+                }}
+              >
+                {/* 保護されたルート */}
+                <Stack.Protected guard={isAuthenticated}>
+                  <Stack.Screen name="(protected)" />
+                </Stack.Protected>
 
-          {/* 非保護ルート */}
-          <Stack.Protected guard={!isAuthenticated}>
-            <Stack.Screen name="sign-in" />
-            <Stack.Screen name="create-account" />
-          </Stack.Protected>
-        </Stack>
-      </SafeAreaProvider>
-    </QueryProvider>
+                {/* 非保護ルート */}
+                <Stack.Protected guard={!isAuthenticated}>
+                  <Stack.Screen name="sign-in" />
+                  <Stack.Screen name="create-account" />
+                </Stack.Protected>
+              </Stack>
+            </ModalProvider>
+          </BottomSheetModalProvider>
+        </SafeAreaProvider>
+      </QueryProvider>
+    </GestureHandlerRootView>
   );
 }

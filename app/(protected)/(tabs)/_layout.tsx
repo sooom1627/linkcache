@@ -88,7 +88,7 @@ export default function TabsLayout() {
                   accessibilityLabel={tab.name}
                 >
                   <View
-                    className={`items-center justify-center rounded-full p-4 ${isActive ? "bg-zinc-100" : ""}`}
+                    className={`items-center justify-center rounded-full p-4 ${isActive ? "bg-slate-100" : ""}`}
                   >
                     <Icon
                       color={isActive ? "#000000" : "#9ca3af"}

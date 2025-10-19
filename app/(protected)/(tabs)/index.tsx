@@ -1,6 +1,5 @@
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 
-import LogoutButton from "@/src/features/auth/components/LogoutButton";
 import { useProfile } from "@/src/features/users";
 import { ScreenContainer } from "@/src/shared/components/layout/ScreenContainer";
 
@@ -49,11 +48,6 @@ export default function Index() {
           <Text className="text-sm text-gray-500">Description {index + 1}</Text>
         </View>
       ))}
-
-      {/* Logout Button */}
-      <View className="w-full">
-        <LogoutButton />
-      </View>
     </ScreenContainer>
   );
 }

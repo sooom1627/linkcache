@@ -42,7 +42,7 @@ export default function FormInput({
     <View className="w-full">
       {/* Input container with icons */}
       <View
-        className={`flex-row items-center rounded-md bg-zinc-200 ${
+        className={`flex-row items-center rounded-md bg-slate-200 ${
           error ? "border border-red-500" : ""
         }`}
       >

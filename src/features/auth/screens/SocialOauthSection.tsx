@@ -6,7 +6,7 @@ export default function SocialOauthSection({ title }: { title: string }) {
   return (
     <View className="flex w-full flex-col items-center justify-center gap-4">
       <View className="flex w-full flex-col items-center justify-center gap-2">
-        <Text className="text-zinc-700">
+        <Text className="text-slate-700">
           {title} with your favorite social media account.
         </Text>
       </View>
