@@ -1,5 +1,5 @@
 import type { PropsWithChildren } from "react";
-import { forwardRef, useMemo } from "react";
+import { forwardRef, useCallback, useMemo } from "react";
 
 import type {
   BottomSheetBackdropProps,
@@ -69,6 +69,13 @@ export interface BaseBottomSheetModalProps
  * </BaseBottomSheetModal>
  * ```
  */
+
+const DEFAULT_HANDLE_INDICATOR_STYLE = {
+  backgroundColor: "#D1D5DB",
+  width: 40,
+  height: 4,
+};
+
 export const BaseBottomSheetModal = forwardRef<
   BottomSheetModal,
   PropsWithChildren<BaseBottomSheetModalProps>
@@ -90,15 +97,18 @@ export const BaseBottomSheetModal = forwardRef<
     const memoizedSnapPoints = useMemo(() => snapPoints, [snapPoints]);
 
     // 背景コンポーネントのレンダリング
-    const renderBackdrop = (backdropProps: BottomSheetBackdropProps) => (
-      <BottomSheetBackdrop
-        {...backdropProps}
-        appearsOnIndex={0}
-        disappearsOnIndex={-1}
-        opacity={backdropOpacity}
-        style={[backdropProps.style, { backgroundColor: backdropColor }]}
-        pressBehavior={enableDismissOnBackdrop ? "close" : "none"}
-      />
+    const renderBackdrop = useCallback(
+      (backdropProps: BottomSheetBackdropProps) => (
+        <BottomSheetBackdrop
+          {...backdropProps}
+          appearsOnIndex={0}
+          disappearsOnIndex={-1}
+          opacity={backdropOpacity}
+          style={[backdropProps.style, { backgroundColor: backdropColor }]}
+          pressBehavior={enableDismissOnBackdrop ? "close" : "none"}
+        />
+      ),
+      [backdropOpacity, backdropColor, enableDismissOnBackdrop],
     );
 
     return (
@@ -108,11 +118,7 @@ export const BaseBottomSheetModal = forwardRef<
         backdropComponent={renderBackdrop}
         enablePanDownToClose={enablePanDownToClose}
         handleIndicatorStyle={
-          handleIndicatorStyle || {
-            backgroundColor: "#D1D5DB",
-            width: 40,
-            height: 4,
-          }
+          handleIndicatorStyle || DEFAULT_HANDLE_INDICATOR_STYLE
         }
         {...props}
       >

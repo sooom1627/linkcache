@@ -10,6 +10,9 @@ import ModalHeader from "@/src/shared/components/modals/ModalHeader";
 interface ProfileEditModalProps {
   onClose?: () => void;
 }
+
+const noop = () => {};
+
 export const ProfileEditModal = forwardRef<
   BottomSheetModal,
   ProfileEditModalProps
@@ -21,7 +24,7 @@ export const ProfileEditModal = forwardRef<
       enablePanDownToClose={false}
     >
       <View className="flex-1 gap-4 px-4 pb-4">
-        <ModalHeader title="Profile Edit" onClose={onClose ?? (() => {})} />
+        <ModalHeader title="Profile Edit" onClose={onClose ?? noop} />
         {/* User ID & Username Input */}
         <View className="w-full gap-4">
           <Text>User ID & Username</Text>
@@ -38,3 +41,5 @@ export const ProfileEditModal = forwardRef<
     </ScrollableBottomSheetModal>
   );
 });
+
+ProfileEditModal.displayName = "ProfileEditModal";

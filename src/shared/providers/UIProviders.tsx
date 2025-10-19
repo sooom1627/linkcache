@@ -32,10 +32,10 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
  */
 export function UIProviders({ children }: PropsWithChildren) {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView className="flex-1">
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
-        style={{ flex: 1 }}
+        className="flex-1"
       >
         <SafeAreaProvider>{children}</SafeAreaProvider>
       </KeyboardAvoidingView>

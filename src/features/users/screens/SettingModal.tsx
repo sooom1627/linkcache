@@ -1,4 +1,5 @@
-import { forwardRef } from "react";
+import type { ReactNode } from "react";
+import { forwardRef, useCallback, useMemo } from "react";
 
 import { View } from "react-native";
 
@@ -29,7 +30,7 @@ interface SettingModalProps {
 
 interface MenuItem {
   title: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   onPress?: () => void;
 }
 
@@ -41,54 +42,61 @@ interface MenuSection {
 export const SettingModal = forwardRef<BottomSheetModal, SettingModalProps>(
   ({ onClose, onCloseAll }, ref) => {
     const { openModal } = useModal();
+    const handleOpenProfileEdit = useCallback(
+      () => openModal("profileEdit"),
+      [openModal],
+    );
 
-    const menuData: MenuSection[] = [
-      {
-        menuTitle: "Your Account",
-        menuItems: [
-          {
-            title: "Profile",
-            icon: <UserRound size={16} color="#6B7280" />,
-            onPress: () => {
-              openModal("profileEdit");
+    const menuData: MenuSection[] = useMemo(
+      () => [
+        {
+          menuTitle: "Your Account",
+          menuItems: [
+            {
+              title: "Profile",
+              icon: <UserRound size={16} color="#6B7280" />,
+              onPress: () => {
+                handleOpenProfileEdit();
+              },
             },
-          },
-          {
-            title: "Password",
-            icon: <KeyRound size={16} color="#6B7280" />,
-          },
-          {
-            title: "Timezone",
-            icon: <Clock size={16} color="#6B7280" />,
-          },
-          {
-            title: "Location",
-            icon: <MapPin size={16} color="#6B7280" />,
-          },
-        ],
-      },
-      {
-        menuTitle: "App Information",
-        menuItems: [
-          {
-            title: "Help",
-            icon: <HelpCircle size={16} color="#6B7280" />,
-          },
-          {
-            title: "Privacy Policy",
-            icon: <Lock size={16} color="#6B7280" />,
-          },
-          {
-            title: "Terms of Service",
-            icon: <File size={16} color="#6B7280" />,
-          },
-          {
-            title: "Version",
-            icon: <Info size={16} color="#6B7280" />,
-          },
-        ],
-      },
-    ];
+            {
+              title: "Password",
+              icon: <KeyRound size={16} color="#6B7280" />,
+            },
+            {
+              title: "Timezone",
+              icon: <Clock size={16} color="#6B7280" />,
+            },
+            {
+              title: "Location",
+              icon: <MapPin size={16} color="#6B7280" />,
+            },
+          ],
+        },
+        {
+          menuTitle: "App Information",
+          menuItems: [
+            {
+              title: "Help",
+              icon: <HelpCircle size={16} color="#6B7280" />,
+            },
+            {
+              title: "Privacy Policy",
+              icon: <Lock size={16} color="#6B7280" />,
+            },
+            {
+              title: "Terms of Service",
+              icon: <File size={16} color="#6B7280" />,
+            },
+            {
+              title: "Version",
+              icon: <Info size={16} color="#6B7280" />,
+            },
+          ],
+        },
+      ],
+      [],
+    );
     return (
       <ScrollableBottomSheetModal
         ref={ref}
