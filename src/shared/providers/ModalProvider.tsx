@@ -1,4 +1,4 @@
-import type { PropsWithChildren } from "react";
+import type { ComponentType, PropsWithChildren } from "react";
 import { useCallback, useMemo, useRef } from "react";
 
 import type { BottomSheetModal } from "@gorhom/bottom-sheet";
@@ -6,8 +6,39 @@ import type { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { ProfileEditModal } from "@/src/features/users/screens/ProfileEditModal";
 import { SettingModal } from "@/src/features/users/screens/SettingModal";
 
-import type { ModalRefs } from "./ModalContext";
+import type { ModalRefs, ModalType } from "./ModalContext";
 import { ModalContextProvider } from "./ModalContext";
+
+/**
+ * モーダルの基本プロパティ型定義
+ */
+interface BaseModalProps {
+  onClose?: () => void;
+  onCloseAll?: () => void;
+}
+
+/**
+ * モーダル設定の型定義
+ */
+interface ModalConfig {
+  type: ModalType;
+  component: ComponentType<
+    BaseModalProps & { ref: React.RefObject<BottomSheetModal | null> }
+  >;
+  needsCloseAll?: boolean;
+}
+
+/**
+ * モーダル設定配列
+ * 新しいモーダルを追加する場合は、この配列に追加するだけで自動的に管理されます
+ */
+const MODAL_CONFIGS: ModalConfig[] = [
+  { type: "setting", component: SettingModal, needsCloseAll: true },
+  { type: "profileEdit", component: ProfileEditModal, needsCloseAll: false },
+  // 新しいモーダルをここに追加
+  // { type: "filter", component: FilterModal, needsCloseAll: false },
+  // { type: "confirm", component: ConfirmModal, needsCloseAll: false },
+];
 
 /**
  * モーダルプロバイダー
@@ -22,50 +53,58 @@ import { ModalContextProvider } from "./ModalContext";
  * ```
  */
 export function ModalProvider({ children }: PropsWithChildren) {
-  // 各モーダルのref
-  const settingModalRef = useRef<BottomSheetModal>(null);
-  const profileEditModalRef = useRef<BottomSheetModal>(null);
+  // 各モーダルのrefを動的に生成
+  const modalRefs = useMemo(
+    () =>
+      MODAL_CONFIGS.reduce(
+        (acc, { type }) => {
+          acc[type] = useRef<BottomSheetModal | null>(null);
+          return acc;
+        },
+        {} as Record<ModalType, React.RefObject<BottomSheetModal | null>>,
+      ),
+    [],
+  );
 
   // refsオブジェクトをメモ化
-  const refs: ModalRefs = useMemo(
-    () => ({
-      setting: settingModalRef,
-      profileEdit: profileEditModalRef,
-    }),
-    [],
-  );
+  const refs: ModalRefs = useMemo(() => modalRefs, [modalRefs]);
 
-  // 各モーダルのclose関数
-  const closeSetting = useCallback(
-    () => settingModalRef.current?.dismiss(),
-    [],
-  );
-  const closeProfileEdit = useCallback(
-    () => profileEditModalRef.current?.dismiss(),
-    [],
+  // 各モーダルのclose関数を動的に生成
+  const closeHandlers = useMemo(
+    () =>
+      MODAL_CONFIGS.reduce(
+        (acc, { type }) => {
+          acc[type] = () => modalRefs[type]?.current?.dismiss();
+          return acc;
+        },
+        {} as Record<ModalType, () => void>,
+      ),
+    [modalRefs],
   );
 
   // すべてのモーダルを閉じる関数
   const closeAllModals = useCallback(() => {
-    settingModalRef.current?.dismiss();
-    profileEditModalRef.current?.dismiss();
-  }, []);
+    MODAL_CONFIGS.forEach(({ type }) => {
+      modalRefs[type]?.current?.dismiss();
+    });
+  }, [modalRefs]);
 
   return (
     <ModalContextProvider refs={refs}>
       {children}
 
       {/* モーダルコンポーネント - アプリ全体で1インスタンス */}
-      <SettingModal
-        ref={settingModalRef}
-        onClose={closeSetting}
-        onCloseAll={closeAllModals}
-      />
-      <ProfileEditModal ref={profileEditModalRef} onClose={closeProfileEdit} />
-
-      {/* 将来的に他のモーダルを追加 */}
-      {/* <FilterModal ref={filterModalRef} onClose={closeFilter} /> */}
-      {/* <ConfirmModal ref={confirmModalRef} onClose={closeConfirm} /> */}
+      {MODAL_CONFIGS.map(({ type, component, needsCloseAll }) => {
+        const ModalComponent = component;
+        return (
+          <ModalComponent
+            key={type}
+            ref={modalRefs[type]}
+            onClose={closeHandlers[type]}
+            {...(needsCloseAll && { onCloseAll: closeAllModals })}
+          />
+        );
+      })}
     </ModalContextProvider>
   );
 }

@@ -1,19 +1,8 @@
-import type { ReactNode } from "react";
 import { forwardRef, useCallback, useMemo } from "react";
 
 import { View } from "react-native";
 
 import type { BottomSheetModal } from "@gorhom/bottom-sheet";
-import {
-  Clock,
-  File,
-  HelpCircle,
-  Info,
-  KeyRound,
-  Lock,
-  MapPin,
-  UserRound,
-} from "lucide-react-native";
 
 import { ScrollableBottomSheetModal } from "@/src/shared/components/modals";
 import ModalHeader from "@/src/shared/components/modals/ModalHeader";
@@ -22,21 +11,11 @@ import { useModal } from "@/src/shared/providers/ModalContext";
 import LogoutButton from "../../auth/components/LogoutButton";
 import SettingItem from "../components/setting/SettingItem";
 import SettingMenuSection from "../components/setting/SettingMenuSection";
+import { createSettingMenuData } from "../constants/settingMenuData";
 
 interface SettingModalProps {
   onClose?: () => void;
   onCloseAll?: () => void;
-}
-
-interface MenuItem {
-  title: string;
-  icon: ReactNode;
-  onPress?: () => void;
-}
-
-interface MenuSection {
-  menuTitle: string;
-  menuItems: MenuItem[];
 }
 
 export const SettingModal = forwardRef<BottomSheetModal, SettingModalProps>(
@@ -47,55 +26,9 @@ export const SettingModal = forwardRef<BottomSheetModal, SettingModalProps>(
       [openModal],
     );
 
-    const menuData: MenuSection[] = useMemo(
-      () => [
-        {
-          menuTitle: "Your Account",
-          menuItems: [
-            {
-              title: "Profile",
-              icon: <UserRound size={16} color="#6B7280" />,
-              onPress: () => {
-                handleOpenProfileEdit();
-              },
-            },
-            {
-              title: "Password",
-              icon: <KeyRound size={16} color="#6B7280" />,
-            },
-            {
-              title: "Timezone",
-              icon: <Clock size={16} color="#6B7280" />,
-            },
-            {
-              title: "Location",
-              icon: <MapPin size={16} color="#6B7280" />,
-            },
-          ],
-        },
-        {
-          menuTitle: "App Information",
-          menuItems: [
-            {
-              title: "Help",
-              icon: <HelpCircle size={16} color="#6B7280" />,
-            },
-            {
-              title: "Privacy Policy",
-              icon: <Lock size={16} color="#6B7280" />,
-            },
-            {
-              title: "Terms of Service",
-              icon: <File size={16} color="#6B7280" />,
-            },
-            {
-              title: "Version",
-              icon: <Info size={16} color="#6B7280" />,
-            },
-          ],
-        },
-      ],
-      [],
+    const menuData = useMemo(
+      () => createSettingMenuData(handleOpenProfileEdit),
+      [handleOpenProfileEdit],
     );
     return (
       <ScrollableBottomSheetModal
@@ -118,15 +51,18 @@ export const SettingModal = forwardRef<BottomSheetModal, SettingModalProps>(
           {/* Menu Items */}
           {menuData.map((menu) => (
             <SettingMenuSection key={menu.menuTitle} title={menu.menuTitle}>
-              {menu.menuItems.map((item) => (
-                <SettingItem
-                  key={item.title}
-                  title={item.title}
-                  onPress={item.onPress ?? (() => {})}
-                >
-                  {item.icon}
-                </SettingItem>
-              ))}
+              {menu.menuItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <SettingItem
+                    key={item.title}
+                    title={item.title}
+                    onPress={item.onPress ?? (() => {})}
+                  >
+                    <Icon {...item.iconProps} />
+                  </SettingItem>
+                );
+              })}
             </SettingMenuSection>
           ))}
 
