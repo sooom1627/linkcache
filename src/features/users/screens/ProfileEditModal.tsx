@@ -1,4 +1,4 @@
-import { forwardRef, useCallback, useEffect, useRef, useState } from "react";
+import { forwardRef, useCallback, useEffect, useRef } from "react";
 
 import { Text, View, type TextInput } from "react-native";
 
@@ -10,6 +10,7 @@ import { ScrollableBottomSheetModal } from "@/src/shared/components/modals";
 import ModalHeader from "@/src/shared/components/modals/ModalHeader";
 
 import { useProfile } from "../hooks";
+import { useProfileForm } from "../hooks/useProfileForm";
 import { useUpdateProfile } from "../hooks/useUpdateProfile";
 
 interface ProfileEditModalProps {
@@ -23,30 +24,33 @@ export const ProfileEditModal = forwardRef<
   ProfileEditModalProps
 >(({ onClose }, ref) => {
   const { data: profile } = useProfile();
+
+  // フォーム状態管理
+  const { formData, setUserId, setUsername, validateForm } = useProfileForm();
+
+  // API処理
   const { mutate: updateProfile, isPending } = useUpdateProfile({
     onSuccess: () => {
       onClose?.();
     },
   });
-  const [userId, setUserId] = useState<string>(profile?.user_id ?? "");
-  const [username, setUsername] = useState<string>(profile?.username ?? "");
 
   // フォーム入力のref
   const usernameInputRef = useRef<TextInput>(null);
 
+  // プロフィールデータをフォームに反映
   useEffect(() => {
     if (profile) {
       setUserId(profile.user_id);
       setUsername(profile.username);
     }
-  }, [profile]);
+  }, [profile, setUserId, setUsername]);
 
   const handleUpdateProfile = useCallback(() => {
-    updateProfile({
-      user_id: userId,
-      username: username,
-    });
-  }, [updateProfile, userId, username]);
+    if (!validateForm()) return;
+
+    updateProfile(formData);
+  }, [validateForm, updateProfile, formData]);
 
   return (
     <ScrollableBottomSheetModal
@@ -65,7 +69,7 @@ export const ProfileEditModal = forwardRef<
           </View>
           <FormInput
             placeholder="User ID (4-32 characters)"
-            value={userId}
+            value={formData.user_id}
             onChangeText={setUserId}
             keyboardType="default"
             autoCapitalize="none"
@@ -78,7 +82,7 @@ export const ProfileEditModal = forwardRef<
           <FormInput
             ref={usernameInputRef}
             placeholder="Username"
-            value={username}
+            value={formData.username}
             onChangeText={setUsername}
             keyboardType="default"
             autoCapitalize="none"

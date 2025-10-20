@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useCallback, useRef } from "react";
 
 import { Text, View, type TextInput } from "react-native";
 
@@ -8,8 +8,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { FormButton, FormInput } from "@/src/shared/components/forms";
 
 import LogoutButton from "../../auth/components/LogoutButton";
-import type { UseProfileSetupReturn } from "../hooks";
-import { useProfileSetup } from "../hooks";
+import {
+  useCheckUserId,
+  useCreateProfile,
+  useProfileForm,
+  type UseProfileFormReturn,
+} from "../hooks";
 import { getUserIdHelperText, isSubmitEnabled } from "../utils";
 
 interface SetupProfileScreenProps {
@@ -24,25 +28,46 @@ export function SetupProfileScreen({
   onSuccess,
   onError,
 }: SetupProfileScreenProps) {
+  // フォーム状態管理
   const {
-    userId,
-    setUserId,
-    username,
-    setUsername,
+    formData,
     errors,
-    isCheckingUserId,
-    checkError,
-    isUserIdAvailable,
-    isPending,
-    handleSubmit,
-  }: UseProfileSetupReturn = useProfileSetup({ onSuccess, onError });
+    setUserId,
+    setUsername,
+    validateForm,
+  }: UseProfileFormReturn = useProfileForm();
+
+  // user_id重複チェック
+  const {
+    data: isUserIdAvailable,
+    isLoading: isCheckingUserId,
+    error: checkError,
+  } = useCheckUserId(formData.user_id, true);
+
+  // プロフィール作成
+  const { mutate: createProfile, isPending } = useCreateProfile({
+    onSuccess,
+    onError,
+  });
 
   // フォーム入力のref
   const usernameInputRef = useRef<TextInput>(null);
 
+  // 送信処理
+  const handleSubmit = useCallback(() => {
+    // バリデーション
+    if (!validateForm()) return;
+
+    // user_id可用性チェック（undefined、false、またはチェック中の場合は送信不可）
+    if (isUserIdAvailable !== true) return;
+
+    // プロフィール作成
+    createProfile(formData);
+  }, [validateForm, isUserIdAvailable, createProfile, formData]);
+
   // user_idヘルパーテキスト
   const userIdHelper = getUserIdHelperText(
-    userId,
+    formData.user_id,
     isCheckingUserId,
     checkError,
     isUserIdAvailable,
@@ -53,8 +78,8 @@ export function SetupProfileScreen({
     isPending,
     isCheckingUserId,
     isUserIdAvailable,
-    userId,
-    username,
+    formData.user_id,
+    formData.username,
     errors,
   );
 
@@ -73,7 +98,7 @@ export function SetupProfileScreen({
         <View className="w-full gap-4">
           <FormInput
             placeholder="User ID (4-32 characters)"
-            value={userId}
+            value={formData.user_id}
             onChangeText={setUserId}
             keyboardType="default"
             autoCorrect={false}
@@ -89,7 +114,7 @@ export function SetupProfileScreen({
           <FormInput
             ref={usernameInputRef}
             placeholder="Display Name (4-32 characters)"
-            value={username}
+            value={formData.username}
             onChangeText={setUsername}
             keyboardType="default"
             autoCorrect={false}
