@@ -97,6 +97,12 @@ export const ProfileEditModal = forwardRef<
     formData,
   ]);
 
+  const handleOnClose = useCallback(() => {
+    onClose?.();
+    setUserId(profile?.user_id ?? "");
+    setUsername(profile?.username ?? "");
+  }, [onClose, setUserId, setUsername, profile]);
+
   return (
     <ScrollableBottomSheetModal
       ref={ref}
@@ -104,7 +110,10 @@ export const ProfileEditModal = forwardRef<
       enablePanDownToClose={false}
     >
       <View className="flex-1 gap-4 px-4 pb-4">
-        <ModalHeader title="Update Your Profile" onClose={onClose ?? noop} />
+        <ModalHeader
+          title="Update Your Profile"
+          onClose={handleOnClose ?? noop}
+        />
         {/* User ID & Username Input */}
         <View className="w-full gap-4">
           <View className="w-full">
