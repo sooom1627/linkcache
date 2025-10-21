@@ -39,13 +39,17 @@ export function useUpdateProfile(options?: {
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
+  if (!user) {
+    throw new Error("User not authenticated");
+  }
+
   const handleUpdateProfile = useMutation<
     UserProfile,
     PostgrestError,
     UpdateProfileRequest,
     { previousProfile: UserProfile | undefined } // contextの型定義
   >({
-    mutationFn: (profile) => updateProfile(user?.id ?? "", profile),
+    mutationFn: (profile) => updateProfile(user.id, profile),
     onSuccess: () => {
       queryClient.setQueryData(
         userQueryKeys.profile(),
