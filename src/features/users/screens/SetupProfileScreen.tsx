@@ -81,6 +81,7 @@ export function SetupProfileScreen({}) {
       {/* User ID & Username Input */}
       <View className="w-full gap-4">
         <FormInput
+          label="User ID"
           placeholder="User ID (4-32 characters)"
           value={formData.user_id}
           onChangeText={setUserId}
@@ -97,6 +98,7 @@ export function SetupProfileScreen({}) {
         />
         <FormInput
           ref={usernameInputRef}
+          label="Display Name"
           placeholder="Display Name (4-32 characters)"
           value={formData.username}
           onChangeText={setUsername}

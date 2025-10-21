@@ -140,6 +140,7 @@ export const ProfileEditModal = forwardRef<
             </Text>
           </View>
           <FormInput
+            label="User ID"
             placeholder="User ID (4-32 characters)"
             value={formData.user_id}
             onChangeText={setUserId}
@@ -156,6 +157,7 @@ export const ProfileEditModal = forwardRef<
           />
           <FormInput
             ref={usernameInputRef}
+            label="Display Name"
             placeholder="Display Name (4-32 characters)"
             value={formData.username}
             onChangeText={setUsername}

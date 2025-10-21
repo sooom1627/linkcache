@@ -71,6 +71,7 @@ export default function FormSection({
   return (
     <View className="mb-8 flex w-full flex-col gap-4">
       <FormInput
+        label="Email"
         placeholder={emailConfig.placeholder}
         textContentType={emailConfig.textContentType}
         autoCapitalize={emailConfig.autoCapitalize}
@@ -86,6 +87,7 @@ export default function FormSection({
 
       <FormInput
         ref={passwordInputRef}
+        label="Password"
         placeholder={passwordConfig.placeholder}
         textContentType={passwordConfig.textContentType}
         autoCapitalize={passwordConfig.autoCapitalize}

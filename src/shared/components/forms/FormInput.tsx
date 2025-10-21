@@ -3,6 +3,7 @@ import { forwardRef, type ReactNode } from "react";
 import { Text, TextInput, View, type TextInputProps } from "react-native";
 
 interface FormInputProps {
+  label: string;
   placeholder: string;
   value: string;
   onChangeText: (text: string) => void;
@@ -25,10 +26,12 @@ interface FormInputProps {
  * Auth & User系フォーム専用の入力コンポーネント
  * Zodバリデーションエラーやヘルパーテキスト（重複チェック結果など）の表示に対応
  * アイコンを左右に配置可能
+ * Label要素を常に表示することで、エラー表示時の画面ガタつきを防止
  */
 const FormInput = forwardRef<TextInput, FormInputProps>(
   (
     {
+      label,
       placeholder,
       value,
       onChangeText,
@@ -50,10 +53,24 @@ const FormInput = forwardRef<TextInput, FormInputProps>(
   ) => {
     return (
       <View className="w-full">
+        {/* Label行（常に表示、高さ固定） */}
+        <View className="mb-2 h-6 flex-row items-center gap-2">
+          {/* ラベルテキスト */}
+          <Text className="text-sm font-medium text-gray-700">{label}</Text>
+          {/* エラーメッセージ / ヘルパーテキスト表示領域（高さ固定） */}
+          <View className="">
+            {error ? (
+              <Text className="text-sm text-red-600">{error}</Text>
+            ) : helperText ? (
+              <Text className={`text-sm ${helperTextColor}`}>{helperText}</Text>
+            ) : null}
+          </View>
+        </View>
+
         {/* Input container with icons */}
         <View
           className={`flex-row items-center rounded-md bg-slate-200 ${
-            error ? "border border-red-500" : ""
+            error ? "border border-red-500" : "border border-slate-200"
           }`}
         >
           {/* Left Icon */}
@@ -74,7 +91,7 @@ const FormInput = forwardRef<TextInput, FormInputProps>(
             onSubmitEditing={onSubmitEditing}
             blurOnSubmit={blurOnSubmit}
             className={`flex-1 p-4 ${leftIcon ? "pl-2" : ""} ${rightIcon ? "pr-2" : ""}`}
-            accessibilityLabel={placeholder}
+            accessibilityLabel={label}
             accessibilityHint={helperText}
             accessibilityValue={secureTextEntry ? undefined : { text: value }}
           />
@@ -82,16 +99,6 @@ const FormInput = forwardRef<TextInput, FormInputProps>(
           {/* Right Icon */}
           {rightIcon && <View className="mr-4">{rightIcon}</View>}
         </View>
-
-        {/* エラーメッセージ表示 */}
-        {error && <Text className="mt-1 text-sm text-red-600">{error}</Text>}
-
-        {/* ヘルパーテキスト表示（エラーがない場合のみ） */}
-        {!error && helperText && (
-          <Text className={`mt-1 text-sm ${helperTextColor}`}>
-            {helperText}
-          </Text>
-        )}
       </View>
     );
   },
