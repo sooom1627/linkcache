@@ -16,18 +16,7 @@ import {
 } from "../hooks";
 import { getUserIdHelperText, isSubmitEnabled } from "../utils";
 
-interface SetupProfileScreenProps {
-  onSuccess?: () => void;
-  onError?: (error: Error) => void;
-}
-
-/**
- * プロフィール設定画面のUIコンポーネント
- */
-export function SetupProfileScreen({
-  onSuccess,
-  onError,
-}: SetupProfileScreenProps) {
+export function SetupProfileScreen({}) {
   // フォーム状態管理
   const {
     formData,
@@ -45,10 +34,7 @@ export function SetupProfileScreen({
   } = useCheckUserId(formData.user_id, true);
 
   // プロフィール作成
-  const { mutate: createProfile, isPending } = useCreateProfile({
-    onSuccess,
-    onError,
-  });
+  const { mutate: createProfile, isPending } = useCreateProfile({});
 
   // フォーム入力のref
   const usernameInputRef = useRef<TextInput>(null);

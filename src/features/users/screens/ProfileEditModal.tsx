@@ -29,7 +29,7 @@ export const ProfileEditModal = forwardRef<
   const { formData, setUserId, setUsername, validateForm } = useProfileForm();
 
   // API処理
-  const { mutate: updateProfile, isPending } = useUpdateProfile({
+  const { mutateAsync: updateProfile, isPending } = useUpdateProfile({
     onSuccess: () => {
       onClose?.();
     },
