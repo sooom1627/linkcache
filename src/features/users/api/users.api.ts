@@ -36,6 +36,14 @@ export async function createProfile(
   userId: string,
   profile: CreateProfileRequest,
 ): Promise<UserProfile> {
+  if (!userId) {
+    throw createPostgrestError("User not authenticated", "AUTH001");
+  }
+
+  if (!profile.user_id || !profile.username) {
+    throw createPostgrestError("User ID and username are required", "PGRST116");
+  }
+
   // プロフィールをINSERT
   const { data, error } = await supabase
     .from("users")

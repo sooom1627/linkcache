@@ -50,11 +50,8 @@ export function useUpdateProfile(options?: {
     { previousProfile: UserProfile | undefined } // contextの型定義
   >({
     mutationFn: (profile) => updateProfile(user.id, profile),
-    onSuccess: () => {
-      queryClient.setQueryData(
-        userQueryKeys.profile(),
-        (old: UserProfile | null) => old ?? null,
-      );
+    onSuccess: (data) => {
+      queryClient.setQueryData(userQueryKeys.profile(), data);
       Alert.alert("Success", "Profile updated successfully");
       options?.onSuccess?.();
     },
