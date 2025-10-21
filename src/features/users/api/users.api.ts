@@ -123,17 +123,22 @@ export async function getMyProfile(): Promise<UserProfile | null> {
 /**
  * user_idの重複チェック
  * @param userId - チェックするuser_id
+ * @param excludeUserId - 除外するuser_id（更新時に現在のuser_idを除外する場合に使用）
  * @returns 利用可能な場合はtrue、既に使用されている場合はfalse
  * @throws {PostgrestError} データベースエラーが発生した場合
  */
 export async function checkUserIdAvailability(
   userId: string,
+  excludeUserId?: string,
 ): Promise<boolean> {
-  const { data, error } = await supabase
-    .from("users")
-    .select("user_id")
-    .eq("user_id", userId)
-    .maybeSingle();
+  let query = supabase.from("users").select("user_id").eq("user_id", userId);
+
+  // 現在のuser_idを除外（更新時）
+  if (excludeUserId) {
+    query = query.neq("user_id", excludeUserId);
+  }
+
+  const { data, error } = await query.maybeSingle();
 
   if (error) {
     throw error;
