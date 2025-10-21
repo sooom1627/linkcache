@@ -1,10 +1,15 @@
 import type { PostgrestError } from "@supabase/supabase-js";
 import { useQuery } from "@tanstack/react-query";
 
+import { useDebounce } from "@/src/shared/hooks/useDebounce";
+
 import { checkUserIdAvailability } from "../api";
 
 /**
  * user_id重複チェック用のカスタムフック
+ *
+ * 入力値を500msデバウンスしてからAPI呼び出しを行います。
+ * タイピング中の連続したAPI呼び出しを防ぎ、パフォーマンスを向上させます。
  *
  * @param userId - チェックするuser_id
  * @param enabled - クエリを有効にするかどうか（デフォルト: true）
@@ -39,10 +44,13 @@ export function useCheckUserId(
   enabled: boolean = true,
   excludeUserId?: string,
 ) {
+  // user_idを500msデバウンス（タイピング中のAPI呼び出しを防ぐ）
+  const debouncedUserId: string = useDebounce<string>(userId, 500);
+
   return useQuery<boolean, PostgrestError>({
-    queryKey: ["check-user-id", userId, excludeUserId],
-    queryFn: () => checkUserIdAvailability(userId, excludeUserId),
-    enabled: enabled && userId.length >= 4,
+    queryKey: ["check-user-id", debouncedUserId, excludeUserId],
+    queryFn: () => checkUserIdAvailability(debouncedUserId, excludeUserId),
+    enabled: enabled && debouncedUserId.length >= 4,
     staleTime: 5000, // 5秒間キャッシュして不要な再取得を防ぐ
     retry: 1, // エラー時のリトライ回数を1回に制限
   });

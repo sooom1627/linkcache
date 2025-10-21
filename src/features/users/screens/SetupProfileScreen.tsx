@@ -43,8 +43,8 @@ export function SetupProfileScreen({}) {
     // バリデーション
     if (!validateForm()) return;
 
-    // user_id可用性チェック（undefined、false、またはチェック中の場合は送信不可）
-    if (isUserIdAvailable !== true) return;
+    // user_idが利用不可の場合は送信不可
+    if (isUserIdAvailable === false) return;
 
     // プロフィール作成
     createProfile(formData);
@@ -61,7 +61,6 @@ export function SetupProfileScreen({}) {
   // 送信ボタン有効化判定
   const submitEnabled = isSubmitEnabled(
     isPending,
-    isCheckingUserId,
     isUserIdAvailable,
     formData.user_id,
     formData.username,

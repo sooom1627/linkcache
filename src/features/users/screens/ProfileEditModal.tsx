@@ -12,7 +12,7 @@ import ModalHeader from "@/src/shared/components/modals/ModalHeader";
 import { useCheckUserId, useProfile } from "../hooks";
 import { useProfileForm } from "../hooks/useProfileForm";
 import { useUpdateProfile } from "../hooks/useUpdateProfile";
-import { getUserIdHelperText } from "../utils";
+import { getUserIdHelperText, isSubmitEnabled } from "../utils";
 
 interface ProfileEditModalProps {
   onClose?: () => void;
@@ -64,56 +64,29 @@ export const ProfileEditModal = forwardRef<
   }, [profile, setUserId, setUsername]);
 
   // user_idのヘルパーテキスト
-  const userIdHelper = useMemo(() => {
-    // 元のIDと同じ場合はヘルパーテキスト不要
-    if (formData.user_id === originalUserId) {
-      return undefined;
-    }
-    return getUserIdHelperText(
-      formData.user_id,
-      isCheckingUserId,
-      checkError,
-      isUserIdAvailable,
-    );
-  }, [
+  const userIdHelper = getUserIdHelperText(
     formData.user_id,
-    originalUserId,
     isCheckingUserId,
     checkError,
     isUserIdAvailable,
-  ]);
+    originalUserId,
+  );
 
   // 送信ボタン有効化判定
-  const isSubmitDisabled = useMemo(() => {
-    // 処理中は無効
-    if (isPending || isCheckingUserId) return true;
-
-    // バリデーションエラーがある場合は無効
-    if (errors.user_id || errors.username) return true;
-
-    // 最小文字数チェック
-    if (formData.user_id.length < 4 || formData.username.length < 4)
-      return true;
-
-    // user_idが変更されている場合は重複チェック必須
-    if (shouldCheckUserId && isUserIdAvailable !== true) return true;
-
-    return false;
-  }, [
+  const submitEnabled = isSubmitEnabled(
     isPending,
-    isCheckingUserId,
-    errors,
+    isUserIdAvailable,
     formData.user_id,
     formData.username,
+    errors,
     shouldCheckUserId,
-    isUserIdAvailable,
-  ]);
+  );
 
   const handleUpdateProfile = useCallback(() => {
     if (!validateForm()) return;
 
-    // user_idが変更されている場合は重複チェック必須
-    if (shouldCheckUserId && isUserIdAvailable !== true) return;
+    // user_idが利用不可の場合は送信不可
+    if (shouldCheckUserId && isUserIdAvailable === false) return;
 
     updateProfile(formData);
   }, [
@@ -173,7 +146,7 @@ export const ProfileEditModal = forwardRef<
         <FormButton
           title={isPending ? "Updating..." : "Update Profile"}
           onPress={handleUpdateProfile}
-          disabled={isSubmitDisabled}
+          disabled={!submitEnabled}
         />
       </View>
     </ScrollableBottomSheetModal>
