@@ -2,7 +2,7 @@ import { useEffect } from "react";
 
 import { ActivityIndicator, Text } from "react-native";
 
-import { Slot, useRouter, useSegments } from "expo-router";
+import { Stack, useRouter, useSegments } from "expo-router";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -68,5 +68,10 @@ export default function ProtectedLayout() {
     );
   }
 
-  return <Slot />;
+  return (
+    <Stack>
+      <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="modals" />
+    </Stack>
+  );
 }
