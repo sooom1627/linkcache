@@ -40,16 +40,17 @@ export function useCreateProfile(options?: {
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
-  if (!user) {
-    throw new Error("User not authenticated");
-  }
-
   const handleCreateProfile = useMutation<
     UserProfile,
     PostgrestError,
     CreateProfileRequest
   >({
-    mutationFn: (profile) => createProfile(user.id, profile),
+    mutationFn: (profile) => {
+      if (!user?.id) {
+        throw new Error("User not authenticated");
+      }
+      return createProfile(user.id, profile);
+    },
     onSuccess: (data) => {
       // 作成されたプロフィールをキャッシュに設定
       queryClient.setQueryData(userQueryKeys.profile(), data);
