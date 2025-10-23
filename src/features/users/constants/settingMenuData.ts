@@ -8,7 +8,6 @@ import {
   Info,
   KeyRound,
   Lock,
-  UserRound,
 } from "lucide-react-native";
 
 export interface MenuItem {
@@ -25,18 +24,10 @@ export interface MenuSection {
 
 const ICON_PROPS: LucideProps = { size: 16, color: "#6B7280" };
 
-export const createSettingMenuData = (
-  handleOpenProfileEdit: () => void,
-): MenuSection[] => [
+export const createSettingMenuData = (): MenuSection[] => [
   {
     menuTitle: "Your Account",
     menuItems: [
-      {
-        title: "Profile",
-        icon: UserRound,
-        iconProps: ICON_PROPS,
-        onPress: handleOpenProfileEdit,
-      },
       {
         title: "Password",
         icon: KeyRound,

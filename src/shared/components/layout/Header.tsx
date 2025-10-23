@@ -3,8 +3,9 @@ import { Text, TouchableOpacity, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 
-import { ArrowLeft, UserRound } from "lucide-react-native";
+import { ArrowLeft } from "lucide-react-native";
 
+import Avatar from "@/src/features/users/components/user/Avatar";
 import { useModal } from "@/src/shared/providers";
 
 export interface HeaderProps {
@@ -34,17 +35,7 @@ export default function Header({
       >
         {topComponent ? (
           <View className="flex-row items-center justify-start gap-4 px-4 py-2">
-            <TouchableOpacity
-              onPress={() => openModal("setting")}
-              className="rounded-full bg-slate-200 p-4"
-              hitSlop={10}
-              activeOpacity={0.8}
-              accessibilityLabel="Profile"
-              accessibilityRole="button"
-              accessibilityHint="Open settings"
-            >
-              <UserRound size={16} color="black" />
-            </TouchableOpacity>
+            <Avatar onPress={() => openModal("setting")} size="small" />
             <Text className="text-2xl font-bold text-slate-700">{title}</Text>
           </View>
         ) : (
