@@ -4,25 +4,24 @@ import type { PostgrestError } from "@supabase/supabase-js";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { useAuth } from "../../auth";
-import { createProfile } from "../api";
+import { updateProfile } from "../api";
 import { userQueryKeys } from "../constants/queryKeys";
-import type { CreateProfileRequest, UserProfile } from "../types/users.types";
+import type { UpdateProfileRequest, UserProfile } from "../types";
 
 /**
- * プロフィール作成用のカスタムフック
+ * プロフィール更新用のカスタムフック
  *
- * プロフィール情報の作成とキャッシュ管理を行います。
- * 作成後はキャッシュに新しいプロフィールを設定します。
+ * プロフィール情報の更新とキャッシュ管理を行います。
+ * フォーム状態は含まず、API処理のみを提供します。
  *
  * @param options - コールバックオプション
  * @returns mutate関数と処理状態
  *
  * @example
  * ```tsx
- * const { mutate: createProfile, isPending } = useCreateProfile({
+ * const { mutate: updateProfile, isPending } = useUpdateProfile({
  *   onSuccess: () => {
- *     console.log('Profile created');
- *     router.replace('/(tabs)');
+ *     console.log('Profile updated');
  *   },
  *   onError: (error) => {
  *     Alert.alert('Error', error.message);
@@ -30,36 +29,36 @@ import type { CreateProfileRequest, UserProfile } from "../types/users.types";
  * });
  *
  * // 使用時
- * createProfile({ user_id: 'john_doe', username: 'John Doe' });
+ * updateProfile({ user_id: 'john_doe', username: 'John Doe' });
  * ```
  */
-export function useCreateProfile(options?: {
+export function useUpdateProfile(options?: {
   onSuccess?: () => void;
   onError?: (error: PostgrestError) => void;
 }) {
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
-  const handleCreateProfile = useMutation<
+  const handleUpdateProfile = useMutation<
     UserProfile,
     PostgrestError,
-    CreateProfileRequest
+    UpdateProfileRequest,
+    { previousProfile: UserProfile | undefined } // contextの型定義
   >({
     mutationFn: (profile) => {
       if (!user?.id) {
         throw new Error("User not authenticated");
       }
-      return createProfile(user.id, profile);
+      return updateProfile(user.id, profile);
     },
     onSuccess: (data) => {
-      // 作成されたプロフィールをキャッシュに設定
       queryClient.setQueryData(userQueryKeys.profile(), data);
-      Alert.alert("Success", "Profile created successfully");
+      Alert.alert("Success", "Profile updated successfully");
       options?.onSuccess?.();
     },
     onError: (error) => {
-      Alert.alert("Error", "Failed to create profile");
-      console.error("Error creating profile", error);
+      Alert.alert("Error", "Failed to update profile");
+      console.error("Error updating profile", error);
       options?.onError?.(error);
     },
     onSettled: () => {
@@ -68,5 +67,5 @@ export function useCreateProfile(options?: {
     },
   });
 
-  return handleCreateProfile;
+  return handleUpdateProfile;
 }

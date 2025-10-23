@@ -1,8 +1,9 @@
-import type { ReactNode } from "react";
+import { forwardRef, type ReactNode } from "react";
 
 import { Text, TextInput, View, type TextInputProps } from "react-native";
 
 interface FormInputProps {
+  label: string;
   placeholder: string;
   value: string;
   onChangeText: (text: string) => void;
@@ -16,66 +17,93 @@ interface FormInputProps {
   autoCorrect?: TextInputProps["autoCorrect"];
   leftIcon?: ReactNode;
   rightIcon?: ReactNode;
+  returnKeyType?: TextInputProps["returnKeyType"];
+  onSubmitEditing?: TextInputProps["onSubmitEditing"];
+  blurOnSubmit?: boolean;
 }
 
 /**
  * Auth & User系フォーム専用の入力コンポーネント
  * Zodバリデーションエラーやヘルパーテキスト（重複チェック結果など）の表示に対応
  * アイコンを左右に配置可能
+ * Label要素を常に表示することで、エラー表示時の画面ガタつきを防止
  */
-export default function FormInput({
-  placeholder,
-  value,
-  onChangeText,
-  error,
-  helperText,
-  helperTextColor = "text-gray-500",
-  textContentType,
-  autoCapitalize = "none",
-  secureTextEntry = false,
-  keyboardType,
-  autoCorrect,
-  leftIcon,
-  rightIcon,
-}: FormInputProps) {
-  return (
-    <View className="w-full">
-      {/* Input container with icons */}
-      <View
-        className={`flex-row items-center rounded-md bg-slate-200 ${
-          error ? "border border-red-500" : ""
-        }`}
-      >
-        {/* Left Icon */}
-        {leftIcon && <View className="ml-4">{leftIcon}</View>}
+const FormInput = forwardRef<TextInput, FormInputProps>(
+  (
+    {
+      label,
+      placeholder,
+      value,
+      onChangeText,
+      error,
+      helperText,
+      helperTextColor = "text-gray-500",
+      textContentType,
+      autoCapitalize = "none",
+      secureTextEntry = false,
+      keyboardType,
+      autoCorrect,
+      leftIcon,
+      rightIcon,
+      returnKeyType = "done",
+      onSubmitEditing,
+      blurOnSubmit = true,
+    },
+    ref,
+  ) => {
+    return (
+      <View className="w-full">
+        {/* Label行（常に表示、高さ固定） */}
+        <View className="mb-2 h-6 flex-row items-center gap-2">
+          {/* ラベルテキスト */}
+          <Text className="text-sm font-medium text-gray-700">{label}</Text>
+          {/* エラーメッセージ / ヘルパーテキスト表示領域（高さ固定） */}
+          <View className="">
+            {error ? (
+              <Text className="text-sm text-red-600">{error}</Text>
+            ) : helperText ? (
+              <Text className={`text-sm ${helperTextColor}`}>{helperText}</Text>
+            ) : null}
+          </View>
+        </View>
 
-        {/* Text Input */}
-        <TextInput
-          placeholder={placeholder}
-          value={value}
-          onChangeText={onChangeText}
-          textContentType={textContentType}
-          autoCapitalize={autoCapitalize}
-          secureTextEntry={secureTextEntry}
-          keyboardType={keyboardType}
-          autoCorrect={autoCorrect}
-          className={`flex-1 p-4 ${leftIcon ? "pl-2" : ""} ${rightIcon ? "pr-2" : ""}`}
-          accessibilityLabel={placeholder}
-          accessibilityHint={helperText}
-          accessibilityValue={secureTextEntry ? undefined : { text: value }}
-        />
+        {/* Input container with icons */}
+        <View
+          className={`flex-row items-center rounded-md bg-slate-200 ${
+            error ? "border border-red-500" : "border border-slate-200"
+          }`}
+        >
+          {/* Left Icon */}
+          {leftIcon && <View className="ml-4">{leftIcon}</View>}
 
-        {/* Right Icon */}
-        {rightIcon && <View className="mr-4">{rightIcon}</View>}
+          {/* Text Input */}
+          <TextInput
+            ref={ref}
+            placeholder={placeholder}
+            value={value}
+            onChangeText={onChangeText}
+            textContentType={textContentType}
+            autoCapitalize={autoCapitalize}
+            secureTextEntry={secureTextEntry}
+            keyboardType={keyboardType}
+            autoCorrect={autoCorrect}
+            returnKeyType={returnKeyType}
+            onSubmitEditing={onSubmitEditing}
+            blurOnSubmit={blurOnSubmit}
+            className={`flex-1 p-4 ${leftIcon ? "pl-2" : ""} ${rightIcon ? "pr-2" : ""}`}
+            accessibilityLabel={label}
+            accessibilityHint={helperText}
+            accessibilityValue={secureTextEntry ? undefined : { text: value }}
+          />
+
+          {/* Right Icon */}
+          {rightIcon && <View className="mr-4">{rightIcon}</View>}
+        </View>
       </View>
+    );
+  },
+);
 
-      {/* エラーメッセージ表示 */}
-      {error && <Text className="mt-1 text-sm text-red-600">{error}</Text>}
+FormInput.displayName = "FormInput";
 
-      {/* ヘルパーテキスト表示（エラーがない場合のみ） */}
-      {!error && helperText && (
-        <Text className={`mt-1 text-sm ${helperTextColor}`}>{helperText}</Text>
-      )}
-    </View>
-  );
-}
+export default FormInput;

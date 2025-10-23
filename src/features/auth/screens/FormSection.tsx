@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
-import { TouchableOpacity, View } from "react-native";
+import { TouchableOpacity, View, type TextInput } from "react-native";
 
 import { Eye, EyeClosed, Lock, Mail } from "lucide-react-native";
 
@@ -35,6 +35,9 @@ export default function FormSection({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  // フォーム入力のref
+  const passwordInputRef = useRef<TextInput>(null);
+
   const handleFieldChange = (field: keyof AuthFormSection, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
@@ -68,6 +71,7 @@ export default function FormSection({
   return (
     <View className="mb-8 flex w-full flex-col gap-4">
       <FormInput
+        label="Email"
         placeholder={emailConfig.placeholder}
         textContentType={emailConfig.textContentType}
         autoCapitalize={emailConfig.autoCapitalize}
@@ -76,9 +80,14 @@ export default function FormSection({
         onChangeText={(value) => handleFieldChange("email", value)}
         error={errors.email}
         leftIcon={<Mail size={16} color="#6B7280" />}
+        returnKeyType="next"
+        onSubmitEditing={() => passwordInputRef.current?.focus()}
+        blurOnSubmit={false}
       />
 
       <FormInput
+        ref={passwordInputRef}
+        label="Password"
         placeholder={passwordConfig.placeholder}
         textContentType={passwordConfig.textContentType}
         autoCapitalize={passwordConfig.autoCapitalize}
@@ -87,6 +96,8 @@ export default function FormSection({
         onChangeText={(value) => handleFieldChange("password", value)}
         error={errors.password}
         leftIcon={<Lock size={16} color="#6B7280" />}
+        returnKeyType="done"
+        onSubmitEditing={handleSubmit}
         rightIcon={
           passwordConfig.secureTextEntry ? (
             <TouchableOpacity
