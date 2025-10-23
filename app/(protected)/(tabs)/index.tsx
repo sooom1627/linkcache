@@ -1,5 +1,7 @@
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 
+import { router } from "expo-router";
+
 import { useProfile } from "@/src/features/users";
 import { ScreenContainer } from "@/src/shared/components/layout/ScreenContainer";
 
@@ -41,6 +43,9 @@ export default function Index() {
       <Text className="text-center text-gray-600">
         @{profile?.user_id || "..."} / {profile?.username || "..."}
       </Text>
+      <TouchableOpacity onPress={() => router.push("/modals")}>
+        <Text>Open Modal</Text>
+      </TouchableOpacity>
 
       {Array.from({ length: 25 }).map((_, index) => (
         <View key={index} className="mb-4">

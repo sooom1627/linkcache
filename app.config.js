@@ -10,6 +10,9 @@ export default {
     newArchEnabled: true,
     ios: {
       supportsTablet: true,
+      infoPlist: {
+        UIDesignRequiresCompatibility: true,
+      },
     },
     android: {
       adaptiveIcon: {

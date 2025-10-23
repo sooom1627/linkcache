@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-import { ActivityIndicator, Text } from "react-native";
+import { ActivityIndicator, Text, TouchableOpacity } from "react-native";
 
 import { Stack, useRouter, useSegments } from "expo-router";
 
@@ -70,8 +70,29 @@ export default function ProtectedLayout() {
 
   return (
     <Stack>
-      <Stack.Screen name="(tabs)" />
-      <Stack.Screen name="modals" />
+      <Stack.Screen
+        name="(tabs)"
+        options={{
+          headerShown: true,
+          headerTitle: "",
+          headerBlurEffect: "systemMaterialLight",
+          headerBackButtonDisplayMode: "minimal",
+          headerBackVisible: true,
+          headerTransparent: true,
+          headerStyle: {
+            backgroundColor: "transparent",
+          },
+          headerRight: () => (
+            <TouchableOpacity onPress={() => router.push("/modals")}>
+              <Text>Open Modal</Text>
+            </TouchableOpacity>
+          ),
+        }}
+      />
+      <Stack.Screen
+        name="modals"
+        options={{ presentation: "modal", headerShown: false }}
+      />
     </Stack>
   );
 }

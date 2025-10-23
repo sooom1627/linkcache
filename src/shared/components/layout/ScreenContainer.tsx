@@ -4,9 +4,6 @@ import { View } from "react-native";
 
 import Animated from "react-native-reanimated";
 
-import CustomSafeArea from "./CustomSafeArea";
-import Header from "./Header";
-
 const HEADER_HEIGHT = 64;
 
 interface ScreenContainerProps {
@@ -20,11 +17,9 @@ interface ScreenContainerProps {
 
 export function ScreenContainer({
   children,
-  headerTitle = "Hello, User",
   scrollable = true,
   centerContent = true,
   noPaddingBottom = false,
-  topComponent = true,
 }: ScreenContainerProps) {
   const paddingBottom = noPaddingBottom ? "" : "pb-28";
   const contentClassName = centerContent
@@ -33,8 +28,7 @@ export function ScreenContainer({
 
   if (scrollable) {
     return (
-      <CustomSafeArea>
-        <Header title={headerTitle} topComponent={topComponent} />
+      <View className="flex-1">
         <Animated.ScrollView
           className="flex-1"
           style={{ paddingTop: HEADER_HEIGHT }}
@@ -45,16 +39,15 @@ export function ScreenContainer({
         >
           <View className={contentClassName}>{children}</View>
         </Animated.ScrollView>
-      </CustomSafeArea>
+      </View>
     );
   }
 
   return (
-    <CustomSafeArea>
-      <Header title={headerTitle} topComponent={topComponent} />
+    <View className="flex-1">
       <View className="flex-1">
         <View className={contentClassName}>{children}</View>
       </View>
-    </CustomSafeArea>
+    </View>
   );
 }
