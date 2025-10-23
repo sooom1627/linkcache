@@ -1,8 +1,15 @@
-import { Text, TouchableOpacity, View } from "react-native";
+import {
+  ActionSheetIOS,
+  Alert,
+  Platform,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 import { ChevronRight, Plus } from "lucide-react-native";
 
-import { useProfile } from "../../hooks";
+import { useImagePicker, useProfile, useUploadAvatar } from "../../hooks";
 
 import Avatar from "./Avatar";
 
@@ -16,13 +23,80 @@ export default function UserCard({
   onPressEditProfile,
 }: UserCardProps) {
   const { data: profile } = useProfile();
-  const noop = () => {};
+  const { pickImageFromLibrary, pickImageFromCamera } = useImagePicker();
+  const { mutate: uploadAvatar, isPending } = useUploadAvatar();
+
+  const handleTakePhoto = async () => {
+    const image = await pickImageFromCamera();
+    if (image) {
+      uploadAvatar({
+        fileUri: image.uri,
+        mimeType: image.mimeType,
+      });
+    }
+  };
+
+  const handleChooseFromLibrary = async () => {
+    const image = await pickImageFromLibrary();
+    if (image) {
+      uploadAvatar({
+        fileUri: image.uri,
+        mimeType: image.mimeType,
+      });
+    }
+  };
+
+  const handleAvatarUpload = () => {
+    if (Platform.OS === "ios") {
+      // iOSの場合はActionSheetを使用
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
+          options: ["Cancel", "Take Photo", "Choose from Library"],
+          cancelButtonIndex: 0,
+        },
+        (buttonIndex) => {
+          if (buttonIndex === 1) {
+            void handleTakePhoto();
+          } else if (buttonIndex === 2) {
+            void handleChooseFromLibrary();
+          }
+        },
+      );
+    } else {
+      // Androidの場合はAlertを使用
+      Alert.alert(
+        "Upload Avatar",
+        "Choose a photo source",
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+          },
+          {
+            text: "Take Photo",
+            onPress: () => {
+              void handleTakePhoto();
+            },
+          },
+          {
+            text: "Choose from Library",
+            onPress: () => {
+              void handleChooseFromLibrary();
+            },
+          },
+        ],
+        { cancelable: true },
+      );
+    }
+  };
+
   return (
     <View className="flex flex-row items-center gap-4 border-b border-slate-200 py-4">
       <View className="relative flex-row items-center justify-center">
-        <Avatar onPress={noop} size={avatarSize} />
+        <Avatar onPress={() => {}} size={avatarSize} />
         <TouchableOpacity
-          onPress={noop}
+          onPress={handleAvatarUpload}
+          disabled={isPending}
           hitSlop={16}
           activeOpacity={0.8}
           className="absolute bottom-0 right-0 rounded-full bg-slate-700 p-1"

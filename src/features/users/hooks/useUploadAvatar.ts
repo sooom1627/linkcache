@@ -1,7 +1,5 @@
 import { Alert } from "react-native";
 
-import * as FileSystem from "expo-file-system";
-
 import type { PostgrestError } from "@supabase/supabase-js";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -28,18 +26,27 @@ function getExtensionFromMimeType(mimeType: string): string {
  * @returns ArrayBuffer
  */
 async function convertFileToArrayBuffer(fileUri: string): Promise<ArrayBuffer> {
-  // ファイルをBase64に変換
-  const base64 = await FileSystem.readAsStringAsync(fileUri, {
-    encoding: "base64",
+  return new Promise((resolve, reject) => {
+    // fetchを使ってBlobを取得
+    fetch(fileUri)
+      .then((response) => response.blob())
+      .then((blob) => {
+        // FileReaderを使ってBlobをArrayBufferに変換
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          if (reader.result instanceof ArrayBuffer) {
+            resolve(reader.result);
+          } else {
+            reject(new Error("Failed to convert blob to ArrayBuffer"));
+          }
+        };
+        reader.onerror = () => {
+          reject(new Error("FileReader error"));
+        };
+        reader.readAsArrayBuffer(blob);
+      })
+      .catch(reject);
   });
-
-  // Base64からArrayBufferに変換
-  const byteCharacters = atob(base64);
-  const byteNumbers = new Array(byteCharacters.length);
-  for (let i = 0; i < byteCharacters.length; i++) {
-    byteNumbers[i] = byteCharacters.charCodeAt(i);
-  }
-  return new Uint8Array(byteNumbers).buffer;
 }
 
 /**
