@@ -29,7 +29,12 @@ export default function UserCard({
   onPressEditProfile,
 }: UserCardProps) {
   const { data: profile } = useProfile();
-  const { pickImageFromLibrary, pickImageFromCamera } = useImagePicker();
+  const {
+    pickImageFromLibrary,
+    pickImageFromCamera,
+    requestLibraryPermission,
+    requestCameraPermission,
+  } = useImagePicker();
   const { mutate: uploadAvatar, isPending } = useUploadAvatar();
 
   const handleImagePicked = async (
@@ -44,6 +49,27 @@ export default function UserCard({
     }
   };
 
+  const handleCameraSelected = async () => {
+    const hasPermission = await requestCameraPermission();
+    if (hasPermission) {
+      void handleImagePicked(pickImageFromCamera);
+    } else {
+      Alert.alert("Permission Required", "Please allow camera access.");
+    }
+  };
+
+  const handleLibrarySelected = async () => {
+    const hasPermission = await requestLibraryPermission();
+    if (hasPermission) {
+      void handleImagePicked(pickImageFromLibrary);
+    } else {
+      Alert.alert(
+        "Permission Required",
+        "Please allow access to your photo library.",
+      );
+    }
+  };
+
   const handleAvatarUpload = () => {
     if (Platform.OS === "ios") {
       // iOSの場合はActionSheetを使用
@@ -54,9 +80,9 @@ export default function UserCard({
         },
         (buttonIndex) => {
           if (buttonIndex === 1) {
-            void handleImagePicked(pickImageFromCamera);
+            void handleCameraSelected();
           } else if (buttonIndex === 2) {
-            void handleImagePicked(pickImageFromLibrary);
+            void handleLibrarySelected();
           }
         },
       );
@@ -73,13 +99,13 @@ export default function UserCard({
           {
             text: "Take Photo",
             onPress: () => {
-              void handleImagePicked(pickImageFromCamera);
+              void handleCameraSelected();
             },
           },
           {
             text: "Choose from Library",
             onPress: () => {
-              void handleImagePicked(pickImageFromLibrary);
+              void handleLibrarySelected();
             },
           },
         ],

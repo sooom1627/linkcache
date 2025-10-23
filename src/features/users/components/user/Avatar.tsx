@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import { Pressable, StyleSheet } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 
 import { Image } from "expo-image";
 
@@ -49,10 +49,8 @@ export default function Avatar({
   return (
     <Pressable
       onPress={onPress}
-      style={[
-        styles.container,
-        { width: avatarSize, height: avatarSize, borderRadius: avatarSize / 2 },
-      ]}
+      style={[styles.container]}
+      className="rounded-full border-2 border-slate-200"
       hitSlop={10}
       accessibilityRole="button"
       accessibilityLabel="Open profile"
@@ -75,7 +73,12 @@ export default function Avatar({
           cachePolicy="memory-disk"
         />
       ) : (
-        <UserRound size={iconSize[size]} color="black" />
+        <View
+          className="items-center justify-center rounded-full bg-slate-200"
+          style={{ width: avatarSize, height: avatarSize }}
+        >
+          <UserRound size={iconSize[size]} color="black" />
+        </View>
       )}
     </Pressable>
   );
@@ -86,8 +89,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#E2E8F0",
-    borderWidth: 4,
-    borderColor: "#E2E8F0",
   },
   image: {
     overflow: "hidden",

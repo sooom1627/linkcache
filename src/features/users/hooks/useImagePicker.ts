@@ -13,16 +13,33 @@ export interface PickedImage {
 }
 
 /**
+ * useImagePicker フックの戻り値の型
+ */
+export interface UseImagePickerReturn {
+  checkPermissions: () => Promise<{
+    library: boolean;
+    camera: boolean;
+  }>;
+  requestLibraryPermission: () => Promise<boolean>;
+  requestCameraPermission: () => Promise<boolean>;
+  pickImageFromLibrary: () => Promise<PickedImage | null>;
+  pickImageFromCamera: () => Promise<PickedImage | null>;
+}
+
+/**
  * 画像選択用のカスタムフック
  *
  * expo-image-pickerを使用して、ライブラリまたはカメラから画像を選択します。
  * パーミッション管理も含みます。
  *
- * @returns 画像選択関数
+ * @returns 画像選択関数とパーミッションチェック関数
  *
  * @example
  * ```tsx
- * const { pickImageFromLibrary, pickImageFromCamera } = useImagePicker();
+ * const { pickImageFromLibrary, pickImageFromCamera, checkPermissions } = useImagePicker();
+ *
+ * // パーミッションを事前確認
+ * const permissions = await checkPermissions();
  *
  * // ライブラリから選択
  * const image = await pickImageFromLibrary();
@@ -37,25 +54,45 @@ export interface PickedImage {
  * }
  * ```
  */
-export function useImagePicker() {
+export function useImagePicker(): UseImagePickerReturn {
   /**
-   * ライブラリから画像を選択
+   * パーミッション状態を事前確認
+   * @returns ライブラリとカメラのパーミッション状態
+   */
+  const checkPermissions = async () => {
+    const [libraryStatus, cameraStatus] = await Promise.all([
+      ImagePicker.getMediaLibraryPermissionsAsync(),
+      ImagePicker.getCameraPermissionsAsync(),
+    ]);
+
+    return {
+      library: libraryStatus.status === "granted",
+      camera: cameraStatus.status === "granted",
+    };
+  };
+
+  /**
+   * ライブラリパーミッションをリクエスト
+   */
+  const requestLibraryPermission = async (): Promise<boolean> => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    return status === "granted";
+  };
+
+  /**
+   * カメラパーミッションをリクエスト
+   */
+  const requestCameraPermission = async (): Promise<boolean> => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    return status === "granted";
+  };
+
+  /**
+   * ライブラリから画像を選択（パーミッションは事前取得済みを想定）
    * @returns 選択された画像情報（キャンセル時はnull）
    */
   const pickImageFromLibrary = async (): Promise<PickedImage | null> => {
     try {
-      // パーミッションをリクエスト
-      const { status } =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-      if (status !== "granted") {
-        Alert.alert(
-          "Permission Required",
-          "Please allow access to your photo library.",
-        );
-        return null;
-      }
-
       // 画像を選択
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: "images",
@@ -89,19 +126,11 @@ export function useImagePicker() {
   };
 
   /**
-   * カメラで撮影
+   * カメラで撮影（パーミッションは事前取得済みを想定）
    * @returns 撮影された画像情報（キャンセル時はnull）
    */
   const pickImageFromCamera = async (): Promise<PickedImage | null> => {
     try {
-      // パーミッションをリクエスト
-      const { status } = await ImagePicker.requestCameraPermissionsAsync();
-
-      if (status !== "granted") {
-        Alert.alert("Permission Required", "Please allow camera access.");
-        return null;
-      }
-
       // カメラを起動
       const result = await ImagePicker.launchCameraAsync({
         allowsEditing: true,
@@ -134,6 +163,9 @@ export function useImagePicker() {
   };
 
   return {
+    checkPermissions,
+    requestLibraryPermission,
+    requestCameraPermission,
     pickImageFromLibrary,
     pickImageFromCamera,
   };

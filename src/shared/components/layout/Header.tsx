@@ -37,14 +37,28 @@ export default function Header({
         style={{ height: HEADER_HEIGHT }}
       >
         {topComponent ? (
-          <View className="flex-row items-center justify-start gap-4 px-4 py-2">
+          <View className="flex-row items-center justify-start gap-2 px-4 py-2">
             <Avatar
               avatarUrl={profile?.avatar_url}
               updatedAt={profile?.updated_at}
               onPress={() => openModal("setting")}
               size="small"
             />
-            <Text className="text-2xl font-bold text-slate-700">{title}</Text>
+            <View>
+              {title.includes("Hello") && (
+                <Text className="text-base text-slate-500">
+                  {new Date()
+                    .toLocaleDateString("ja-JP", {
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                      timeZone: "UTC",
+                    })
+                    .replaceAll("/", "/")}
+                </Text>
+              )}
+              <Text className="text-2xl font-bold text-slate-700">{title}</Text>
+            </View>
           </View>
         ) : (
           <View className="flex-row items-center justify-start gap-4 px-4 py-2">
