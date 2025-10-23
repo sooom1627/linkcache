@@ -6,6 +6,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../../auth";
 import { uploadAvatar } from "../api";
 import { userQueryKeys } from "../constants/queryKeys";
+import type { UserProfile } from "../types/users.types";
 
 /**
  * MIMEタイプから拡張子を取得
@@ -111,9 +112,28 @@ export function useUploadAvatar(options?: {
       // APIを呼び出し
       return uploadAvatar(user.id, filePath, fileData, mimeType);
     },
-    onSuccess: (data) => {
-      // プロフィールクエリを無効化して再取得
-      queryClient.invalidateQueries({ queryKey: userQueryKeys.profile() });
+    onSuccess: async (data) => {
+      // 既存のプロフィールデータを取得
+      const currentProfile = queryClient.getQueryData<UserProfile | null>(
+        userQueryKeys.profile(),
+      );
+
+      // キャッシュを即座に更新（楽観的更新）
+      if (currentProfile) {
+        const updatedProfile: UserProfile = {
+          ...currentProfile,
+          avatar_url: data.avatarUrl,
+          updated_at: new Date().toISOString(),
+        };
+        queryClient.setQueryData(userQueryKeys.profile(), updatedProfile);
+        console.log("Cache updated:", updatedProfile);
+      }
+
+      // 念のため再取得（サーバーと同期）
+      await queryClient.invalidateQueries({
+        queryKey: userQueryKeys.profile(),
+      });
+
       Alert.alert("Success", "Avatar uploaded successfully");
       options?.onSuccess?.(data);
     },
