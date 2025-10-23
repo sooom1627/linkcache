@@ -1,20 +1,24 @@
+import { useMemo } from "react";
+
 import { Pressable, StyleSheet } from "react-native";
 
 import { Image } from "expo-image";
 
 import { UserRound } from "lucide-react-native";
 
-import { useProfile } from "../../hooks";
-
 interface AvatarProps {
+  avatarUrl?: string | null;
+  updatedAt?: string | null;
   onPress?: () => void;
   size?: "small" | "medium" | "large" | "xlarge";
 }
 
-// シンプルなグレーのプレースホルダー画像（Base64 1x1 pixel）
+// シンプルなグレーのプレースホルダー画像
 const PLACEHOLDER_BLURHASH = "LKO2?U%2Tw=w]~RBVZRi};RPxuwH";
 
 export default function Avatar({
+  avatarUrl,
+  updatedAt,
   onPress = () => {},
   size = "medium",
 }: AvatarProps) {
@@ -33,13 +37,14 @@ export default function Avatar({
   };
 
   const avatarSize = sizeMap[size];
-  const { data: profile } = useProfile();
 
-  // デバッグ用ログ
-  console.log("Avatar render:", {
-    avatar_url: profile?.avatar_url,
-    updated_at: profile?.updated_at,
-  });
+  // URLにバージョンパラメータを追加（キャッシュバスティング）
+  const imageUri = useMemo(() => {
+    if (!avatarUrl) return null;
+    return updatedAt
+      ? `${avatarUrl}?v=${new Date(updatedAt).getTime()}`
+      : avatarUrl;
+  }, [avatarUrl, updatedAt]);
 
   return (
     <Pressable
@@ -53,13 +58,9 @@ export default function Avatar({
       accessibilityLabel="Open profile"
       accessibilityHint="Open profile"
     >
-      {profile?.avatar_url ? (
+      {imageUri ? (
         <Image
-          source={{
-            uri: profile.updated_at
-              ? `${profile.avatar_url}?v=${new Date(profile.updated_at).getTime()}`
-              : profile.avatar_url,
-          }}
+          source={{ uri: imageUri }}
           placeholder={{ blurhash: PLACEHOLDER_BLURHASH }}
           style={[
             styles.image,

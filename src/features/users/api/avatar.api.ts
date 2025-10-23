@@ -42,14 +42,7 @@ export async function uploadAvatar(
     throw createPostgrestError("File path and data are required", "STORAGE001");
   }
 
-  // 既存の画像を削除（エラーは無視）
-  try {
-    await supabase.storage.from("avatars").remove([filePath]);
-  } catch {
-    // 既存ファイルがない場合のエラーは無視
-  }
-
-  // Storageにアップロード
+  // Storageにアップロード（upsertで自動上書き）
   const { data: uploadData, error: uploadError } = await supabase.storage
     .from("avatars")
     .upload(filePath, fileData, {

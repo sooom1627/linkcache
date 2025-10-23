@@ -54,8 +54,11 @@ export function useDeleteAvatar(options?: {
       options?.onSuccess?.();
     },
     onError: (error) => {
-      Alert.alert("Error", "Failed to delete avatar");
-      console.error("Error deleting avatar", error);
+      Alert.alert(
+        "Delete Failed",
+        "Could not delete avatar. Please try again.",
+      );
+      console.error("Error deleting avatar:", error);
       options?.onError?.(error);
     },
   });

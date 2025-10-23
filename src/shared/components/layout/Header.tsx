@@ -6,6 +6,7 @@ import { router } from "expo-router";
 import { ArrowLeft } from "lucide-react-native";
 
 import Avatar from "@/src/features/users/components/user/Avatar";
+import { useProfile } from "@/src/features/users/hooks";
 import { useModal } from "@/src/shared/providers";
 
 export interface HeaderProps {
@@ -19,6 +20,8 @@ export default function Header({
   topComponent = true,
 }: HeaderProps) {
   const { openModal } = useModal();
+  const { data: profile } = useProfile();
+
   return (
     <View
       className="absolute inset-x-0 top-0 z-50"
@@ -35,7 +38,12 @@ export default function Header({
       >
         {topComponent ? (
           <View className="flex-row items-center justify-start gap-4 px-4 py-2">
-            <Avatar onPress={() => openModal("setting")} size="small" />
+            <Avatar
+              avatarUrl={profile?.avatar_url}
+              updatedAt={profile?.updated_at}
+              onPress={() => openModal("setting")}
+              size="small"
+            />
             <Text className="text-2xl font-bold text-slate-700">{title}</Text>
           </View>
         ) : (

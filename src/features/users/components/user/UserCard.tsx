@@ -1,5 +1,6 @@
 import {
   ActionSheetIOS,
+  ActivityIndicator,
   Alert,
   Platform,
   Text,
@@ -9,7 +10,12 @@ import {
 
 import { ChevronRight, Plus } from "lucide-react-native";
 
-import { useImagePicker, useProfile, useUploadAvatar } from "../../hooks";
+import {
+  useImagePicker,
+  useProfile,
+  useUploadAvatar,
+  type PickedImage,
+} from "../../hooks";
 
 import Avatar from "./Avatar";
 
@@ -26,18 +32,10 @@ export default function UserCard({
   const { pickImageFromLibrary, pickImageFromCamera } = useImagePicker();
   const { mutate: uploadAvatar, isPending } = useUploadAvatar();
 
-  const handleTakePhoto = async () => {
-    const image = await pickImageFromCamera();
-    if (image) {
-      uploadAvatar({
-        fileUri: image.uri,
-        mimeType: image.mimeType,
-      });
-    }
-  };
-
-  const handleChooseFromLibrary = async () => {
-    const image = await pickImageFromLibrary();
+  const handleImagePicked = async (
+    picker: () => Promise<PickedImage | null>,
+  ) => {
+    const image = await picker();
     if (image) {
       uploadAvatar({
         fileUri: image.uri,
@@ -56,9 +54,9 @@ export default function UserCard({
         },
         (buttonIndex) => {
           if (buttonIndex === 1) {
-            void handleTakePhoto();
+            void handleImagePicked(pickImageFromCamera);
           } else if (buttonIndex === 2) {
-            void handleChooseFromLibrary();
+            void handleImagePicked(pickImageFromLibrary);
           }
         },
       );
@@ -75,13 +73,13 @@ export default function UserCard({
           {
             text: "Take Photo",
             onPress: () => {
-              void handleTakePhoto();
+              void handleImagePicked(pickImageFromCamera);
             },
           },
           {
             text: "Choose from Library",
             onPress: () => {
-              void handleChooseFromLibrary();
+              void handleImagePicked(pickImageFromLibrary);
             },
           },
         ],
@@ -93,7 +91,12 @@ export default function UserCard({
   return (
     <View className="flex flex-row items-center gap-4 border-b border-slate-200 py-4">
       <View className="relative flex-row items-center justify-center">
-        <Avatar onPress={() => {}} size={avatarSize} />
+        <Avatar
+          avatarUrl={profile?.avatar_url}
+          updatedAt={profile?.updated_at}
+          onPress={() => {}}
+          size={avatarSize}
+        />
         <TouchableOpacity
           onPress={handleAvatarUpload}
           disabled={isPending}
@@ -101,7 +104,11 @@ export default function UserCard({
           activeOpacity={0.8}
           className="absolute bottom-0 right-0 rounded-full bg-slate-700 p-1"
         >
-          <Plus size={12} color="white" />
+          {isPending ? (
+            <ActivityIndicator size="small" color="white" />
+          ) : (
+            <Plus size={12} color="white" />
+          )}
         </TouchableOpacity>
       </View>
       <View className=" flex-1 flex-row items-center justify-between">

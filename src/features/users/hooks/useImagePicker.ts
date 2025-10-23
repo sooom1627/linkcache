@@ -51,7 +51,7 @@ export function useImagePicker() {
       if (status !== "granted") {
         Alert.alert(
           "Permission Required",
-          "Please allow access to your photo library to upload an avatar.",
+          "Please allow access to your photo library.",
         );
         return null;
       }
@@ -61,7 +61,7 @@ export function useImagePicker() {
         mediaTypes: "images",
         allowsEditing: true,
         aspect: [1, 1],
-        quality: 0.8,
+        quality: 0.7,
       });
 
       // キャンセルされた場合
@@ -83,7 +83,7 @@ export function useImagePicker() {
       };
     } catch (error) {
       console.error("Error picking image from library:", error);
-      Alert.alert("Error", "Failed to pick image from library");
+      Alert.alert("Error", "Could not select image. Please try again.");
       return null;
     }
   };
@@ -98,10 +98,7 @@ export function useImagePicker() {
       const { status } = await ImagePicker.requestCameraPermissionsAsync();
 
       if (status !== "granted") {
-        Alert.alert(
-          "Permission Required",
-          "Please allow access to your camera to take a photo.",
-        );
+        Alert.alert("Permission Required", "Please allow camera access.");
         return null;
       }
 
@@ -109,7 +106,7 @@ export function useImagePicker() {
       const result = await ImagePicker.launchCameraAsync({
         allowsEditing: true,
         aspect: [1, 1],
-        quality: 0.8,
+        quality: 0.7,
       });
 
       // キャンセルされた場合
@@ -131,7 +128,7 @@ export function useImagePicker() {
       };
     } catch (error) {
       console.error("Error taking photo with camera:", error);
-      Alert.alert("Error", "Failed to take photo with camera");
+      Alert.alert("Error", "Could not take photo. Please try again.");
       return null;
     }
   };

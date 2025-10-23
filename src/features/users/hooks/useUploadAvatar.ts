@@ -126,20 +126,23 @@ export function useUploadAvatar(options?: {
           updated_at: new Date().toISOString(),
         };
         queryClient.setQueryData(userQueryKeys.profile(), updatedProfile);
-        console.log("Cache updated:", updatedProfile);
       }
 
-      // 念のため再取得（サーバーと同期）
-      await queryClient.invalidateQueries({
+      // バックグラウンドでサーバーと同期
+      void queryClient.invalidateQueries({
         queryKey: userQueryKeys.profile(),
+        refetchType: "none",
       });
 
       Alert.alert("Success", "Avatar uploaded successfully");
       options?.onSuccess?.(data);
     },
     onError: (error) => {
-      Alert.alert("Error", "Failed to upload avatar");
-      console.error("Error uploading avatar", error);
+      Alert.alert(
+        "Upload Failed",
+        "Could not upload avatar. Please try again.",
+      );
+      console.error("Error uploading avatar:", error);
       options?.onError?.(error);
     },
   });
