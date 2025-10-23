@@ -1,0 +1,121 @@
+import { Alert } from "react-native";
+
+import * as FileSystem from "expo-file-system";
+
+import type { PostgrestError } from "@supabase/supabase-js";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+import { useAuth } from "../../auth";
+import { uploadAvatar } from "../api";
+import { userQueryKeys } from "../constants/queryKeys";
+
+/**
+ * MIMEタイプから拡張子を取得
+ */
+function getExtensionFromMimeType(mimeType: string): string {
+  const mimeToExt: Record<string, string> = {
+    "image/jpeg": "jpg",
+    "image/jpg": "jpg",
+    "image/png": "png",
+    "image/webp": "webp",
+  };
+  return mimeToExt[mimeType] || "jpg";
+}
+
+/**
+ * ファイルURIをArrayBufferに変換
+ * @param fileUri - ローカルファイルURI
+ * @returns ArrayBuffer
+ */
+async function convertFileToArrayBuffer(fileUri: string): Promise<ArrayBuffer> {
+  // ファイルをBase64に変換
+  const base64 = await FileSystem.readAsStringAsync(fileUri, {
+    encoding: "base64",
+  });
+
+  // Base64からArrayBufferに変換
+  const byteCharacters = atob(base64);
+  const byteNumbers = new Array(byteCharacters.length);
+  for (let i = 0; i < byteCharacters.length; i++) {
+    byteNumbers[i] = byteCharacters.charCodeAt(i);
+  }
+  return new Uint8Array(byteNumbers).buffer;
+}
+
+/**
+ * アバター画像アップロード用のリクエスト型
+ */
+export interface UploadAvatarRequest {
+  fileUri: string;
+  mimeType: string;
+}
+
+/**
+ * アバター画像アップロード用のカスタムフック
+ *
+ * ファイル変換処理（fileUri → ArrayBuffer）を含み、
+ * Supabase Storageへのアップロードとプロフィール更新を行います。
+ *
+ * @param options - コールバックオプション
+ * @returns mutate関数と処理状態
+ *
+ * @example
+ * ```tsx
+ * const { mutate: uploadAvatar, isPending } = useUploadAvatar({
+ *   onSuccess: (data) => {
+ *     console.log('Avatar uploaded:', data.avatarUrl);
+ *   },
+ *   onError: (error) => {
+ *     Alert.alert('Error', error.message);
+ *   }
+ * });
+ *
+ * // 使用時
+ * uploadAvatar({
+ *   fileUri: 'file:///path/to/image.jpg',
+ *   mimeType: 'image/jpeg'
+ * });
+ * ```
+ */
+export function useUploadAvatar(options?: {
+  onSuccess?: (data: { avatarUrl: string }) => void;
+  onError?: (error: PostgrestError) => void;
+}) {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+
+  const handleUploadAvatar = useMutation<
+    { avatarUrl: string },
+    PostgrestError,
+    UploadAvatarRequest
+  >({
+    mutationFn: async ({ fileUri, mimeType }) => {
+      if (!user?.id) {
+        throw new Error("User not authenticated");
+      }
+
+      // ファイルパスを生成
+      const extension = getExtensionFromMimeType(mimeType);
+      const filePath = `${user.id}/avatar.${extension}`;
+
+      // ファイルをArrayBufferに変換
+      const fileData = await convertFileToArrayBuffer(fileUri);
+
+      // APIを呼び出し
+      return uploadAvatar(user.id, filePath, fileData, mimeType);
+    },
+    onSuccess: (data) => {
+      // プロフィールクエリを無効化して再取得
+      queryClient.invalidateQueries({ queryKey: userQueryKeys.profile() });
+      Alert.alert("Success", "Avatar uploaded successfully");
+      options?.onSuccess?.(data);
+    },
+    onError: (error) => {
+      Alert.alert("Error", "Failed to upload avatar");
+      console.error("Error uploading avatar", error);
+      options?.onError?.(error);
+    },
+  });
+
+  return handleUploadAvatar;
+}

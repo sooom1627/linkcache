@@ -1,6 +1,6 @@
 import { Text, TouchableOpacity, View } from "react-native";
 
-import { ChevronRight } from "lucide-react-native";
+import { ChevronRight, Plus } from "lucide-react-native";
 
 import { useProfile } from "../../hooks";
 
@@ -19,7 +19,17 @@ export default function UserCard({
   const noop = () => {};
   return (
     <View className="flex flex-row items-center gap-4 border-b border-slate-200 py-4">
-      <Avatar onPress={noop} size={avatarSize} />
+      <View className="relative flex-row items-center justify-center">
+        <Avatar onPress={noop} size={avatarSize} />
+        <TouchableOpacity
+          onPress={noop}
+          hitSlop={16}
+          activeOpacity={0.8}
+          className="absolute bottom-0 right-0 rounded-full bg-slate-700 p-1"
+        >
+          <Plus size={12} color="white" />
+        </TouchableOpacity>
+      </View>
       <View className=" flex-1 flex-row items-center justify-between">
         <View className="flex-col items-start justify-start">
           <Text className="text-xl font-bold text-slate-700">
