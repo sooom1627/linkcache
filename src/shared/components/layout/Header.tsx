@@ -43,6 +43,7 @@ export default function Header({
               updatedAt={profile?.updated_at}
               onPress={() => openModal("setting")}
               size="small"
+              accessibilityLabel="Open settings"
             />
             <View>
               {title.includes("Hello") && (

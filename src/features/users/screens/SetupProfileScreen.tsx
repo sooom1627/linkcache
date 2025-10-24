@@ -33,7 +33,7 @@ export function SetupProfileScreen({}) {
   } = useCheckUserId(formData.user_id, true);
 
   // プロフィール作成
-  const { mutate: createProfile, isPending } = useCreateProfile({});
+  const { mutate: createProfile, isPending } = useCreateProfile();
 
   // フォーム入力のref
   const usernameInputRef = useRef<TextInput>(null);

@@ -11,7 +11,15 @@ interface AvatarProps {
   updatedAt?: string | null;
   onPress?: () => void;
   size?: "small" | "medium" | "large" | "xlarge";
+  accessibilityLabel?: string;
 }
+
+const AVATAR_SIZE = {
+  small: 48,
+  medium: 64,
+  large: 96,
+  xlarge: 128,
+};
 
 // シンプルなグレーのプレースホルダー画像
 const PLACEHOLDER_BLURHASH = "LKO2?U%2Tw=w]~RBVZRi};RPxuwH";
@@ -21,22 +29,9 @@ export default function Avatar({
   updatedAt,
   onPress = () => {},
   size = "medium",
+  accessibilityLabel = "Open profile",
 }: AvatarProps) {
-  const sizeMap = {
-    small: 48,
-    medium: 64,
-    large: 96,
-    xlarge: 128,
-  };
-
-  const iconSize = {
-    small: 24,
-    medium: 32,
-    large: 48,
-    xlarge: 64,
-  };
-
-  const avatarSize = sizeMap[size];
+  const avatarSize = AVATAR_SIZE[size];
 
   // URLにバージョンパラメータを追加（キャッシュバスティング）
   const imageUri = useMemo(() => {
@@ -53,8 +48,8 @@ export default function Avatar({
       className="rounded-full border-2 border-slate-200"
       hitSlop={10}
       accessibilityRole="button"
-      accessibilityLabel="Open profile"
-      accessibilityHint="Open profile"
+      accessibilityLabel={accessibilityLabel}
+      accessibilityHint={accessibilityLabel}
     >
       {imageUri ? (
         <Image
@@ -77,7 +72,7 @@ export default function Avatar({
           className="items-center justify-center rounded-full bg-slate-200"
           style={{ width: avatarSize, height: avatarSize }}
         >
-          <UserRound size={iconSize[size]} color="black" />
+          <UserRound size={16} color="black" />
         </View>
       )}
     </Pressable>
