@@ -2,6 +2,7 @@ import { Alert, ScrollView, View } from "react-native";
 
 import { useRouter } from "expo-router";
 
+import { useQueryClient } from "@tanstack/react-query";
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -12,10 +13,12 @@ import AuthTitleSection from "@/src/features/auth/screens/AuthTitleSection";
 import FormSection from "@/src/features/auth/screens/FormSection";
 import SocialOauthSection from "@/src/features/auth/screens/SocialOauthSection";
 import type { AuthFormSection } from "@/src/features/auth/types/AuthFormSectionSchema";
+import { userQueryKeys } from "@/src/features/users/constants/queryKeys";
 import Divider from "@/src/shared/components/layout/Divider";
 
 export default function CreateAccount() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { mutateAsync: signUp } = useSignUp({
     onSuccess: (data) => {
       if (!data.session) {
@@ -25,6 +28,7 @@ export default function CreateAccount() {
           [{ text: "OK", onPress: () => router.replace("/sign-in") }],
         );
       } else {
+        queryClient.invalidateQueries({ queryKey: userQueryKeys.profile() });
         router.replace("/");
       }
     },
@@ -48,6 +52,7 @@ export default function CreateAccount() {
   return (
     <SafeAreaView edges={["top"]} className="flex-1 bg-slate-100">
       <ScrollView
+        keyboardDismissMode="on-drag"
         keyboardShouldPersistTaps="handled"
         className="flex-1 bg-slate-100"
         contentContainerClassName="flex-1"
