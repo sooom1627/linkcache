@@ -99,26 +99,27 @@ export function useUploadAvatar(options?: {
   >({
     mutationFn: async ({ fileUri, mimeType }) => {
       if (!user?.id) {
-        throw new Error("User not authenticated");
+        throw {
+          message: "User not authenticated",
+          code: "AUTH001",
+          details: null,
+          hint: null,
+          name: "PostgrestError",
+        } as unknown as PostgrestError;
       }
 
-      // ファイルパスを生成
       const extension = getExtensionFromMimeType(mimeType);
       const filePath = `${user.id}/avatar.${extension}`;
 
-      // ファイルをArrayBufferに変換
       const fileData = await convertFileToArrayBuffer(fileUri);
 
-      // APIを呼び出し
       return uploadAvatar(user.id, filePath, fileData, mimeType);
     },
     onSuccess: async (data) => {
-      // 既存のプロフィールデータを取得
       const currentProfile = queryClient.getQueryData<UserProfile | null>(
         userQueryKeys.profile(),
       );
 
-      // キャッシュを即座に更新（楽観的更新）
       if (currentProfile) {
         const updatedProfile: UserProfile = {
           ...currentProfile,
@@ -128,12 +129,6 @@ export function useUploadAvatar(options?: {
         queryClient.setQueryData(userQueryKeys.profile(), updatedProfile);
       }
 
-      // バックグラウンドでサーバーと同期
-      void queryClient.invalidateQueries({
-        queryKey: userQueryKeys.profile(),
-        refetchType: "none",
-      });
-
       Alert.alert("Success", "Avatar uploaded successfully");
       options?.onSuccess?.(data);
     },
@@ -142,8 +137,19 @@ export function useUploadAvatar(options?: {
         "Upload Failed",
         "Could not upload avatar. Please try again.",
       );
-      console.error("Error uploading avatar:", error);
-      options?.onError?.(error);
+      throw {
+        message: "Failed to upload avatar",
+        code: "PGRST116",
+        details: error.message,
+        hint: error.hint,
+        name: "PostgrestError",
+      } as unknown as PostgrestError;
+    },
+    onSettled: () => {
+      void queryClient.invalidateQueries({
+        queryKey: userQueryKeys.profile(),
+        refetchType: "none",
+      });
     },
   });
 

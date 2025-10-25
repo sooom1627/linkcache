@@ -3,8 +3,6 @@ import { Alert } from "react-native";
 import type { PostgrestError } from "@supabase/supabase-js";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { useAuth } from "../../auth";
-import { updateProfile } from "../api";
 import { userQueryKeys } from "../constants/queryKeys";
 import type { UpdateProfileRequest, UserProfile } from "../types";
 
@@ -37,7 +35,6 @@ export function useUpdateProfile(options?: {
   onError?: (error: PostgrestError) => void;
 }) {
   const queryClient = useQueryClient();
-  const { user } = useAuth();
 
   const handleUpdateProfile = useMutation<
     UserProfile,
@@ -45,12 +42,6 @@ export function useUpdateProfile(options?: {
     UpdateProfileRequest,
     { previousProfile: UserProfile | undefined } // contextの型定義
   >({
-    mutationFn: (profile) => {
-      if (!user?.id) {
-        throw new Error("User not authenticated");
-      }
-      return updateProfile(user.id, profile);
-    },
     onSuccess: (data) => {
       queryClient.setQueryData(userQueryKeys.profile(), data);
       Alert.alert("Success", "Profile updated successfully");
@@ -58,8 +49,13 @@ export function useUpdateProfile(options?: {
     },
     onError: (error) => {
       Alert.alert("Error", "Failed to update profile");
-      console.error("Error updating profile", error);
-      options?.onError?.(error);
+      throw {
+        message: "Failed to update profile",
+        code: "PGRST116",
+        details: error.message,
+        hint: error.hint,
+        name: "PostgrestError",
+      } as unknown as PostgrestError;
     },
     onSettled: () => {
       // 成功・失敗に関わらず、最終的にクエリを無効化して最新データを取得
