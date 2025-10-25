@@ -1,6 +1,6 @@
 import { useCallback, useRef } from "react";
 
-import { Text, View, type TextInput } from "react-native";
+import { View, type TextInput } from "react-native";
 
 import { AtSign, UserRound } from "lucide-react-native";
 
@@ -68,15 +68,7 @@ export function SetupProfileScreen({}) {
   );
 
   return (
-    <View className="flex flex-1 flex-col justify-center gap-8">
-      {/* Title */}
-      <View className="w-full">
-        <Text className="mb-2 text-3xl font-bold">Setup Your Profile</Text>
-        <Text className="text-gray-600">
-          Choose your unique user ID and display name
-        </Text>
-      </View>
-
+    <View className="flex w-full flex-col justify-center gap-8">
       {/* User ID & Username Input */}
       <View className="w-full gap-4">
         <FormInput

@@ -41,16 +41,18 @@ export default function CreateAccount() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <View className="mx-8 flex flex-1 flex-col items-start justify-center">
-        {/* Create Account Title */}
-        <AuthTitleSection
-          title="Create Account"
-          subtitle="Already have an account?"
-          link="/sign-in"
-          linkText="SignIn"
-        />
-
+    <SafeAreaView
+      edges={["top"]}
+      className="flex flex-1 flex-col items-start justify-end bg-slate-100"
+    >
+      {/* Create Account Title */}
+      <AuthTitleSection
+        title="Welcome to Cache! 🎉"
+        subtitle="Already have an account?"
+        link="/sign-in"
+        linkText="SignIn"
+      />
+      <View className="flex w-full flex-col items-start justify-start rounded-[32px] border border-slate-200 bg-white px-4 pb-16 pt-10">
         {/* Create Account Form */}
         <FormSection
           emailConfig={{

@@ -38,19 +38,19 @@ export default function SocialMediaButton({
 
   return (
     <TouchableOpacity
-      className={`w-full flex-row items-center justify-center rounded-lg p-4 ${config.bgColor} ${config.borderColor}`}
+      className={`flex-1 flex-row items-center justify-center rounded-lg p-4 ${config.bgColor} ${config.borderColor}`}
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={`${config.label} button`}
     >
-      <View className="absolute left-4">
+      <View className="mr-4">
         {config.iconFamily === "AntDesign" ? (
-          <AntDesign name={config.icon} size={20} color={config.iconColor} />
+          <AntDesign name={config.icon} size={16} color={config.iconColor} />
         ) : (
-          <FontAwesome name={config.icon} size={20} color={config.iconColor} />
+          <FontAwesome name={config.icon} size={16} color={config.iconColor} />
         )}
       </View>
-      <Text className={`font-semibold ${config.textColor}`}>
+      <Text className={`text-sm font-semibold ${config.textColor}`}>
         {config.label}
       </Text>
     </TouchableOpacity>
