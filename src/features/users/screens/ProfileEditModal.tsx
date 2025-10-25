@@ -80,6 +80,13 @@ export const ProfileEditModal = forwardRef<
     shouldCheckUserId,
   );
 
+  const isUnchanged = useMemo(() => {
+    return (
+      profile?.user_id === formData.user_id &&
+      profile?.username === formData.username
+    );
+  }, [profile, formData]);
+
   const handleUpdateProfile = useCallback(() => {
     if (!validateForm()) return;
 
@@ -153,9 +160,15 @@ export const ProfileEditModal = forwardRef<
         {/* Update Profile Button */}
         <View className="w-full pt-4">
           <FormButton
-            title={isPending ? "Updating..." : "Update Profile"}
+            title={
+              isPending
+                ? "Updating..."
+                : isUnchanged
+                  ? "No changes"
+                  : "Update Profile"
+            }
             onPress={handleUpdateProfile}
-            disabled={!submitEnabled}
+            disabled={!submitEnabled || isUnchanged}
           />
         </View>
       </View>
