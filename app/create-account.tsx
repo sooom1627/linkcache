@@ -63,7 +63,7 @@ export default function CreateAccount() {
             title="Welcome to Cache! 🎉"
             subtitle="Already have an account?"
             link="/sign-in"
-            linkText="SignIn"
+            linkText="Sign In"
           />
           <View
             style={{ paddingBottom: insets.bottom }}
