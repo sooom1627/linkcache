@@ -107,7 +107,7 @@ export function useProfileForm(
     return true;
   };
 
-  const result: UseProfileFormReturn = {
+  return {
     formData,
     errors,
     setUserId,
@@ -116,6 +116,4 @@ export function useProfileForm(
     validateForm,
     hasErrors: !!errors.user_id || !!errors.username,
   };
-
-  return result;
 }

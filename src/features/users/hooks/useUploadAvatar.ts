@@ -86,8 +86,8 @@ export interface UploadAvatarRequest {
  * ```
  */
 export function useUploadAvatar(options?: {
-  onSuccess?: (data: { avatarUrl: string }) => void;
-  onError?: (error: PostgrestError) => void;
+  onSuccess?: () => void;
+  onError?: () => void;
 }) {
   const queryClient = useQueryClient();
   const { user } = useAuth();
@@ -130,7 +130,7 @@ export function useUploadAvatar(options?: {
       }
 
       Alert.alert("Success", "Avatar uploaded successfully");
-      options?.onSuccess?.(data);
+      options?.onSuccess?.();
     },
     onError: (error) => {
       Alert.alert(

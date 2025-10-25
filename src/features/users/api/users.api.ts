@@ -29,7 +29,7 @@ function createPostgrestError(
  * @throws {PostgrestError} データベースエラーが発生した場合
  */
 export async function updateProfile(
-  userId: string,
+  userId: string | null,
   profile: UpdateProfileRequest,
 ): Promise<UserProfile> {
   const { user_id, username } = profile;

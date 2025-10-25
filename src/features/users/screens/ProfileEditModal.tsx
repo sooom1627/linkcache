@@ -18,8 +18,6 @@ interface ProfileEditModalProps {
   onClose?: () => void;
 }
 
-const noop = () => {};
-
 export const ProfileEditModal = forwardRef<
   BottomSheetModal,
   ProfileEditModalProps
@@ -112,10 +110,7 @@ export const ProfileEditModal = forwardRef<
       stackBehavior="switch"
     >
       <View className="flex-1 gap-4 px-4 pb-10">
-        <ModalHeader
-          title="Update Your Profile"
-          onClose={handleOnClose ?? noop}
-        />
+        <ModalHeader title="Update Your Profile" onClose={handleOnClose} />
         {/* User ID & Username Input */}
         <View className="w-full gap-2">
           <View className="w-full">

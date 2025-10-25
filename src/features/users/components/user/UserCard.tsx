@@ -120,7 +120,6 @@ export default function UserCard({
         <Avatar
           avatarUrl={profile?.avatar_url}
           updatedAt={profile?.updated_at}
-          onPress={() => {}}
           size={avatarSize}
           accessibilityLabel="No function"
         />
@@ -148,6 +147,9 @@ export default function UserCard({
         <TouchableOpacity
           onPress={onPressEditProfile}
           className="mt-2 flex-row items-center justify-center gap-2 px-2"
+          accessibilityRole="button"
+          accessibilityLabel="Edit profile"
+          accessibilityHint="Edit profile"
         >
           <Text className="text-base text-slate-700">Edit Profile</Text>
           <ChevronRight size={20} color="#6B7280" />
