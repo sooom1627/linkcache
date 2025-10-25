@@ -3,52 +3,15 @@ import { Alert } from "react-native";
 import type { PostgrestError } from "@supabase/supabase-js";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
+import {
+  convertFileToArrayBuffer,
+  getExtensionFromMimeType,
+} from "@/src/shared/utils/file";
+
 import { useAuth } from "../../auth";
 import { uploadAvatar } from "../api";
 import { userQueryKeys } from "../constants/queryKeys";
 import type { UserProfile } from "../types/users.types";
-
-/**
- * MIMEタイプから拡張子を取得
- */
-function getExtensionFromMimeType(mimeType: string): string {
-  const mimeToExt: Record<string, string> = {
-    "image/jpeg": "jpg",
-    "image/jpg": "jpg",
-    "image/png": "png",
-    "image/webp": "webp",
-  };
-  return mimeToExt[mimeType] || "jpg";
-}
-
-/**
- * ファイルURIをArrayBufferに変換
- * @param fileUri - ローカルファイルURI
- * @returns ArrayBuffer
- */
-async function convertFileToArrayBuffer(fileUri: string): Promise<ArrayBuffer> {
-  return new Promise((resolve, reject) => {
-    // fetchを使ってBlobを取得
-    fetch(fileUri)
-      .then((response) => response.blob())
-      .then((blob) => {
-        // FileReaderを使ってBlobをArrayBufferに変換
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          if (reader.result instanceof ArrayBuffer) {
-            resolve(reader.result);
-          } else {
-            reject(new Error("Failed to convert blob to ArrayBuffer"));
-          }
-        };
-        reader.onerror = () => {
-          reject(new Error("FileReader error"));
-        };
-        reader.readAsArrayBuffer(blob);
-      })
-      .catch(reject);
-  });
-}
 
 /**
  * アバター画像アップロード用のリクエスト型
@@ -61,8 +24,8 @@ export interface UploadAvatarRequest {
 /**
  * アバター画像アップロード用のカスタムフック
  *
- * ファイル変換処理（fileUri → ArrayBuffer）を含み、
  * Supabase Storageへのアップロードとプロフィール更新を行います。
+ * ファイル変換処理は共通ユーティリティ（@/shared/utils/file）を使用します。
  *
  * @param options - コールバックオプション
  * @returns mutate関数と処理状態
