@@ -5,8 +5,9 @@ export interface UserProfile {
   id: string;
   user_id: string;
   username: string;
-  avatar_url?: string;
+  avatar_url: string | null;
   updated_at?: string;
+  created_at?: string;
 }
 
 /**
