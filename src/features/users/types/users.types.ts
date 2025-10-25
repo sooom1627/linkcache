@@ -11,13 +11,6 @@ export interface UserProfile {
 }
 
 /**
- * user_id重複チェックのレスポンス
- */
-export interface CheckUserIdResponse {
-  isAvailable: boolean;
-}
-
-/**
  * プロフィール更新リクエスト
  */
 export interface UpdateProfileRequest {

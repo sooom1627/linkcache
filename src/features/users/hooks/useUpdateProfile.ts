@@ -47,7 +47,6 @@ export function useUpdateProfile(options?: {
     mutationFn: (profile) => updateProfile(user?.id ?? "", profile),
     onSuccess: (data) => {
       queryClient.setQueryData(userQueryKeys.profile(), data);
-
       options?.onSuccess?.();
     },
     onError: (error) => {

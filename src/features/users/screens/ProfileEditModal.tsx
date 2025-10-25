@@ -1,6 +1,6 @@
 import { forwardRef, useCallback, useEffect, useMemo, useRef } from "react";
 
-import { Text, View, type TextInput } from "react-native";
+import { Alert, Text, View, type TextInput } from "react-native";
 
 import type { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { AtSign, UserRound } from "lucide-react-native";
@@ -87,13 +87,29 @@ export const ProfileEditModal = forwardRef<
     );
   }, [profile, formData]);
 
-  const handleUpdateProfile = useCallback(() => {
+  const handleUpdateProfile = useCallback(async () => {
+    // バリデーションチェック（awaitの前に実行）
     if (!validateForm()) return;
 
-    // user_idが利用不可の場合は送信不可
+    // user_idが利用不可の場合は送信不可（awaitの前に実行）
     if (shouldCheckUserId && isUserIdAvailable === false) return;
 
-    updateProfile(formData);
+    try {
+      await updateProfile(
+        { user_id: formData.user_id, username: formData.username },
+        {
+          onSuccess: () => {
+            Alert.alert("Success", "Profile updated successfully");
+          },
+          onError: () => {
+            Alert.alert("Error", "Failed to update profile");
+          },
+        },
+      );
+    } finally {
+      setUserId(profile?.user_id ?? "");
+      setUsername(profile?.username ?? "");
+    }
   }, [
     validateForm,
     shouldCheckUserId,
