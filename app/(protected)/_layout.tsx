@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-import { ActivityIndicator, Text } from "react-native";
+import { ActivityIndicator, Text, TouchableOpacity } from "react-native";
 
 import { Slot, useRouter } from "expo-router";
 
@@ -16,7 +16,7 @@ import { useProfile } from "@/src/features/users";
 export default function ProtectedLayout() {
   const router = useRouter();
   const { session, isLoading: isSessionLoading } = useAuth();
-  const { isLoading: isProfileLoading, isError: isProfileError } = useProfile();
+  const { isLoading: isProfileLoading, isError: error, refetch } = useProfile();
 
   const isLoading = isSessionLoading || isProfileLoading;
   const shouldGoSignIn = !session;
@@ -41,10 +41,22 @@ export default function ProtectedLayout() {
     return null;
   }
 
-  if (session && isProfileError) {
+  if (session && error) {
     return (
       <SafeAreaView className="relative flex-1 items-center justify-center bg-white">
-        <Text>プロフィールの読み込みに失敗しました。</Text>
+        <Text>Failed to load profile</Text>
+        <TouchableOpacity
+          className="mt-4 rounded-lg bg-slate-700 px-6 py-3"
+          accessibilityRole="button"
+          accessibilityLabel="Reload profile"
+          onPress={() => {
+            refetch();
+          }}
+        >
+          <Text className="text-center font-semibold text-white">
+            Reload profile
+          </Text>
+        </TouchableOpacity>
       </SafeAreaView>
     );
   }
