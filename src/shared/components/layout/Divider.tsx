@@ -1,6 +1,10 @@
 import { Text, View } from "react-native";
 
-export function Divider({ text = "" }: { text: string }) {
+interface DividerProps {
+  text?: string;
+}
+
+export function Divider({ text }: DividerProps) {
   return (
     <View className="my-2 flex w-full flex-row items-center gap-2">
       <View className="h-px w-full flex-1 bg-slate-300" />
