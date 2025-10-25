@@ -68,7 +68,7 @@ export function SetupProfileScreen({}) {
   );
 
   return (
-    <View className="mx-8 flex flex-1 flex-col justify-center gap-8">
+    <View className="flex flex-1 flex-col justify-center gap-8">
       {/* Title */}
       <View className="w-full">
         <Text className="mb-2 text-3xl font-bold">Setup Your Profile</Text>
@@ -111,16 +111,17 @@ export function SetupProfileScreen({}) {
         />
       </View>
 
-      {/* Submit Button */}
-      <FormButton
-        title={isPending ? "Creating..." : "Complete Setup"}
-        onPress={handleSubmit}
-        disabled={!submitEnabled}
-      />
+      <View className="w-full gap-4">
+        {/* Submit Button */}
+        <FormButton
+          title={isPending ? "Creating..." : "Complete Setup"}
+          onPress={handleSubmit}
+          disabled={!submitEnabled}
+        />
 
-      {/* Logout Button */}
-      <View className="w-full">
-        <LogoutButton />
+        {/* Logout Button */}
+
+        <LogoutButton disabledColor="bg-red-400" enabledColor="bg-red-500" />
       </View>
     </View>
   );
