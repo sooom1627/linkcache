@@ -1,6 +1,11 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import NetInfo from "@react-native-community/netinfo";
+import {
+  onlineManager,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
 
 /**
  * React Query設定
@@ -54,5 +59,16 @@ interface QueryProviderProps {
 
 export function QueryProvider({ children }: QueryProviderProps) {
   const [client] = useState(() => createQueryClient());
+
+  // React Native環境でのネットワーク再接続検知
+  // refetchOnReconnect: trueを機能させるために必須
+  useEffect(() => {
+    return onlineManager.setEventListener((setOnline) => {
+      return NetInfo.addEventListener((state) => {
+        setOnline(Boolean(state.isConnected));
+      });
+    });
+  }, []);
+
   return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
 }
