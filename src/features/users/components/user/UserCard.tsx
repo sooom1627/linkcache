@@ -115,7 +115,7 @@ export default function UserCard({
   };
 
   return (
-    <View className="flex flex-row items-center gap-4 border-b border-slate-200 py-4">
+    <View className="flex flex-row items-center gap-4 rounded-3xl bg-slate-50 p-4">
       <View className="relative flex-row items-center justify-center">
         <Avatar
           avatarUrl={profile?.avatar_url}

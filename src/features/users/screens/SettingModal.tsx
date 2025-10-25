@@ -48,7 +48,7 @@ export const SettingModal = forwardRef<BottomSheetModal, SettingModalProps>(
 
           {/* User Card */}
           <UserCard
-            avatarSize="medium"
+            avatarSize="small"
             onPressEditProfile={handleOpenProfileEdit}
           />
 
