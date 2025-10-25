@@ -3,8 +3,10 @@ import { Text, TouchableOpacity, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 
-import { ArrowLeft, UserRound } from "lucide-react-native";
+import { ArrowLeft } from "lucide-react-native";
 
+import { Avatar } from "@/src/features/users/components/user/Avatar";
+import { useProfile } from "@/src/features/users/hooks";
 import { useModal } from "@/src/shared/providers";
 
 export interface HeaderProps {
@@ -18,6 +20,8 @@ export default function Header({
   topComponent = true,
 }: HeaderProps) {
   const { openModal } = useModal();
+  const { data: profile } = useProfile();
+
   return (
     <View
       className="absolute inset-x-0 top-0 z-50"
@@ -33,19 +37,29 @@ export default function Header({
         style={{ height: HEADER_HEIGHT }}
       >
         {topComponent ? (
-          <View className="flex-row items-center justify-start gap-4 px-4 py-2">
-            <TouchableOpacity
+          <View className="flex-row items-center justify-start gap-2 px-4 py-2">
+            <Avatar
+              avatarUrl={profile?.avatar_url}
+              updatedAt={profile?.updated_at}
               onPress={() => openModal("setting")}
-              className="rounded-full bg-slate-200 p-4"
-              hitSlop={10}
-              activeOpacity={0.8}
-              accessibilityLabel="Profile"
-              accessibilityRole="button"
-              accessibilityHint="Open settings"
-            >
-              <UserRound size={16} color="black" />
-            </TouchableOpacity>
-            <Text className="text-2xl font-bold text-slate-700">{title}</Text>
+              size="medium"
+              accessibilityLabel="Open settings"
+            />
+            <View>
+              {title.includes("Hello") && (
+                <Text className="text-base text-slate-500">
+                  {new Date()
+                    .toLocaleDateString("ja-JP", {
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                      timeZone: "UTC",
+                    })
+                    .replaceAll("/", "/")}
+                </Text>
+              )}
+              <Text className="text-xl font-bold text-slate-700">{title}</Text>
+            </View>
           </View>
         ) : (
           <View className="flex-row items-center justify-start gap-4 px-4 py-2">

@@ -11,6 +11,7 @@ import { useModal } from "@/src/shared/providers/ModalContext";
 import LogoutButton from "../../auth/components/LogoutButton";
 import SettingItem from "../components/setting/SettingItem";
 import SettingMenuSection from "../components/setting/SettingMenuSection";
+import UserCard from "../components/user/UserCard";
 import { createSettingMenuData } from "../constants/settingMenuData";
 
 interface SettingModalProps {
@@ -26,15 +27,14 @@ export const SettingModal = forwardRef<BottomSheetModal, SettingModalProps>(
       [openModal],
     );
 
-    const menuData = useMemo(
-      () => createSettingMenuData(handleOpenProfileEdit),
-      [handleOpenProfileEdit],
-    );
+    const menuData = useMemo(() => createSettingMenuData(), []);
     return (
       <ScrollableBottomSheetModal
         ref={ref}
-        snapPoints={["90%"]}
+        snapPoints={["70%", "90%"]}
+        index={1}
         enablePanDownToClose={false}
+        stackBehavior="push"
       >
         <View className="flex-1 gap-4 px-4 pb-4">
           {/* Header */}
@@ -46,6 +46,12 @@ export const SettingModal = forwardRef<BottomSheetModal, SettingModalProps>(
                 return;
               })
             }
+          />
+
+          {/* User Card */}
+          <UserCard
+            avatarSize="medium"
+            onPressEditProfile={handleOpenProfileEdit}
           />
 
           {/* Menu Items */}

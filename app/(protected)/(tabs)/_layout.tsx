@@ -1,8 +1,8 @@
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 
 import { View } from "react-native";
 
-import { usePathname, useRouter } from "expo-router";
+import { usePathname } from "expo-router";
 import { TabList, Tabs, TabSlot, TabTrigger } from "expo-router/ui";
 
 import { ChartNoAxesCombined, House, Layers2, List } from "lucide-react-native";
@@ -12,7 +12,6 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 
-import { useProfile } from "@/src/features/users";
 import type { TabItem } from "@/src/shared/types/Tabs.types";
 
 const tabs: TabItem[] = [
@@ -33,32 +32,13 @@ const tabBarStyle = {
 };
 
 export default function TabsLayout() {
-  const { data: profile, isLoading } = useProfile();
-  const router = useRouter();
   const pathname = usePathname();
-
   const insets = useSafeAreaInsets();
 
   const dynamicTabBarStyle = useMemo(
     () => ({ ...tabBarStyle, bottom: insets.bottom }),
     [insets.bottom],
   );
-
-  useEffect(() => {
-    if (isLoading) {
-      return;
-    }
-
-    // プロフィールが未設定の場合、initial-setupへリダイレクト
-    if (!profile) {
-      router.replace("/initial-setup");
-    }
-  }, [profile, isLoading, router]);
-
-  // ローディング中またはプロフィール未設定の場合は何も表示しない
-  if (isLoading || !profile) {
-    return null;
-  }
 
   return (
     <SafeAreaView className="flex-1 bg-white" edges={["top", "right", "left"]}>
