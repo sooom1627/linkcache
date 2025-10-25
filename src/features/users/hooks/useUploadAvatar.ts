@@ -61,22 +61,12 @@ export function useUploadAvatar(options?: {
     UploadAvatarRequest
   >({
     mutationFn: async ({ fileUri, mimeType }) => {
-      if (!user?.id) {
-        throw {
-          message: "User not authenticated",
-          code: "AUTH001",
-          details: null,
-          hint: null,
-          name: "PostgrestError",
-        } as unknown as PostgrestError;
-      }
-
       const extension = getExtensionFromMimeType(mimeType);
-      const filePath = `${user.id}/avatar.${extension}`;
+      const filePath = `${user?.id}/avatar.${extension}`;
 
       const fileData = await convertFileToArrayBuffer(fileUri);
 
-      return uploadAvatar(user.id, filePath, fileData, mimeType);
+      return uploadAvatar(user?.id ?? "", filePath, fileData, mimeType);
     },
     onSuccess: async (data) => {
       const currentProfile = queryClient.getQueryData<UserProfile | null>(
