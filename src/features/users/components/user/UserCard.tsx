@@ -28,7 +28,7 @@ export default function UserCard({
   avatarSize = "medium",
   onPressEditProfile,
 }: UserCardProps) {
-  const { data: profile } = useProfile();
+  const { data: profile, isLoading, error } = useProfile();
   const {
     pickImageFromLibrary,
     pickImageFromCamera,
@@ -113,6 +113,14 @@ export default function UserCard({
       );
     }
   };
+
+  if (isLoading || error) {
+    return (
+      <View className="flex flex-row items-center gap-4 rounded-3xl bg-slate-50 py-4 pl-4 pr-2">
+        <Text className="text-base text-slate-700">Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <View className="flex flex-row items-center gap-4 rounded-3xl bg-slate-50 py-4 pl-4 pr-2">
