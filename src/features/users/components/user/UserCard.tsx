@@ -122,7 +122,7 @@ export default function UserCard({
           updatedAt={profile?.updated_at}
           onPress={() => {}}
           size={avatarSize}
-          accessibilityLabel="Upload avatar"
+          accessibilityLabel="No function"
         />
         <TouchableOpacity
           onPress={handleAvatarUpload}
