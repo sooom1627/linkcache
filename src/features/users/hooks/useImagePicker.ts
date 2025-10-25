@@ -99,6 +99,8 @@ export function useImagePicker(): UseImagePickerReturn {
         allowsEditing: true,
         aspect: [1, 1],
         quality: 0.7,
+        selectionLimit: 1,
+        allowsMultipleSelection: false,
       });
 
       // キャンセルされた場合
