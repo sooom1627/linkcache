@@ -56,7 +56,7 @@ const FormInput = forwardRef<TextInput, FormInputProps>(
         {/* Label行（常に表示、高さ固定） */}
         <View className="mb-2 h-6 flex-row items-center gap-2">
           {/* ラベルテキスト */}
-          <Text className="text-sm font-medium text-gray-700">{label}</Text>
+          <Text className="text-sm font-medium text-slate-700">{label}</Text>
           {/* エラーメッセージ / ヘルパーテキスト表示領域（高さ固定） */}
           <View className="">
             {error ? (
@@ -69,7 +69,7 @@ const FormInput = forwardRef<TextInput, FormInputProps>(
 
         {/* Input container with icons */}
         <View
-          className={`flex-row items-center rounded-md bg-slate-200 ${
+          className={`flex-row items-center rounded-xl bg-slate-50 ${
             error ? "border border-red-500" : "border border-slate-200"
           }`}
         >

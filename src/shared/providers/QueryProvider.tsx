@@ -6,10 +6,14 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
  * React Query設定
  *
  * キャッシュ戦略:
- * - staleTime: データが「古い」とみなされるまでの時間
- * - gcTime: 未使用のキャッシュがメモリから削除されるまでの時間
+ * - staleTime: データが「古い」とみなされるまでの時間（デフォルト5分）
+ * - gcTime: 未使用のキャッシュがメモリから削除されるまでの時間（10分）
  * - refetchOnWindowFocus: モバイルでは不要（バッテリー節約）
  * - refetchOnReconnect: ネットワーク復帰時に自動再フェッチ
+ *
+ * 注意:
+ * - 一部のクエリ（例: useProfile）は個別にstaleTime: Infinityを設定
+ * - これらは明示的なinvalidate時のみ更新される
  *
  * @see https://tanstack.com/query/latest/docs/react/guides/important-defaults
  */

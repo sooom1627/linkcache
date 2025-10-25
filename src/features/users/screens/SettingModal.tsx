@@ -31,8 +31,10 @@ export const SettingModal = forwardRef<BottomSheetModal, SettingModalProps>(
     return (
       <ScrollableBottomSheetModal
         ref={ref}
-        snapPoints={["90%"]}
+        snapPoints={["70%", "90%"]}
+        index={1}
         enablePanDownToClose={false}
+        stackBehavior="push"
       >
         <View className="flex-1 gap-4 px-4 pb-4">
           {/* Header */}

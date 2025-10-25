@@ -69,58 +69,63 @@ export default function FormSection({
   };
 
   return (
-    <View className="mb-8 flex w-full flex-col gap-4">
-      <FormInput
-        label="Email"
-        placeholder={emailConfig.placeholder}
-        textContentType={emailConfig.textContentType}
-        autoCapitalize={emailConfig.autoCapitalize}
-        secureTextEntry={emailConfig.secureTextEntry}
-        value={formData.email}
-        onChangeText={(value) => handleFieldChange("email", value)}
-        error={errors.email}
-        leftIcon={<Mail size={16} color="#6B7280" />}
-        returnKeyType="next"
-        onSubmitEditing={() => passwordInputRef.current?.focus()}
-        blurOnSubmit={false}
-      />
+    <View className="mb-8 flex w-full flex-col gap-8">
+      {/* Email & Password Input */}
+      <View className="w-full gap-4">
+        <FormInput
+          label="Email"
+          placeholder={emailConfig.placeholder}
+          textContentType={emailConfig.textContentType}
+          autoCapitalize={emailConfig.autoCapitalize}
+          secureTextEntry={emailConfig.secureTextEntry}
+          value={formData.email}
+          onChangeText={(value) => handleFieldChange("email", value)}
+          error={errors.email}
+          leftIcon={<Mail size={16} color="#6B7280" />}
+          returnKeyType="next"
+          onSubmitEditing={() => passwordInputRef.current?.focus()}
+          blurOnSubmit={false}
+        />
+        <FormInput
+          ref={passwordInputRef}
+          label="Password"
+          placeholder={passwordConfig.placeholder}
+          textContentType={passwordConfig.textContentType}
+          autoCapitalize={passwordConfig.autoCapitalize}
+          secureTextEntry={!showPassword && passwordConfig.secureTextEntry}
+          value={formData.password}
+          onChangeText={(value) => handleFieldChange("password", value)}
+          error={errors.password}
+          leftIcon={<Lock size={16} color="#6B7280" />}
+          returnKeyType="done"
+          onSubmitEditing={handleSubmit}
+          rightIcon={
+            passwordConfig.secureTextEntry ? (
+              <TouchableOpacity
+                onPress={() => setShowPassword(!showPassword)}
+                accessibilityLabel={
+                  showPassword ? "Hide password" : "Show password"
+                }
+              >
+                {showPassword ? (
+                  <EyeClosed size={20} color="#6B7280" />
+                ) : (
+                  <Eye size={20} color="#6B7280" />
+                )}
+              </TouchableOpacity>
+            ) : undefined
+          }
+        />
+      </View>
 
-      <FormInput
-        ref={passwordInputRef}
-        label="Password"
-        placeholder={passwordConfig.placeholder}
-        textContentType={passwordConfig.textContentType}
-        autoCapitalize={passwordConfig.autoCapitalize}
-        secureTextEntry={!showPassword && passwordConfig.secureTextEntry}
-        value={formData.password}
-        onChangeText={(value) => handleFieldChange("password", value)}
-        error={errors.password}
-        leftIcon={<Lock size={16} color="#6B7280" />}
-        returnKeyType="done"
-        onSubmitEditing={handleSubmit}
-        rightIcon={
-          passwordConfig.secureTextEntry ? (
-            <TouchableOpacity
-              onPress={() => setShowPassword(!showPassword)}
-              accessibilityLabel={
-                showPassword ? "Hide password" : "Show password"
-              }
-            >
-              {showPassword ? (
-                <EyeClosed size={20} color="#6B7280" />
-              ) : (
-                <Eye size={20} color="#6B7280" />
-              )}
-            </TouchableOpacity>
-          ) : undefined
-        }
-      />
-
-      <FormButton
-        title={isSubmitting ? "Loading..." : buttonTitle}
-        onPress={handleSubmit}
-        disabled={isSubmitting}
-      />
+      {/* Submit Button */}
+      <View className="w-full">
+        <FormButton
+          title={isSubmitting ? "Loading..." : buttonTitle}
+          onPress={handleSubmit}
+          disabled={isSubmitting}
+        />
+      </View>
     </View>
   );
 }

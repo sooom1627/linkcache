@@ -16,9 +16,9 @@ import "../assets/styles/global.css";
  * 認証状態に基づくリダイレクトは(protected)/_layout.tsxが担当
  */
 function RootNavigator() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
 
-  if (isLoading) {
+  if (isAuthLoading) {
     return <LoadingScreen />;
   }
 
