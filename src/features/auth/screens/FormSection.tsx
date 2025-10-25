@@ -19,7 +19,7 @@ interface FormSectionProps {
   onSubmit: (data: AuthFormSection) => void | Promise<void>;
 }
 
-export default function FormSection({
+export function FormSection({
   emailConfig,
   passwordConfig,
   buttonTitle,

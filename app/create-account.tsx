@@ -9,12 +9,12 @@ import {
 } from "react-native-safe-area-context";
 
 import { useSignUp } from "@/src/features/auth/hooks/useSignUp";
-import AuthTitleSection from "@/src/features/auth/screens/AuthTitleSection";
-import FormSection from "@/src/features/auth/screens/FormSection";
-import SocialOauthSection from "@/src/features/auth/screens/SocialOauthSection";
+import { AuthTitleSection } from "@/src/features/auth/screens/AuthTitleSection";
+import { FormSection } from "@/src/features/auth/screens/FormSection";
+import { SocialOauthSection } from "@/src/features/auth/screens/SocialOauthSection";
 import type { AuthFormSection } from "@/src/features/auth/types/AuthFormSectionSchema";
 import { userQueryKeys } from "@/src/features/users/constants/queryKeys";
-import Divider from "@/src/shared/components/layout/Divider";
+import { Divider } from "@/src/shared/components/layout/Divider";
 
 export default function CreateAccount() {
   const router = useRouter();

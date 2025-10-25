@@ -9,7 +9,7 @@ interface AuthTitleSectionProps {
   linkText: string;
 }
 
-export default function AuthTitleSection({
+export function AuthTitleSection({
   title,
   subtitle,
   link,
