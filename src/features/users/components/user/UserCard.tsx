@@ -115,7 +115,7 @@ export default function UserCard({
   };
 
   return (
-    <View className="flex flex-row items-center gap-4 rounded-3xl bg-slate-50 p-4">
+    <View className="flex flex-row items-center gap-4 rounded-3xl bg-slate-50 py-4 pl-4 pr-2">
       <View className="relative flex-row items-center justify-center">
         <Avatar
           avatarUrl={profile?.avatar_url}
@@ -150,7 +150,7 @@ export default function UserCard({
           className="mt-2 flex-row items-center justify-center gap-2 px-2"
         >
           <Text className="text-base text-slate-700">Edit Profile</Text>
-          <ChevronRight size={16} color="#6B7280" />
+          <ChevronRight size={20} color="#6B7280" />
         </TouchableOpacity>
       </View>
     </View>

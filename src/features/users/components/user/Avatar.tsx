@@ -15,8 +15,8 @@ interface AvatarProps {
 }
 
 const AVATAR_SIZE = {
-  small: 48,
-  medium: 64,
+  small: 32,
+  medium: 48,
   large: 96,
   xlarge: 128,
 };

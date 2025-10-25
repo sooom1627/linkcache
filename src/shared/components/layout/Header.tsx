@@ -42,7 +42,7 @@ export default function Header({
               avatarUrl={profile?.avatar_url}
               updatedAt={profile?.updated_at}
               onPress={() => openModal("setting")}
-              size="small"
+              size="medium"
               accessibilityLabel="Open settings"
             />
             <View>
@@ -58,7 +58,7 @@ export default function Header({
                     .replaceAll("/", "/")}
                 </Text>
               )}
-              <Text className="text-2xl font-bold text-slate-700">{title}</Text>
+              <Text className="text-xl font-bold text-slate-700">{title}</Text>
             </View>
           </View>
         ) : (
