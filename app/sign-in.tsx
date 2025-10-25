@@ -59,7 +59,7 @@ export default function SignIn() {
           />
           <View
             style={{ paddingBottom: insets.bottom }}
-            className="flex w-full flex-col items-start justify-start rounded-t-[32px] border-t border-slate-200 bg-white px-4 pt-10"
+            className="flex w-full flex-col items-start justify-start rounded-t-[32px] bg-white px-4 pt-10"
           >
             {/* SignIn Form */}
             <FormSection
