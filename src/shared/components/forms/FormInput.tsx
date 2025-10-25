@@ -69,7 +69,7 @@ const FormInput = forwardRef<TextInput, FormInputProps>(
 
         {/* Input container with icons */}
         <View
-          className={`flex-row items-center rounded-md bg-slate-200 ${
+          className={`flex-row items-center rounded-xl bg-slate-50 ${
             error ? "border border-red-500" : "border border-slate-200"
           }`}
         >

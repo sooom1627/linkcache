@@ -106,16 +106,18 @@ export const ProfileEditModal = forwardRef<
   return (
     <ScrollableBottomSheetModal
       ref={ref}
-      snapPoints={["90%"]}
+      snapPoints={["70%", "90%"]}
+      index={1}
       enablePanDownToClose={false}
+      stackBehavior="switch"
     >
-      <View className="flex-1 gap-4 px-4 pb-4">
+      <View className="flex-1 gap-4 px-4 pb-10">
         <ModalHeader
           title="Update Your Profile"
           onClose={handleOnClose ?? noop}
         />
         {/* User ID & Username Input */}
-        <View className="w-full gap-4">
+        <View className="w-full gap-2">
           <View className="w-full">
             <Text className="text-slate-500">
               Update your user ID and display name
@@ -152,11 +154,15 @@ export const ProfileEditModal = forwardRef<
             onSubmitEditing={handleUpdateProfile}
           />
         </View>
-        <FormButton
-          title={isPending ? "Updating..." : "Update Profile"}
-          onPress={handleUpdateProfile}
-          disabled={!submitEnabled}
-        />
+
+        {/* Update Profile Button */}
+        <View className="w-full pt-4">
+          <FormButton
+            title={isPending ? "Updating..." : "Update Profile"}
+            onPress={handleUpdateProfile}
+            disabled={!submitEnabled}
+          />
+        </View>
       </View>
     </ScrollableBottomSheetModal>
   );
