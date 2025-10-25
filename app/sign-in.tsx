@@ -1,8 +1,11 @@
-import { Alert, View } from "react-native";
+import { Alert, ScrollView, View } from "react-native";
 
 import { useRouter } from "expo-router";
 
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 import { useSignIn } from "@/src/features/auth/hooks/useSignIn";
 import AuthTitleSection from "@/src/features/auth/screens/AuthTitleSection";
@@ -32,44 +35,54 @@ export default function SignIn() {
     });
   };
 
+  const insets = useSafeAreaInsets();
+
   return (
-    <SafeAreaView
-      edges={["top"]}
-      className="flex flex-1 flex-col items-start justify-end bg-slate-100"
-    >
-      {/* SignIn Title */}
-      <AuthTitleSection
-        title="Hi, Welcome Back! 👋"
-        subtitle="New here?"
-        link="/create-account"
-        linkText="Create an account"
-      />
-      <View className="flex w-full flex-col items-start justify-start rounded-[32px] border border-slate-200 bg-white px-4 pb-16 pt-10">
-        {/* SignIn Form */}
-        <FormSection
-          emailConfig={{
-            name: "email",
-            placeholder: "Email",
-            textContentType: "emailAddress",
-            autoCapitalize: "none",
-          }}
-          passwordConfig={{
-            name: "password",
-            placeholder: "Password",
-            textContentType: "password",
-            autoCapitalize: "none",
-            secureTextEntry: true,
-          }}
-          buttonTitle="Sign In"
-          onSubmit={handleSignIn}
-        />
+    <SafeAreaView edges={["top"]} className="flex-1 bg-slate-100">
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        className="flex-1 bg-slate-100"
+        contentContainerClassName="flex-1"
+      >
+        <View className="flex flex-1 flex-col items-start justify-end">
+          {/* SignIn Title */}
+          <AuthTitleSection
+            title="Hi, Welcome Back! 👋"
+            subtitle="New here?"
+            link="/create-account"
+            linkText="Create an account"
+          />
+          <View
+            style={{ paddingBottom: insets.bottom }}
+            className="flex w-full flex-col items-start justify-start rounded-t-[32px] border-t border-slate-200 bg-white px-4 pt-10"
+          >
+            {/* SignIn Form */}
+            <FormSection
+              emailConfig={{
+                name: "email",
+                placeholder: "Email",
+                textContentType: "emailAddress",
+                autoCapitalize: "none",
+              }}
+              passwordConfig={{
+                name: "password",
+                placeholder: "Password",
+                textContentType: "password",
+                autoCapitalize: "none",
+                secureTextEntry: true,
+              }}
+              buttonTitle="Sign In"
+              onSubmit={handleSignIn}
+            />
 
-        {/* Divider */}
-        <Divider text="or" />
+            {/* Divider */}
+            <Divider text="or" />
 
-        {/* SignIn with Social Media */}
-        <SocialOauthSection title="Sign In" />
-      </View>
+            {/* SignIn with Social Media */}
+            <SocialOauthSection title="Sign In" />
+          </View>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }

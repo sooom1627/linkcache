@@ -1,8 +1,11 @@
-import { Alert, View } from "react-native";
+import { Alert, ScrollView, View } from "react-native";
 
 import { useRouter } from "expo-router";
 
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 import { useSignUp } from "@/src/features/auth/hooks/useSignUp";
 import AuthTitleSection from "@/src/features/auth/screens/AuthTitleSection";
@@ -22,7 +25,7 @@ export default function CreateAccount() {
           [{ text: "OK", onPress: () => router.replace("/sign-in") }],
         );
       } else {
-        router.replace("/initial-setup");
+        router.replace("/");
       }
     },
     onError: (error) => {
@@ -40,44 +43,54 @@ export default function CreateAccount() {
     });
   };
 
+  const insets = useSafeAreaInsets();
+
   return (
-    <SafeAreaView
-      edges={["top"]}
-      className="flex flex-1 flex-col items-start justify-end bg-slate-100"
-    >
-      {/* Create Account Title */}
-      <AuthTitleSection
-        title="Welcome to Cache! 🎉"
-        subtitle="Already have an account?"
-        link="/sign-in"
-        linkText="SignIn"
-      />
-      <View className="flex w-full flex-col items-start justify-start rounded-[32px] border border-slate-200 bg-white px-4 pb-16 pt-10">
-        {/* Create Account Form */}
-        <FormSection
-          emailConfig={{
-            name: "email",
-            placeholder: "Email",
-            textContentType: "emailAddress",
-            autoCapitalize: "none",
-          }}
-          passwordConfig={{
-            name: "password",
-            placeholder: "Password",
-            textContentType: "newPassword",
-            autoCapitalize: "none",
-            secureTextEntry: true,
-          }}
-          buttonTitle="Create Account"
-          onSubmit={handleCreateAccount}
-        />
+    <SafeAreaView edges={["top"]} className="flex-1 bg-slate-100">
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        className="flex-1 bg-slate-100"
+        contentContainerClassName="flex-1"
+      >
+        <View className="flex flex-1 flex-col items-start justify-end">
+          {/* Create Account Title */}
+          <AuthTitleSection
+            title="Welcome to Cache! 🎉"
+            subtitle="Already have an account?"
+            link="/sign-in"
+            linkText="SignIn"
+          />
+          <View
+            style={{ paddingBottom: insets.bottom }}
+            className="flex w-full flex-col items-start justify-start rounded-t-[32px] border-t border-slate-200 bg-white px-4 pt-10"
+          >
+            {/* Create Account Form */}
+            <FormSection
+              emailConfig={{
+                name: "email",
+                placeholder: "Email",
+                textContentType: "emailAddress",
+                autoCapitalize: "none",
+              }}
+              passwordConfig={{
+                name: "password",
+                placeholder: "Password",
+                textContentType: "newPassword",
+                autoCapitalize: "none",
+                secureTextEntry: true,
+              }}
+              buttonTitle="Create Account"
+              onSubmit={handleCreateAccount}
+            />
 
-        {/* Divider */}
-        <Divider text="or" />
+            {/* Divider */}
+            <Divider text="or" />
 
-        {/* SignIn with Social Media */}
-        <SocialOauthSection title="SignUp" />
-      </View>
+            {/* SignIn with Social Media */}
+            <SocialOauthSection title="SignUp" />
+          </View>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }

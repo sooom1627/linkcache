@@ -10,14 +10,6 @@ export interface UserProfile {
 }
 
 /**
- * プロフィール作成リクエスト
- */
-export interface CreateProfileRequest {
-  user_id: string;
-  username: string;
-}
-
-/**
  * user_id重複チェックのレスポンス
  */
 export interface CheckUserIdResponse {

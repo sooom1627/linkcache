@@ -35,6 +35,7 @@ export function UIProviders({ children }: PropsWithChildren) {
     <GestureHandlerRootView className="flex-1">
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 8 : 0}
         className="flex-1"
       >
         <SafeAreaProvider>{children}</SafeAreaProvider>

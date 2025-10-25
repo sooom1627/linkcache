@@ -2,7 +2,7 @@ import { useEffect } from "react";
 
 import { ActivityIndicator, Text } from "react-native";
 
-import { Slot, useRouter, useSegments } from "expo-router";
+import { Slot, useRouter } from "expo-router";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -11,42 +11,23 @@ import { useProfile } from "@/src/features/users";
 
 /**
  * 保護されたルートのレイアウト
- * 認証状態とプロフィール設定状態に基づいてリダイレクトを管理
+ * 認証状態に基づいてリダイレクトを管理
  */
 export default function ProtectedLayout() {
   const router = useRouter();
-  const segments = useSegments() as string[];
   const { session, isLoading: isSessionLoading } = useAuth();
-  const {
-    data: profile,
-    isLoading: isProfileLoading,
-    isError: isProfileError,
-  } = useProfile();
+  const { isLoading: isProfileLoading, isError: isProfileError } = useProfile();
 
   const isLoading = isSessionLoading || isProfileLoading;
-  const isOnSetupProfile = segments.includes("initial-setup");
   const shouldGoSignIn = !session;
-  const shouldGoSetupProfile =
-    !!session && !profile && !isProfileError && !isOnSetupProfile;
-  const shouldGoTabs = !!session && !!profile && isOnSetupProfile;
 
   useEffect(() => {
     if (isLoading) return;
 
     if (shouldGoSignIn) {
       router.replace("/sign-in");
-      return;
     }
-
-    if (shouldGoSetupProfile) {
-      router.replace("/initial-setup");
-      return;
-    }
-
-    if (shouldGoTabs) {
-      router.replace("/");
-    }
-  }, [isLoading, shouldGoSignIn, shouldGoSetupProfile, shouldGoTabs, router]);
+  }, [isLoading, shouldGoSignIn, router]);
 
   if (isLoading) {
     return (
@@ -56,7 +37,7 @@ export default function ProtectedLayout() {
     );
   }
 
-  if (shouldGoSignIn || shouldGoSetupProfile || shouldGoTabs) {
+  if (shouldGoSignIn) {
     return null;
   }
 
