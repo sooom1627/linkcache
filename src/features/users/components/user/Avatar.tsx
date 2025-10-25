@@ -24,7 +24,7 @@ const AVATAR_SIZE = {
 // シンプルなグレーのプレースホルダー画像
 const PLACEHOLDER_BLURHASH = "LKO2?U%2Tw=w]~RBVZRi};RPxuwH";
 
-export default function Avatar({
+export function Avatar({
   avatarUrl,
   updatedAt,
   onPress = () => {},
@@ -45,11 +45,10 @@ export default function Avatar({
     <Pressable
       onPress={onPress}
       style={[styles.container]}
-      className="rounded-full border-2 border-slate-200"
+      className="rounded-full border-2 border-slate-200 bg-slate-200"
       hitSlop={10}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
-      accessibilityHint={accessibilityLabel}
     >
       {imageUri ? (
         <Image
@@ -83,7 +82,6 @@ const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#E2E8F0",
   },
   image: {
     overflow: "hidden",

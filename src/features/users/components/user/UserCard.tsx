@@ -17,7 +17,7 @@ import {
   type PickedImage,
 } from "../../hooks";
 
-import Avatar from "./Avatar";
+import { Avatar } from "./Avatar";
 
 interface UserCardProps {
   avatarSize?: "small" | "medium" | "large" | "xlarge";

@@ -5,7 +5,7 @@ import { router } from "expo-router";
 
 import { ArrowLeft } from "lucide-react-native";
 
-import Avatar from "@/src/features/users/components/user/Avatar";
+import { Avatar } from "@/src/features/users/components/user/Avatar";
 import { useProfile } from "@/src/features/users/hooks";
 import { useModal } from "@/src/shared/providers";
 
