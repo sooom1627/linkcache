@@ -59,10 +59,10 @@ export default function LanguageSettings() {
             onPress={() => handleSelectLanguage(language)}
             disabled={!language.isReady}
             className={`min-w-[40%] flex-1 flex-col flex-wrap items-center justify-start gap-2 rounded-lg border bg-slate-100
-            p-4 ${selectedLanguage === language.code ? "border-blue-500" : "border-slate-200"}`}
+            p-4 ${selectedLanguage === language.code ? "border-blue-500" : "border-slate-200"} ${!language.isReady ? "opacity-50" : ""}`}
           >
             <Text className="font-bold text-slate-700">
-              {language.flag} {language.name}
+              {language.flag} {language.name} {!language.isReady && "(Not Ready)"}
             </Text>
             <Text className="text-slate-500">{language.text}</Text>
           </TouchableOpacity>
