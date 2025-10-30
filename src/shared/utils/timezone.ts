@@ -87,6 +87,41 @@ export function getDeviceTimezone(): string {
 }
 
 /**
+ * 入力された日時を `Date` オブジェクトに正規化
+ */
+function toValidDate(date: string | Date): Date | null {
+  const parsedDate = typeof date === "string" ? new Date(date) : new Date(date);
+
+  return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
+}
+
+/**
+ * ロケールを解決（省略時は端末設定を使用）
+ */
+function resolveLocale(locale?: string): string {
+  return locale ?? getDeviceLocale();
+}
+
+function formatWithFallback(
+  date: Date | null,
+  fallback: string,
+  formatterFactory: () => Intl.DateTimeFormat,
+  context: string,
+): string {
+  if (!date) {
+    console.error(`${context}: invalid date input`);
+    return fallback;
+  }
+
+  try {
+    return formatterFactory().format(date);
+  } catch (error) {
+    console.error(`${context}:`, error);
+    return fallback;
+  }
+}
+
+/**
  * UTC日時を端末のタイムゾーンでフォーマット表示
  *
  * @param utcDate - UTC日時（ISO 8601文字列またはDateオブジェクト）
@@ -114,31 +149,21 @@ export function formatDateTime(
   utcDate: string | Date,
   options?: FormatDateTimeOptions,
 ): string {
-  try {
-    // 文字列の場合はDateオブジェクトに変換
-    const date = typeof utcDate === "string" ? new Date(utcDate) : utcDate;
+  const date = toValidDate(utcDate);
+  const dateStyle = options?.dateStyle ?? "medium";
+  const timeStyle = options?.timeStyle ?? "short";
+  const locale = resolveLocale(options?.locale);
 
-    // 無効な日付をチェック
-    if (isNaN(date.getTime())) {
-      throw new Error("Invalid date");
-    }
-
-    // デフォルトオプション
-    const dateStyle = options?.dateStyle ?? "medium";
-    const timeStyle = options?.timeStyle ?? "short";
-    const locale = options?.locale ?? getDeviceLocale();
-
-    // Intl.DateTimeFormatでフォーマット
-    const formatter = new Intl.DateTimeFormat(locale, {
-      dateStyle,
-      timeStyle,
-    });
-
-    return formatter.format(date);
-  } catch (error) {
-    console.error("Error formatting date time:", error);
-    return "Invalid Date";
-  }
+  return formatWithFallback(
+    date,
+    "Invalid Date",
+    () =>
+      new Intl.DateTimeFormat(locale, {
+        dateStyle,
+        timeStyle,
+      }),
+    "Error formatting date time",
+  );
 }
 
 /**
@@ -172,27 +197,18 @@ export function formatDate(
   style: DateFormatStyle = "medium",
   locale?: string,
 ): string {
-  try {
-    // 文字列の場合はDateオブジェクトに変換
-    const date = typeof utcDate === "string" ? new Date(utcDate) : utcDate;
+  const date = toValidDate(utcDate);
+  const targetLocale = resolveLocale(locale);
 
-    // 無効な日付をチェック
-    if (isNaN(date.getTime())) {
-      throw new Error("Invalid date");
-    }
-
-    const targetLocale = locale ?? getDeviceLocale();
-
-    // Intl.DateTimeFormatでフォーマット（日付のみ）
-    const formatter = new Intl.DateTimeFormat(targetLocale, {
-      dateStyle: style,
-    });
-
-    return formatter.format(date);
-  } catch (error) {
-    console.error("Error formatting date:", error);
-    return "Invalid Date";
-  }
+  return formatWithFallback(
+    date,
+    "Invalid Date",
+    () =>
+      new Intl.DateTimeFormat(targetLocale, {
+        dateStyle: style,
+      }),
+    "Error formatting date",
+  );
 }
 
 /**
@@ -219,27 +235,18 @@ export function formatTime(
   style: DateFormatStyle = "short",
   locale?: string,
 ): string {
-  try {
-    // 文字列の場合はDateオブジェクトに変換
-    const date = typeof utcDate === "string" ? new Date(utcDate) : utcDate;
+  const date = toValidDate(utcDate);
+  const targetLocale = resolveLocale(locale);
 
-    // 無効な日付をチェック
-    if (isNaN(date.getTime())) {
-      throw new Error("Invalid date");
-    }
-
-    const targetLocale = locale ?? getDeviceLocale();
-
-    // Intl.DateTimeFormatでフォーマット（時刻のみ）
-    const formatter = new Intl.DateTimeFormat(targetLocale, {
-      timeStyle: style,
-    });
-
-    return formatter.format(date);
-  } catch (error) {
-    console.error("Error formatting time:", error);
-    return "Invalid Time";
-  }
+  return formatWithFallback(
+    date,
+    "Invalid Time",
+    () =>
+      new Intl.DateTimeFormat(targetLocale, {
+        timeStyle: style,
+      }),
+    "Error formatting time",
+  );
 }
 
 /**
@@ -267,58 +274,56 @@ export function formatRelativeTime(
   utcDate: string | Date,
   options?: FormatRelativeTimeOptions,
 ): string {
+  const date = toValidDate(utcDate);
+
+  if (!date) {
+    console.error("Error formatting relative time: invalid date input");
+    return "Invalid Date";
+  }
+
+  // 現在時刻との差分（ミリ秒）
+  const now = new Date();
+  const diffMs = date.getTime() - now.getTime();
+  const diffSeconds = Math.trunc(diffMs / 1000);
+  const diffMinutes = Math.trunc(diffSeconds / 60);
+  const diffHours = Math.trunc(diffMinutes / 60);
+  const diffDays = Math.trunc(diffHours / 24);
+  const diffWeeks = Math.trunc(diffDays / 7);
+  const diffMonths = Math.trunc(diffDays / 30);
+  const diffYears = Math.trunc(diffDays / 365);
+
+  // 適切な単位を選択
+  let value: number;
+  let unit: Intl.RelativeTimeFormatUnit;
+
+  if (Math.abs(diffYears) >= 1) {
+    value = diffYears;
+    unit = "year";
+  } else if (Math.abs(diffMonths) >= 1) {
+    value = diffMonths;
+    unit = "month";
+  } else if (Math.abs(diffWeeks) >= 1) {
+    value = diffWeeks;
+    unit = "week";
+  } else if (Math.abs(diffDays) >= 1) {
+    value = diffDays;
+    unit = "day";
+  } else if (Math.abs(diffHours) >= 1) {
+    value = diffHours;
+    unit = "hour";
+  } else if (Math.abs(diffMinutes) >= 1) {
+    value = diffMinutes;
+    unit = "minute";
+  } else {
+    value = diffSeconds;
+    unit = "second";
+  }
+
+  // デフォルトオプション
+  const locale = resolveLocale(options?.locale);
+  const style = options?.style ?? "long";
+
   try {
-    // 文字列の場合はDateオブジェクトに変換
-    const date = typeof utcDate === "string" ? new Date(utcDate) : utcDate;
-
-    // 無効な日付をチェック
-    if (isNaN(date.getTime())) {
-      throw new Error("Invalid date");
-    }
-
-    // 現在時刻との差分（ミリ秒）
-    const now = new Date();
-    const diffMs = date.getTime() - now.getTime();
-    const diffSeconds = Math.floor(diffMs / 1000);
-    const diffMinutes = Math.floor(diffSeconds / 60);
-    const diffHours = Math.floor(diffMinutes / 60);
-    const diffDays = Math.floor(diffHours / 24);
-    const diffWeeks = Math.floor(diffDays / 7);
-    const diffMonths = Math.floor(diffDays / 30);
-    const diffYears = Math.floor(diffDays / 365);
-
-    // 適切な単位を選択
-    let value: number;
-    let unit: Intl.RelativeTimeFormatUnit;
-
-    if (Math.abs(diffYears) >= 1) {
-      value = diffYears;
-      unit = "year";
-    } else if (Math.abs(diffMonths) >= 1) {
-      value = diffMonths;
-      unit = "month";
-    } else if (Math.abs(diffWeeks) >= 1) {
-      value = diffWeeks;
-      unit = "week";
-    } else if (Math.abs(diffDays) >= 1) {
-      value = diffDays;
-      unit = "day";
-    } else if (Math.abs(diffHours) >= 1) {
-      value = diffHours;
-      unit = "hour";
-    } else if (Math.abs(diffMinutes) >= 1) {
-      value = diffMinutes;
-      unit = "minute";
-    } else {
-      value = diffSeconds;
-      unit = "second";
-    }
-
-    // デフォルトオプション
-    const locale = options?.locale ?? getDeviceLocale();
-    const style = options?.style ?? "long";
-
-    // Intl.RelativeTimeFormatでフォーマット
     const formatter = new Intl.RelativeTimeFormat(locale, {
       numeric: "auto",
       style,
@@ -356,28 +361,19 @@ export function formatMonthDay(
   utcDate: string | Date,
   locale?: string,
 ): string {
-  try {
-    // 文字列の場合はDateオブジェクトに変換
-    const date = typeof utcDate === "string" ? new Date(utcDate) : utcDate;
+  const date = toValidDate(utcDate);
+  const targetLocale = resolveLocale(locale);
 
-    // 無効な日付をチェック
-    if (isNaN(date.getTime())) {
-      throw new Error("Invalid date");
-    }
-
-    const targetLocale = locale ?? getDeviceLocale();
-
-    // Intl.DateTimeFormatでフォーマット（月名と日付のみ）
-    const formatter = new Intl.DateTimeFormat(targetLocale, {
-      month: "long",
-      day: "numeric",
-    });
-
-    return formatter.format(date);
-  } catch (error) {
-    console.error("Error formatting month and day:", error);
-    return "Invalid Date";
-  }
+  return formatWithFallback(
+    date,
+    "Invalid Date",
+    () =>
+      new Intl.DateTimeFormat(targetLocale, {
+        month: "long",
+        day: "numeric",
+      }),
+    "Error formatting month and day",
+  );
 }
 
 /**
@@ -399,17 +395,15 @@ export function formatMonthDay(
  * この関数は特定のローカル日時をUTCに変換する必要がある場合に使用します。
  */
 export function toUTC(localDate: Date): string {
-  try {
-    // 無効な日付をチェック
-    if (isNaN(localDate.getTime())) {
-      throw new Error("Invalid date");
-    }
+  const date = toValidDate(localDate);
 
-    // ISO 8601形式のUTC文字列を返す
-    // toISOString()は常にUTCで返す（末尾に'Z'が付く）
-    return localDate.toISOString();
-  } catch (error) {
-    console.error("Error converting to UTC:", error);
-    throw new Error("Failed to convert date to UTC");
+  if (!date) {
+    const message = "Failed to convert date to UTC";
+    console.error("Error converting to UTC: invalid date input");
+    throw new Error(message);
   }
+
+  // ISO 8601形式のUTC文字列を返す
+  // toISOString()は常にUTCで返す（末尾に'Z'が付く）
+  return date.toISOString();
 }
