@@ -62,7 +62,8 @@ export default function LanguageSettings() {
             p-4 ${selectedLanguage === language.code ? "border-blue-500" : "border-slate-200"} ${!language.isReady ? "opacity-50" : ""}`}
           >
             <Text className="font-bold text-slate-700">
-              {language.flag} {language.name} {!language.isReady && "(Not Ready)"}
+              {language.flag} {language.name}{" "}
+              {!language.isReady && "(Not Ready)"}
             </Text>
             <Text className="text-slate-500">{language.text}</Text>
           </TouchableOpacity>
