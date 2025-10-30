@@ -332,6 +332,55 @@ export function formatRelativeTime(
 }
 
 /**
+ * UTC日時を月名と日付でフォーマット表示（年なし）
+ *
+ * @param utcDate - UTC日時（ISO 8601文字列またはDateオブジェクト）
+ * @param locale - ロケール（省略時は端末のロケール）
+ * @returns フォーマットされた月日文字列
+ *
+ * @example
+ * ```typescript
+ * const utcString = "2025-10-27T12:34:56.789Z";
+ *
+ * // 英語: "October 27"
+ * formatMonthDay(utcString, 'en-US');
+ *
+ * // 日本語: "10月27日"
+ * formatMonthDay(utcString, 'ja-JP');
+ *
+ * // 端末のロケールで表示
+ * formatMonthDay(utcString);
+ * ```
+ */
+export function formatMonthDay(
+  utcDate: string | Date,
+  locale?: string,
+): string {
+  try {
+    // 文字列の場合はDateオブジェクトに変換
+    const date = typeof utcDate === "string" ? new Date(utcDate) : utcDate;
+
+    // 無効な日付をチェック
+    if (isNaN(date.getTime())) {
+      throw new Error("Invalid date");
+    }
+
+    const targetLocale = locale ?? getDeviceLocale();
+
+    // Intl.DateTimeFormatでフォーマット（月名と日付のみ）
+    const formatter = new Intl.DateTimeFormat(targetLocale, {
+      month: "long",
+      day: "numeric",
+    });
+
+    return formatter.format(date);
+  } catch (error) {
+    console.error("Error formatting month and day:", error);
+    return "Invalid Date";
+  }
+}
+
+/**
  * ローカル日時をUTCに変換（ISO 8601形式で返す）
  *
  * @param localDate - ローカル日時のDateオブジェクト

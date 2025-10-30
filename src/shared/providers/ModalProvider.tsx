@@ -3,6 +3,7 @@ import { useCallback, useMemo, useRef } from "react";
 
 import type { BottomSheetModal } from "@gorhom/bottom-sheet";
 
+import { LocaleSettingModal } from "@/src/features/users/screens/LocaleSettingModal";
 import { ProfileEditModal } from "@/src/features/users/screens/ProfileEditModal";
 import { SettingModal } from "@/src/features/users/screens/SettingModal";
 
@@ -35,6 +36,11 @@ interface ModalConfig {
 const MODAL_CONFIGS: ModalConfig[] = [
   { type: "setting", component: SettingModal, needsCloseAll: true },
   { type: "profileEdit", component: ProfileEditModal, needsCloseAll: false },
+  {
+    type: "localeSetting",
+    component: LocaleSettingModal,
+    needsCloseAll: false,
+  },
   // 新しいモーダルをここに追加
   // { type: "filter", component: FilterModal, needsCloseAll: false },
   // { type: "confirm", component: ConfirmModal, needsCloseAll: false },
@@ -56,11 +62,13 @@ export function ModalProvider({ children }: PropsWithChildren) {
   // 各モーダルのrefを動的に生成
   const settingRef = useRef<BottomSheetModal | null>(null);
   const profileEditRef = useRef<BottomSheetModal | null>(null);
+  const localeSettingRef = useRef<BottomSheetModal | null>(null);
 
   const modalRefs = useMemo(
     () => ({
       setting: settingRef,
       profileEdit: profileEditRef,
+      localeSetting: localeSettingRef,
     }),
     [],
   );
