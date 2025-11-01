@@ -27,6 +27,8 @@ export default {
     },
     plugins: [
       "expo-router",
+      "expo-secure-store",
+      "expo-localization",
       [
         "expo-splash-screen",
         {
@@ -36,16 +38,6 @@ export default {
           backgroundColor: "#ffffff",
           dark: {
             backgroundColor: "#000000",
-          },
-        },
-      ],
-      "expo-secure-store",
-      [
-        "expo-localization",
-        {
-          supportedLocales: {
-            ios: ["en", "ja"],
-            android: ["en", "ja"],
           },
         },
       ],

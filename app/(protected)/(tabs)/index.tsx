@@ -1,10 +1,13 @@
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 
+import { useTranslation } from "react-i18next";
+
 import { useProfile } from "@/src/features/users";
 import { ScreenContainer } from "@/src/shared/components/layout/ScreenContainer";
 
 export default function Index() {
   const { data: profile, isLoading, error, refetch } = useProfile();
+  const { t } = useTranslation();
 
   if (isLoading) {
     return (
@@ -41,6 +44,7 @@ export default function Index() {
       <Text className="text-center text-gray-600">
         @{profile?.user_id || "..."} / {profile?.username || "..."}
       </Text>
+      <Text>{t("welcome_message")}</Text>
 
       {Array.from({ length: 25 }).map((_, index) => (
         <View key={index} className="mb-4">
