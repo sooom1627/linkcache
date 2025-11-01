@@ -40,6 +40,15 @@ export default {
         },
       ],
       "expo-secure-store",
+      [
+        "expo-localization",
+        {
+          supportedLocales: {
+            ios: ["en", "ja"],
+            android: ["en", "ja"],
+          },
+        },
+      ],
     ],
     experiments: {
       typedRoutes: true,
