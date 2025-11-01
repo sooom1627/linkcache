@@ -1,3 +1,30 @@
 {
-  "welcome_message": "ようこそ、アプリへ！"
+  "welcome_message": "ようこそ、アプリへ！",
+  "auth_messages": {
+    "sign_in_messages": {
+      "title": "おかえりなさい！👋",
+      "subtitle": "新規登録はこちら",
+      "link": "/create-account",
+      "linkText": "新規登録",
+      "buttonTitle": "ログイン"
+    },
+    "create_account_messages": {
+      "title": "ようこそ、Cacheへ！🎉",
+      "subtitle": "既にアカウントをお持ちですか？",
+      "link": "/sign-in",
+      "linkText": "ログイン",
+      "buttonTitle": "新規登録"
+    },
+    "auth_form_messages": {
+      "email_placeholder": "メールアドレス",
+      "password_placeholder": "パスワード",
+      "error_messages": {
+        "email_required": "メールアドレスは必須です",
+        "email_invalid": "有効なメールアドレスを入力してください",
+        "password_required": "パスワードは必須です",
+        "password_min_length": "パスワードは8文字以上である必要があります",
+        "password_max_length": "パスワードが長すぎます"
+      }
+    }
+  }
 }

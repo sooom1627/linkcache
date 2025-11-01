@@ -3,11 +3,12 @@ import { useRef, useState } from "react";
 import { TouchableOpacity, View, type TextInput } from "react-native";
 
 import { Eye, EyeClosed, Lock, Mail } from "lucide-react-native";
+import { useTranslation } from "react-i18next";
 
 import { FormButton, FormInput } from "@/src/shared/components/forms";
 
 import {
-  AuthFormSectionSchema,
+  createAuthFormSectionSchema,
   type AuthFormFieldConfig,
   type AuthFormSection,
 } from "../types/AuthFormSectionSchema";
@@ -25,6 +26,7 @@ export function FormSection({
   buttonTitle,
   onSubmit,
 }: FormSectionProps) {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<AuthFormSection>({
     email: "",
     password: "",
@@ -46,6 +48,7 @@ export function FormSection({
   };
 
   const handleSubmit = async () => {
+    const AuthFormSectionSchema = createAuthFormSectionSchema(t);
     const result = AuthFormSectionSchema.safeParse(formData);
 
     if (!result.success) {

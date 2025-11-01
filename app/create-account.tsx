@@ -3,6 +3,7 @@ import { Alert, ScrollView, View } from "react-native";
 import { useRouter } from "expo-router";
 
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -19,6 +20,8 @@ import { Divider } from "@/src/shared/components/layout/Divider";
 export default function CreateAccount() {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
+
   const { mutateAsync: signUp } = useSignUp({
     onSuccess: (data) => {
       if (!data.session) {
@@ -60,31 +63,37 @@ export default function CreateAccount() {
         <View className="flex flex-1 flex-col items-start justify-end">
           {/* Create Account Title */}
           <AuthTitleSection
-            title="Welcome to Cache! 🎉"
-            subtitle="Already have an account?"
+            title={t("auth_messages.create_account_messages.title")}
+            subtitle={t("auth_messages.create_account_messages.subtitle")}
             link="/sign-in"
-            linkText="Sign In"
+            linkText={t("auth_messages.create_account_messages.linkText")}
           />
           <View
-            style={{ paddingBottom: insets.bottom }}
-            className="flex w-full flex-col items-start justify-start rounded-t-[32px] bg-white px-4 pt-10"
+            style={{ paddingBottom: insets.bottom + 8 }}
+            className="flex w-full flex-col items-start justify-start rounded-t-[32px] bg-white px-6 pt-10"
           >
             {/* Create Account Form */}
             <FormSection
               emailConfig={{
                 name: "email",
-                placeholder: "Email",
+                placeholder: t(
+                  "auth_messages.auth_form_messages.email_placeholder",
+                ),
                 textContentType: "emailAddress",
                 autoCapitalize: "none",
               }}
               passwordConfig={{
                 name: "password",
-                placeholder: "Password",
+                placeholder: t(
+                  "auth_messages.auth_form_messages.password_placeholder",
+                ),
                 textContentType: "newPassword",
                 autoCapitalize: "none",
                 secureTextEntry: true,
               }}
-              buttonTitle="Create Account"
+              buttonTitle={t(
+                "auth_messages.create_account_messages.buttonTitle",
+              )}
               onSubmit={handleCreateAccount}
             />
 
