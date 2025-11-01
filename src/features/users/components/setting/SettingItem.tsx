@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { Pressable, Text, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 
 import { ChevronRight } from "lucide-react-native";
 
@@ -16,12 +16,13 @@ export default function SettingItem({
   onPress,
 }: SettingItemProps) {
   return (
-    <Pressable
+    <TouchableOpacity
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={title}
       accessibilityHint="Open setting item"
       hitSlop={8}
+      activeOpacity={0.8}
       className="w-full flex-row items-start justify-between gap-4 p-2"
     >
       {children}
@@ -31,6 +32,6 @@ export default function SettingItem({
           <ChevronRight size={20} color="#6B7280" />
         </View>
       </View>
-    </Pressable>
+    </TouchableOpacity>
   );
 }

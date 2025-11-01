@@ -2,24 +2,13 @@ import { forwardRef, type ReactNode } from "react";
 
 import { Text, TextInput, View, type TextInputProps } from "react-native";
 
-interface FormInputProps {
+interface FormInputProps extends Omit<TextInputProps, "className" | "style"> {
   label: string;
-  placeholder: string;
-  value: string;
-  onChangeText: (text: string) => void;
   error?: string;
   helperText?: string;
   helperTextColor?: string;
-  textContentType?: TextInputProps["textContentType"];
-  autoCapitalize?: TextInputProps["autoCapitalize"];
-  secureTextEntry?: boolean;
-  keyboardType?: TextInputProps["keyboardType"];
-  autoCorrect?: TextInputProps["autoCorrect"];
   leftIcon?: ReactNode;
   rightIcon?: ReactNode;
-  returnKeyType?: TextInputProps["returnKeyType"];
-  onSubmitEditing?: TextInputProps["onSubmitEditing"];
-  blurOnSubmit?: boolean;
 }
 
 /**
@@ -32,22 +21,15 @@ const FormInput = forwardRef<TextInput, FormInputProps>(
   (
     {
       label,
-      placeholder,
-      value,
-      onChangeText,
       error,
       helperText,
       helperTextColor = "text-gray-500",
-      textContentType,
-      autoCapitalize = "none",
-      secureTextEntry = false,
-      keyboardType,
-      autoCorrect,
       leftIcon,
       rightIcon,
+      autoCapitalize = "none",
       returnKeyType = "done",
-      onSubmitEditing,
       blurOnSubmit = true,
+      ...rest
     },
     ref,
   ) => {
@@ -79,21 +61,13 @@ const FormInput = forwardRef<TextInput, FormInputProps>(
           {/* Text Input */}
           <TextInput
             ref={ref}
-            placeholder={placeholder}
-            value={value}
-            onChangeText={onChangeText}
-            textContentType={textContentType}
             autoCapitalize={autoCapitalize}
-            secureTextEntry={secureTextEntry}
-            keyboardType={keyboardType}
-            autoCorrect={autoCorrect}
             returnKeyType={returnKeyType}
-            onSubmitEditing={onSubmitEditing}
             blurOnSubmit={blurOnSubmit}
+            {...rest}
             className={`flex-1 p-4 ${leftIcon ? "pl-2" : ""} ${rightIcon ? "pr-2" : ""}`}
             accessibilityLabel={label}
             accessibilityHint={helperText}
-            accessibilityValue={secureTextEntry ? undefined : { text: value }}
           />
 
           {/* Right Icon */}

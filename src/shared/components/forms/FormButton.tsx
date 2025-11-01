@@ -1,9 +1,12 @@
-import { Text, TouchableOpacity } from "react-native";
+import {
+  Text,
+  TouchableOpacity,
+  type TouchableOpacityProps,
+} from "react-native";
 
-interface FormButtonProps {
+interface FormButtonProps
+  extends Omit<TouchableOpacityProps, "className" | "style"> {
   title: string;
-  onPress: () => void;
-  disabled?: boolean;
   disabledColor?: string;
   enabledColor?: string;
 }
@@ -13,15 +16,15 @@ interface FormButtonProps {
  */
 export default function FormButton({
   title,
-  onPress,
   disabled = false,
   disabledColor = "bg-slate-400",
   enabledColor = "bg-slate-800",
+  ...rest
 }: FormButtonProps) {
   return (
     <TouchableOpacity
-      onPress={onPress}
       disabled={disabled}
+      {...rest}
       className={`w-full items-center justify-center rounded-md p-4 ${
         disabled ? disabledColor : enabledColor
       }`}
