@@ -6,14 +6,19 @@
       "subtitle": "New here?",
       "link": "/create-account",
       "linkText": "Create an account",
-      "buttonTitle": "Sign In"
+      "buttonTitle": "Sign In",
+      "failed_message_title": "Sign In Failed",
+      "failed_message_description": "Invalid email or password. Please try again."
     },
     "create_account_messages": {
       "title": "Welcome to Cache! 🎉",
       "subtitle": "Already have an account?",
       "link": "/sign-in",
       "linkText": "Sign In",
-      "buttonTitle": "Create Account"
+      "buttonTitle": "Create Account",
+      "failed_message_title": "Create Account Failed",
+      "failed_message_description": "Account creation failed. Please try again.",
+      "failed_message_already_registered": "This email address is already registered. Please use a different email address."
     },
     "auth_form_messages": {
       "email_placeholder": "Email",

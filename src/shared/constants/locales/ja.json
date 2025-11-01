@@ -6,14 +6,19 @@
       "subtitle": "新規登録はこちら",
       "link": "/create-account",
       "linkText": "新規登録",
-      "buttonTitle": "ログイン"
+      "buttonTitle": "ログイン",
+      "failed_message_title": "ログインに失敗しました",
+      "failed_message_description": "メールアドレスまたはパスワードが間違っています。再度お試しください。"
     },
     "create_account_messages": {
       "title": "ようこそ、Cacheへ！🎉",
       "subtitle": "既にアカウントをお持ちですか？",
       "link": "/sign-in",
       "linkText": "ログイン",
-      "buttonTitle": "新規登録"
+      "buttonTitle": "新規登録",
+      "failed_message_title": "新規登録に失敗しました",
+      "failed_message_default": "新規登録に失敗しました。再度お試しください。",
+      "failed_message_already_registered": "メールアドレスがすでに登録されています。別のメールアドレスを使用してください。"
     },
     "auth_form_messages": {
       "email_placeholder": "メールアドレス",

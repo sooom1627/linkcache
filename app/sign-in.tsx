@@ -27,11 +27,11 @@ export default function SignIn() {
       queryClient.invalidateQueries({ queryKey: userQueryKeys.profile() });
       router.replace("/");
     },
-    onError: (error) => {
-      const friendlyMessage = error.message.includes("invalid credentials")
-        ? "Invalid email or password. Please try again."
-        : "Sign in failed. Please try again.";
-      Alert.alert("Sign In Failed", friendlyMessage);
+    onError: () => {
+      Alert.alert(
+        t("auth_messages.sign_in_messages.failed_message_title"),
+        t("auth_messages.sign_in_messages.failed_message_description"),
+      );
     },
   });
 

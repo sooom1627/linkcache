@@ -37,9 +37,14 @@ export default function CreateAccount() {
     },
     onError: (error) => {
       const friendlyMessage = error.message.includes("already registered")
-        ? "This email address is already registered. Please use a different email address."
-        : "Account creation failed. Please try again.";
-      Alert.alert("Sign Up Failed", friendlyMessage);
+        ? t(
+            "auth_messages.create_account_messages.failed_message_already_registered",
+          )
+        : t("auth_messages.create_account_messages.failed_message_default");
+      Alert.alert(
+        t("auth_messages.create_account_messages.failed_message_title"),
+        friendlyMessage,
+      );
     },
   });
 
