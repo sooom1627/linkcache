@@ -1,6 +1,6 @@
 import type { Session } from "@supabase/supabase-js";
 
-import { supabase } from "@/src/shared/utils/supabase";
+import { supabase } from "@/src/shared/lib/supabase";
 
 /**
  * 現在のセッションを取得

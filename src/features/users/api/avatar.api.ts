@@ -1,6 +1,6 @@
 import type { PostgrestError } from "@supabase/supabase-js";
 
-import { supabase } from "@/src/shared/utils/supabase";
+import { supabase } from "@/src/shared/lib/supabase";
 
 /**
  * PostgrestErrorと互換性のあるカスタムエラーを作成

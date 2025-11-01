@@ -127,7 +127,7 @@ export const ProfileEditModal = forwardRef<
   return (
     <ScrollableBottomSheetModal
       ref={ref}
-      snapPoints={["70%", "90%"]}
+      snapPoints={["50%", "90%"]}
       index={1}
       enablePanDownToClose={false}
       stackBehavior="switch"

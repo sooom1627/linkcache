@@ -27,7 +27,10 @@ export const SettingModal = forwardRef<BottomSheetModal, SettingModalProps>(
       [openModal],
     );
 
-    const menuData = useMemo(() => createSettingMenuData(), []);
+    const menuData = useMemo(
+      () => createSettingMenuData(openModal),
+      [openModal],
+    );
     return (
       <ScrollableBottomSheetModal
         ref={ref}

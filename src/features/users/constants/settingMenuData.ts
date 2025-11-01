@@ -10,6 +10,8 @@ import {
   Lock,
 } from "lucide-react-native";
 
+import type { ModalType } from "@/src/shared/providers";
+
 export interface MenuItem {
   title: string;
   icon: ComponentType<LucideProps>;
@@ -24,7 +26,9 @@ export interface MenuSection {
 
 const ICON_PROPS: LucideProps = { size: 16, color: "#6B7280" };
 
-export const createSettingMenuData = (): MenuSection[] => [
+export const createSettingMenuData = (
+  openModal: (modalType: ModalType) => void,
+): MenuSection[] => [
   {
     menuTitle: "Your Account",
     menuItems: [
@@ -34,9 +38,12 @@ export const createSettingMenuData = (): MenuSection[] => [
         iconProps: ICON_PROPS,
       },
       {
-        title: "Timezone & Location",
+        title: "Timezone & Language",
         icon: Earth,
         iconProps: ICON_PROPS,
+        onPress: () => {
+          openModal("localeSetting");
+        },
       },
     ],
   },

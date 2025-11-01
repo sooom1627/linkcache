@@ -9,6 +9,8 @@ import { Avatar } from "@/src/features/users/components/user/Avatar";
 import { useProfile } from "@/src/features/users/hooks";
 import { useModal } from "@/src/shared/providers";
 
+import { formatDate } from "../../utils/timezone";
+
 export interface HeaderProps {
   title: string;
   topComponent?: boolean;
@@ -48,14 +50,7 @@ export default function Header({
             <View>
               {title.includes("Hello") && (
                 <Text className="text-base text-slate-500">
-                  {new Date()
-                    .toLocaleDateString("ja-JP", {
-                      year: "numeric",
-                      month: "2-digit",
-                      day: "2-digit",
-                      timeZone: "UTC",
-                    })
-                    .replaceAll("/", "/")}
+                  {formatDate(new Date(), "long", "en-US")}
                 </Text>
               )}
               <Text className="text-xl font-bold text-slate-700">{title}</Text>
