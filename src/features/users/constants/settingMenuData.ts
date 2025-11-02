@@ -32,15 +32,15 @@ export const createSettingMenuData = (
   t: TFunction<"translation", undefined>,
 ): MenuSection[] => [
   {
-    menuTitle: t("user_messages.setting_modal.account_title"),
+    menuTitle: t("users.setting_modal.account_title"),
     menuItems: [
       {
-        title: t("user_messages.setting_modal.menu_items.password"),
+        title: t("users.setting_modal.menu_items.password"),
         icon: KeyRound,
         iconProps: ICON_PROPS,
       },
       {
-        title: t("user_messages.setting_modal.menu_items.timezone_language"),
+        title: t("users.setting_modal.menu_items.timezone_language"),
         icon: Earth,
         iconProps: ICON_PROPS,
         onPress: () => {
@@ -50,25 +50,25 @@ export const createSettingMenuData = (
     ],
   },
   {
-    menuTitle: t("user_messages.setting_modal.information_title"),
+    menuTitle: t("users.setting_modal.information_title"),
     menuItems: [
       {
-        title: t("user_messages.setting_modal.menu_items.help"),
+        title: t("users.setting_modal.menu_items.help"),
         icon: HelpCircle,
         iconProps: ICON_PROPS,
       },
       {
-        title: t("user_messages.setting_modal.menu_items.privacy_policy"),
+        title: t("users.setting_modal.menu_items.privacy_policy"),
         icon: Lock,
         iconProps: ICON_PROPS,
       },
       {
-        title: t("user_messages.setting_modal.menu_items.terms_of_service"),
+        title: t("users.setting_modal.menu_items.terms_of_service"),
         icon: File,
         iconProps: ICON_PROPS,
       },
       {
-        title: t("user_messages.setting_modal.menu_items.version"),
+        title: t("users.setting_modal.menu_items.version"),
         icon: Info,
         iconProps: ICON_PROPS,
       },

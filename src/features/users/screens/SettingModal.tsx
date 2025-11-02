@@ -45,7 +45,7 @@ export const SettingModal = forwardRef<BottomSheetModal, SettingModalProps>(
         <View className="flex-1 gap-4 px-4 pb-4">
           {/* Header */}
           <ModalHeader
-            title={t("user_messages.setting_modal.title")}
+            title={t("users.setting_modal.title")}
             onClose={
               onClose ??
               (() => {

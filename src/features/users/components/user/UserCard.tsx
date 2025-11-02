@@ -163,7 +163,7 @@ export default function UserCard({
           hitSlop={16}
         >
           <Text className="text-base text-slate-700">
-            {t("user_messages.user_card.edit_profile")}
+            {t("users.user_card.edit_profile")}
           </Text>
           <ChevronRight size={20} color="#6B7280" />
         </TouchableOpacity>

@@ -32,7 +32,7 @@
       }
     }
   },
-  "user_messages": {
+  "users": {
     "user_card": {
       "edit_profile": "Edit Profile"
     },
@@ -47,6 +47,33 @@
         "privacy_policy": "Privacy Policy",
         "terms_of_service": "Terms of Service",
         "version": "Version"
+      },
+      "profile_edit": {
+        "title": "Edit Profile",
+        "user_id": "User ID",
+        "user_id_placeholder": "User ID (4-32 characters)",
+        "username": "Username",
+        "username_placeholder": "Username (4-32 characters)",
+        "no_changes": "No changes",
+        "update_profile": "Update Profile",
+        "form_validation_messages": {
+          "checking_availability": "Checking availability...",
+          "error_checking_availability": "Error checking availability",
+          "available": "✓ Available",
+          "already_taken": "✗ Already taken"
+        },
+        "error_messages": {
+          "user_id_required": "User ID is required",
+          "user_id_invalid": "Invalid User ID",
+          "username_required": "Username is required",
+          "username_invalid": "Invalid Username"
+        },
+        "callback_messages": {
+          "success_title": "Update Complete",
+          "success_message": "Profile updated successfully",
+          "error_title": "Update Failed",
+          "error_message": "Failed to update profile. Please try again."
+        }
       }
     }
   }

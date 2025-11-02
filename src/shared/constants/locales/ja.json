@@ -32,7 +32,7 @@
       }
     }
   },
-  "user_messages": {
+  "users": {
     "user_card": {
       "edit_profile": "プロフィールを編集"
     },
@@ -47,6 +47,33 @@
         "privacy_policy": "プライバシーポリシー",
         "terms_of_service": "利用規約",
         "version": "バージョン"
+      },
+      "profile_edit": {
+        "title": "プロフィールを編集",
+        "user_id": "ユーザーID",
+        "user_id_placeholder": "ユーザーID (4-32文字)",
+        "username": "ユーザー名",
+        "username_placeholder": "ユーザー名 (4-32文字)",
+        "no_changes": "変更がありません",
+        "update_profile": "プロフィールを更新",
+        "form_validation_messages": {
+          "checking_availability": "利用可能かどうかを確認中...",
+          "error_checking_availability": "利用可能かどうかの確認に失敗しました",
+          "available": "✓ 利用可能",
+          "already_taken": "✗ 既に使用されています"
+        },
+        "error_messages": {
+          "user_id_required": "ユーザーIDは必須です",
+          "user_id_invalid": "有効なユーザーIDを入力してください",
+          "username_required": "ユーザー名は必須です",
+          "username_invalid": "有効なユーザー名を入力してください"
+        },
+        "callback_messages": {
+          "success_title": "更新完了",
+          "success_message": "プロフィールを更新しました",
+          "error_title": "更新失敗",
+          "error_message": "プロフィールを更新できませんでした。再度お試しください。"
+        }
       }
     }
   }

@@ -1,3 +1,5 @@
+import type { TFunction } from "i18next";
+
 import type { ProfileSetupErrors } from "../types/ProfileSetupSchema";
 
 /**
@@ -11,6 +13,7 @@ import type { ProfileSetupErrors } from "../types/ProfileSetupSchema";
  * @returns ヘルパーテキストとカラー、または undefined
  */
 export function getUserIdHelperText(
+  t: TFunction<"translation", undefined>,
   userId: string,
   isCheckingUserId: boolean,
   checkError: unknown,
@@ -26,18 +29,38 @@ export function getUserIdHelperText(
   if (userId.length < 4) return undefined;
 
   if (isCheckingUserId) {
-    return { text: "Checking availability...", color: "text-gray-500" };
+    return {
+      text: t(
+        "users.setting_modal.profile_edit.form_validation_messages.checking_availability",
+      ),
+      color: "text-gray-500",
+    };
   }
 
   if (checkError) {
-    return { text: "Error checking availability", color: "text-red-600" };
+    return {
+      text: t(
+        "users.setting_modal.profile_edit.form_validation_messages.error_checking_availability",
+      ),
+      color: "text-red-600",
+    };
   }
 
   if (isUserIdAvailable) {
-    return { text: "✓ Available", color: "text-green-600" };
+    return {
+      text: t(
+        "users.setting_modal.profile_edit.form_validation_messages.available",
+      ),
+      color: "text-green-600",
+    };
   }
 
-  return { text: "✗ Already taken", color: "text-red-600" };
+  return {
+    text: t(
+      "users.setting_modal.profile_edit.form_validation_messagealready_taken",
+    ),
+    color: "text-red-600",
+  };
 }
 
 /**
