@@ -1,17 +1,46 @@
 import { z } from "zod";
 
-export const AuthFormSectionSchema = z.object({
-  email: z
-    .string()
-    .min(1, { message: "Email is required" })
-    .email({ message: "Invalid email address" }),
-  password: z
-    .string()
-    .min(8, { message: "Password must be at least 8 characters" })
-    .max(100, { message: "Password is too long" }),
-});
+/**
+ * 認証フォームのバリデーションスキーマを生成する関数
+ * @param t - 翻訳関数
+ * @returns Zodスキーマ
+ */
+export const createAuthFormSectionSchema = (t: (key: string) => string) =>
+  z.object({
+    email: z
+      .string()
+      .min(1, {
+        message: t(
+          "auth_messages.auth_form_messages.error_messages.email_required",
+        ),
+      })
+      .email({
+        message: t(
+          "auth_messages.auth_form_messages.error_messages.email_invalid",
+        ),
+      }),
+    password: z
+      .string()
+      .min(1, {
+        message: t(
+          "auth_messages.auth_form_messages.error_messages.password_required",
+        ),
+      })
+      .min(8, {
+        message: t(
+          "auth_messages.auth_form_messages.error_messages.password_min_length",
+        ),
+      })
+      .max(100, {
+        message: t(
+          "auth_messages.auth_form_messages.error_messages.password_max_length",
+        ),
+      }),
+  });
 
-export type AuthFormSection = z.infer<typeof AuthFormSectionSchema>;
+export type AuthFormSection = z.infer<
+  ReturnType<typeof createAuthFormSectionSchema>
+>;
 
 export type AuthFormFieldName = keyof AuthFormSection;
 

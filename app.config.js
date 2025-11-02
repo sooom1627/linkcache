@@ -27,6 +27,8 @@ export default {
     },
     plugins: [
       "expo-router",
+      "expo-secure-store",
+      "expo-localization",
       [
         "expo-splash-screen",
         {
@@ -39,7 +41,6 @@ export default {
           },
         },
       ],
-      "expo-secure-store",
     ],
     experiments: {
       typedRoutes: true,
