@@ -158,6 +158,7 @@ export default function UserCard({
           accessibilityRole="button"
           accessibilityLabel="Edit profile"
           accessibilityHint="Edit profile"
+          hitSlop={16}
         >
           <Text className="text-base text-slate-700">Edit Profile</Text>
           <ChevronRight size={20} color="#6B7280" />
