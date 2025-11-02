@@ -23,7 +23,7 @@ interface SettingModalProps {
 export const SettingModal = forwardRef<BottomSheetModal, SettingModalProps>(
   ({ onClose, onCloseAll }, ref) => {
     const { openModal } = useModal();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const handleOpenProfileEdit = useCallback(
       () => openModal("profileEdit"),
       [openModal],
@@ -31,8 +31,9 @@ export const SettingModal = forwardRef<BottomSheetModal, SettingModalProps>(
 
     const menuData = useMemo(
       () => createSettingMenuData(openModal, t),
-      [openModal],
+      [openModal, t, i18n.language],
     );
+
     return (
       <ScrollableBottomSheetModal
         ref={ref}
