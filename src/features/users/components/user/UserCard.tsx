@@ -9,6 +9,7 @@ import {
 } from "react-native";
 
 import { ChevronRight, Plus } from "lucide-react-native";
+import { useTranslation } from "react-i18next";
 
 import {
   useImagePicker,
@@ -36,6 +37,7 @@ export default function UserCard({
     requestCameraPermission,
   } = useImagePicker();
   const { mutate: uploadAvatar, isPending } = useUploadAvatar();
+  const { t } = useTranslation();
 
   const handleImagePicked = async (
     picker: () => Promise<PickedImage | null>,
@@ -160,7 +162,9 @@ export default function UserCard({
           accessibilityHint="Edit profile"
           hitSlop={16}
         >
-          <Text className="text-base text-slate-700">Edit Profile</Text>
+          <Text className="text-base text-slate-700">
+            {t("user_messages.user_card.edit_profile")}
+          </Text>
           <ChevronRight size={20} color="#6B7280" />
         </TouchableOpacity>
       </View>

@@ -31,5 +31,23 @@
         "password_max_length": "パスワードが長すぎます"
       }
     }
+  },
+  "user_messages": {
+    "user_card": {
+      "edit_profile": "プロフィールを編集"
+    },
+    "setting_modal": {
+      "title": "設定",
+      "account_title": "アカウント",
+      "information_title": "アプリ情報",
+      "menu_items": {
+        "password": "パスワード",
+        "timezone_language": "タイムゾーン & 言語",
+        "help": "ヘルプ",
+        "privacy_policy": "プライバシーポリシー",
+        "terms_of_service": "利用規約",
+        "version": "バージョン"
+      }
+    }
   }
 }

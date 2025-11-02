@@ -31,5 +31,23 @@
         "password_max_length": "Password is too long"
       }
     }
+  },
+  "user_messages": {
+    "user_card": {
+      "edit_profile": "Edit Profile"
+    },
+    "setting_modal": {
+      "title": "Settings",
+      "account_title": "Your Account",
+      "information_title": "App Information",
+      "menu_items": {
+        "password": "Password",
+        "timezone_language": "Timezone & Language",
+        "help": "Help",
+        "privacy_policy": "Privacy Policy",
+        "terms_of_service": "Terms of Service",
+        "version": "Version"
+      }
+    }
   }
 }
