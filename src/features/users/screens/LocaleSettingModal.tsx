@@ -56,7 +56,7 @@ export const LocaleSettingModal = forwardRef<
       <View className="flex-1 gap-4 px-4 pb-4">
         <ModalHeader
           title={t("users.setting_modal.locale_setting.title")}
-          onClose={onClose ?? (() => {})}
+          onClose={onClose || (() => {})}
         />
 
         {/* Timezone info */}
