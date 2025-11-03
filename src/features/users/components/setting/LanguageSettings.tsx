@@ -2,7 +2,6 @@ import { useState } from "react";
 
 import { Alert, Text, TouchableOpacity, View } from "react-native";
 
-import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -11,11 +10,8 @@ import {
 } from "../../../../shared/constants/languages";
 import { setLanguage } from "../../../../shared/utils/langSetting";
 
-export default function LanguageSettings({
-  t,
-}: {
-  t: TFunction<"translation", undefined>;
-}) {
+export default function LanguageSettings() {
+  const { t } = useTranslation();
   const { i18n } = useTranslation();
   const [selectedLanguage, setSelectedLanguage] = useState<string>(
     i18n.language,

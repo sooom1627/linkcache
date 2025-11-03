@@ -78,7 +78,7 @@ export const LocaleSettingModal = forwardRef<
         </View>
 
         {/* Language info */}
-        <LanguageSettings t={t} />
+        <LanguageSettings />
       </View>
     </ScrollableBottomSheetModal>
   );
