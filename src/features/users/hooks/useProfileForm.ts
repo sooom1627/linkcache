@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+import { useTranslation } from "react-i18next";
+
 import type { ProfileSetupErrors } from "../types/ProfileSetupSchema";
 import { ProfileSetupSchema } from "../types/ProfileSetupSchema";
 
@@ -43,6 +45,7 @@ export function useProfileForm(
   initialData?: ProfileFormData,
 ): UseProfileFormReturn {
   const defaultData: ProfileFormData = { user_id: "", username: "" };
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<ProfileFormData>(
     initialData ?? defaultData,
   );
@@ -60,7 +63,7 @@ export function useProfileForm(
 
     // user_idのバリデーション
     if (formData.user_id.length > 0) {
-      const result = ProfileSetupSchema.shape.user_id.safeParse(
+      const result = ProfileSetupSchema(t).shape.user_id.safeParse(
         formData.user_id,
       );
       if (!result.success) {
@@ -70,7 +73,7 @@ export function useProfileForm(
 
     // usernameのバリデーション
     if (formData.username.length > 0) {
-      const result = ProfileSetupSchema.shape.username.safeParse(
+      const result = ProfileSetupSchema(t).shape.username.safeParse(
         formData.username,
       );
       if (!result.success) {
@@ -92,7 +95,7 @@ export function useProfileForm(
 
   // 最終バリデーション（送信時）
   const validateForm = (): boolean => {
-    const result = ProfileSetupSchema.safeParse(formData);
+    const result = ProfileSetupSchema(t).safeParse(formData);
 
     if (!result.success) {
       const newErrors: ProfileSetupErrors = {};

@@ -1,12 +1,5 @@
-/**
- * ファイル操作に関するユーティリティ関数
- */
+import { File } from "expo-file-system";
 
-/**
- * MIMEタイプから拡張子を取得
- * @param mimeType - MIMEタイプ（例: "image/jpeg"）
- * @returns ファイル拡張子（例: "jpg"）
- */
 export function getExtensionFromMimeType(mimeType: string): string {
   const mimeToExt: Record<string, string> = {
     "image/jpeg": "jpg",
@@ -20,15 +13,9 @@ export function getExtensionFromMimeType(mimeType: string): string {
   return mimeToExt[mimeType] || "jpg";
 }
 
-/**
- * ファイルURIをArrayBufferに変換
- * @param fileUri - ローカルファイルURI
- * @returns ArrayBuffer
- */
 export async function convertFileToArrayBuffer(
   fileUri: string,
 ): Promise<ArrayBuffer> {
-  const res = await fetch(fileUri);
-  const blob = await res.blob();
-  return blob.arrayBuffer();
+  const file = new File(fileUri);
+  return file.arrayBuffer();
 }

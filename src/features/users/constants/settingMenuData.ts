@@ -1,5 +1,6 @@
 import type { ComponentType } from "react";
 
+import type { TFunction } from "i18next";
 import type { LucideProps } from "lucide-react-native";
 import {
   Earth,
@@ -28,17 +29,18 @@ const ICON_PROPS: LucideProps = { size: 16, color: "#6B7280" };
 
 export const createSettingMenuData = (
   openModal: (modalType: ModalType) => void,
+  t: TFunction<"translation", undefined>,
 ): MenuSection[] => [
   {
-    menuTitle: "Your Account",
+    menuTitle: t("users.setting_modal.account_title"),
     menuItems: [
       {
-        title: "Password",
+        title: t("users.setting_modal.menu_items.password"),
         icon: KeyRound,
         iconProps: ICON_PROPS,
       },
       {
-        title: "Timezone & Language",
+        title: t("users.setting_modal.menu_items.timezone_language"),
         icon: Earth,
         iconProps: ICON_PROPS,
         onPress: () => {
@@ -48,25 +50,25 @@ export const createSettingMenuData = (
     ],
   },
   {
-    menuTitle: "App Information",
+    menuTitle: t("users.setting_modal.information_title"),
     menuItems: [
       {
-        title: "Help",
+        title: t("users.setting_modal.menu_items.help"),
         icon: HelpCircle,
         iconProps: ICON_PROPS,
       },
       {
-        title: "Privacy Policy",
+        title: t("users.setting_modal.menu_items.privacy_policy"),
         icon: Lock,
         iconProps: ICON_PROPS,
       },
       {
-        title: "Terms of Service",
+        title: t("users.setting_modal.menu_items.terms_of_service"),
         icon: File,
         iconProps: ICON_PROPS,
       },
       {
-        title: "Version",
+        title: t("users.setting_modal.menu_items.version"),
         icon: Info,
         iconProps: ICON_PROPS,
       },

@@ -3,6 +3,7 @@ import { forwardRef, useCallback, useMemo } from "react";
 import { View } from "react-native";
 
 import type { BottomSheetModal } from "@gorhom/bottom-sheet";
+import { useTranslation } from "react-i18next";
 
 import { ScrollableBottomSheetModal } from "@/src/shared/components/modals";
 import ModalHeader from "@/src/shared/components/modals/ModalHeader";
@@ -22,15 +23,17 @@ interface SettingModalProps {
 export const SettingModal = forwardRef<BottomSheetModal, SettingModalProps>(
   ({ onClose, onCloseAll }, ref) => {
     const { openModal } = useModal();
+    const { t, i18n } = useTranslation();
     const handleOpenProfileEdit = useCallback(
       () => openModal("profileEdit"),
       [openModal],
     );
 
     const menuData = useMemo(
-      () => createSettingMenuData(openModal),
-      [openModal],
+      () => createSettingMenuData(openModal, t),
+      [openModal, t, i18n.language],
     );
+
     return (
       <ScrollableBottomSheetModal
         ref={ref}
@@ -42,7 +45,7 @@ export const SettingModal = forwardRef<BottomSheetModal, SettingModalProps>(
         <View className="flex-1 gap-4 px-4 pb-4">
           {/* Header */}
           <ModalHeader
-            title="Settings"
+            title={t("users.setting_modal.title")}
             onClose={
               onClose ??
               (() => {

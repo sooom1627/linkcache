@@ -9,6 +9,7 @@ import {
 } from "react-native";
 
 import { ChevronRight, Plus } from "lucide-react-native";
+import { useTranslation } from "react-i18next";
 
 import {
   useImagePicker,
@@ -36,6 +37,7 @@ export default function UserCard({
     requestCameraPermission,
   } = useImagePicker();
   const { mutate: uploadAvatar, isPending } = useUploadAvatar();
+  const { t } = useTranslation();
 
   const handleImagePicked = async (
     picker: () => Promise<PickedImage | null>,
@@ -64,8 +66,8 @@ export default function UserCard({
       void handleImagePicked(pickImageFromLibrary);
     } else {
       Alert.alert(
-        "Permission Required",
-        "Please allow access to your photo library.",
+        t("users.user_card.permission_required"),
+        t("users.user_card.please_allow_access_to_photo_library"),
       );
     }
   };
@@ -75,7 +77,11 @@ export default function UserCard({
       // iOSの場合はActionSheetを使用
       ActionSheetIOS.showActionSheetWithOptions(
         {
-          options: ["Cancel", "Take Photo", "Choose from Library"],
+          options: [
+            t("users.user_card.cancel"),
+            t("users.user_card.take_photo"),
+            t("users.user_card.choose_from_library"),
+          ],
           cancelButtonIndex: 0,
         },
         (buttonIndex) => {
@@ -93,17 +99,17 @@ export default function UserCard({
         "Choose a photo source",
         [
           {
-            text: "Cancel",
+            text: t("users.user_card.cancel"),
             style: "cancel",
           },
           {
-            text: "Take Photo",
+            text: t("users.user_card.take_photo"),
             onPress: () => {
               void handleCameraSelected();
             },
           },
           {
-            text: "Choose from Library",
+            text: t("users.user_card.choose_from_library"),
             onPress: () => {
               void handleLibrarySelected();
             },
@@ -139,7 +145,10 @@ export default function UserCard({
           className="absolute bottom-0 right-0 rounded-full bg-slate-700 p-1"
         >
           {isPending ? (
-            <ActivityIndicator size="small" color="white" />
+            <ActivityIndicator
+              style={{ width: 12, height: 12 }}
+              color="white"
+            />
           ) : (
             <Plus size={12} color="white" />
           )}
@@ -158,8 +167,11 @@ export default function UserCard({
           accessibilityRole="button"
           accessibilityLabel="Edit profile"
           accessibilityHint="Edit profile"
+          hitSlop={16}
         >
-          <Text className="text-base text-slate-700">Edit Profile</Text>
+          <Text className="text-base text-slate-700">
+            {t("users.user_card.edit_profile")}
+          </Text>
           <ChevronRight size={20} color="#6B7280" />
         </TouchableOpacity>
       </View>
