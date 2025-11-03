@@ -76,7 +76,6 @@ export function useUploadAvatar(options?: {
     UploadAvatarRequest
   >({
     mutationFn: async ({ fileUri, mimeType }) => {
-      
       if (!user?.id) {
         throw createPostgrestError("User not authenticated", "AUTH001");
       }

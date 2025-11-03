@@ -57,7 +57,7 @@ export function getUserIdHelperText(
 
   return {
     text: t(
-      "users.setting_modal.profile_edit.form_validation_messagealready_taken",
+      "users.setting_modal.profile_edit.form_validation_messages.already_taken",
     ),
     color: "text-red-600",
   };
