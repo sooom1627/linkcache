@@ -13,7 +13,7 @@ import { useSignIn } from "@/src/features/auth/hooks/useSignIn";
 import { AuthTitleSection } from "@/src/features/auth/screens/AuthTitleSection";
 import { FormSection } from "@/src/features/auth/screens/FormSection";
 import { SocialOauthSection } from "@/src/features/auth/screens/SocialOauthSection";
-import type { AuthFormSection } from "@/src/features/auth/types/AuthFormSectionSchema";
+import type { AuthFormSection } from "@/src/features/auth/types/authFormSectionSchema.types";
 import { userQueryKeys } from "@/src/features/users/constants/queryKeys";
 import { Divider } from "@/src/shared/components/layout/Divider";
 

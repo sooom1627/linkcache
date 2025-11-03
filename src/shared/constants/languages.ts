@@ -89,8 +89,10 @@ export const languages: readonly LanguageSetting[] = languageSettings;
 /**
  * 言語コードが実装済みかチェック（型ガード）
  */
+const readyLanguageCodes = new Set(readyLanguages.map((lang) => lang.code));
+
 export function isReadyLanguage(code: LanguageCode): code is SupportedLang {
-  return code === "en" || code === "ja";
+  return readyLanguageCodes.has(code as SupportedLang);
 }
 
 /**

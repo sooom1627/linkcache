@@ -11,7 +11,7 @@ import {
   createAuthFormSectionSchema,
   type AuthFormFieldConfig,
   type AuthFormSection,
-} from "../types/AuthFormSectionSchema";
+} from "../types/authFormSectionSchema.types";
 
 interface FormSectionProps {
   emailConfig: AuthFormFieldConfig;

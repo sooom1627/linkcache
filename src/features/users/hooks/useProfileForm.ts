@@ -79,7 +79,7 @@ export function useProfileForm(
     }
 
     setErrors(newErrors);
-  }, [formData.user_id, formData.username]);
+  }, [formData.user_id, formData.username, schema]);
 
   // 個別フィールド更新
   const setUserId = (value: string) => {

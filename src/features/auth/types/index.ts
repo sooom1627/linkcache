@@ -5,4 +5,4 @@
  */
 
 export * from "./auth.types";
-export * from "./AuthFormSectionSchema";
+export * from "./authFormSectionSchema.types";
