@@ -41,7 +41,7 @@ export function ProfileSetupSchema(t: TFunction<"translation", undefined>) {
 /**
  * プロフィール設定フォームの型
  */
-export type ProfileSetupForm = z.infer<typeof ProfileSetupSchema>;
+export type ProfileSetupForm = z.infer<ReturnType<typeof ProfileSetupSchema>>;
 
 /**
  * プロフィール設定フォームのエラー型

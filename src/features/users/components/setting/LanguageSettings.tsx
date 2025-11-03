@@ -5,6 +5,7 @@ import { Alert, Text, TouchableOpacity, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import {
+  isReadyLanguageSetting,
   languageSettings,
   type LanguageSetting,
 } from "../../../../shared/constants/languages";
@@ -18,7 +19,8 @@ export default function LanguageSettings() {
   );
 
   const handleSelectLanguage = async (language: LanguageSetting) => {
-    if (!language.isReady) return;
+    // 型ガードで実装済み言語かチェック
+    if (!isReadyLanguageSetting(language)) return;
 
     try {
       await setLanguage(language.code);
