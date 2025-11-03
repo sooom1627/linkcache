@@ -79,6 +79,14 @@
           "error_title": "Update Failed",
           "error_message": "Failed to update profile. Please try again."
         }
+      },
+      "locale_setting": {
+        "title": "Timezone & Language",
+        "timezone": "Timezone",
+        "timezone_info": "The timezone is according to the device settings",
+        "language": "Language",
+        "error_title": "Error",
+        "error_message": "Failed to change language. Please try again."
       }
     }
   }

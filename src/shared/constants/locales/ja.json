@@ -79,6 +79,14 @@
           "error_title": "更新失敗",
           "error_message": "プロフィールを更新できませんでした。再度お試しください。"
         }
+      },
+      "locale_setting": {
+        "title": "タイムゾーン & 言語",
+        "timezone": "タイムゾーン",
+        "timezone_info": "タイムゾーンはデバイスの設定に従います",
+        "language": "言語",
+        "error_title": "エラー",
+        "error_message": "言語を変更できませんでした。再度お試しください。"
       }
     }
   }

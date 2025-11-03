@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { Alert, Text, TouchableOpacity, View } from "react-native";
 
+import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -10,7 +11,11 @@ import {
 } from "../../../../shared/constants/languages";
 import { setLanguage } from "../../../../shared/utils/langSetting";
 
-export default function LanguageSettings() {
+export default function LanguageSettings({
+  t,
+}: {
+  t: TFunction<"translation", undefined>;
+}) {
   const { i18n } = useTranslation();
   const [selectedLanguage, setSelectedLanguage] = useState<string>(
     i18n.language,
@@ -23,17 +28,21 @@ export default function LanguageSettings() {
       await setLanguage(language.code);
       setSelectedLanguage(language.code);
     } catch (error) {
-      console.error("言語変更エラー:", error);
-      Alert.alert("Error", "Failed to change language. Please try again.", [
-        { text: "OK" },
-      ]);
+      console.error("Language change error:", error);
+      Alert.alert(
+        t("users.setting_modal.locale_setting.error_title"),
+        t("users.setting_modal.locale_setting.error_message"),
+        [{ text: "OK" }],
+      );
     }
   };
 
   return (
     <View className="w-full flex-col items-start justify-start gap-2">
       <View className="w-full flex-row items-center justify-between gap-2">
-        <Text className="font-bold text-slate-500">Language</Text>
+        <Text className="font-bold text-slate-500">
+          {t("users.setting_modal.locale_setting.language")}
+        </Text>
       </View>
       <View className="w-full flex-row flex-wrap items-center justify-start gap-2">
         {languageSettings.map((language) => (
