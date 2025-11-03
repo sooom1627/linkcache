@@ -141,7 +141,10 @@ export default function UserCard({
           className="absolute bottom-0 right-0 rounded-full bg-slate-700 p-1"
         >
           {isPending ? (
-            <ActivityIndicator size="small" color="white" />
+            <ActivityIndicator
+              style={{ width: 12, height: 12 }}
+              color="white"
+            />
           ) : (
             <Plus size={12} color="white" />
           )}

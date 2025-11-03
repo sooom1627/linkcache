@@ -61,12 +61,19 @@ export function useUploadAvatar(options?: {
     UploadAvatarRequest
   >({
     mutationFn: async ({ fileUri, mimeType }) => {
-      const extension = getExtensionFromMimeType(mimeType);
-      const filePath = `${user?.id}/avatar.${extension}`;
+      if (!user?.id) {
+        throw {
+          message: "User not authenticated",
+          code: "AUTH001",
+          name: "PostgrestError",
+        } as PostgrestError;
+      }
 
+      const extension = getExtensionFromMimeType(mimeType);
+      const filePath = `${user.id}/avatar.${extension}`;
       const fileData = await convertFileToArrayBuffer(fileUri);
 
-      return uploadAvatar(user?.id ?? "", filePath, fileData, mimeType);
+      return uploadAvatar(user.id, filePath, fileData, mimeType);
     },
     onSuccess: async (data) => {
       const currentProfile = queryClient.getQueryData<UserProfile | null>(
@@ -74,29 +81,23 @@ export function useUploadAvatar(options?: {
       );
 
       if (currentProfile) {
-        const updatedProfile: UserProfile = {
+        queryClient.setQueryData(userQueryKeys.profile(), {
           ...currentProfile,
           avatar_url: data.avatarUrl,
           updated_at: new Date().toISOString(),
-        };
-        queryClient.setQueryData(userQueryKeys.profile(), updatedProfile);
+        });
       }
 
       Alert.alert("Success", "Avatar uploaded successfully");
       options?.onSuccess?.();
     },
     onError: (error) => {
+      console.error("Avatar upload failed:", error.message);
       Alert.alert(
         "Upload Failed",
         "Could not upload avatar. Please try again.",
       );
-      throw {
-        message: "Failed to upload avatar",
-        code: "PGRST116",
-        details: error.message,
-        hint: error.hint,
-        name: "PostgrestError",
-      } as unknown as PostgrestError;
+      options?.onError?.();
     },
     onSettled: () => {
       void queryClient.invalidateQueries({
