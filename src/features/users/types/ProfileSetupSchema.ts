@@ -4,8 +4,8 @@ import { z } from "zod";
 /**
  * プロフィール設定フォームのバリデーションスキーマ
  */
-export const ProfileSetupSchema = (t: TFunction<"translation", undefined>) =>
-  z.object({
+export function ProfileSetupSchema(t: TFunction<"translation", undefined>) {
+  return z.object({
     user_id: z
       .string()
       .min(4, {
@@ -36,6 +36,7 @@ export const ProfileSetupSchema = (t: TFunction<"translation", undefined>) =>
         ),
       }),
   });
+}
 
 /**
  * プロフィール設定フォームの型

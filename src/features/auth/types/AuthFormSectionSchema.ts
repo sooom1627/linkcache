@@ -5,8 +5,8 @@ import { z } from "zod";
  * @param t - 翻訳関数
  * @returns Zodスキーマ
  */
-export const createAuthFormSectionSchema = (t: (key: string) => string) =>
-  z.object({
+export function createAuthFormSectionSchema(t: (key: string) => string) {
+  return z.object({
     email: z
       .string()
       .min(1, {
@@ -37,6 +37,7 @@ export const createAuthFormSectionSchema = (t: (key: string) => string) =>
         ),
       }),
   });
+}
 
 export type AuthFormSection = z.infer<
   ReturnType<typeof createAuthFormSectionSchema>
