@@ -66,7 +66,12 @@
           "user_id_required": "ユーザーIDは必須です",
           "user_id_invalid": "有効なユーザーIDを入力してください",
           "username_required": "ユーザー名は必須です",
-          "username_invalid": "有効なユーザー名を入力してください"
+          "username_invalid": "有効なユーザー名を入力してください",
+          "user_id_min_length": "ユーザーIDは4文字以上である必要があります",
+          "user_id_max_length": "ユーザーIDは32文字以内である必要があります",
+          "username_min_length": "ユーザー名は4文字以上である必要があります",
+          "username_max_length": "ユーザー名は32文字以内である必要があります",
+          "user_id_regex": "ユーザーIDは英数字とアンダースコアのみ使用できます"
         },
         "callback_messages": {
           "success_title": "更新完了",

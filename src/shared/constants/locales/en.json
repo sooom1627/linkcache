@@ -66,7 +66,12 @@
           "user_id_required": "User ID is required",
           "user_id_invalid": "Invalid User ID",
           "username_required": "Username is required",
-          "username_invalid": "Invalid Username"
+          "username_invalid": "Invalid Username",
+          "user_id_min_length": "User ID must be at least 4 characters",
+          "user_id_max_length": "User ID must be at most 32 characters",
+          "username_min_length": "Username must be at least 4 characters",
+          "username_max_length": "Username must be at most 32 characters",
+          "user_id_regex": "Letters, numbers, and underscores only"
         },
         "callback_messages": {
           "success_title": "Update Complete",
