@@ -48,6 +48,21 @@ export interface UploadAvatarRequest {
  * });
  * ```
  */
+
+function createPostgrestError(
+  message: string,
+  code: string = "PGRST301",
+): PostgrestError {
+  const error: PostgrestError = {
+    name: "PostgrestError",
+    message,
+    details: message,
+    hint: "",
+    code,
+  };
+  return error;
+}
+
 export function useUploadAvatar(options?: {
   onSuccess?: () => void;
   onError?: () => void;
@@ -61,12 +76,9 @@ export function useUploadAvatar(options?: {
     UploadAvatarRequest
   >({
     mutationFn: async ({ fileUri, mimeType }) => {
+      
       if (!user?.id) {
-        throw {
-          message: "User not authenticated",
-          code: "AUTH001",
-          name: "PostgrestError",
-        } as PostgrestError;
+        throw createPostgrestError("User not authenticated", "AUTH001");
       }
 
       const extension = getExtensionFromMimeType(mimeType);
