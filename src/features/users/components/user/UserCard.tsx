@@ -56,7 +56,10 @@ export default function UserCard({
     if (hasPermission) {
       void handleImagePicked(pickImageFromCamera);
     } else {
-      Alert.alert("Permission Required", "Please allow camera access.");
+      Alert.alert(
+        t("users.user_card.permission_required"),
+        t("users.user_card.please_allow_access_to_camera"),
+      );
     }
   };
 
@@ -74,7 +77,6 @@ export default function UserCard({
 
   const handleAvatarUpload = () => {
     if (Platform.OS === "ios") {
-      // iOSの場合はActionSheetを使用
       ActionSheetIOS.showActionSheetWithOptions(
         {
           options: [
@@ -95,8 +97,8 @@ export default function UserCard({
     } else {
       // Androidの場合はAlertを使用
       Alert.alert(
-        "Upload Avatar",
-        "Choose a photo source",
+        t("users.user_card.upload_avatar"),
+        t("users.user_card.choose_a_photo_source"),
         [
           {
             text: t("users.user_card.cancel"),

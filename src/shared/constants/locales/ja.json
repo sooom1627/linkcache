@@ -36,6 +36,7 @@
     "user_card": {
       "permission_required": "権限が必要です",
       "please_allow_access_to_photo_library": "写真ライブラリへのアクセスを許可してください。",
+      "please_allow_access_to_camera": "カメラへのアクセスを許可してください。",
       "edit_profile": "プロフィールを編集",
       "cancel": "キャンセル",
       "take_photo": "写真を撮る",

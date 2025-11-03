@@ -36,6 +36,7 @@
     "user_card": {
       "permission_required": "Permission Required",
       "please_allow_access_to_photo_library": "Please allow access to your photo library.",
+      "please_allow_access_to_camera": "Please allow access to your camera.",
       "edit_profile": "Edit Profile",
       "cancel": "Cancel",
       "take_photo": "Take Photo",
