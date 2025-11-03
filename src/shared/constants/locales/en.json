@@ -34,7 +34,12 @@
   },
   "users": {
     "user_card": {
-      "edit_profile": "Edit Profile"
+      "permission_required": "Permission Required",
+      "please_allow_access_to_photo_library": "Please allow access to your photo library.",
+      "edit_profile": "Edit Profile",
+      "cancel": "Cancel",
+      "take_photo": "Take Photo",
+      "choose_from_library": "Choose from Library"
     },
     "setting_modal": {
       "title": "Settings",

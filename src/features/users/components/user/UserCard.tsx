@@ -66,8 +66,8 @@ export default function UserCard({
       void handleImagePicked(pickImageFromLibrary);
     } else {
       Alert.alert(
-        "Permission Required",
-        "Please allow access to your photo library.",
+        t("users.user_card.permission_required"),
+        t("users.user_card.please_allow_access_to_photo_library"),
       );
     }
   };
@@ -77,7 +77,11 @@ export default function UserCard({
       // iOSの場合はActionSheetを使用
       ActionSheetIOS.showActionSheetWithOptions(
         {
-          options: ["Cancel", "Take Photo", "Choose from Library"],
+          options: [
+            t("users.user_card.cancel"),
+            t("users.user_card.take_photo"),
+            t("users.user_card.choose_from_library"),
+          ],
           cancelButtonIndex: 0,
         },
         (buttonIndex) => {
@@ -95,17 +99,17 @@ export default function UserCard({
         "Choose a photo source",
         [
           {
-            text: "Cancel",
+            text: t("users.user_card.cancel"),
             style: "cancel",
           },
           {
-            text: "Take Photo",
+            text: t("users.user_card.take_photo"),
             onPress: () => {
               void handleCameraSelected();
             },
           },
           {
-            text: "Choose from Library",
+            text: t("users.user_card.choose_from_library"),
             onPress: () => {
               void handleLibrarySelected();
             },
