@@ -22,7 +22,7 @@ export default function SettingItem({
       accessibilityLabel={title}
       accessibilityHint="Open setting item"
       hitSlop={8}
-      className="w-full flex-row items-start justify-between gap-4 p-2"
+      className="pressable-active:bg-slate-100 w-full flex-row items-start justify-between gap-4 p-2"
     >
       {children}
       <View className="flex-1 flex-row items-center justify-between gap-4">

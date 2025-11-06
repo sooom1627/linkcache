@@ -1,27 +1,47 @@
+import type { TFunction } from "i18next";
 import { z } from "zod";
 
 /**
  * プロフィール設定フォームのバリデーションスキーマ
  */
-export const ProfileSetupSchema = z.object({
-  user_id: z
-    .string()
-    .min(4, "User ID must be at least 4 characters")
-    .max(32, "User ID must be at most 32 characters")
-    .regex(
-      /^[a-zA-Z0-9_]+$/,
-      "User ID can only contain letters, numbers, and underscores",
-    ),
-  username: z
-    .string()
-    .min(4, "Username must be at least 4 characters")
-    .max(32, "Username must be at most 32 characters"),
-});
+export function ProfileSetupSchema(t: TFunction<"translation", undefined>) {
+  return z.object({
+    user_id: z
+      .string()
+      .min(4, {
+        message: t(
+          "users.setting_modal.profile_edit.error_messages.user_id_min_length",
+        ),
+      })
+      .max(32, {
+        message: t(
+          "users.setting_modal.profile_edit.error_messages.user_id_max_length",
+        ),
+      })
+      .regex(/^[a-zA-Z0-9_]+$/, {
+        message: t(
+          "users.setting_modal.profile_edit.error_messages.user_id_regex",
+        ),
+      }),
+    username: z
+      .string()
+      .min(4, {
+        message: t(
+          "users.setting_modal.profile_edit.error_messages.username_min_length",
+        ),
+      })
+      .max(32, {
+        message: t(
+          "users.setting_modal.profile_edit.error_messages.username_max_length",
+        ),
+      }),
+  });
+}
 
 /**
  * プロフィール設定フォームの型
  */
-export type ProfileSetupForm = z.infer<typeof ProfileSetupSchema>;
+export type ProfileSetupForm = z.infer<ReturnType<typeof ProfileSetupSchema>>;
 
 /**
  * プロフィール設定フォームのエラー型

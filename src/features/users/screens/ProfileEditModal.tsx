@@ -1,9 +1,10 @@
 import { forwardRef, useCallback, useEffect, useMemo, useRef } from "react";
 
-import { Alert, Text, View, type TextInput } from "react-native";
+import { Alert, View, type TextInput } from "react-native";
 
 import type { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { AtSign, UserRound } from "lucide-react-native";
+import { useTranslation } from "react-i18next";
 
 import { FormButton, FormInput } from "@/src/shared/components/forms";
 import { ScrollableBottomSheetModal } from "@/src/shared/components/modals";
@@ -23,6 +24,7 @@ export const ProfileEditModal = forwardRef<
   ProfileEditModalProps
 >(({ onClose }, ref) => {
   const { data: profile } = useProfile();
+  const { t } = useTranslation();
 
   // フォーム状態管理
   const { formData, errors, setUserId, setUsername, validateForm } =
@@ -63,6 +65,7 @@ export const ProfileEditModal = forwardRef<
 
   // user_idのヘルパーテキスト
   const userIdHelper = getUserIdHelperText(
+    t,
     formData.user_id,
     isCheckingUserId,
     checkError,
@@ -99,10 +102,24 @@ export const ProfileEditModal = forwardRef<
         { user_id: formData.user_id, username: formData.username },
         {
           onSuccess: () => {
-            Alert.alert("Success", "Profile updated successfully");
+            Alert.alert(
+              t(
+                "users.setting_modal.profile_edit.callback_messages.success_title",
+              ),
+              t(
+                "users.setting_modal.profile_edit.callback_messages.success_message",
+              ),
+            );
           },
           onError: () => {
-            Alert.alert("Error", "Failed to update profile");
+            Alert.alert(
+              t(
+                "users.setting_modal.profile_edit.callback_messages.error_title",
+              ),
+              t(
+                "users.setting_modal.profile_edit.callback_messages.error_message",
+              ),
+            );
           },
         },
       );
@@ -127,23 +144,23 @@ export const ProfileEditModal = forwardRef<
   return (
     <ScrollableBottomSheetModal
       ref={ref}
-      snapPoints={["70%", "90%"]}
+      snapPoints={["50%", "90%"]}
       index={1}
       enablePanDownToClose={false}
       stackBehavior="switch"
     >
       <View className="flex-1 gap-4 px-4 pb-10">
-        <ModalHeader title="Update Your Profile" onClose={handleOnClose} />
+        <ModalHeader
+          title={t("users.setting_modal.profile_edit.title")}
+          onClose={handleOnClose}
+        />
         {/* User ID & Username Input */}
         <View className="w-full gap-2">
-          <View className="w-full">
-            <Text className="text-slate-500">
-              Update your user ID and display name
-            </Text>
-          </View>
           <FormInput
-            label="User ID"
-            placeholder="User ID (4-32 characters)"
+            label={t("users.setting_modal.profile_edit.user_id")}
+            placeholder={t(
+              "users.setting_modal.profile_edit.user_id_placeholder",
+            )}
             value={formData.user_id}
             onChangeText={setUserId}
             keyboardType="default"
@@ -159,8 +176,10 @@ export const ProfileEditModal = forwardRef<
           />
           <FormInput
             ref={usernameInputRef}
-            label="Display Name"
-            placeholder="Display Name (4-32 characters)"
+            label={t("users.setting_modal.profile_edit.username")}
+            placeholder={t(
+              "users.setting_modal.profile_edit.username_placeholder",
+            )}
             value={formData.username}
             onChangeText={setUsername}
             keyboardType="default"
@@ -180,8 +199,8 @@ export const ProfileEditModal = forwardRef<
               isPending
                 ? "Updating..."
                 : isUnchanged
-                  ? "No changes"
-                  : "Update Profile"
+                  ? t("users.setting_modal.profile_edit.no_changes")
+                  : t("users.setting_modal.profile_edit.update_profile")
             }
             onPress={handleUpdateProfile}
             disabled={!submitEnabled || isUnchanged}

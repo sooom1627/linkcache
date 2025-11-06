@@ -1,6 +1,6 @@
 import type { PostgrestError } from "@supabase/supabase-js";
 
-import { supabase } from "@/src/shared/utils/supabase";
+import { supabase } from "@/src/shared/lib/supabase";
 
 /**
  * PostgrestErrorと互換性のあるカスタムエラーを作成
@@ -38,11 +38,6 @@ export async function uploadAvatar(
     throw createPostgrestError("User not authenticated", "AUTH001");
   }
 
-  if (!filePath || !fileData) {
-    throw createPostgrestError("File path and data are required", "STORAGE001");
-  }
-
-  // Storageにアップロード（upsertで自動上書き）
   const { data: uploadData, error: uploadError } = await supabase.storage
     .from("avatars")
     .upload(filePath, fileData, {
@@ -61,12 +56,10 @@ export async function uploadAvatar(
     throw createPostgrestError("Upload failed: No data returned", "STORAGE003");
   }
 
-  // Public URLを取得
   const {
     data: { publicUrl },
   } = supabase.storage.from("avatars").getPublicUrl(filePath);
 
-  // usersテーブルのavatar_urlを更新
   const { error: updateError } = await supabase
     .from("users")
     .update({ avatar_url: publicUrl, updated_at: new Date().toISOString() })

@@ -1,0 +1,99 @@
+{
+  "welcome_message": "Welcome to the app!",
+  "auth_messages": {
+    "sign_in_messages": {
+      "title": "Hi, Welcome Back! 👋",
+      "subtitle": "New here?",
+      "link": "/create-account",
+      "linkText": "Create an account",
+      "buttonTitle": "Sign In",
+      "failed_message_title": "Sign In Failed",
+      "failed_message_description": "Invalid email or password. Please try again."
+    },
+    "create_account_messages": {
+      "title": "Welcome to Cache! 🎉",
+      "subtitle": "Already have an account?",
+      "link": "/sign-in",
+      "linkText": "Sign In",
+      "buttonTitle": "Create Account",
+      "failed_message_title": "Create Account Failed",
+      "failed_message_description": "Account creation failed. Please try again.",
+      "failed_message_already_registered": "This email address is already registered. Please use a different email address."
+    },
+    "auth_form_messages": {
+      "email_placeholder": "Email",
+      "password_placeholder": "Password",
+      "error_messages": {
+        "email_required": "Email is required",
+        "email_invalid": "Invalid email address",
+        "password_required": "Password is required",
+        "password_min_length": "Password must be at least 8 characters",
+        "password_max_length": "Password is too long"
+      }
+    }
+  },
+  "users": {
+    "user_card": {
+      "permission_required": "Permission Required",
+      "please_allow_access_to_photo_library": "Please allow access to your photo library.",
+      "please_allow_access_to_camera": "Please allow access to your camera.",
+      "edit_profile": "Edit Profile",
+      "cancel": "Cancel",
+      "take_photo": "Take Photo",
+      "choose_from_library": "Choose from Library"
+    },
+    "setting_modal": {
+      "title": "Settings",
+      "account_title": "Your Account",
+      "information_title": "App Information",
+      "menu_items": {
+        "password": "Password",
+        "timezone_language": "Timezone & Language",
+        "help": "Help",
+        "privacy_policy": "Privacy Policy",
+        "terms_of_service": "Terms of Service",
+        "version": "Version"
+      },
+      "profile_edit": {
+        "title": "Edit Profile",
+        "user_id": "User ID",
+        "user_id_placeholder": "User ID (4-32 characters)",
+        "username": "Username",
+        "username_placeholder": "Username (4-32 characters)",
+        "no_changes": "No changes",
+        "update_profile": "Update Profile",
+        "form_validation_messages": {
+          "checking_availability": "Checking availability...",
+          "error_checking_availability": "Error checking availability",
+          "available": "✓ Available",
+          "already_taken": "✗ Already taken"
+        },
+        "error_messages": {
+          "user_id_required": "User ID is required",
+          "user_id_invalid": "Invalid User ID",
+          "username_required": "Username is required",
+          "username_invalid": "Invalid Username",
+          "user_id_min_length": "User ID must be at least 4 characters",
+          "user_id_max_length": "User ID must be at most 32 characters",
+          "username_min_length": "Username must be at least 4 characters",
+          "username_max_length": "Username must be at most 32 characters",
+          "user_id_regex": "Letters, numbers, and underscores only"
+        },
+        "callback_messages": {
+          "success_title": "Update Complete",
+          "success_message": "Profile updated successfully",
+          "error_title": "Update Failed",
+          "error_message": "Failed to update profile. Please try again."
+        }
+      },
+      "locale_setting": {
+        "title": "Timezone & Language",
+        "timezone": "Timezone",
+        "timezone_info": "The timezone is according to the device settings",
+        "language": "Language",
+        "error_title": "Error",
+        "error_message": "Failed to change language. Please try again."
+      }
+    }
+  }
+}

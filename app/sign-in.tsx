@@ -3,6 +3,7 @@ import { Alert, ScrollView, View } from "react-native";
 import { useRouter } from "expo-router";
 
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -12,23 +13,25 @@ import { useSignIn } from "@/src/features/auth/hooks/useSignIn";
 import { AuthTitleSection } from "@/src/features/auth/screens/AuthTitleSection";
 import { FormSection } from "@/src/features/auth/screens/FormSection";
 import { SocialOauthSection } from "@/src/features/auth/screens/SocialOauthSection";
-import type { AuthFormSection } from "@/src/features/auth/types/AuthFormSectionSchema";
+import type { AuthFormSection } from "@/src/features/auth/types/authFormSectionSchema.types";
 import { userQueryKeys } from "@/src/features/users/constants/queryKeys";
 import { Divider } from "@/src/shared/components/layout/Divider";
 
 export default function SignIn() {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
+
   const { mutateAsync: signIn } = useSignIn({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: userQueryKeys.profile() });
       router.replace("/");
     },
-    onError: (error) => {
-      const friendlyMessage = error.message.includes("invalid credentials")
-        ? "Invalid email or password. Please try again."
-        : "Sign in failed. Please try again.";
-      Alert.alert("Sign In Failed", friendlyMessage);
+    onError: () => {
+      Alert.alert(
+        t("auth_messages.sign_in_messages.failed_message_title"),
+        t("auth_messages.sign_in_messages.failed_message_description"),
+      );
     },
   });
 
@@ -52,31 +55,35 @@ export default function SignIn() {
         <View className="flex flex-1 flex-col items-start justify-end">
           {/* SignIn Title */}
           <AuthTitleSection
-            title="Hi, Welcome Back! 👋"
-            subtitle="New here?"
+            title={t("auth_messages.sign_in_messages.title")}
+            subtitle={t("auth_messages.sign_in_messages.subtitle")}
             link="/create-account"
-            linkText="Create an account"
+            linkText={t("auth_messages.sign_in_messages.linkText")}
           />
           <View
-            style={{ paddingBottom: insets.bottom }}
-            className="flex w-full flex-col items-start justify-start rounded-t-[32px] bg-white px-4 pt-10"
+            style={{ paddingBottom: insets.bottom + 8 }}
+            className="flex w-full flex-col items-start justify-start rounded-t-[32px] bg-white px-6 pt-10"
           >
             {/* SignIn Form */}
             <FormSection
               emailConfig={{
                 name: "email",
-                placeholder: "Email",
+                placeholder: t(
+                  "auth_messages.auth_form_messages.email_placeholder",
+                ),
                 textContentType: "emailAddress",
                 autoCapitalize: "none",
               }}
               passwordConfig={{
                 name: "password",
-                placeholder: "Password",
+                placeholder: t(
+                  "auth_messages.auth_form_messages.password_placeholder",
+                ),
                 textContentType: "password",
                 autoCapitalize: "none",
                 secureTextEntry: true,
               }}
-              buttonTitle="Sign In"
+              buttonTitle={t("auth_messages.sign_in_messages.buttonTitle")}
               onSubmit={handleSignIn}
             />
 

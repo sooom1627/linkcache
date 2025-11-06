@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
 
-import { supabase } from "@/src/shared/utils/supabase";
+import { supabase } from "@/src/shared/lib/supabase";
 
 import { getSession } from "../api";
 import type { AuthState } from "../types/auth.types";

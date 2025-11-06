@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
+import { useTranslation } from "react-i18next";
 
 import type { ProfileSetupErrors } from "../types/ProfileSetupSchema";
 import { ProfileSetupSchema } from "../types/ProfileSetupSchema";
@@ -43,6 +45,8 @@ export function useProfileForm(
   initialData?: ProfileFormData,
 ): UseProfileFormReturn {
   const defaultData: ProfileFormData = { user_id: "", username: "" };
+  const { t } = useTranslation();
+  const schema = useMemo(() => ProfileSetupSchema(t), [t]);
   const [formData, setFormData] = useState<ProfileFormData>(
     initialData ?? defaultData,
   );
@@ -60,9 +64,7 @@ export function useProfileForm(
 
     // user_idのバリデーション
     if (formData.user_id.length > 0) {
-      const result = ProfileSetupSchema.shape.user_id.safeParse(
-        formData.user_id,
-      );
+      const result = schema.shape.user_id.safeParse(formData.user_id);
       if (!result.success) {
         newErrors.user_id = result.error.issues[0]?.message;
       }
@@ -70,16 +72,14 @@ export function useProfileForm(
 
     // usernameのバリデーション
     if (formData.username.length > 0) {
-      const result = ProfileSetupSchema.shape.username.safeParse(
-        formData.username,
-      );
+      const result = schema.shape.username.safeParse(formData.username);
       if (!result.success) {
         newErrors.username = result.error.issues[0]?.message;
       }
     }
 
     setErrors(newErrors);
-  }, [formData.user_id, formData.username]);
+  }, [formData.user_id, formData.username, schema]);
 
   // 個別フィールド更新
   const setUserId = (value: string) => {
@@ -92,7 +92,7 @@ export function useProfileForm(
 
   // 最終バリデーション（送信時）
   const validateForm = (): boolean => {
-    const result = ProfileSetupSchema.safeParse(formData);
+    const result = schema.safeParse(formData);
 
     if (!result.success) {
       const newErrors: ProfileSetupErrors = {};
