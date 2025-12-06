@@ -10,7 +10,8 @@ const createTestQueryClient = () =>
     defaultOptions: {
       queries: {
         retry: false,
-        gcTime: Infinity,
+        staleTime: 0,
+        gcTime: 0,
       },
     },
   });
