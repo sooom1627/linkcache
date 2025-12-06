@@ -45,6 +45,7 @@ src/features/[feature-name]/
 │   ├── context/            # 状態管理のテスト（必須）
 │   ├── hooks/             # カスタムフックのテスト（複雑なロジックのみ）
 │   ├── integration/       # 統合テスト（主要フロー1-2個）
+│   ├── utils/             # ユーティリティのテスト
 │   └── test-utils.tsx     # Feature固有のテストユーティリティ
 ├── __mocks__/              # モックファイル
 ├── context/
@@ -57,6 +58,7 @@ src/features/[feature-name]/
 **テストすべきもの：**
 - **context** - ビジネスロジックの中心（必須）
 - **hooks** - 複雑なロジックがある場合のみ
+- **utils** - ビジネスロジックを含むユーティリティ
 - **統合テスト** - 主要なユーザーフロー（1-2個）
 
 **テスト不要なもの：**
@@ -86,11 +88,12 @@ src/services/
 - 単純なユーティリティ → テスト不要
 - 複雑な計算・変換ロジック → 必要に応じてテスト
 
-テストが必要な場合は、対象ファイルと同じ階層に配置：
+テストが必要な場合は、対象ファイルと同じ階層に配置するか、`__tests__`ディレクトリを作成して配置：
 ```
 src/shared/utils/
 ├── dateFormatter.ts
-└── dateFormatter.test.ts  # 複雑なロジックがある場合のみ
+└── __tests__/
+    └── dateFormatter.test.ts  # 複雑なロジックがある場合のみ
 ```
 
 ### 4. app/ - ルーティング・アプリ初期化
@@ -113,7 +116,8 @@ app/
 
 ### Phase 1: 基礎テスト（最重要）
 - Zustandストアの単体テスト
-- 複雑なビジネスロジックのテスト
+- 複雑なビジネスロジック（utils）のテスト
+- 複雑なカスタムフック（hooks）のテスト
 
 ### Phase 2: ロジックテスト（重要）
 - フォームバリデーション
@@ -126,7 +130,15 @@ app/
 
 ## モック戦略
 
-シンプルなモックを心がけます：
+シンプルなモックを心がけます。型安全性を高めるため、`jest.mocked()` の使用を推奨します。
+
+```typescript
+// ❌ 避ける: 安全でないキャスト
+(apiClient.get as jest.Mock).mockResolvedValue(data);
+
+// ✅ 推奨: 型安全なモック操作
+jest.mocked(apiClient.get).mockResolvedValue(data);
+```
 
 ```typescript
 // ❌ 避ける: 過度に複雑なモック
@@ -171,7 +183,7 @@ const queryClient = new QueryClient({
 
 - ユニットテスト: `[ファイル名].test.ts`
 - 統合テスト: `[機能名]-flow.test.tsx`
-- テストユーティリティ: `test-utils.tsx`
+- テストユーティリティ: `test-utils.test.tsx` (Jestの仕様上、最低1つのテストを含む必要があるため)
 - モック: `[サービス名].mock.ts`
 
 ## 実装例
@@ -243,13 +255,13 @@ export const mockSupabaseClient = {
 
 ```bash
 # 全てのテスト
-npm test
+pnpm test
 
 # Feature別のテスト
-npm test -- src/features/[feature-name]/__tests__
+pnpm test src/features/[feature-name]/__tests__
 
 # カバレッジレポート付き
-npm run test:coverage
+pnpm run test:coverage
 ```
 
 ## アンチパターン
@@ -299,28 +311,27 @@ npm run test:coverage
 ## 新しいFeatureでのテスト追加手順
 
 1. `src/features/[feature-name]/__tests__/` ディレクトリを作成
-2. 必要なサブディレクトリを作成（stores/, hooks/, integration/）
-3. ストアのテストから始める
-4. 複雑なフックがあればテストを追加
-5. 主要なフローの統合テストを1つ作成
+2. 必要なサブディレクトリを作成（stores/, hooks/, integration/, utils/）
+3. 複雑なフックやロジックがあればテストを追加
+4. 主要なフローの統合テストを1つ作成
 
 ## カバレッジ目標（参考値）
 
 複雑になりすぎないよう、以下を目安とします：
 
-- **Features (stores)**: 70-80%
-- **Features (hooks)**: 60%（複雑なもののみ）
+- **Features (hooks/utils)**: 60-80%（複雑なもののみ）
+- **Features (integration)**: 主要フローの疎通確認
 - **Services**: モックの提供が主（カバレッジ不問）
 - **Shared**: 50%（複雑なユーティリティのみ）
 - **全体**: 50-60%（無理に上げない）
 
 ## 参考実装
 
-実際の実装例は [auth feature のテスト](mdc:src/features/auth/__tests__) を参照してください：
+実際の実装例は [users feature のテスト](mdc:src/features/users/__tests__) を参照してください：
 
-- [authStore.test.ts](mdc:src/features/auth/__tests__/stores/authStore.test.ts) - ストアテストの例
-- [useLoginForm.test.ts](mdc:src/features/auth/__tests__/hooks/useLoginForm.test.ts) - フックテストの例
-- [auth-flow.test.tsx](mdc:src/features/auth/__tests__/integration/auth-flow.test.tsx) - 統合テストの例
-- [test-utils.tsx](mdc:src/features/auth/__tests__/test-utils.tsx) - テストユーティリティの例
+- [profile-setup.utils.test.ts](mdc:src/features/users/__tests__/utils/profile-setup.utils.test.ts) - ユーティリティテストの例
+- [useProfileForm.test.ts](mdc:src/features/users/__tests__/hooks/useProfileForm.test.ts) - フックテストの例
+- [ProfileEditFlow.test.tsx](mdc:src/features/users/__tests__/integration/ProfileEditFlow.test.tsx) - 統合テストの例
+- [test-utils.test.tsx](mdc:src/features/users/__tests__/test-utils.test.tsx) - テストユーティリティの例
 
 これらの方針に従うことで、保守性が高く、価値のあるテストスイートを維持できます。
