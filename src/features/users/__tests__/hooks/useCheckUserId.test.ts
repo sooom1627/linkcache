@@ -11,11 +11,15 @@ jest.mock("../../api", () => ({
 
 // Mock useDebounce to return value immediately for testing, or we can use real timers
 // Using real implementation with fake timers is better for testing logic
-jest.useFakeTimers();
 
 describe("useCheckUserId", () => {
   beforeEach(() => {
+    jest.useFakeTimers();
     jest.clearAllMocks();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   it("should not fetch when userId is too short", async () => {

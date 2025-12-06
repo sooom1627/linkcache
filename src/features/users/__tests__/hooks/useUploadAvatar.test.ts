@@ -24,12 +24,14 @@ jest.mock("../../../auth", () => ({
   }),
 }));
 
-// Spy on Alert
-jest.spyOn(Alert, "alert");
-
 describe("useUploadAvatar", () => {
   beforeEach(() => {
+    jest.spyOn(Alert, "alert");
     jest.clearAllMocks();
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
   it("should upload avatar successfully", async () => {
