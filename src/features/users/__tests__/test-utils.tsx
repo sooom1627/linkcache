@@ -29,10 +29,3 @@ export const wrapper = ({ children }: { children: React.ReactNode }) => (
 // and to allow importing this file as a test utility.
 export const customRender = (ui: React.ReactElement, options = {}) =>
   render(ui, { wrapper, ...options });
-
-// Dummy test to satisfy Jest
-describe("test-utils", () => {
-  it("dummy", () => {
-    expect(true).toBe(true);
-  });
-});

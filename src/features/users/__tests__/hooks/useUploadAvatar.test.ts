@@ -6,7 +6,7 @@ import { convertFileToArrayBuffer } from "@/src/shared/utils/file";
 
 import { uploadAvatar } from "../../api";
 import { useUploadAvatar } from "../../hooks/useUploadAvatar";
-import { wrapper } from "../test-utils.test";
+import { wrapper } from "../test-utils";
 
 // Mocks
 jest.mock("../../api", () => ({

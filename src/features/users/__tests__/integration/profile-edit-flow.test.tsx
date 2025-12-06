@@ -1,5 +1,7 @@
 import React from "react";
 
+import type { PostgrestError } from "@supabase/supabase-js";
+import type { UseQueryResult } from "@tanstack/react-query";
 import { fireEvent, screen, waitFor } from "@testing-library/react-native";
 
 import { useCheckUserId } from "../../hooks/useCheckUserId";
@@ -7,7 +9,8 @@ import { useProfile } from "../../hooks/useProfile";
 import { useProfileForm } from "../../hooks/useProfileForm";
 import { useUpdateProfile } from "../../hooks/useUpdateProfile";
 import { ProfileEditModal } from "../../screens/ProfileEditModal";
-import { customRender } from "../test-utils.test";
+import type { UserProfile } from "../../types";
+import { customRender } from "../test-utils";
 
 // Mock ScrollableBottomSheetModal to render content immediately without bottom sheet logic
 jest.mock("@/src/shared/components/modals", () => ({
@@ -41,6 +44,22 @@ jest.mock("../../hooks/useProfileForm", () => ({
   useProfileForm: jest.fn(),
 }));
 
+// Helper to create a successful query result with proper typing
+const createSuccessQueryResult = <T,>(
+  data: T,
+): UseQueryResult<T, PostgrestError> =>
+  ({
+    data,
+    isLoading: false,
+    isError: false,
+    error: null,
+    isSuccess: true,
+    status: "success",
+    fetchStatus: "idle",
+    isPending: false,
+    refetch: jest.fn(),
+  }) as unknown as UseQueryResult<T, PostgrestError>;
+
 describe("ProfileEditFlow", () => {
   const mockOnClose = jest.fn();
   const mockUpdateProfile = jest.fn();
@@ -60,25 +79,17 @@ describe("ProfileEditFlow", () => {
     jest.clearAllMocks();
 
     // Setup default hook returns
-    jest.mocked(useProfile).mockReturnValue({
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
-      data: { user_id: "original_id", username: "Original Name" } as any, // Partial mock
-      isPending: false,
-      isError: false,
-      error: null,
-      refetch: jest.fn(),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any);
+    const mockProfile: UserProfile = {
+      id: "1",
+      user_id: "original_id",
+      username: "Original Name",
+      avatar_url: null,
+    };
+    jest
+      .mocked(useProfile)
+      .mockReturnValue(createSuccessQueryResult(mockProfile));
 
-    jest.mocked(useCheckUserId).mockReturnValue({
-      data: true, // Available
-      isLoading: false,
-      error: null,
-      isSuccess: true,
-      status: "success",
-      fetchStatus: "idle",
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any);
+    jest.mocked(useCheckUserId).mockReturnValue(createSuccessQueryResult(true));
 
     jest.mocked(useUpdateProfile).mockReturnValue({
       data: undefined,
@@ -114,15 +125,15 @@ describe("ProfileEditFlow", () => {
 
   it("disables submit button when no changes", () => {
     // Mock profile same as form data
-    jest.mocked(useProfile).mockReturnValue({
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
-      data: { user_id: "testuser", username: "Test User" } as any,
-      isPending: false,
-      isError: false,
-      error: null,
-      refetch: jest.fn(),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any);
+    const mockProfile: UserProfile = {
+      id: "1",
+      user_id: "testuser",
+      username: "Test User",
+      avatar_url: null,
+    };
+    jest
+      .mocked(useProfile)
+      .mockReturnValue(createSuccessQueryResult(mockProfile));
 
     customRender(<ProfileEditModal onClose={mockOnClose} />);
 
@@ -140,15 +151,9 @@ describe("ProfileEditFlow", () => {
     });
 
     // Check user id returns false (taken)
-    jest.mocked(useCheckUserId).mockReturnValue({
-      data: false,
-      isLoading: false,
-      error: null,
-      isSuccess: true,
-      status: "success",
-      fetchStatus: "idle",
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any);
+    jest
+      .mocked(useCheckUserId)
+      .mockReturnValue(createSuccessQueryResult(false));
 
     customRender(<ProfileEditModal onClose={mockOnClose} />);
 
@@ -157,13 +162,6 @@ describe("ProfileEditFlow", () => {
         "users.setting_modal.profile_edit.form_validation_messages.already_taken",
       ),
     ).toBeTruthy();
-
-    // Button should be disabled (logic inside component checks this)
-    // Note: Since we mocked useProfileForm, we need to ensure the component logic
-    // uses the mocked return values to determine button state.
-    // The component logic for disabled state:
-    // !submitEnabled || isUnchanged
-    // submitEnabled uses isUserIdAvailable which comes from useCheckUserId mock.
   });
 
   it("calls updateProfile when submit button is pressed", async () => {
@@ -174,15 +172,15 @@ describe("ProfileEditFlow", () => {
       validateForm: jest.fn(() => true),
     });
 
-    jest.mocked(useProfile).mockReturnValue({
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
-      data: { user_id: "old_id", username: "Old Name" } as any,
-      isPending: false,
-      isError: false,
-      error: null,
-      refetch: jest.fn(),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any);
+    const mockProfile: UserProfile = {
+      id: "1",
+      user_id: "old_id",
+      username: "Old Name",
+      avatar_url: null,
+    };
+    jest
+      .mocked(useProfile)
+      .mockReturnValue(createSuccessQueryResult(mockProfile));
 
     customRender(<ProfileEditModal onClose={mockOnClose} />);
 

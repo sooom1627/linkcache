@@ -2,7 +2,7 @@ import { renderHook, waitFor } from "@testing-library/react-native";
 
 import { checkUserIdAvailability } from "../../api";
 import { useCheckUserId } from "../../hooks/useCheckUserId";
-import { wrapper } from "../test-utils.test";
+import { wrapper } from "../test-utils";
 
 // Mock api
 jest.mock("../../api", () => ({
