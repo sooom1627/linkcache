@@ -1,8 +1,11 @@
 import React from "react";
 
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import type { PostgrestError } from "@supabase/supabase-js";
 import type { UseQueryResult } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, screen, waitFor } from "@testing-library/react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import { useCheckUserId } from "../../hooks/useCheckUserId";
 import { useProfile } from "../../hooks/useProfile";
@@ -43,6 +46,25 @@ jest.mock("../../hooks/useUpdateProfile", () => ({
 jest.mock("../../hooks/useProfileForm", () => ({
   useProfileForm: jest.fn(),
 }));
+
+// Create a local query client for this test file
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      gcTime: 0,
+    },
+  },
+});
+
+// Define wrapper locally to control queryClient
+const wrapper = ({ children }: { children: React.ReactNode }) => (
+  <GestureHandlerRootView style={{ flex: 1 }}>
+    <QueryClientProvider client={queryClient}>
+      <BottomSheetModalProvider>{children}</BottomSheetModalProvider>
+    </QueryClientProvider>
+  </GestureHandlerRootView>
+);
 
 // Helper to create a successful query result with proper typing
 const createSuccessQueryResult = <T,>(
@@ -113,8 +135,14 @@ describe("ProfileEditFlow", () => {
     jest.mocked(useProfileForm).mockReturnValue(defaultFormState);
   });
 
+  afterEach(() => {
+    queryClient.getQueryCache().clear();
+    queryClient.getMutationCache().clear();
+    jest.clearAllMocks();
+  });
+
   it("renders correctly with initial data", () => {
-    customRender(<ProfileEditModal onClose={mockOnClose} />);
+    customRender(<ProfileEditModal onClose={mockOnClose} />, { wrapper });
 
     expect(
       screen.getByText("users.setting_modal.profile_edit.title"),
@@ -135,9 +163,8 @@ describe("ProfileEditFlow", () => {
       .mocked(useProfile)
       .mockReturnValue(createSuccessQueryResult(mockProfile));
 
-    customRender(<ProfileEditModal onClose={mockOnClose} />);
+    customRender(<ProfileEditModal onClose={mockOnClose} />, { wrapper });
 
-    // @ts-ignore - toBeDisabled is available in test environment
     expect(
       screen.getByText("users.setting_modal.profile_edit.no_changes"),
     ).toBeDisabled();
@@ -155,7 +182,7 @@ describe("ProfileEditFlow", () => {
       .mocked(useCheckUserId)
       .mockReturnValue(createSuccessQueryResult(false));
 
-    customRender(<ProfileEditModal onClose={mockOnClose} />);
+    customRender(<ProfileEditModal onClose={mockOnClose} />, { wrapper });
 
     expect(
       screen.getByText(
@@ -182,7 +209,7 @@ describe("ProfileEditFlow", () => {
       .mocked(useProfile)
       .mockReturnValue(createSuccessQueryResult(mockProfile));
 
-    customRender(<ProfileEditModal onClose={mockOnClose} />);
+    customRender(<ProfileEditModal onClose={mockOnClose} />, { wrapper });
 
     fireEvent.press(
       screen.getByText("users.setting_modal.profile_edit.update_profile"),

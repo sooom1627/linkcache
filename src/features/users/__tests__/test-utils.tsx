@@ -26,7 +26,6 @@ export const wrapper = ({ children }: { children: React.ReactNode }) => (
   </GestureHandlerRootView>
 );
 
-// Create a custom render function to appease Jest "test suite must contain at least one test"
-// and to allow importing this file as a test utility.
+// Custom render function that wraps components with necessary test providers
 export const customRender = (ui: React.ReactElement, options = {}) =>
   render(ui, { wrapper, ...options });

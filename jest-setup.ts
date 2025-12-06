@@ -1,4 +1,5 @@
 import "@gorhom/bottom-sheet/mock";
+import "@testing-library/jest-native/extend-expect";
 import "react-native-gesture-handler/jestSetup";
 
 // Create a stable t function to avoid infinite loops in useEffect dependencies
