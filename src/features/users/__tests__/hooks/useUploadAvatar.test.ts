@@ -36,10 +36,10 @@ describe("useUploadAvatar", () => {
 
   it("should upload avatar successfully", async () => {
     const onSuccessMock = jest.fn();
-    (convertFileToArrayBuffer as jest.Mock).mockResolvedValue(
-      new ArrayBuffer(8),
-    );
-    (uploadAvatar as jest.Mock).mockResolvedValue({ path: "avatar.jpg" });
+    jest.mocked(convertFileToArrayBuffer).mockResolvedValue(new ArrayBuffer(8));
+    jest.mocked(uploadAvatar).mockResolvedValue({
+      avatarUrl: "https://example.com/avatar.jpg",
+    });
 
     const { result } = renderHook(
       () => useUploadAvatar({ onSuccess: onSuccessMock }),
@@ -67,10 +67,8 @@ describe("useUploadAvatar", () => {
 
   it("should handle upload error", async () => {
     const onErrorMock = jest.fn();
-    (convertFileToArrayBuffer as jest.Mock).mockResolvedValue(
-      new ArrayBuffer(8),
-    );
-    (uploadAvatar as jest.Mock).mockRejectedValue(new Error("Upload failed"));
+    jest.mocked(convertFileToArrayBuffer).mockResolvedValue(new ArrayBuffer(8));
+    jest.mocked(uploadAvatar).mockRejectedValue(new Error("Upload failed"));
 
     const { result } = renderHook(
       () => useUploadAvatar({ onError: onErrorMock }),
