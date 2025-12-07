@@ -2,7 +2,8 @@ export default {
   expo: {
     name: "linkcache",
     slug: "linkcache",
-    version: "1.0.0",
+    owner: "sooom",
+    version: "0.1.0",
     orientation: "portrait",
     icon: "./assets/images/icon.png",
     scheme: "linkcache",
@@ -49,6 +50,9 @@ export default {
     extra: {
       supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL || "",
       supabaseAnonKey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || "",
+      eas: {
+        projectId: "c60046f0-2206-446f-b59a-3336c0bda04f",
+      },
     },
   },
 };
