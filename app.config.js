@@ -30,6 +30,8 @@ export default {
       "expo-router",
       "expo-secure-store",
       "expo-localization",
+      "expo-font",
+      "expo-web-browser",
       [
         "expo-splash-screen",
         {
