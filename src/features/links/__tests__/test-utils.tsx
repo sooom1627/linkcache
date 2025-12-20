@@ -1,7 +1,8 @@
 import React from "react";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { renderHook } from "@testing-library/react-native";
+import { render, renderHook } from "@testing-library/react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 const createTestQueryClient = () =>
   new QueryClient({
@@ -19,12 +20,17 @@ const createTestQueryClient = () =>
   });
 
 export const wrapper = ({ children }: { children: React.ReactNode }) => (
-  <QueryClientProvider client={createTestQueryClient()}>
-    {children}
-  </QueryClientProvider>
+  <SafeAreaProvider>
+    <QueryClientProvider client={createTestQueryClient()}>
+      {children}
+    </QueryClientProvider>
+  </SafeAreaProvider>
 );
 
 export const customRenderHook = <TResult, TProps>(
   render: (initialProps: TProps) => TResult,
   options = {},
 ) => renderHook(render, { wrapper, ...options });
+
+export const customRender = (ui: React.ReactElement, options = {}) =>
+  render(ui, { wrapper, ...options });

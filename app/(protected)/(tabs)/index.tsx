@@ -2,6 +2,7 @@ import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 
 import { useTranslation } from "react-i18next";
 
+import { LinkCreateScreen } from "@/src/features/links/screens/LinkCreateScreen";
 import { useProfile } from "@/src/features/users";
 import { ScreenContainer } from "@/src/shared/components/layout/ScreenContainer";
 
@@ -52,6 +53,7 @@ export default function Index() {
           <Text className="text-sm text-gray-500">Description {index + 1}</Text>
         </View>
       ))}
+      <LinkCreateScreen />
     </ScreenContainer>
   );
 }

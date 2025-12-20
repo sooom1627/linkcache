@@ -6,6 +6,17 @@ import type { LinkMetadata } from "../../utils/metadata";
 import { fetchLinkMetadata } from "../../utils/metadata";
 import { customRenderHook } from "../test-utils";
 
+// Mock SafeAreaContext (required for wrapper)
+jest.mock("react-native-safe-area-context", () => {
+  const inset = { top: 0, right: 0, bottom: 0, left: 0 };
+  return {
+    SafeAreaProvider: jest.fn(
+      ({ children }: { children: React.ReactNode }) => children,
+    ),
+    useSafeAreaInsets: jest.fn(() => inset),
+  };
+});
+
 // Mock dependencies
 jest.mock("../../utils/metadata", () => ({
   fetchLinkMetadata: jest.fn(),
