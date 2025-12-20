@@ -4,163 +4,106 @@ globs:
 alwaysApply: true
 ---
 
-  You are an expert developer proficient in TypeScript, React and Expo (React Native), Tailwind css, Supabase, Zod, i18next ( expo-localization), Zustand, TanStack React Query.
+  You are an expert developer proficient in TypeScript, React and Expo (React Native), Tailwind css(Native wind), Supabase, Zod, i18next ( expo-localization), TanStack React Query.
 
-  Code Style and Structure
-  - Write concise, technical TypeScript code with accurate examples.
-  - Use functional and declarative programming patterns; avoid classes.
-  - Prefer iteration and modularization over code duplication.
-  - Use descriptive variable names with auxiliary verbs (e.g., isLoading, hasError).
-  - Structure files: Organize Files by Feature. Group related components, hooks, and styles into feature-based directories (e.g., user-profile, chat-screen).
-  - Follow the Single Responsibility Principle
-  - **Simplicity-First Design**: Prioritize practical implementation over theoretical beauty. Avoid over-abstraction.
-  - **YAGNI Principle**: Implement only what is currently needed. Avoid speculative features.
-  - Follow Expo's official documentation for setting up and configuring your projects: https://docs.expo.dev/
+ # Development Guidelines (TypeScript / Expo / Supabase)
 
-  Naming Conventions
-  - Use lowercase with dashes for directories (e.g., components/auth-wizard).
-  - Favor named exports for components.
+## Core Principles
+1. **Simplicity over Sophistication**: Choose practical, straightforward solutions over architecturally "elegant" but complex ones.
+2. **Integration over Fragmentation**: Prefer unified implementations over multiple small pieces that require complex integration.
+3. **Current Requirements over Future Flexibility (YAGNI)**: Build for today's needs. Avoid speculative features or over-abstraction.
+4. **Readability over Cleverness**: Code must be immediately understandable to any team member.
+5. **Minimal Viable Abstraction**: Abstract only after a pattern has been proven and repeated at least 3 times.
 
-  File Organization and Splitting
-  - Keep files between 50-200 lines when possible; up to 300 lines is acceptable for complex logic.
-  - Split files only when there are truly different responsibilities or when reused across multiple features.
-  - Avoid creating integration hooks that merely combine other hooks - prefer unified implementations.
-  - Don't split for the sake of file size alone - prioritize cohesion and readability.
-  - Create abstractions only after implementing the same pattern 3+ times.
+---
 
-  TypeScript and Zod Usage
-  - Use TypeScript for all code; prefer interfaces over types.
-  - Follow ESLint Expo configuration
-  - Utilize type definition files (.d.ts)
-  - Avoid enums; use maps instead.
-  - Use functional components with TypeScript interfaces.
-  - Use strict mode in TypeScript for better type safety.
+## Technical Stack
+- **Framework**: Expo (Managed Workflow)
+- **Language**: TypeScript (Strict Mode)
+- **Styling**: NativeWind v3 (Tailwind CSS)
+- **State Management**:
+  - **Local**: `useState`
+  - **Server**: `TanStack React Query`
+  - **Global**: `React Context` + `useReducer`
+- **Database/Auth**: Supabase
+- **Validation**: Zod
+- **Navigation**: Expo Router (File-based)
+- **I18n**: i18next (expo-localization)
+- **Testing**: Jest + React Native Testing Library (Classical TDD)
 
-  Syntax and Formatting
-  - Use the "function" keyword for pure functions.
-  - Avoid unnecessary curly braces in conditionals; use concise syntax for simple statements.
-  - Use declarative JSX.
-  - Use Prettier for consistent code formatting.
+---
 
-  UI and Styling
-  - Use Expo's built-in components for common UI patterns and layouts.
-  - Implement responsive design with Flexbox and Expo's useWindowDimensions for screen size adjustments.
-  - Use Tailwind CSS for component styling.
-  - Implement dark mode support using Expo's useColorScheme.
-  - Modal UI with Bottom Sheet
-  - Utilize haptic feedback with expo-haptics
-  - Apply animations with react-native-reanimated
-  - Ensure high accessibility (a11y) standards using ARIA roles and native accessibility props.
-  - Leverage react-native-reanimated and react-native-gesture-handler for performant animations and gestures.
+## Code Style & Structure
+- **Functional Programming**: Use functional and declarative patterns; strictly avoid classes.
+- **File Organization**: Organize by **Feature**. Group related components, hooks, and logic into feature-based directories (e.g., `features/auth`, `features/payments`).
+- **Naming Conventions**:
+  - Use lowercase with dashes (kebab-case) for directories (e.g., `components/form-elements`).
+  - Favor **named exports** for components and functions.
+  - Use descriptive variable names with auxiliary verbs (e.g., `isLoading`, `hasError`, `shouldRedirect`).
+- **File Splitting**:
+  - Maintain files between 50–200 lines; 300 lines maximum for complex logic.
+  - Do not split files for size alone—prioritize cohesion and readability.
 
-  Safe Area Management
-  - Use SafeAreaProvider from react-native-safe-area-context to manage safe areas globally in your app.
-  - Wrap top-level components with SafeAreaView to handle notches, status bars, and other screen insets on both iOS and Android.
-  - Use SafeAreaScrollView for scrollable content to ensure it respects safe area boundaries.
-  - Avoid hardcoding padding or margins for safe areas; rely on SafeAreaView and context hooks.
+---
 
-  Performance Optimization
-  - Minimize the use of useState and useEffect; prefer context and reducers for state management.
-  - Use Expo's AppLoading and SplashScreen for optimized app startup experience.
-  - Optimize images: use WebP format where supported, include size data, implement lazy loading with expo-image.
-  - Implement code splitting and lazy loading for non-critical components with React's Suspense and dynamic imports.
-  - Profile and monitor performance using React Native's built-in tools and Expo's debugging features.
-  - Avoid unnecessary re-renders by memoizing components and using useMemo and useCallback hooks appropriately.
+## State Management Architecture
+- **Local State**: Use `useState` for UI-specific state contained within a single component.
+- **Server State**: Use `TanStack React Query` for all data fetching, caching, and server synchronization. Avoid duplicating server data in local/global state.
+- **Global State**: Use **React Context** combined with `useReducer` for application-wide state (e.g., user sessions, global settings). Separate contexts by domain to minimize unnecessary re-renders.
 
-  Navigation
-  - Expo Router: Use Expo Router for file-based routing in your React Native app. It provides native navigation, deep linking, and works across Android, iOS, and web. Refer to the official documentation for setup and usage: https://docs.expo.dev/router/introduction/
-  - Control redirects based on authentication state
+---
 
-  State Management
-  - Use React Context and useReducer for managing global state.
-  - Leverage react-query for data fetching and caching; avoid excessive API calls.
-  - For complex state management, consider using Zustand
-  - Handle URL search parameters using libraries like expo-linking.
-  - **Integrate related state logic**: Combine form state, validation, and submission in single hooks rather than splitting unnecessarily.
-  - **Design from usage**: Start with how the hook will be used, then implement backwards to ensure practical APIs.
+## Error Handling & Validation
+- **Runtime Validation**: Use **Zod** for validating all external data (API responses, Form inputs, Deep links).
+- **Proactive Handling**:
+  - Handle errors at the beginning of functions (Guard Clauses).
+  - Use early returns to avoid deeply nested `if-else` blocks.
+  - Avoid unnecessary `else` statements; use the `if-return` pattern.
+- **UI Resilience**:
+  - Implement **Global Error Boundaries** to catch unexpected crashes.
+  - Provide user-friendly feedback for API failures using toast notifications or error states.
+- **Logging**: Use `expo-error-reporter` or Sentry for production error tracking and crash reporting.
 
-  Error Handling and Validation
-  - Use Zod for runtime validation and error handling.
-  - Implement proper error logging using Sentry or a similar service.
-  - Prioritize error handling and edge cases:
-    - Handle errors at the beginning of functions.
-    - Use early returns for error conditions to avoid deeply nested if statements.
-    - Avoid unnecessary else statements; use if-return pattern instead.
-    - Implement global error boundaries to catch and handle unexpected errors.
-  - Use expo-error-reporter for logging and reporting errors in production.
+---
 
-  Testing
-  - Write unit tests using Jest and React Native Testing Library.
-  - Implement integration tests for critical user flows using Detox.
-  - Use Expo's testing tools for running tests in different environments.
-  - Consider snapshot testing for components to ensure UI consistency.
+## Testing Strategy: Classical TDD
+- **TDD Workflow**: Write a failing test first, implement the minimum code to pass, and then refactor.
+- **Classical Style**:
+  - Favor **Sociable Tests**: Test units in integration with their real dependencies whenever possible.
+  - **Minimize Mocking**: Only mock external out-of-process dependencies (e.g., Supabase APIs, Camera hardware, Push Notifications).
+  - Focus on testing **behavior** and requirements rather than implementation details.
+- **Tools**: Use Jest for logic and React Native Testing Library (RNTL) for component behavior.
 
-  Security
-  - Sanitize user inputs to prevent XSS attacks.
-  - Use react-native-encrypted-storage for secure storage of sensitive data.
-  - Ensure secure communication with APIs using HTTPS and proper authentication.
-  - Use Expo's Security guidelines to protect your app: https://docs.expo.dev/guides/security/
+---
 
-  Internationalization (i18n)
-  - Use react-native-i18n or expo-localization for internationalization and localization.
-  - Support multiple languages(ja and en) and RTL layouts.
-  - Ensure text scaling and font adjustments for accessibility.
+## UI & Styling (NativeWind v3)
+- **Styling**: Use **NativeWind v3** for component styling via `className`.
+- **Layout**: Use Flexbox and Expo's `useWindowDimensions` for responsive designs.
+- **Safe Area**: Use `SafeAreaProvider` and `useSafeAreaInsets` from `react-native-safe-area-context` for precise layout control (notches, home indicators).
+- **Animations**: Leverage `react-native-reanimated` and `react-native-gesture-handler` for performant interactions.
+- **Performance**: Use `expo-image` for high-performance image rendering and caching. Avoid `AppLoading`; use `expo-splash-screen`.
 
-  Backend and Database
-  - Use Supabase for backend services, including authentication and database interactions.
-  - Implement Row Level Security (RLS) policies for fine-grained access control.
-  - Use Supabase Auth for user authentication and management.
-  - Leverage Supabase Storage for file uploads and management.
-  - Use of Supabase Branch feature
-  - Use Supabase Edge Functions for serverless API endpoints when needed.
-  - Follow Supabase guidelines for security and performance.
-  - Use Zod schemas to validate data exchanged with the backend.
-  - In table design, link relations to the profile rather than to auth.id.
+---
 
-  Design Principles
-  1. **Simplicity over Sophistication**: Choose practical solutions over architecturally elegant ones.
-  2. **Integration over Fragmentation**: Prefer unified implementations over multiple small pieces that need integration.
-  3. **Current Requirements over Future Flexibility**: Build for today's needs, refactor when tomorrow's needs are clear.
-  4. **Readability over Cleverness**: Code should be immediately understandable to team members.
-  5. **Minimal Viable Abstraction**: Abstract only when patterns are proven and repeated.
+## Backend & Security (Supabase)
+- **Authentication**: Utilize Supabase Auth for user management and session handling.
+- **Database**: 
+  - Link all relations to a `profiles` table rather than directly to `auth.users.id`.
+  - Strictly enforce **Row Level Security (RLS)** policies on every table.
+- **Storage**: Use Supabase Storage for file management.
+- **Edge Functions**: Use for server-side logic that requires sensitive environment variables or heavy processing.
 
-  Key Conventions
-  1. Rely on Expo's managed workflow for streamlined development and deployment.
-  2. Prioritize Mobile Web Vitals (Load Time, Jank, and Responsiveness).
-  3. Use expo-constants for managing environment variables and configuration.
-  4. Use expo-permissions to handle device permissions gracefully.
-  5. Implement expo-updates for over-the-air (OTA) updates.
-  6. Follow Expo's best practices for app deployment and publishing: https://docs.expo.dev/distribution/introduction/
-  7. Ensure compatibility with iOS and Android by testing extensively on both platforms.
+---
 
-  API Documentation
-  - Use Expo's official documentation for setting up and configuring your projects: https://docs.expo.dev/
-  Refer to Expo's documentation for detailed information on Views, Blueprints, and Extensions for best practices.
-
-  Output Expectations
-  - Code Examples Provide code snippets that align with the guidelines above.
-  - Explanations Include brief explanations to clarify complex implementations when necessary.
-  - Clarity and Correctness Ensure all code is clear, correct, and ready for use in a production environment.
-  - Best Practices Demonstrate adherence to best practices in performance, security, and maintainability.
-  - **Simplicity Focus**: Prefer straightforward implementations over complex architectures. Question every abstraction.
-  - **Practical Solutions**: Choose approaches that solve current problems effectively rather than theoretical ideal solutions.
-
-Git Commit Messages
-When generating git commit messages:
-- **ALWAYS use a prefix** (feat, fix, docs, style, refactor, perf, test, chore)
-- Keep the main message under 50 characters INCLUDING the prefix
-- Use imperative mood after the prefix
-- Be specific but concise
-- No periods at the end
-- Format: `prefix: message`
-- **Language**: Always use English for commit messages
-
-Git commit Prefix Rules (Angular Convention):
-- `feat:` A new feature
-- `fix:` A bug fix
-- `docs:` Documentation only changes
-- `style:` Changes that do not affect the meaning of the code (formatting, missing semi-colons, etc)
-- `refactor:` A code change that neither fixes a bug nor adds a feature
-- `perf:` A code change that improves performance
-- `test:` Adding missing or correcting existing tests
+## Git Commit Messages
+- **Format**: `prefix: message`
+- **Prefixes**:
+  - `feat`: A new feature
+  - `fix`: A bug fix
+  - `docs`: Documentation changes only
+  - `style`: Formatting, missing semi-colons, etc. (no code change)
+  - `refactor`: Code change that neither fixes a bug nor adds a feature
+  - `perf`: Code change that improves performance
+  - `test`: Adding or correcting tests
+  - `chore`: Changes to build process, libraries, or auxiliary tools
       
