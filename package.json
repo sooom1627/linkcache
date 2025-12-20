@@ -47,6 +47,7 @@
     "expo-web-browser": "~15.0.10",
     "i18n-js": "^4.5.1",
     "i18next": "^25.6.0",
+    "link-preview-js": "^4.0.0",
     "lucide-react-native": "^0.545.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
