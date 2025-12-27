@@ -95,5 +95,22 @@
         "error_message": "言語を変更できませんでした。再度お試しください。"
       }
     }
+  },
+  "links": {
+    "create": {
+      "title": "リンクを追加",
+      "url_placeholder": "URLを入力",
+      "submit_button": "リンクを保存",
+      "error_messages": {
+        "url_required": "URLは必須です",
+        "url_invalid": "有効なURLを入力してください"
+      },
+      "callback_messages": {
+        "success_title": "リンクを保存しました",
+        "success_message": "リンクがインボックスに追加されました",
+        "error_title": "保存に失敗しました",
+        "error_message": "リンクを保存できませんでした。再度お試しください。"
+      }
+    }
   }
 }

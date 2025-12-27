@@ -95,5 +95,22 @@
         "error_message": "Failed to change language. Please try again."
       }
     }
+  },
+  "links": {
+    "create": {
+      "title": "Add Link",
+      "url_placeholder": "Enter URL",
+      "submit_button": "Save Link",
+      "error_messages": {
+        "url_required": "URL is required",
+        "url_invalid": "Please enter a valid URL"
+      },
+      "callback_messages": {
+        "success_title": "Link Saved",
+        "success_message": "Link has been added to your inbox",
+        "error_title": "Save Failed",
+        "error_message": "Failed to save link. Please try again."
+      }
+    }
   }
 }
