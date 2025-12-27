@@ -150,4 +150,37 @@ describe("useCreateLink", () => {
       expect(result.current.isPending).toBe(false);
     });
   });
+
+  it("normalizes URL before creating link", async () => {
+    const mockResponse = {
+      link_id: "test-uuid",
+      url: "https://example.com",
+      status: "inbox",
+    };
+
+    (fetchOgpMetadata as jest.Mock).mockResolvedValueOnce(null);
+    (createLinkWithStatus as jest.Mock).mockResolvedValueOnce(mockResponse);
+
+    const { result } = renderHook(() => useCreateLink(), { wrapper });
+
+    act(() => {
+      // プロトコルなし、大文字、末尾スラッシュありのURLを入力
+      result.current.createLink("EXAMPLE.COM/");
+    });
+
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true);
+    });
+
+    // 正規化されたURLでAPIが呼ばれることを確認
+    expect(fetchOgpMetadata).toHaveBeenCalledWith("https://example.com");
+    expect(createLinkWithStatus).toHaveBeenCalledWith({
+      url: "https://example.com",
+      title: null,
+      description: null,
+      image_url: null,
+      favicon_url: null,
+      site_name: null,
+    });
+  });
 });

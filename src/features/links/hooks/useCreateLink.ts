@@ -5,6 +5,7 @@ import {
   type CreateLinkResponse,
 } from "../api/createLink.api";
 import { fetchOgpMetadata } from "../utils/metadata";
+import { normalizeUrl } from "../utils/normalizeUrl";
 
 /**
  * リンク作成フックの戻り値
@@ -39,12 +40,15 @@ export interface UseCreateLinkReturn {
 export function useCreateLink(): UseCreateLinkReturn {
   const mutation = useMutation({
     mutationFn: async (url: string) => {
+      // URLを正規化
+      const normalizedUrl = normalizeUrl(url);
+
       // OGPメタデータを取得（失敗してもnullが返る）
-      const metadata = await fetchOgpMetadata(url);
+      const metadata = await fetchOgpMetadata(normalizedUrl);
 
       // APIを呼び出してリンクを作成
       return createLinkWithStatus({
-        url,
+        url: normalizedUrl,
         title: metadata?.title ?? null,
         description: metadata?.description ?? null,
         image_url: metadata?.image_url ?? null,
