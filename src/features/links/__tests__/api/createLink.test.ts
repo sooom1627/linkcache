@@ -1,3 +1,5 @@
+import { supabase } from "@/src/shared/lib/supabase";
+
 import { createLinkWithStatus } from "../../api/createLink.api";
 
 // Supabaseクライアントのモック
@@ -7,8 +9,6 @@ jest.mock("@/src/shared/lib/supabase", () => ({
   },
 }));
 
-import { supabase } from "@/src/shared/lib/supabase";
-
 describe("createLinkWithStatus", () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -16,7 +16,11 @@ describe("createLinkWithStatus", () => {
 
   it("calls Supabase RPC with correct parameters", async () => {
     const mockResponse = {
-      data: { link_id: "test-uuid", url: "https://example.com", status: "inbox" },
+      data: {
+        link_id: "test-uuid",
+        url: "https://example.com",
+        status: "inbox",
+      },
       error: null,
     };
     (supabase.rpc as jest.Mock).mockResolvedValueOnce(mockResponse);
@@ -49,7 +53,11 @@ describe("createLinkWithStatus", () => {
 
   it("calls RPC with null values for optional parameters", async () => {
     const mockResponse = {
-      data: { link_id: "test-uuid", url: "https://example.com", status: "inbox" },
+      data: {
+        link_id: "test-uuid",
+        url: "https://example.com",
+        status: "inbox",
+      },
       error: null,
     };
     (supabase.rpc as jest.Mock).mockResolvedValueOnce(mockResponse);

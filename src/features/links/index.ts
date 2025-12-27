@@ -17,7 +17,6 @@ export type { OgpMetadata } from "./utils/metadata";
 // API
 export { createLinkWithStatus } from "./api/createLink.api";
 export type {
-    CreateLinkParams,
-    CreateLinkResponse
+  CreateLinkParams,
+  CreateLinkResponse,
 } from "./api/createLink.api";
-

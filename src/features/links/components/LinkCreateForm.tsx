@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { useTranslation } from "react-i18next";
 import { Alert, View } from "react-native";
+
+import { useTranslation } from "react-i18next";
 
 import FormButton from "@/src/shared/components/forms/FormButton";
 import FormInput from "@/src/shared/components/forms/FormInput";
@@ -106,11 +107,7 @@ export default function LinkCreateForm({ onSuccess }: LinkCreateFormProps) {
       />
 
       <FormButton
-        title={
-          isPending
-            ? "..."
-            : t("links.create.submit_button")
-        }
+        title={isPending ? "..." : t("links.create.submit_button")}
         onPress={handleSubmit}
         disabled={isSubmitDisabled}
       />

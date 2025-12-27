@@ -1,6 +1,8 @@
 import { act, renderHook, waitFor } from "@testing-library/react-native";
 
+import { createLinkWithStatus } from "../../api/createLink.api";
 import { useCreateLink } from "../../hooks/useCreateLink";
+import { fetchOgpMetadata } from "../../utils/metadata";
 import { wrapper } from "../test-utils";
 
 // API層のモック
@@ -12,9 +14,6 @@ jest.mock("../../api/createLink.api", () => ({
 jest.mock("../../utils/metadata", () => ({
   fetchOgpMetadata: jest.fn(),
 }));
-
-import { createLinkWithStatus } from "../../api/createLink.api";
-import { fetchOgpMetadata } from "../../utils/metadata";
 
 describe("useCreateLink", () => {
   beforeEach(() => {

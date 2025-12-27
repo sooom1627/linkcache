@@ -1,11 +1,11 @@
+import { getLinkPreview } from "link-preview-js";
+
 import { fetchOgpMetadata } from "../../utils/metadata";
 
 // link-preview-jsのモック
 jest.mock("link-preview-js", () => ({
   getLinkPreview: jest.fn(),
 }));
-
-import { getLinkPreview } from "link-preview-js";
 
 describe("fetchOgpMetadata", () => {
   beforeEach(() => {
@@ -28,7 +28,8 @@ describe("fetchOgpMetadata", () => {
     expect(getLinkPreview).toHaveBeenCalledWith("https://example.com", {
       timeout: 5000,
       headers: {
-        "User-Agent": expect.any(String),
+        "User-Agent":
+          "Mozilla/5.0 (compatible; LinkCache/1.0; +https://linkcache.app)",
       },
     });
     expect(result).toEqual({

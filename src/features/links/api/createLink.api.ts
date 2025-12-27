@@ -34,7 +34,9 @@ export interface CreateLinkResponse {
 export async function createLinkWithStatus(
   params: CreateLinkParams,
 ): Promise<CreateLinkResponse> {
-  const { data, error } = await supabase.rpc("create_link_with_status", {
+  // Supabase RPC の戻り値型は Database.Functions に定義がないため any になる
+  // 型安全性は CreateLinkResponse で保証
+  const response = await supabase.rpc("create_link_with_status", {
     p_url: params.url,
     p_title: params.title ?? null,
     p_description: params.description ?? null,
@@ -43,9 +45,13 @@ export async function createLinkWithStatus(
     p_site_name: params.site_name ?? null,
   });
 
-  if (error) {
-    throw error;
+  if (response.error) {
+    throw response.error;
   }
 
-  return data as CreateLinkResponse;
+  if (!response.data) {
+    throw new Error("No data returned from RPC");
+  }
+
+  return response.data as CreateLinkResponse;
 }
