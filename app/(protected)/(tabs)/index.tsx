@@ -2,6 +2,7 @@ import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 
 import { useTranslation } from "react-i18next";
 
+import { LinkCreateForm } from "@/src/features/links";
 import { useProfile } from "@/src/features/users";
 import { ScreenContainer } from "@/src/shared/components/layout/ScreenContainer";
 
@@ -45,6 +46,7 @@ export default function Index() {
         @{profile?.user_id || "..."} / {profile?.username || "..."}
       </Text>
       <Text>{t("welcome_message")}</Text>
+      <LinkCreateForm onSuccess={() => {}} />
 
       {Array.from({ length: 25 }).map((_, index) => (
         <View key={index} className="mb-4">
