@@ -387,7 +387,3 @@ import type { LinkType } from '../types/link.types';
 
 
 - [Simplicity-First Design Rules](mdc:.cursor/rules/simplicity-first-design.mdc) - シンプリシティ・ファースト設計原則
-
-## 日本語での応答
-
-開発者への応答は常に日本語で行い、実装を最小限かつシンプルに保つこと。仕様決定時は選択肢と理由を整理して確認を取ること。
