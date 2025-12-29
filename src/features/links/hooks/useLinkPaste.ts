@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 
 import * as Clipboard from "expo-clipboard";
+
 import { useTranslation } from "react-i18next";
 
 import type {

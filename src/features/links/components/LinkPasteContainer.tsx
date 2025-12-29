@@ -206,7 +206,7 @@ function InvalidStateView({
             {t("links.paste.invalid_url_title")}
           </Text>
           <Text className="text-center text-sm text-slate-400">
-            { errorMessage || t("links.paste.invalid_url_description") }
+            {errorMessage || t("links.paste.invalid_url_description")}
           </Text>
         </View>
 
