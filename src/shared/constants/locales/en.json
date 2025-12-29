@@ -101,6 +101,7 @@
       "title": "Add Link",
       "url_placeholder": "Enter URL",
       "submit_button": "Save Link",
+      "saving": "Saving...",
       "error_messages": {
         "url_required": "URL is required",
         "url_invalid": "Please enter a valid URL"
@@ -122,7 +123,8 @@
       "invalid_url_title": "Invalid URL",
       "invalid_url_description": "Please paste a valid URL",
       "try_again": "Try Again",
-      "clear_button": "Clear"
+      "clear_button": "Clear",
+      "change_link": "Change"
     }
   }
 }

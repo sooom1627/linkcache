@@ -1,12 +1,4 @@
-import { useCallback } from "react";
-
-import {
-  ActivityIndicator,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 
 import { Image } from "expo-image";
 
@@ -15,7 +7,7 @@ import {
   ClipboardPaste,
   Globe,
   Link2,
-  X,
+  RotateCcw,
 } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
@@ -27,7 +19,6 @@ interface LinkPasteContainerProps {
   preview: LinkPreview | null;
   errorMessage: string | null;
   onPaste: () => void;
-  onUpdateUrl: (url: string) => void;
   onReset: () => void;
 }
 
@@ -94,16 +85,14 @@ function LoadingStateView() {
 }
 
 /**
- * Preview状態のUI（OGカード表示 + 編集可能URL）
+ * Preview状態のUI（OGカード表示）
  */
 function PreviewStateView({
   preview,
-  onUpdateUrl,
   onClear,
   hasOgp,
 }: {
   preview: LinkPreview;
-  onUpdateUrl: (url: string) => void;
   onClear: () => void;
   hasOgp: boolean;
 }) {
@@ -113,7 +102,6 @@ function PreviewStateView({
     <Animated.View
       entering={FadeIn.duration(200)}
       exiting={FadeOut.duration(150)}
-      className="gap-5"
     >
       {/* プレビューカード */}
       <View className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
@@ -142,18 +130,34 @@ function PreviewStateView({
             {preview.title || t("links.paste.no_title")}
           </Text>
 
-          {/* ドメイン */}
-          <View className="flex-row items-center gap-2">
-            {preview.faviconUrl ? (
-              <Image
-                source={{ uri: preview.faviconUrl }}
-                style={{ width: 14, height: 14 }}
-                contentFit="contain"
-              />
-            ) : (
-              <Globe size={14} color="#94a3b8" strokeWidth={1.5} />
-            )}
-            <Text className="text-sm text-slate-400">{preview.domain}</Text>
+          {/* ドメイン + 変更ボタン */}
+          <View className="flex-row items-center justify-between">
+            <View className="flex-row items-center gap-2">
+              {preview.faviconUrl ? (
+                <Image
+                  source={{ uri: preview.faviconUrl }}
+                  style={{ width: 14, height: 14 }}
+                  contentFit="contain"
+                />
+              ) : (
+                <Globe size={14} color="#94a3b8" strokeWidth={1.5} />
+              )}
+              <Text className="text-sm text-slate-400">{preview.domain}</Text>
+            </View>
+
+            {/* 変更ボタン */}
+            <TouchableOpacity
+              onPress={onClear}
+              className="flex-row items-center gap-1"
+              accessibilityRole="button"
+              accessibilityLabel={t("links.paste.change_link")}
+              activeOpacity={0.6}
+            >
+              <RotateCcw size={12} color="#3b82f6" strokeWidth={2} />
+              <Text className="text-sm font-medium text-blue-500">
+                {t("links.paste.change_link")}
+              </Text>
+            </TouchableOpacity>
           </View>
 
           {/* OGPなし警告 */}
@@ -166,37 +170,6 @@ function PreviewStateView({
             </View>
           )}
         </View>
-      </View>
-
-      {/* URLフィールド */}
-      <View className="gap-2">
-        <View className="flex-row items-center justify-between">
-          <Text className="text-sm font-medium text-slate-500">
-            {t("links.paste.url_label")}
-          </Text>
-          <TouchableOpacity
-            onPress={onClear}
-            className="flex-row items-center gap-1 rounded-lg px-2 py-1"
-            accessibilityRole="button"
-            accessibilityLabel={t("links.paste.clear_button")}
-            activeOpacity={0.6}
-          >
-            <X size={14} color="#94a3b8" strokeWidth={1.5} />
-            <Text className="text-sm text-slate-400">
-              {t("links.paste.clear_button")}
-            </Text>
-          </TouchableOpacity>
-        </View>
-        <TextInput
-          value={preview.url}
-          onChangeText={onUpdateUrl}
-          className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm text-slate-700"
-          placeholder="https://..."
-          placeholderTextColor="#94a3b8"
-          keyboardType="url"
-          autoCapitalize="none"
-          autoCorrect={false}
-        />
       </View>
     </Animated.View>
   );
@@ -264,24 +237,15 @@ export default function LinkPasteContainer({
   preview,
   errorMessage,
   onPaste,
-  onUpdateUrl,
   onReset,
 }: LinkPasteContainerProps) {
-  const handleUpdateUrl = useCallback(
-    (url: string) => {
-      onUpdateUrl(url);
-    },
-    [onUpdateUrl],
-  );
-
   return (
-    <View className="min-h-[180px]">
+    <View className="h-[240px]">
       {status === "empty" && <EmptyStateView onPaste={onPaste} />}
       {status === "loading" && <LoadingStateView />}
       {(status === "preview" || status === "noOgp") && preview && (
         <PreviewStateView
           preview={preview}
-          onUpdateUrl={handleUpdateUrl}
           onClear={onReset}
           hasOgp={status === "preview"}
         />

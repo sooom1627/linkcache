@@ -100,39 +100,6 @@ export function useLinkPaste(): UseLinkPasteReturn {
   }, []);
 
   /**
-   * URLを直接更新（編集時）
-   * 注: OGP再取得は行わず、URLのみを更新する（ユーザー体験向上のため）
-   */
-  const updateUrl = useCallback(
-    (url: string) => {
-      if (!preview) return;
-
-      try {
-        const normalizedUrl = normalizeUrl(url.trim());
-        if (!isValidUrl(normalizedUrl)) {
-          setStatus("invalid");
-          setErrorMessage("有効なURLではありません");
-          return;
-        }
-
-        const domain = extractDomain(normalizedUrl);
-
-        // URLのみを更新（OGP再取得は行わない）
-        setPreview({
-          ...preview,
-          url: normalizedUrl,
-          domain,
-        });
-        setErrorMessage(null);
-      } catch {
-        setStatus("invalid");
-        setErrorMessage("有効なURLではありません");
-      }
-    },
-    [preview],
-  );
-
-  /**
    * 状態をリセット
    */
   const reset = useCallback(() => {
@@ -149,7 +116,6 @@ export function useLinkPaste(): UseLinkPasteReturn {
     preview,
     errorMessage,
     pasteFromClipboard,
-    updateUrl,
     reset,
     canSave,
   };

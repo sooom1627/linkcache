@@ -101,6 +101,7 @@
       "title": "リンクを追加",
       "url_placeholder": "URLを入力",
       "submit_button": "リンクを保存",
+      "saving": "保存中...",
       "error_messages": {
         "url_required": "URLは必須です",
         "url_invalid": "有効なURLを入力してください"
@@ -122,7 +123,8 @@
       "invalid_url_title": "無効なURL",
       "invalid_url_description": "有効なURLを貼り付けてください",
       "try_again": "やり直す",
-      "clear_button": "クリア"
+      "clear_button": "クリア",
+      "change_link": "変更"
     }
   }
 }

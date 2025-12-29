@@ -146,34 +146,6 @@ describe("useLinkPaste", () => {
     });
   });
 
-  describe("updateUrl", () => {
-    it("URLを更新する（OGPは再取得しない）", async () => {
-      // まずpreview状態にする
-      jest
-        .mocked(Clipboard.getStringAsync)
-        .mockResolvedValueOnce("https://example.com");
-      jest.mocked(fetchOgpMetadata).mockResolvedValueOnce(null);
-
-      const { result } = renderHook(() => useLinkPaste(), { wrapper });
-
-      await act(async () => {
-        await result.current.pasteFromClipboard();
-      });
-
-      expect(result.current.status).toBe("noOgp");
-
-      // URLを編集（同期処理）
-      act(() => {
-        result.current.updateUrl("https://newsite.com");
-      });
-
-      expect(result.current.preview?.url).toBe("https://newsite.com");
-      expect(result.current.preview?.domain).toBe("newsite.com");
-      // OGP再取得は行わないことを確認
-      expect(fetchOgpMetadata).toHaveBeenCalledTimes(1);
-    });
-  });
-
   describe("reset", () => {
     it("empty状態に戻る", async () => {
       jest

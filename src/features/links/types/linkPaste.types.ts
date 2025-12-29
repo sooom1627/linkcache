@@ -38,8 +38,6 @@ export interface UseLinkPasteReturn {
   errorMessage: string | null;
   /** クリップボードからURLを貼り付け */
   pasteFromClipboard: () => Promise<void>;
-  /** URLを直接更新（編集時） */
-  updateUrl: (url: string) => void;
   /** 状態をリセット */
   reset: () => void;
   /** 保存可能かどうか */

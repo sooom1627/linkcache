@@ -1,16 +1,11 @@
 import { forwardRef, useCallback, useEffect } from "react";
 
-import {
-  ActivityIndicator,
-  Alert,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Alert, View } from "react-native";
 
 import type { BottomSheetModal } from "@gorhom/bottom-sheet";
-import { Check } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
+
+import { FormButton } from "@/src/shared/components/forms";
 
 import { ScrollableBottomSheetModal } from "@/src/shared/components/modals";
 import ModalHeader from "@/src/shared/components/modals/ModalHeader";
@@ -41,15 +36,8 @@ export const LinkCreateModal = forwardRef<
   const { t } = useTranslation();
 
   // リンク貼り付けフック
-  const {
-    status,
-    preview,
-    errorMessage,
-    pasteFromClipboard,
-    updateUrl,
-    reset,
-    canSave,
-  } = useLinkPaste();
+  const { status, preview, errorMessage, pasteFromClipboard, reset, canSave } =
+    useLinkPaste();
 
   // リンク作成フック
   const {
@@ -116,7 +104,6 @@ export const LinkCreateModal = forwardRef<
             preview={preview}
             errorMessage={errorMessage}
             onPaste={pasteFromClipboard}
-            onUpdateUrl={updateUrl}
             onReset={reset}
           />
         </View>
@@ -124,35 +111,15 @@ export const LinkCreateModal = forwardRef<
         {/* 保存ボタン（preview/noOgp状態でのみ表示） */}
         {(status === "preview" || status === "noOgp") && (
           <View className="mt-6">
-            <TouchableOpacity
+            <FormButton
+              title={
+                isPending
+                  ? t("links.create.saving")
+                  : t("links.create.submit_button")
+              }
               onPress={handleSave}
               disabled={isSubmitDisabled}
-              className={`flex-row items-center justify-center gap-2 rounded-xl py-4 ${
-                isSubmitDisabled ? "bg-slate-100" : "bg-blue-500"
-              }`}
-              accessibilityRole="button"
-              accessibilityLabel={t("links.create.submit_button")}
-              activeOpacity={0.8}
-            >
-              {isPending ? (
-                <ActivityIndicator size="small" color="#ffffff" />
-              ) : (
-                <>
-                  <Check
-                    size={18}
-                    color={isSubmitDisabled ? "#94a3b8" : "#ffffff"}
-                    strokeWidth={2}
-                  />
-                  <Text
-                    className={`text-base font-medium ${
-                      isSubmitDisabled ? "text-slate-400" : "text-white"
-                    }`}
-                  >
-                    {t("links.create.submit_button")}
-                  </Text>
-                </>
-              )}
-            </TouchableOpacity>
+            />
           </View>
         )}
       </View>
