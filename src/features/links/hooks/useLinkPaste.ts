@@ -9,6 +9,7 @@ import type {
 } from "../types/linkPaste.types";
 import { fetchOgpMetadata } from "../utils/metadata";
 import { normalizeUrl } from "../utils/normalizeUrl";
+import { isValidUrl } from "../utils/urlValidation";
 
 /**
  * URLからドメインを抽出する
@@ -19,19 +20,6 @@ function extractDomain(url: string): string {
     return urlObj.hostname.replace(/^www\./, "");
   } catch {
     return "";
-  }
-}
-
-/**
- * URLが有効かどうかを検証する
- */
-function isValidUrl(url: string): boolean {
-  try {
-    const normalized = normalizeUrl(url);
-    new URL(normalized);
-    return true;
-  } catch {
-    return false;
   }
 }
 

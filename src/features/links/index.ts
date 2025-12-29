@@ -16,6 +16,7 @@ export { LinkCreateModal } from "./screens/LinkCreateModal";
 export { fetchOgpMetadata } from "./utils/metadata";
 export type { OgpMetadata } from "./utils/metadata";
 export { normalizeUrl } from "./utils/normalizeUrl";
+export { isValidUrl } from "./utils/urlValidation";
 
 // API
 export { createLinkWithStatus } from "./api/createLink.api";

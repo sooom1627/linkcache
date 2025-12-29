@@ -1,10 +1,68 @@
 /**
+ * 削除対象の計測パラメータ（ブラックリスト）
+ *
+ * - Google Analytics: utm_*
+ * - Facebook: fbclid
+ * - Google Ads: gclid, gclsrc
+ * - その他: ref, tag, source, mc_eid, _ga
+ */
+const TRACKING_PARAMS = new Set([
+  // Google Analytics (UTM)
+  "utm_source",
+  "utm_medium",
+  "utm_campaign",
+  "utm_term",
+  "utm_content",
+  "utm_id",
+  // Facebook
+  "fbclid",
+  // Google Ads
+  "gclid",
+  "gclsrc",
+  // その他
+  "ref",
+  "tag",
+  "source",
+  "mc_eid",
+  "_ga",
+  // Twitter/X
+  "twclid",
+  // Microsoft
+  "msclkid",
+]);
+
+/**
+ * クエリパラメータから計測用パラメータを削除する
+ *
+ * @param searchParams - URLSearchParams オブジェクト
+ * @returns 計測パラメータを除いた新しい URLSearchParams
+ */
+function removeTrackingParams(searchParams: URLSearchParams): URLSearchParams {
+  const cleaned = new URLSearchParams();
+
+  searchParams.forEach((value, key) => {
+    // utm_ で始まるパラメータも削除
+    if (key.startsWith("utm_")) {
+      return;
+    }
+    // ブラックリストに含まれるパラメータを削除
+    if (TRACKING_PARAMS.has(key.toLowerCase())) {
+      return;
+    }
+    cleaned.append(key, value);
+  });
+
+  return cleaned;
+}
+
+/**
  * URLを正規化する
  *
  * - プロトコルがない場合は https:// を補完
  * - プロトコルとホスト名を小文字に変換
  * - 末尾のスラッシュを削除
  * - 前後の空白を削除
+ * - 計測用クエリパラメータを削除（utm_*, fbclid, gclid等）
  *
  * @param url - 正規化するURL
  * @returns 正規化されたURL
@@ -14,6 +72,7 @@
  * normalizeUrl("example.com") // "https://example.com"
  * normalizeUrl("HTTPS://EXAMPLE.COM/") // "https://example.com"
  * normalizeUrl("https://example.com/Path") // "https://example.com/Path"
+ * normalizeUrl("https://example.com?utm_source=fb") // "https://example.com"
  * ```
  */
 export function normalizeUrl(url: string): string {
@@ -51,9 +110,13 @@ export function normalizeUrl(url: string): string {
     // 末尾のスラッシュを削除
     result = result.replace(/\/+$/, "");
 
-    // クエリパラメータを追加
+    // クエリパラメータを追加（計測パラメータを除去）
     if (parsed.search) {
-      result += parsed.search;
+      const cleanedParams = removeTrackingParams(parsed.searchParams);
+      const cleanedSearch = cleanedParams.toString();
+      if (cleanedSearch) {
+        result += `?${cleanedSearch}`;
+      }
     }
 
     // フラグメントを追加
