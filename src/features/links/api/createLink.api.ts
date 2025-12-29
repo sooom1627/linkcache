@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 import { supabase } from "@/src/shared/lib/supabase";
 
 /**
@@ -13,13 +15,23 @@ export interface CreateLinkParams {
 }
 
 /**
- * リンク作成APIのレスポンス
+ * リンク作成APIレスポンスのZodスキーマ
+ *
+ * Supabase RPC `create_link_with_status` の戻り値を検証
+ * - link_id: UUID形式の文字列
+ * - url: 有効なURL文字列
+ * - status: リンクステータス列挙値
  */
-export interface CreateLinkResponse {
-  link_id: string;
-  url: string;
-  status: "inbox" | "keep" | "archived" | "dismissed";
-}
+const createLinkResponseSchema = z.object({
+  link_id: z.string().uuid(),
+  url: z.string().url(),
+  status: z.enum(["inbox", "keep", "archived", "dismissed"]),
+});
+
+/**
+ * リンク作成APIのレスポンス型（Zodスキーマから推論）
+ */
+export type CreateLinkResponse = z.infer<typeof createLinkResponseSchema>;
 
 /**
  * リンクを作成してステータスを設定する
@@ -34,11 +46,6 @@ export interface CreateLinkResponse {
 export async function createLinkWithStatus(
   params: CreateLinkParams,
 ): Promise<CreateLinkResponse> {
-  // NOTE: Supabase RPC の戻り値型について
-  // - Database.Functions に型定義がないため、response.data は any 型になる
-  // - 実際の RPC は { link_id: UUID, url: TEXT, status: TEXT } を返す
-  // - PostgreSQL の UUID 型は JavaScript では string として扱われる
-  // - 型アサーション (as CreateLinkResponse) で期待する型に変換
   const response = await supabase.rpc("create_link_with_status", {
     p_url: params.url,
     p_title: params.title ?? null,
@@ -56,5 +63,14 @@ export async function createLinkWithStatus(
     throw new Error("No data returned from RPC");
   }
 
-  return response.data as CreateLinkResponse;
+  // Zodスキーマでランタイムバリデーション
+  const parseResult = createLinkResponseSchema.safeParse(response.data);
+
+  if (!parseResult.success) {
+    throw new Error(
+      `Invalid RPC response format: ${parseResult.error.message}`,
+    );
+  }
+
+  return parseResult.data;
 }

@@ -74,27 +74,19 @@ export function useLinkPaste(): UseLinkPasteReturn {
       // OGPメタデータを取得
       const metadata = await fetchOgpMetadata(normalizedUrl);
 
-      if (metadata) {
-        setStatus("preview");
-        setPreview({
-          url: normalizedUrl,
-          title: metadata.title,
-          imageUrl: metadata.image_url,
-          siteName: metadata.site_name,
-          domain,
-          faviconUrl: metadata.favicon_url,
-        });
-      } else {
-        setStatus("noOgp");
-        setPreview({
-          url: normalizedUrl,
-          title: null,
-          imageUrl: null,
-          siteName: null,
-          domain,
-          faviconUrl: null,
-        });
-      }
+      // OGP画像が取得できたかどうかで状態を判定
+      // 画像がある場合は完全なプレビュー、ない場合はnoOgp警告を表示
+      const hasOgpImage = metadata?.image_url != null;
+
+      setStatus(hasOgpImage ? "preview" : "noOgp");
+      setPreview({
+        url: normalizedUrl,
+        title: metadata?.title ?? null,
+        imageUrl: metadata?.image_url ?? null,
+        siteName: metadata?.site_name ?? null,
+        domain,
+        faviconUrl: metadata?.favicon_url ?? null,
+      });
     } catch {
       setStatus("invalid");
       setErrorMessage(t("links.paste.error_clipboard_read_failed"));

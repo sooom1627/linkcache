@@ -66,6 +66,8 @@ describe("isValidUrl", () => {
       expect(isValidUrl("http://172.15.0.1")).toBe(true); // 172.16-31の外
       expect(isValidUrl("http://172.32.0.1")).toBe(true); // 172.16-31の外
       expect(isValidUrl("http://192.167.1.1")).toBe(true); // 192.168.x.xの外
+      expect(isValidUrl("http://169.253.255.255")).toBe(true); // 169.254.x.xの外
+      expect(isValidUrl("http://223.255.255.255")).toBe(true); // マルチキャスト範囲の外
     });
   });
 
@@ -130,6 +132,28 @@ describe("isValidUrl", () => {
 
     it("0.0.0.0は無効（特殊アドレス）", () => {
       expect(isValidUrl("http://0.0.0.0")).toBe(false);
+    });
+
+    it("リンクローカルアドレス（169.254.x.x）は無効", () => {
+      expect(isValidUrl("http://169.254.0.1")).toBe(false);
+      expect(isValidUrl("http://169.254.255.255")).toBe(false);
+      expect(isValidUrl("http://169.254.100.50")).toBe(false);
+    });
+
+    it("マルチキャストアドレス（224.0.0.0-239.255.255.255）は無効", () => {
+      expect(isValidUrl("http://224.0.0.1")).toBe(false);
+      expect(isValidUrl("http://239.255.255.255")).toBe(false);
+      expect(isValidUrl("http://230.0.0.1")).toBe(false);
+    });
+
+    it("予約済みアドレス（240.0.0.0-255.255.255.254）は無効", () => {
+      expect(isValidUrl("http://240.0.0.1")).toBe(false);
+      expect(isValidUrl("http://250.100.50.25")).toBe(false);
+      expect(isValidUrl("http://255.255.255.254")).toBe(false);
+    });
+
+    it("ブロードキャストアドレス（255.255.255.255）は無効", () => {
+      expect(isValidUrl("http://255.255.255.255")).toBe(false);
     });
   });
 

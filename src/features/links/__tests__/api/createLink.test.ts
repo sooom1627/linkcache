@@ -9,6 +9,10 @@ jest.mock("@/src/shared/lib/supabase", () => ({
   },
 }));
 
+// テスト用の有効なUUID
+const MOCK_UUID_1 = "550e8400-e29b-41d4-a716-446655440000";
+const MOCK_UUID_2 = "123e4567-e89b-12d3-a456-426614174000";
+
 describe("createLinkWithStatus", () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -17,7 +21,7 @@ describe("createLinkWithStatus", () => {
   it("calls Supabase RPC with correct parameters", async () => {
     const mockResponse = {
       data: {
-        link_id: "test-uuid",
+        link_id: MOCK_UUID_1,
         url: "https://example.com",
         status: "inbox",
       },
@@ -45,7 +49,7 @@ describe("createLinkWithStatus", () => {
       p_site_name: "Example Site",
     });
     expect(result).toEqual({
-      link_id: "test-uuid",
+      link_id: MOCK_UUID_1,
       url: "https://example.com",
       status: "inbox",
     });
@@ -54,7 +58,7 @@ describe("createLinkWithStatus", () => {
   it("calls RPC with null values for optional parameters", async () => {
     const mockResponse = {
       data: {
-        link_id: "test-uuid",
+        link_id: MOCK_UUID_1,
         url: "https://example.com",
         status: "inbox",
       },
@@ -96,7 +100,7 @@ describe("createLinkWithStatus", () => {
   it("handles RPC response correctly", async () => {
     const mockResponse = {
       data: {
-        link_id: "abc-123",
+        link_id: MOCK_UUID_2,
         url: "https://test.com",
         status: "inbox",
       },
@@ -106,7 +110,7 @@ describe("createLinkWithStatus", () => {
 
     const result = await createLinkWithStatus({ url: "https://test.com" });
 
-    expect(result.link_id).toBe("abc-123");
+    expect(result.link_id).toBe(MOCK_UUID_2);
     expect(result.url).toBe("https://test.com");
     expect(result.status).toBe("inbox");
   });

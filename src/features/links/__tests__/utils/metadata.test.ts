@@ -13,7 +13,7 @@ describe("fetchOgpMetadata", () => {
   });
 
   it("fetches and returns OGP metadata from URL", async () => {
-    (getLinkPreview as jest.Mock).mockResolvedValueOnce({
+    jest.mocked(getLinkPreview).mockResolvedValueOnce({
       url: "https://example.com",
       title: "Example Title",
       description: "Example Description",
@@ -21,16 +21,20 @@ describe("fetchOgpMetadata", () => {
       favicons: ["https://example.com/favicon.ico"],
       siteName: "Example Site",
       mediaType: "website",
-    });
+    } as unknown as Awaited<ReturnType<typeof getLinkPreview>>);
 
     const result = await fetchOgpMetadata("https://example.com");
 
     expect(getLinkPreview).toHaveBeenCalledWith("https://example.com", {
-      timeout: 5000,
+      timeout: 10000,
       headers: {
         "User-Agent":
-          "Mozilla/5.0 (compatible; LinkCache/1.0; +https://linkcache.app)",
+          "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
+        "Accept-Language": "ja,en-US;q=0.9,en;q=0.8",
+        Accept:
+          "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
       },
+      followRedirects: "follow",
     });
     expect(result).toEqual({
       title: "Example Title",
@@ -42,7 +46,7 @@ describe("fetchOgpMetadata", () => {
   });
 
   it("returns first image and favicon when multiple exist", async () => {
-    (getLinkPreview as jest.Mock).mockResolvedValueOnce({
+    jest.mocked(getLinkPreview).mockResolvedValueOnce({
       url: "https://example.com",
       title: "Title",
       description: "Description",
@@ -56,7 +60,7 @@ describe("fetchOgpMetadata", () => {
       ],
       siteName: "Site",
       mediaType: "website",
-    });
+    } as unknown as Awaited<ReturnType<typeof getLinkPreview>>);
 
     const result = await fetchOgpMetadata("https://example.com");
 
@@ -65,12 +69,11 @@ describe("fetchOgpMetadata", () => {
   });
 
   it("handles missing optional fields", async () => {
-    (getLinkPreview as jest.Mock).mockResolvedValueOnce({
+    jest.mocked(getLinkPreview).mockResolvedValueOnce({
       url: "https://example.com",
       title: "Title Only",
       mediaType: "website",
-      // description, images, favicons, siteName are missing
-    });
+    } as unknown as Awaited<ReturnType<typeof getLinkPreview>>);
 
     const result = await fetchOgpMetadata("https://example.com");
 
@@ -83,52 +86,92 @@ describe("fetchOgpMetadata", () => {
     });
   });
 
-  it("handles empty arrays for images and favicons", async () => {
-    (getLinkPreview as jest.Mock).mockResolvedValueOnce({
-      url: "https://example.com",
-      title: "Title",
-      description: "Description",
-      images: [],
-      favicons: [],
-      siteName: "Site",
-      mediaType: "website",
+  it("handles PDF URLs with application mediaType", async () => {
+    jest.mocked(getLinkPreview).mockResolvedValueOnce({
+      url: "https://example.com/document.pdf",
+      mediaType: "application",
+      contentType: "application/pdf",
+      favicons: ["https://example.com/favicon.ico"],
+    } as unknown as Awaited<ReturnType<typeof getLinkPreview>>);
+
+    const result = await fetchOgpMetadata("https://example.com/document.pdf");
+
+    expect(result).toEqual({
+      title: "document",
+      description: "PDF Document",
+      image_url: null,
+      site_name: "example.com",
+      favicon_url: "https://example.com/favicon.ico",
     });
-
-    const result = await fetchOgpMetadata("https://example.com");
-
-    expect(result?.image_url).toBeNull();
-    expect(result?.favicon_url).toBeNull();
   });
 
-  it("returns null when fetch fails", async () => {
-    (getLinkPreview as jest.Mock).mockRejectedValueOnce(
-      new Error("Network error"),
-    );
+  it("handles PDF URLs detected by extension", async () => {
+    jest.mocked(getLinkPreview).mockResolvedValueOnce({
+      url: "https://example.com/report.pdf",
+      mediaType: "application",
+    } as unknown as Awaited<ReturnType<typeof getLinkPreview>>);
 
-    const result = await fetchOgpMetadata("https://example.com");
+    const result = await fetchOgpMetadata("https://example.com/report.pdf");
 
-    expect(result).toBeNull();
+    expect(result).toEqual({
+      title: "report",
+      description: "PDF Document",
+      image_url: null,
+      site_name: "example.com",
+      favicon_url: null,
+    });
   });
 
-  it("returns null for non-website media types", async () => {
-    (getLinkPreview as jest.Mock).mockResolvedValueOnce({
+  it("handles video/audio media types with fallback info", async () => {
+    jest.mocked(getLinkPreview).mockResolvedValueOnce({
       url: "https://example.com/video.mp4",
       mediaType: "video",
-    });
+    } as unknown as Awaited<ReturnType<typeof getLinkPreview>>);
 
     const result = await fetchOgpMetadata("https://example.com/video.mp4");
 
+    expect(result).toEqual({
+      title: "video",
+      description: null,
+      image_url: null,
+      site_name: "example.com",
+      favicon_url: null,
+    });
+  });
+
+  it("returns fallback metadata when fetch fails", async () => {
+    jest.mocked(getLinkPreview).mockRejectedValueOnce(new Error("Timeout"));
+
+    const result = await fetchOgpMetadata("https://example.com/page");
+
+    expect(result).toEqual({
+      title: "page",
+      description: null,
+      image_url: null,
+      site_name: "example.com",
+      favicon_url: null,
+    });
+  });
+
+  it("returns null for invalid URLs on complete failure", async () => {
+    jest.mocked(getLinkPreview).mockRejectedValueOnce(new Error("Error"));
+
+    const result = await fetchOgpMetadata("not-a-valid-url");
+
     expect(result).toBeNull();
   });
 
-  it("handles audio media type as non-website", async () => {
-    (getLinkPreview as jest.Mock).mockResolvedValueOnce({
-      url: "https://example.com/audio.mp3",
-      mediaType: "audio",
-    });
+  it("handles Japanese filenames in PDF URLs", async () => {
+    jest.mocked(getLinkPreview).mockResolvedValueOnce({
+      url: "https://example.co.jp/%E3%83%AC%E3%83%9D%E3%83%BC%E3%83%88.pdf",
+      mediaType: "application",
+      contentType: "application/pdf",
+    } as unknown as Awaited<ReturnType<typeof getLinkPreview>>);
 
-    const result = await fetchOgpMetadata("https://example.com/audio.mp3");
+    const result = await fetchOgpMetadata(
+      "https://example.co.jp/%E3%83%AC%E3%83%9D%E3%83%BC%E3%83%88.pdf",
+    );
 
-    expect(result).toBeNull();
+    expect(result?.title).toBe("レポート");
   });
 });
