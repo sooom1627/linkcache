@@ -21,6 +21,5 @@ export { normalizeUrl } from "./utils/normalizeUrl";
 export { createLinkWithStatus } from "./api/createLink.api";
 export type {
   CreateLinkParams,
-  CreateLinkResponse
+  CreateLinkResponse,
 } from "./api/createLink.api";
-

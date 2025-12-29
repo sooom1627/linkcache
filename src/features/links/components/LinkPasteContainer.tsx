@@ -1,6 +1,5 @@
 import { useCallback } from "react";
 
-import { Image } from "expo-image";
 import {
   ActivityIndicator,
   Text,
@@ -8,10 +7,18 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 
-import { AlertCircle, Clipboard, Command, Globe, Link } from "lucide-react-native";
+import { Image } from "expo-image";
+
+import {
+  AlertCircle,
+  Clipboard,
+  Command,
+  Globe,
+  Link,
+} from "lucide-react-native";
 import { useTranslation } from "react-i18next";
+import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 
 import type { LinkPasteStatus, LinkPreview } from "../types/linkPaste.types";
 
@@ -82,9 +89,7 @@ function LoadingStateView() {
       className="items-center justify-center gap-4 py-12"
     >
       <ActivityIndicator size="large" color="#475569" />
-      <Text className="text-sm text-slate-500">
-        {t("links.paste.loading")}
-      </Text>
+      <Text className="text-sm text-slate-500">{t("links.paste.loading")}</Text>
     </Animated.View>
   );
 }
@@ -266,4 +271,3 @@ export default function LinkPasteContainer({
     </View>
   );
 }
-

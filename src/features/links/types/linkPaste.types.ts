@@ -45,4 +45,3 @@ export interface UseLinkPasteReturn {
   /** 保存可能かどうか */
   canSave: boolean;
 }
-

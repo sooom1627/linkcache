@@ -46,7 +46,14 @@ export const LinkCreateModal = forwardRef<
   } = useLinkPaste();
 
   // リンク作成フック
-  const { createLink, isPending, isSuccess, isError, error, reset: resetCreate } = useCreateLink();
+  const {
+    createLink,
+    isPending,
+    isSuccess,
+    isError,
+    error,
+    reset: resetCreate,
+  } = useCreateLink();
 
   // モーダルを閉じる
   const handleClose = useCallback(() => {
@@ -95,7 +102,7 @@ export const LinkCreateModal = forwardRef<
     >
       <View className="flex-1 gap-4 px-4 pb-10">
         <ModalHeader title={t("links.create.title")} onClose={handleClose} />
-        
+
         {/* 状態に応じて切り替わるUI */}
         <LinkPasteContainer
           status={status}
