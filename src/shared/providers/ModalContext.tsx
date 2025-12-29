@@ -6,7 +6,11 @@ import type { BottomSheetModal } from "@gorhom/bottom-sheet";
 /**
  * モーダルの種類
  */
-export type ModalType = "setting" | "profileEdit" | "localeSetting";
+export type ModalType =
+  | "setting"
+  | "profileEdit"
+  | "localeSetting"
+  | "linkCreate";
 
 /**
  * モーダルRefsの型定義

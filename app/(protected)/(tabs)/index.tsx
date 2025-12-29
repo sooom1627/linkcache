@@ -1,13 +1,16 @@
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 
+import { Plus } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 
 import { useProfile } from "@/src/features/users";
 import { ScreenContainer } from "@/src/shared/components/layout/ScreenContainer";
+import { useModal } from "@/src/shared/providers/ModalContext";
 
 export default function Index() {
   const { data: profile, isLoading, error, refetch } = useProfile();
   const { t } = useTranslation();
+  const { openModal } = useModal();
 
   if (isLoading) {
     return (
@@ -45,6 +48,19 @@ export default function Index() {
         @{profile?.user_id || "..."} / {profile?.username || "..."}
       </Text>
       <Text>{t("welcome_message")}</Text>
+
+      {/* リンク追加ボタン（仮） */}
+      <TouchableOpacity
+        className="flex-row items-center gap-2 rounded-lg bg-blue-500 px-6 py-3"
+        accessibilityRole="button"
+        accessibilityLabel={t("links.create.add_button")}
+        onPress={() => openModal("linkCreate")}
+      >
+        <Plus size={20} color="white" />
+        <Text className="font-semibold text-white">
+          {t("links.create.add_button")}
+        </Text>
+      </TouchableOpacity>
 
       {Array.from({ length: 25 }).map((_, index) => (
         <View key={index} className="mb-4">

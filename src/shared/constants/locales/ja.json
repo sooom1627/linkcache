@@ -95,5 +95,40 @@
         "error_message": "言語を変更できませんでした。再度お試しください。"
       }
     }
+  },
+  "links": {
+    "create": {
+      "title": "リンクを追加",
+      "add_button": "リンクを追加",
+      "url_placeholder": "URLを入力",
+      "submit_button": "リンクを保存",
+      "saving": "保存中...",
+      "error_messages": {
+        "url_required": "URLは必須です",
+        "url_invalid": "有効なURLを入力してください"
+      },
+      "callback_messages": {
+        "success_title": "リンクを保存しました",
+        "success_message": "リンクがインボックスに追加されました",
+        "error_title": "保存に失敗しました",
+        "error_message": "リンクを保存できませんでした。再度お試しください。"
+      }
+    },
+    "paste": {
+      "empty_description": "クリップボードからリンクを貼り付けてください",
+      "paste_button": "クリップボードから貼り付け",
+      "loading": "リンクを読み込み中...",
+      "url_label": "URL",
+      "no_title": "タイトルなし",
+      "no_ogp_warning": "プレビュー情報を取得できませんでしたが、リンクは保存できます",
+      "invalid_url_title": "無効なURL",
+      "invalid_url_description": "有効なURLを貼り付けてください",
+      "try_again": "やり直す",
+      "clear_button": "クリア",
+      "change_link": "変更",
+      "error_clipboard_empty": "クリップボードが空です",
+      "error_invalid_url": "有効なURLではありません",
+      "error_clipboard_read_failed": "クリップボードの読み取りに失敗しました"
+    }
   }
 }
