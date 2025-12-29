@@ -6,7 +6,6 @@ import type { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useTranslation } from "react-i18next";
 
 import { FormButton } from "@/src/shared/components/forms";
-
 import { ScrollableBottomSheetModal } from "@/src/shared/components/modals";
 import ModalHeader from "@/src/shared/components/modals/ModalHeader";
 

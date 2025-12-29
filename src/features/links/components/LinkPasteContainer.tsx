@@ -240,7 +240,7 @@ export default function LinkPasteContainer({
   onReset,
 }: LinkPasteContainerProps) {
   return (
-    <View className="h-[240px]">
+    <View className="min-h-[200px]">
       {status === "empty" && <EmptyStateView onPaste={onPaste} />}
       {status === "loading" && <LoadingStateView />}
       {(status === "preview" || status === "noOgp") && preview && (
