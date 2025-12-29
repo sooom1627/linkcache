@@ -1,11 +1,17 @@
 import { forwardRef, useCallback, useEffect } from "react";
 
-import { Alert, View } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 import type { BottomSheetModal } from "@gorhom/bottom-sheet";
+import { Check } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 
-import FormButton from "@/src/shared/components/forms/FormButton";
 import { ScrollableBottomSheetModal } from "@/src/shared/components/modals";
 import ModalHeader from "@/src/shared/components/modals/ModalHeader";
 
@@ -95,32 +101,58 @@ export const LinkCreateModal = forwardRef<
   return (
     <ScrollableBottomSheetModal
       ref={ref}
-      snapPoints={["55%", "75%"]}
+      snapPoints={["50%", "70%"]}
       index={0}
       enablePanDownToClose={false}
       stackBehavior="switch"
     >
-      <View className="flex-1 gap-4 px-4 pb-10">
+      <View className="flex-1 px-5 pb-8">
         <ModalHeader title={t("links.create.title")} onClose={handleClose} />
 
         {/* 状態に応じて切り替わるUI */}
-        <LinkPasteContainer
-          status={status}
-          preview={preview}
-          errorMessage={errorMessage}
-          onPaste={pasteFromClipboard}
-          onUpdateUrl={updateUrl}
-          onReset={reset}
-        />
+        <View className="mt-2">
+          <LinkPasteContainer
+            status={status}
+            preview={preview}
+            errorMessage={errorMessage}
+            onPaste={pasteFromClipboard}
+            onUpdateUrl={updateUrl}
+            onReset={reset}
+          />
+        </View>
 
         {/* 保存ボタン（preview/noOgp状態でのみ表示） */}
         {(status === "preview" || status === "noOgp") && (
-          <View className="mt-4">
-            <FormButton
-              title={isPending ? "..." : t("links.create.submit_button")}
+          <View className="mt-6">
+            <TouchableOpacity
               onPress={handleSave}
               disabled={isSubmitDisabled}
-            />
+              className={`flex-row items-center justify-center gap-2 rounded-xl py-4 ${
+                isSubmitDisabled ? "bg-slate-100" : "bg-blue-500"
+              }`}
+              accessibilityRole="button"
+              accessibilityLabel={t("links.create.submit_button")}
+              activeOpacity={0.8}
+            >
+              {isPending ? (
+                <ActivityIndicator size="small" color="#ffffff" />
+              ) : (
+                <>
+                  <Check
+                    size={18}
+                    color={isSubmitDisabled ? "#94a3b8" : "#ffffff"}
+                    strokeWidth={2}
+                  />
+                  <Text
+                    className={`text-base font-medium ${
+                      isSubmitDisabled ? "text-slate-400" : "text-white"
+                    }`}
+                  >
+                    {t("links.create.submit_button")}
+                  </Text>
+                </>
+              )}
+            </TouchableOpacity>
           </View>
         )}
       </View>
