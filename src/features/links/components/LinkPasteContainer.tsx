@@ -33,7 +33,7 @@ function EmptyStateView({ onPaste }: { onPaste: () => void }) {
     <Animated.View
       entering={FadeIn.duration(200)}
       exiting={FadeOut.duration(150)}
-      className="items-center justify-center py-10"
+      className="items-center justify-center"
     >
       {/* ペーストカード */}
       <TouchableOpacity
@@ -191,7 +191,7 @@ function InvalidStateView({
     <Animated.View
       entering={FadeIn.duration(200)}
       exiting={FadeOut.duration(150)}
-      className="items-center justify-center py-10"
+      className="items-center justify-center"
     >
       {/* エラーカード */}
       <View className="w-full items-center gap-5 rounded-2xl border border-red-100 bg-red-50/50 px-6 py-8">
