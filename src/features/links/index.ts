@@ -3,9 +3,11 @@ export * from "./types";
 
 // Hooks
 export { useCreateLink } from "./hooks/useCreateLink";
+export { useLinkPaste } from "./hooks/useLinkPaste";
 
 // Components
 export { default as LinkCreateForm } from "./components/LinkCreateForm";
+export { default as LinkPasteContainer } from "./components/LinkPasteContainer";
 
 // Screens
 export { LinkCreateModal } from "./screens/LinkCreateModal";

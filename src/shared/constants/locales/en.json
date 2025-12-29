@@ -111,6 +111,17 @@
         "error_title": "Save Failed",
         "error_message": "Failed to save link. Please try again."
       }
+    },
+    "paste": {
+      "empty_description": "Paste a link from your clipboard",
+      "paste_button": "Paste from Clipboard",
+      "loading": "Loading link...",
+      "url_label": "URL",
+      "no_title": "No title",
+      "no_ogp_warning": "Preview information unavailable, but you can still save this link",
+      "invalid_url_title": "Invalid URL",
+      "invalid_url_description": "Please paste a valid URL",
+      "try_again": "Try Again"
     }
   }
 }
