@@ -10,7 +10,13 @@ import {
 
 import { Image } from "expo-image";
 
-import { AlertCircle, ClipboardPaste, Globe, Link2, X } from "lucide-react-native";
+import {
+  AlertCircle,
+  ClipboardPaste,
+  Globe,
+  Link2,
+  X,
+} from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 
