@@ -99,6 +99,7 @@
   "links": {
     "create": {
       "title": "Add Link",
+      "add_button": "Add Link",
       "url_placeholder": "Enter URL",
       "submit_button": "Save Link",
       "saving": "Saving...",
@@ -124,7 +125,10 @@
       "invalid_url_description": "Please paste a valid URL",
       "try_again": "Try Again",
       "clear_button": "Clear",
-      "change_link": "Change"
+      "change_link": "Change",
+      "error_clipboard_empty": "Clipboard is empty",
+      "error_invalid_url": "Invalid URL",
+      "error_clipboard_read_failed": "Failed to read clipboard"
     }
   }
 }

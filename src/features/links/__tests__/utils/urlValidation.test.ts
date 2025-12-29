@@ -53,10 +53,19 @@ describe("isValidUrl", () => {
       expect(isValidUrl("http://localhost:8080/api")).toBe(true);
     });
 
-    it("IPアドレスは有効", () => {
-      expect(isValidUrl("http://192.168.1.1")).toBe(true);
-      expect(isValidUrl("http://127.0.0.1:3000")).toBe(true);
-      expect(isValidUrl("https://10.0.0.1/path")).toBe(true);
+    it("パブリックIPアドレスは有効", () => {
+      expect(isValidUrl("http://8.8.8.8")).toBe(true); // Google DNS
+      expect(isValidUrl("http://1.1.1.1")).toBe(true); // Cloudflare DNS
+      expect(isValidUrl("https://203.0.113.1/path")).toBe(true); // TEST-NET-3
+    });
+
+    it("境界値のパブリックIPアドレスは有効", () => {
+      expect(isValidUrl("http://1.2.3.4")).toBe(true);
+      expect(isValidUrl("http://100.200.150.250")).toBe(true);
+      expect(isValidUrl("http://11.0.0.1")).toBe(true); // 10.x.x.xの外
+      expect(isValidUrl("http://172.15.0.1")).toBe(true); // 172.16-31の外
+      expect(isValidUrl("http://172.32.0.1")).toBe(true); // 172.16-31の外
+      expect(isValidUrl("http://192.167.1.1")).toBe(true); // 192.168.x.xの外
     });
   });
 
@@ -88,6 +97,39 @@ describe("isValidUrl", () => {
     it("不正な形式は無効", () => {
       expect(isValidUrl("://example.com")).toBe(false);
       expect(isValidUrl("ftp://example.com")).toBe(false); // http/httpsのみ許可
+    });
+
+    it("無効なIPアドレス（オクテットが0-255の範囲外）は無効", () => {
+      expect(isValidUrl("http://999.999.999.999")).toBe(false);
+      expect(isValidUrl("http://256.1.1.1")).toBe(false);
+      expect(isValidUrl("http://1.256.1.1")).toBe(false);
+      expect(isValidUrl("http://1.1.256.1")).toBe(false);
+      expect(isValidUrl("http://1.1.1.256")).toBe(false);
+      expect(isValidUrl("http://300.300.300.300")).toBe(false);
+    });
+
+    it("プライベートIPアドレスは無効（セキュリティ対策）", () => {
+      // 10.0.0.0/8
+      expect(isValidUrl("http://10.0.0.1")).toBe(false);
+      expect(isValidUrl("http://10.255.255.255")).toBe(false);
+
+      // 172.16.0.0/12
+      expect(isValidUrl("http://172.16.0.1")).toBe(false);
+      expect(isValidUrl("http://172.31.255.255")).toBe(false);
+
+      // 192.168.0.0/16
+      expect(isValidUrl("http://192.168.0.1")).toBe(false);
+      expect(isValidUrl("http://192.168.1.1")).toBe(false);
+      expect(isValidUrl("http://192.168.255.255")).toBe(false);
+
+      // 127.0.0.0/8 ループバック
+      expect(isValidUrl("http://127.0.0.1")).toBe(false);
+      expect(isValidUrl("http://127.0.0.1:3000")).toBe(false);
+      expect(isValidUrl("http://127.255.255.255")).toBe(false);
+    });
+
+    it("0.0.0.0は無効（特殊アドレス）", () => {
+      expect(isValidUrl("http://0.0.0.0")).toBe(false);
     });
   });
 

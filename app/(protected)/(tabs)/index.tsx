@@ -53,11 +53,13 @@ export default function Index() {
       <TouchableOpacity
         className="flex-row items-center gap-2 rounded-lg bg-blue-500 px-6 py-3"
         accessibilityRole="button"
-        accessibilityLabel="リンクを追加"
+        accessibilityLabel={t("links.create.add_button")}
         onPress={() => openModal("linkCreate")}
       >
         <Plus size={20} color="white" />
-        <Text className="font-semibold text-white">リンクを追加</Text>
+        <Text className="font-semibold text-white">
+          {t("links.create.add_button")}
+        </Text>
       </TouchableOpacity>
 
       {Array.from({ length: 25 }).map((_, index) => (

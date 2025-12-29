@@ -16,8 +16,16 @@ const createTestQueryClient = () =>
     },
   });
 
+// テスト間で共有するQueryClientインスタンス
+export const testQueryClient = createTestQueryClient();
+
+// テスト間でキャッシュをクリアするユーティリティ関数
+export const clearQueryCache = () => {
+  testQueryClient.clear();
+  testQueryClient.getQueryCache().clear();
+  testQueryClient.getMutationCache().clear();
+};
+
 export const wrapper = ({ children }: { children: React.ReactNode }) => (
-  <QueryClientProvider client={createTestQueryClient()}>
-    {children}
-  </QueryClientProvider>
+  <QueryClientProvider client={testQueryClient}>{children}</QueryClientProvider>
 );

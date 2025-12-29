@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 
 import * as Clipboard from "expo-clipboard";
+import { useTranslation } from "react-i18next";
 
 import type {
   LinkPasteStatus,
@@ -30,6 +31,7 @@ function extractDomain(url: string): string {
  * 状態に応じたUIを表示するための情報を提供します。
  */
 export function useLinkPaste(): UseLinkPasteReturn {
+  const { t } = useTranslation();
   const [status, setStatus] = useState<LinkPasteStatus>("empty");
   const [preview, setPreview] = useState<LinkPreview | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -47,7 +49,7 @@ export function useLinkPaste(): UseLinkPasteReturn {
       // 空のクリップボード
       if (!clipboardContent || clipboardContent.trim() === "") {
         setStatus("invalid");
-        setErrorMessage("クリップボードが空です");
+        setErrorMessage(t("links.paste.error_clipboard_empty"));
         setPreview(null);
         return;
       }
@@ -61,7 +63,7 @@ export function useLinkPaste(): UseLinkPasteReturn {
         }
       } catch {
         setStatus("invalid");
-        setErrorMessage("有効なURLではありません");
+        setErrorMessage(t("links.paste.error_invalid_url"));
         setPreview(null);
         return;
       }
@@ -94,10 +96,10 @@ export function useLinkPaste(): UseLinkPasteReturn {
       }
     } catch {
       setStatus("invalid");
-      setErrorMessage("クリップボードの読み取りに失敗しました");
+      setErrorMessage(t("links.paste.error_clipboard_read_failed"));
       setPreview(null);
     }
-  }, []);
+  }, [t]);
 
   /**
    * 状態をリセット

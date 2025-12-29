@@ -34,8 +34,11 @@ export interface CreateLinkResponse {
 export async function createLinkWithStatus(
   params: CreateLinkParams,
 ): Promise<CreateLinkResponse> {
-  // Supabase RPC の戻り値型は Database.Functions に定義がないため any になる
-  // 型安全性は CreateLinkResponse で保証
+  // NOTE: Supabase RPC の戻り値型について
+  // - Database.Functions に型定義がないため、response.data は any 型になる
+  // - 実際の RPC は { link_id: UUID, url: TEXT, status: TEXT } を返す
+  // - PostgreSQL の UUID 型は JavaScript では string として扱われる
+  // - 型アサーション (as CreateLinkResponse) で期待する型に変換
   const response = await supabase.rpc("create_link_with_status", {
     p_url: params.url,
     p_title: params.title ?? null,

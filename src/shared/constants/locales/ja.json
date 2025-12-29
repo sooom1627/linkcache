@@ -99,6 +99,7 @@
   "links": {
     "create": {
       "title": "リンクを追加",
+      "add_button": "リンクを追加",
       "url_placeholder": "URLを入力",
       "submit_button": "リンクを保存",
       "saving": "保存中...",
@@ -124,7 +125,10 @@
       "invalid_url_description": "有効なURLを貼り付けてください",
       "try_again": "やり直す",
       "clear_button": "クリア",
-      "change_link": "変更"
+      "change_link": "変更",
+      "error_clipboard_empty": "クリップボードが空です",
+      "error_invalid_url": "有効なURLではありません",
+      "error_clipboard_read_failed": "クリップボードの読み取りに失敗しました"
     }
   }
 }

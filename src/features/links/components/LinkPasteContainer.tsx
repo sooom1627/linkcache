@@ -45,7 +45,7 @@ function EmptyStateView({ onPaste }: { onPaste: () => void }) {
       >
         {/* アイコン */}
         <View className="rounded-full bg-white p-4 shadow-sm">
-          <ClipboardPaste size={28} color="#3b82f6" strokeWidth={1.5} />
+          <ClipboardPaste size={28} color="#6B7280" strokeWidth={1.5} />
         </View>
 
         {/* テキスト */}
@@ -206,7 +206,7 @@ function InvalidStateView({
             {t("links.paste.invalid_url_title")}
           </Text>
           <Text className="text-center text-sm text-slate-400">
-            {errorMessage || t("links.paste.invalid_url_description")}
+            { errorMessage || t("links.paste.invalid_url_description") }
           </Text>
         </View>
 

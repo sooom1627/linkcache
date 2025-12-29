@@ -6,9 +6,63 @@ const TLD_PATTERN = /\.[a-z]{2,}$/i;
 
 /**
  * IPアドレスパターン（IPv4）
+ * 各オクテットが0-255の範囲内であることを検証
  * 例: 192.168.1.1, 127.0.0.1
  */
-const IPV4_PATTERN = /^(\d{1,3}\.){3}\d{1,3}$/;
+const IPV4_OCTET = "(25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)";
+const IPV4_PATTERN = new RegExp(
+  `^${IPV4_OCTET}\\.${IPV4_OCTET}\\.${IPV4_OCTET}\\.${IPV4_OCTET}$`,
+);
+
+/**
+ * プライベート/特殊IPアドレスかどうかを判定する
+ *
+ * 以下の範囲をブロック対象として判定:
+ * - 0.0.0.0 (特殊アドレス)
+ * - 10.0.0.0/8 (10.0.0.0 - 10.255.255.255)
+ * - 172.16.0.0/12 (172.16.0.0 - 172.31.255.255)
+ * - 192.168.0.0/16 (192.168.0.0 - 192.168.255.255)
+ * - 127.0.0.0/8 (127.0.0.0 - 127.255.255.255) ループバック
+ *
+ * @param ip - 検証するIPアドレス文字列
+ * @returns プライベート/特殊IPの場合true
+ */
+function isPrivateOrSpecialIpAddress(ip: string): boolean {
+  // IPアドレス形式でない場合はfalse
+  if (!IPV4_PATTERN.test(ip)) {
+    return false;
+  }
+
+  const octets = ip.split(".").map(Number);
+  const [first, second] = octets;
+
+  // 0.0.0.0 - 特殊アドレス
+  if (first === 0) {
+    return true;
+  }
+
+  // 127.0.0.0/8 - ループバック
+  if (first === 127) {
+    return true;
+  }
+
+  // 10.0.0.0/8
+  if (first === 10) {
+    return true;
+  }
+
+  // 172.16.0.0/12 (172.16.0.0 - 172.31.255.255)
+  if (first === 172 && second >= 16 && second <= 31) {
+    return true;
+  }
+
+  // 192.168.0.0/16
+  if (first === 192 && second === 168) {
+    return true;
+  }
+
+  return false;
+}
 
 /**
  * ホスト名が有効なTLDを持つかどうかを検証する
@@ -17,8 +71,13 @@ function hasValidTld(hostname: string): boolean {
   // ポート番号を除去
   const hostWithoutPort = hostname.split(":")[0];
 
-  // IPアドレスの場合は有効
+  // IPアドレスの場合
   if (IPV4_PATTERN.test(hostWithoutPort)) {
+    // プライベート/特殊IPアドレスはセキュリティ上の理由でブロック
+    // ローカルネットワーク上のサービスへの意図しないアクセスを防止
+    if (isPrivateOrSpecialIpAddress(hostWithoutPort)) {
+      return false;
+    }
     return true;
   }
 
@@ -58,7 +117,8 @@ function addProtocolIfMissing(url: string): string {
  * isValidUrl("https://example.com") // true
  * isValidUrl("example.com") // true（プロトコル補完後に検証）
  * isValidUrl("https://hello") // false（TLDなし）
- * isValidUrl("http://192.168.1.1") // true（IPアドレス）
+ * isValidUrl("http://8.8.8.8") // true（パブリックIPアドレス）
+ * isValidUrl("http://192.168.1.1") // false（プライベートIPアドレス）
  * ```
  */
 export function isValidUrl(url: string): boolean {
