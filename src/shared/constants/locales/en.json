@@ -121,7 +121,8 @@
       "no_ogp_warning": "Preview information unavailable, but you can still save this link",
       "invalid_url_title": "Invalid URL",
       "invalid_url_description": "Please paste a valid URL",
-      "try_again": "Try Again"
+      "try_again": "Try Again",
+      "clear_button": "Clear"
     }
   }
 }

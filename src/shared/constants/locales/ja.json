@@ -121,7 +121,8 @@
       "no_ogp_warning": "プレビュー情報を取得できませんでしたが、リンクは保存できます",
       "invalid_url_title": "無効なURL",
       "invalid_url_description": "有効なURLを貼り付けてください",
-      "try_again": "やり直す"
+      "try_again": "やり直す",
+      "clear_button": "クリア"
     }
   }
 }

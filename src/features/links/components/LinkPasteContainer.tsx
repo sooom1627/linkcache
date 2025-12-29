@@ -16,6 +16,7 @@ import {
   Command,
   Globe,
   Link,
+  X,
 } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
@@ -100,10 +101,12 @@ function LoadingStateView() {
 function PreviewStateView({
   preview,
   onUpdateUrl,
+  onClear,
   hasOgp,
 }: {
   preview: LinkPreview;
   onUpdateUrl: (url: string) => void;
+  onClear: () => void;
   hasOgp: boolean;
 }) {
   const { t } = useTranslation();
@@ -167,11 +170,24 @@ function PreviewStateView({
         </View>
       </View>
 
-      {/* 編集可能なURLフィールド */}
+      {/* 編集可能なURLフィールド + クリアボタン */}
       <View className="gap-2">
-        <Text className="text-sm font-medium text-slate-600">
-          {t("links.paste.url_label")}
-        </Text>
+        <View className="flex-row items-center justify-between">
+          <Text className="text-sm font-medium text-slate-600">
+            {t("links.paste.url_label")}
+          </Text>
+          <TouchableOpacity
+            onPress={onClear}
+            className="flex-row items-center gap-1 rounded-lg px-2 py-1"
+            accessibilityRole="button"
+            accessibilityLabel={t("links.paste.clear_button")}
+          >
+            <X size={16} color="#64748b" />
+            <Text className="text-sm text-slate-500">
+              {t("links.paste.clear_button")}
+            </Text>
+          </TouchableOpacity>
+        </View>
         <TextInput
           value={preview.url}
           onChangeText={onUpdateUrl}
@@ -262,6 +278,7 @@ export default function LinkPasteContainer({
         <PreviewStateView
           preview={preview}
           onUpdateUrl={handleUpdateUrl}
+          onClear={onReset}
           hasOgp={status === "preview"}
         />
       )}
