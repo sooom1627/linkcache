@@ -118,7 +118,7 @@ describe("fetchOgpMetadata", () => {
       description: "PDF Document",
       image_url: null,
       site_name: "example.com",
-      favicon_url: null,
+      favicon_url: "https://example.com/favicon.ico",
     });
   });
 
@@ -135,7 +135,7 @@ describe("fetchOgpMetadata", () => {
       description: null,
       image_url: null,
       site_name: "example.com",
-      favicon_url: null,
+      favicon_url: "https://example.com/favicon.ico",
     });
   });
 
@@ -149,7 +149,7 @@ describe("fetchOgpMetadata", () => {
       description: null,
       image_url: null,
       site_name: "example.com",
-      favicon_url: null,
+      favicon_url: "https://example.com/favicon.ico",
     });
   });
 

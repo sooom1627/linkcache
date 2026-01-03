@@ -72,6 +72,21 @@ function extractSiteNameFromUrl(url: string): string | null {
 }
 
 /**
+ * URLからfavicon URLを生成する（フォールバック用）
+ *
+ * @param url - 対象URL
+ * @returns favicon URL（{protocol}//{hostname}/favicon.ico）、取得不可の場合はnull
+ */
+function extractFaviconUrlFromUrl(url: string): string | null {
+  try {
+    const urlObj = new URL(url);
+    return `${urlObj.protocol}//${urlObj.hostname}/favicon.ico`;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * PDFかどうかを判定する
  *
  * @param url - 対象URL
@@ -138,7 +153,7 @@ export async function fetchOgpMetadata(
         description: "PDF Document",
         image_url: null,
         site_name: extractSiteNameFromUrl(url),
-        favicon_url: data.favicons?.[0] ?? null,
+        favicon_url: data.favicons?.[0] ?? extractFaviconUrlFromUrl(url),
       };
     }
 
@@ -150,7 +165,7 @@ export async function fetchOgpMetadata(
         description: null,
         image_url: null,
         site_name: extractSiteNameFromUrl(url),
-        favicon_url: data.favicons?.[0] ?? null,
+        favicon_url: data.favicons?.[0] ?? extractFaviconUrlFromUrl(url),
       };
     }
 
@@ -177,6 +192,7 @@ export async function fetchOgpMetadata(
 function createFallbackMetadata(url: string): OgpMetadata | null {
   const siteName = extractSiteNameFromUrl(url);
   const filename = extractFilenameFromUrl(url);
+  const faviconUrl = extractFaviconUrlFromUrl(url);
 
   // URLが無効な場合はnullを返す
   if (!siteName) {
@@ -188,6 +204,6 @@ function createFallbackMetadata(url: string): OgpMetadata | null {
     description: null,
     image_url: null,
     site_name: siteName,
-    favicon_url: null,
+    favicon_url: faviconUrl,
   };
 }
