@@ -6,6 +6,8 @@ export { useCreateLink } from "./hooks/useCreateLink";
 export { useLinkPaste } from "./hooks/useLinkPaste";
 export { useLinks } from "./hooks/useLinks";
 export type { UseLinksReturn } from "./hooks/useLinks";
+export { useOgpMetadata } from "./hooks/useOgpMetadata";
+export type { UseOgpMetadataOptions } from "./hooks/useOgpMetadata";
 
 // Components
 export { default as LinkCreateForm } from "./components/LinkCreateForm";
@@ -23,6 +25,12 @@ export { fetchOgpMetadata } from "./utils/metadata";
 export type { OgpMetadata } from "./utils/metadata";
 export { normalizeUrl } from "./utils/normalizeUrl";
 export { isValidUrl } from "./utils/urlValidation";
+export {
+  getCachedOgpMetadata,
+  setCachedOgpMetadata,
+  clearCachedOgpMetadata,
+  clearAllOgpCache,
+} from "./utils/ogpCache";
 
 // API
 export { createLinkWithStatus } from "./api/createLink.api";
