@@ -39,4 +39,15 @@ export const linkQueryKeys = {
    * @param id - リンクID
    */
   detail: (id: string) => [...linkQueryKeys.details(), id] as const,
+
+  /**
+   * OGPメタデータの基底キー
+   */
+  ogp: () => [...linkQueryKeys.all, "ogp"] as const,
+
+  /**
+   * 特定URLのOGPメタデータのクエリキー
+   * @param url - 正規化されたURL
+   */
+  ogpMetadata: (url: string) => [...linkQueryKeys.ogp(), url] as const,
 } as const;
