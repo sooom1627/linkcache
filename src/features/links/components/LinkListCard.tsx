@@ -2,8 +2,8 @@ import { useCallback, useState } from "react";
 
 import { Linking, Pressable, Text, View } from "react-native";
 
-import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
+import { Ionicons } from "@expo/vector-icons";
 
 import type { TriageStatus, UserLink } from "../types/linkList.types";
 
@@ -40,7 +40,7 @@ const OG_IMAGE_WIDTH = Math.round(OG_IMAGE_HEIGHT * 1.91);
 function ThumbnailFallback() {
   return (
     <View
-      className="items-center justify-center rounded-lg bg-gradient-to-br bg-slate-50"
+      className="items-center justify-center rounded-lg bg-slate-50 bg-gradient-to-br"
       style={{ width: OG_IMAGE_WIDTH, height: OG_IMAGE_HEIGHT }}
     >
       <Ionicons name="link-outline" size={24} color="#CBD5E1" />
@@ -77,13 +77,20 @@ export function LinkListCard({ link }: LinkListCardProps) {
       {showFallback ? (
         <ThumbnailFallback />
       ) : (
-        <View style={{ width: OG_IMAGE_WIDTH, height: OG_IMAGE_HEIGHT }} className="rounded-lg">
-        <Image
-          source={link.image_url as string}
-          style={{ width: OG_IMAGE_WIDTH, height: OG_IMAGE_HEIGHT, borderRadius: 8 }}
-          contentFit="cover"
-          transition={150}
-          onError={handleImageError}
+        <View
+          style={{ width: OG_IMAGE_WIDTH, height: OG_IMAGE_HEIGHT }}
+          className="rounded-lg"
+        >
+          <Image
+            source={link.image_url as string}
+            style={{
+              width: OG_IMAGE_WIDTH,
+              height: OG_IMAGE_HEIGHT,
+              borderRadius: 8,
+            }}
+            contentFit="cover"
+            transition={150}
+            onError={handleImageError}
           />
         </View>
       )}

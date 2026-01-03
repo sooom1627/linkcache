@@ -1,6 +1,7 @@
 import { Text, View } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
+
 import { useTranslation } from "react-i18next";
 
 /**
@@ -12,7 +13,7 @@ export function LinkListEmpty() {
   const { t } = useTranslation();
 
   return (
-    <View className="flex-1 mt-16 items-center justify-center px-8 py-16">
+    <View className="mt-16 flex-1 items-center justify-center px-8 py-16">
       <View className="mb-4 rounded-full bg-gray-100 p-4">
         <Ionicons name="link-outline" size={48} color="#9CA3AF" />
       </View>
@@ -28,4 +29,3 @@ export function LinkListEmpty() {
     </View>
   );
 }
-

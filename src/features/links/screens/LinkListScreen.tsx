@@ -4,7 +4,6 @@ import { ActivityIndicator, RefreshControl, Text, View } from "react-native";
 
 import { FlashList } from "@shopify/flash-list";
 
-
 import { LinkListCard } from "../components/LinkListCard";
 import { LinkListEmpty } from "../components/LinkListEmpty";
 import { LinkListLoadingFooter } from "../components/LinkListLoadingFooter";
@@ -46,10 +45,7 @@ export function LinkListScreen() {
   );
 
   // キー抽出
-  const keyExtractor = useCallback(
-    (item: UserLink) => item.status_id,
-    [],
-  );
+  const keyExtractor = useCallback((item: UserLink) => item.status_id, []);
 
   // フッターコンポーネント
   const renderFooter = useCallback(
@@ -68,9 +64,7 @@ export function LinkListScreen() {
 
   // 初回ローディング
   if (isLoading) {
-    return (
-        <ActivityIndicator size="large" color="#6B7280" />
-    );
+    return <ActivityIndicator size="large" color="#6B7280" />;
   }
 
   // エラー状態
@@ -90,25 +84,23 @@ export function LinkListScreen() {
   }
 
   return (
-      <FlashList
-        data={links}
-        renderItem={renderItem}
-        keyExtractor={keyExtractor}
-        contentContainerClassName="pt-4 pb-28"
-        showsVerticalScrollIndicator={false}
-        onEndReached={handleEndReached}
-        onEndReachedThreshold={0.5}
-        ListFooterComponent={renderFooter}
-        ListEmptyComponent={renderEmpty}
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefreshing}
-            onRefresh={refetch}
-            tintColor="#6B7280"
-          />
-        }
-      />
-
+    <FlashList
+      data={links}
+      renderItem={renderItem}
+      keyExtractor={keyExtractor}
+      contentContainerClassName="pt-4 pb-28"
+      showsVerticalScrollIndicator={false}
+      onEndReached={handleEndReached}
+      onEndReachedThreshold={0.5}
+      ListFooterComponent={renderFooter}
+      ListEmptyComponent={renderEmpty}
+      refreshControl={
+        <RefreshControl
+          refreshing={isRefreshing}
+          onRefresh={refetch}
+          tintColor="#6B7280"
+        />
+      }
+    />
   );
 }
-

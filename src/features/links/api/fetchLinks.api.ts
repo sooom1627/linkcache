@@ -56,4 +56,3 @@ export async function fetchUserLinks(
 
   return parseResult.data;
 }
-

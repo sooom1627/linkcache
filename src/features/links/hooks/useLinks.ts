@@ -82,9 +82,8 @@ export function useLinks(pageSize: number = DEFAULT_PAGE_SIZE): UseLinksReturn {
     error: query.error,
     hasNextPage: query.hasNextPage ?? false,
     totalCount,
-    fetchNextPage: query.fetchNextPage,
-    refetch: query.refetch,
+    fetchNextPage: () => void query.fetchNextPage(),
+    refetch: () => void query.refetch(),
     isRefreshing: query.isRefetching && !query.isFetchingNextPage,
   };
 }
-

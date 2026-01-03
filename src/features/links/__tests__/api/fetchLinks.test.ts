@@ -1,3 +1,5 @@
+import { supabase } from "@/src/shared/lib/supabase";
+
 import { fetchUserLinks } from "../../api/fetchLinks.api";
 
 // Supabase クライアントをモック
@@ -6,8 +8,6 @@ jest.mock("@/src/shared/lib/supabase", () => ({
     rpc: jest.fn(),
   },
 }));
-
-import { supabase } from "@/src/shared/lib/supabase";
 
 const mockRpc = supabase.rpc as jest.Mock;
 
@@ -133,4 +133,3 @@ describe("fetchUserLinks", () => {
     });
   });
 });
-

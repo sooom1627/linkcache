@@ -1,10 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import {
   renderHook,
   waitFor,
   type RenderHookResult,
 } from "@testing-library/react-native";
 
+import { fetchUserLinks } from "../../api/fetchLinks.api";
 import { useLinks, type UseLinksReturn } from "../../hooks/useLinks";
 import { clearQueryCache, wrapper } from "../test-utils";
 
@@ -12,8 +12,6 @@ import { clearQueryCache, wrapper } from "../test-utils";
 jest.mock("../../api/fetchLinks.api", () => ({
   fetchUserLinks: jest.fn(),
 }));
-
-import { fetchUserLinks } from "../../api/fetchLinks.api";
 
 const mockFetchUserLinks = jest.mocked(fetchUserLinks);
 
@@ -177,4 +175,3 @@ describe("useLinks", () => {
     });
   });
 });
-

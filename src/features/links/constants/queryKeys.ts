@@ -40,4 +40,3 @@ export const linkQueryKeys = {
    */
   detail: (id: string) => [...linkQueryKeys.details(), id] as const,
 } as const;
-

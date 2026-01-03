@@ -82,4 +82,3 @@ export const getUserLinksResponseSchema = z.object({
   hasMore: z.boolean(),
   totalCount: z.number(),
 });
-

@@ -8,7 +8,6 @@ export default function LinkList() {
       centerContent={false}
       noPaddingBottom
       headerTitle="Link List"
-      
     >
       <LinkListScreen />
     </ScreenContainer>
