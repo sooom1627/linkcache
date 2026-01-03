@@ -5,6 +5,7 @@ import { Linking, Pressable, Text, View } from "react-native";
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
 
+import { extractDomain } from "../hooks/useLinkPaste";
 import type { TriageStatus, UserLink } from "../types/linkList.types";
 
 interface LinkListCardProps {
@@ -124,7 +125,7 @@ export function LinkListCard({ link }: LinkListCardProps) {
             className="flex-1 text-xs font-normal tracking-wide text-slate-400"
             numberOfLines={1}
           >
-            {link.site_name || new URL(link.url).hostname}
+            {link.site_name || extractDomain(link.url)}
           </Text>
         </View>
       </View>

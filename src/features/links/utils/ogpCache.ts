@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { z } from "zod";
 
 import type { OgpMetadata } from "./metadata";
 
@@ -9,6 +10,25 @@ interface CacheEntry {
   data: OgpMetadata;
   timestamp: number;
 }
+
+/**
+ * OgpMetadataのZodスキーマ
+ */
+const ogpMetadataSchema = z.object({
+  title: z.string().nullable(),
+  description: z.string().nullable(),
+  image_url: z.string().nullable(),
+  site_name: z.string().nullable(),
+  favicon_url: z.string().nullable(),
+});
+
+/**
+ * CacheEntryのZodスキーマ
+ */
+const cacheEntrySchema = z.object({
+  data: ogpMetadataSchema,
+  timestamp: z.number(),
+});
 
 /**
  * キャッシュキーのプレフィックス
@@ -37,7 +57,31 @@ export async function getCachedOgpMetadata(
       return null;
     }
 
-    const { data, timestamp }: CacheEntry = JSON.parse(cached);
+    // JSONをパース
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(cached);
+    } catch (parseError) {
+      console.error("OGPキャッシュのJSONパースに失敗しました:", parseError);
+      // 無効なJSONの場合はキャッシュを削除
+      await AsyncStorage.removeItem(cacheKey);
+      return null;
+    }
+
+    // Zodスキーマでバリデーション
+    const validationResult = cacheEntrySchema.safeParse(parsed);
+
+    if (!validationResult.success) {
+      console.error(
+        "OGPキャッシュのバリデーションに失敗しました:",
+        validationResult.error.issues,
+      );
+      // 無効なデータの場合はキャッシュを削除
+      await AsyncStorage.removeItem(cacheKey);
+      return null;
+    }
+
+    const { data, timestamp }: CacheEntry = validationResult.data;
 
     // キャッシュ期限をチェック
     const now = Date.now();

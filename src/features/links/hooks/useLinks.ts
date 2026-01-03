@@ -1,5 +1,7 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 
+import { dataHelpers } from "@/src/shared/utils/timezone";
+
 import { fetchUserLinks } from "../api/fetchLinks.api";
 import { linkQueryKeys } from "../constants/queryKeys";
 import type { UserLink } from "../types/linkList.types";
@@ -68,7 +70,15 @@ export function useLinks(pageSize: number = DEFAULT_PAGE_SIZE): UseLinksReturn {
   });
 
   // 全ページのデータをフラット化
-  const links = query.data?.pages.flatMap((page) => page.data) ?? [];
+  const rawLinks = query.data?.pages.flatMap((page) => page.data) ?? [];
+
+  // タイムスタンプフィールドを変換
+  const links = dataHelpers.transformTimestamps<UserLink>(rawLinks, [
+    "triaged_at",
+    "read_at",
+    "saved_at",
+    "link_created_at",
+  ]);
 
   // 最新ページのtotalCountを取得（なければ0）
   const totalCount =

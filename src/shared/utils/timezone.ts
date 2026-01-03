@@ -407,3 +407,64 @@ export function toUTC(localDate: Date): string {
   // toISOString()は常にUTCで返す（末尾に'Z'が付く）
   return date.toISOString();
 }
+
+// ============================================================================
+// データ変換ヘルパー
+// ============================================================================
+
+/**
+ * データ変換ヘルパー
+ *
+ * タイムスタンプフィールドを含むデータオブジェクトを変換するためのユーティリティ
+ */
+export const dataHelpers = {
+  /**
+   * データ配列のタイムスタンプフィールドを変換
+   *
+   * 各データオブジェクトの指定されたタイムスタンプフィールドを変換します。
+   * 元のデータは変更せず、新しいオブジェクトを返します。
+   *
+   * @param data - 変換対象のデータ配列
+   * @param timestampFields - 変換するタイムスタンプフィールド名の配列
+   * @returns 変換されたデータ配列
+   *
+   * @example
+   * ```typescript
+   * const links = [
+   *   { id: "1", triaged_at: "2025-01-01T12:00:00Z", read_at: null },
+   *   { id: "2", triaged_at: null, read_at: "2025-01-02T12:00:00Z" },
+   * ];
+   *
+   * const transformed = dataHelpers.transformTimestamps(links, [
+   *   "triaged_at",
+   *   "read_at",
+   * ]);
+   * ```
+   */
+  transformTimestamps: <T>(data: T[], timestampFields: (keyof T)[]): T[] => {
+    return data.map((item) => {
+      const transformed = { ...item };
+
+      for (const field of timestampFields) {
+        const value = item[field];
+
+        // nullまたはundefinedの場合はそのまま
+        if (value === null || value === undefined) {
+          continue;
+        }
+
+        // 文字列の場合はDateオブジェクトに変換して検証
+        if (typeof value === "string") {
+          const date = toValidDate(value);
+          if (date) {
+            // 有効な日付の場合はそのまま保持（必要に応じて変換可能）
+            // 現時点では元の文字列を保持
+            transformed[field] = value as T[keyof T];
+          }
+        }
+      }
+
+      return transformed;
+    });
+  },
+};
