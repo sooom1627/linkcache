@@ -38,7 +38,7 @@ export interface UseOgpMetadataOptions {
  */
 export function useOgpMetadata(
   url: string | null | undefined,
-  options: UseOgpMetadataOptions = {}
+  options: UseOgpMetadataOptions = {},
 ): {
   data: OgpMetadata | null | undefined;
   isLoading: boolean;
@@ -70,4 +70,3 @@ export function useOgpMetadata(
     error: error as Error | null,
   };
 }
-

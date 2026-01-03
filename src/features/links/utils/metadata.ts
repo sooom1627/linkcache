@@ -1,9 +1,6 @@
 import { getLinkPreview } from "link-preview-js";
 
-import {
-  getCachedOgpMetadata,
-  setCachedOgpMetadata,
-} from "./ogpCache";
+import { getCachedOgpMetadata, setCachedOgpMetadata } from "./ogpCache";
 
 /**
  * OGPメタデータの型定義
@@ -106,8 +103,25 @@ function isDocumentOrMediaUrl(url: string): boolean {
   try {
     const urlObj = new URL(url);
     const pathname = urlObj.pathname.toLowerCase();
-    const docExtensions = [".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx"];
-    const mediaExtensions = [".mp4", ".mp3", ".wav", ".avi", ".mov", ".webm", ".m4a", ".flac"];
+    const docExtensions = [
+      ".pdf",
+      ".doc",
+      ".docx",
+      ".xls",
+      ".xlsx",
+      ".ppt",
+      ".pptx",
+    ];
+    const mediaExtensions = [
+      ".mp4",
+      ".mp3",
+      ".wav",
+      ".avi",
+      ".mov",
+      ".webm",
+      ".m4a",
+      ".flac",
+    ];
     const extensions = [...docExtensions, ...mediaExtensions];
     return extensions.some((ext) => pathname.endsWith(ext));
   } catch {
@@ -125,9 +139,12 @@ function getFileTypeDescription(url: string): string {
   try {
     const pathname = new URL(url).pathname.toLowerCase();
     if (pathname.endsWith(".pdf")) return "PDF Document";
-    if (pathname.endsWith(".doc") || pathname.endsWith(".docx")) return "Word Document";
-    if (pathname.endsWith(".xls") || pathname.endsWith(".xlsx")) return "Excel Spreadsheet";
-    if (pathname.endsWith(".ppt") || pathname.endsWith(".pptx")) return "PowerPoint Presentation";
+    if (pathname.endsWith(".doc") || pathname.endsWith(".docx"))
+      return "Word Document";
+    if (pathname.endsWith(".xls") || pathname.endsWith(".xlsx"))
+      return "Excel Spreadsheet";
+    if (pathname.endsWith(".ppt") || pathname.endsWith(".pptx"))
+      return "PowerPoint Presentation";
     if (pathname.match(/\.(mp4|avi|mov|webm)$/)) return "Video";
     if (pathname.match(/\.(mp3|wav|m4a|flac)$/)) return "Audio";
     return "Document";
@@ -142,9 +159,7 @@ function getFileTypeDescription(url: string): string {
  * @param url - 対象URL
  * @returns OGPメタデータ、失敗時はnull
  */
-async function fetchOgpViaClient(
-  url: string
-): Promise<OgpMetadata | null> {
+async function fetchOgpViaClient(url: string): Promise<OgpMetadata | null> {
   try {
     // PDFやメディアファイルの場合は特別処理
     if (isDocumentOrMediaUrl(url)) {
@@ -255,7 +270,7 @@ function createFallbackMetadata(url: string): OgpMetadata | null {
  * ```
  */
 export async function fetchOgpMetadata(
-  url: string
+  url: string,
 ): Promise<OgpMetadata | null> {
   // Step 1: AsyncStorageキャッシュをチェック
   const cachedMetadata = await getCachedOgpMetadata(url);

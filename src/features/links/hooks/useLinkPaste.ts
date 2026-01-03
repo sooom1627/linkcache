@@ -1,8 +1,8 @@
 import { useCallback, useState } from "react";
 
-import { useQueryClient } from "@tanstack/react-query";
 import * as Clipboard from "expo-clipboard";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
 import { linkQueryKeys } from "../constants/queryKeys";

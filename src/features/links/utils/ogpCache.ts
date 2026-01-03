@@ -27,7 +27,7 @@ const CACHE_DURATION_MS = 30 * 24 * 60 * 60 * 1000;
  * @returns キャッシュされたメタデータ、存在しないか期限切れの場合はnull
  */
 export async function getCachedOgpMetadata(
-  url: string
+  url: string,
 ): Promise<OgpMetadata | null> {
   try {
     const cacheKey = `${CACHE_KEY_PREFIX}${url}`;
@@ -62,7 +62,7 @@ export async function getCachedOgpMetadata(
  */
 export async function setCachedOgpMetadata(
   url: string,
-  metadata: OgpMetadata
+  metadata: OgpMetadata,
 ): Promise<void> {
   try {
     const cacheKey = `${CACHE_KEY_PREFIX}${url}`;
@@ -104,4 +104,3 @@ export async function clearAllOgpCache(): Promise<void> {
     console.error("OGPキャッシュの一括削除に失敗しました:", error);
   }
 }
-

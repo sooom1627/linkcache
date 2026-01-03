@@ -115,7 +115,7 @@ describe("fetchOgpMetadata", () => {
     } as unknown as Awaited<ReturnType<typeof getLinkPreview>>);
 
     const result = await fetchOgpMetadata(
-      "https://zenn.dev/zenn/articles/zenn-cli-guide"
+      "https://zenn.dev/zenn/articles/zenn-cli-guide",
     );
 
     expect(result?.title).toBe("Zenn CLIで記事・本を管理する方法");
@@ -142,7 +142,7 @@ describe("fetchOgpMetadata", () => {
   describe("Document and Media files", () => {
     it("handles PDF URLs with proper fallback", async () => {
       const result = await fetchOgpMetadata(
-        "https://example.com/documents/report-2024.pdf"
+        "https://example.com/documents/report-2024.pdf",
       );
 
       // PDFの場合はlink-preview-jsを呼ばずに直接フォールバック
@@ -154,7 +154,7 @@ describe("fetchOgpMetadata", () => {
 
     it("handles Japanese PDF filenames", async () => {
       const result = await fetchOgpMetadata(
-        "https://example.co.jp/%E5%A0%B1%E5%91%8A%E6%9B%B8.pdf"
+        "https://example.co.jp/%E5%A0%B1%E5%91%8A%E6%9B%B8.pdf",
       );
 
       expect(result?.title).toBe("報告書");
@@ -163,7 +163,7 @@ describe("fetchOgpMetadata", () => {
 
     it("handles video URLs with proper fallback", async () => {
       const result = await fetchOgpMetadata(
-        "https://example.com/videos/demo.mp4"
+        "https://example.com/videos/demo.mp4",
       );
 
       expect(getLinkPreview).not.toHaveBeenCalled();
@@ -197,9 +197,9 @@ describe("fetchOgpMetadata", () => {
         timestamp: Date.now(),
       };
 
-      jest.mocked(AsyncStorage.getItem).mockResolvedValueOnce(
-        JSON.stringify(cachedMetadata)
-      );
+      jest
+        .mocked(AsyncStorage.getItem)
+        .mockResolvedValueOnce(JSON.stringify(cachedMetadata));
 
       const result = await fetchOgpMetadata("https://example.com");
 
@@ -220,9 +220,9 @@ describe("fetchOgpMetadata", () => {
         timestamp: Date.now() - 31 * 24 * 60 * 60 * 1000, // 31日前
       };
 
-      jest.mocked(AsyncStorage.getItem).mockResolvedValueOnce(
-        JSON.stringify(expiredCache)
-      );
+      jest
+        .mocked(AsyncStorage.getItem)
+        .mockResolvedValueOnce(JSON.stringify(expiredCache));
 
       jest.mocked(getLinkPreview).mockResolvedValueOnce({
         url: "https://example.com",
