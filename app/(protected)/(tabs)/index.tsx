@@ -62,7 +62,7 @@ export default function Index() {
         </Text>
       </TouchableOpacity>
 
-      {Array.from({ length: 25 }).map((_, index) => (
+      {Array.from({ length: 10 }).map((_, index) => (
         <View key={index} className="mb-4">
           <Text className="text-lg font-bold">Swipe {index + 1}</Text>
           <Text className="text-sm text-gray-500">Description {index + 1}</Text>

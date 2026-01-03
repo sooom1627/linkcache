@@ -42,6 +42,13 @@ export type Database = {
             referencedRelation: "links";
             referencedColumns: ["id"];
           },
+          {
+            foreignKeyName: "collection_links_link_id_fkey";
+            columns: ["link_id"];
+            isOneToOne: false;
+            referencedRelation: "user_links_view";
+            referencedColumns: ["link_id"];
+          },
         ];
       };
       collections: {
@@ -119,6 +126,13 @@ export type Database = {
             referencedColumns: ["id"];
           },
           {
+            foreignKeyName: "link_status_link_id_fkey";
+            columns: ["link_id"];
+            isOneToOne: false;
+            referencedRelation: "user_links_view";
+            referencedColumns: ["link_id"];
+          },
+          {
             foreignKeyName: "link_status_user_id_fkey";
             columns: ["user_id"];
             isOneToOne: false;
@@ -192,10 +206,50 @@ export type Database = {
       };
     };
     Views: {
-      [_ in never]: never;
+      user_links_view: {
+        Row: {
+          description: string | null;
+          favicon_url: string | null;
+          image_url: string | null;
+          link_created_at: string | null;
+          link_id: string | null;
+          read_at: string | null;
+          saved_at: string | null;
+          site_name: string | null;
+          status: Database["public"]["Enums"]["triage_status"] | null;
+          status_id: string | null;
+          title: string | null;
+          triaged_at: string | null;
+          url: string | null;
+          user_id: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "link_status_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Functions: {
-      [_ in never]: never;
+      create_link_with_status: {
+        Args: {
+          p_description?: string;
+          p_favicon_url?: string;
+          p_image_url?: string;
+          p_site_name?: string;
+          p_title?: string;
+          p_url: string;
+        };
+        Returns: Json;
+      };
+      get_user_links: {
+        Args: { p_page?: number; p_page_size?: number };
+        Returns: Json;
+      };
     };
     Enums: {
       triage_status: "inbox" | "keep" | "archived" | "dismissed";
