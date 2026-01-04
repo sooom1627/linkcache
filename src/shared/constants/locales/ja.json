@@ -153,7 +153,19 @@
     },
     "card": {
       "open_link_label": "リンクを開く",
-      "open_link_hint": "ブラウザでリンクを開きます"
+      "open_link_hint": "ブラウザでリンクを開きます",
+      "action_modal": {
+        "title": "このリンクを読みましたか？",
+        "status_section": "ステータス",
+        "read_status_section": "既読状態",
+        "mark_as_read": "既読にする",
+        "mark_as_unread": "未読に戻す",
+        "status": {
+          "inbox": "インボックス",
+          "read_soon": "すぐ読む",
+          "later": "後で"
+        }
+      }
     },
     "dashboard": {
       "add_new_link": "リンクを追加",

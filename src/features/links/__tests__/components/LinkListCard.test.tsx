@@ -60,10 +60,8 @@ describe("LinkListCard", () => {
     });
 
     // 外部リンクボタンを取得（accessibilityRole="button"を使用）
-    const openLinkButton = getByRole("button");
-
     // ボタンを押下
-    fireEvent.press(openLinkButton);
+    fireEvent.press(getByRole("button"));
 
     // openBrowserAsyncが正しいURLとオプションで呼ばれることを確認
     expect(mockOpenBrowserAsync).toHaveBeenCalledTimes(1);
@@ -83,8 +81,7 @@ describe("LinkListCard", () => {
       wrapper,
     });
 
-    const openLinkButton = getByRole("button");
-    fireEvent.press(openLinkButton);
+    fireEvent.press(getByRole("button"));
 
     expect(mockOpenBrowserAsync).toHaveBeenCalledWith(testUrl, {
       presentationStyle: WebBrowser.WebBrowserPresentationStyle.PAGE_SHEET,
@@ -110,11 +107,9 @@ describe("LinkListCard", () => {
       wrapper,
     });
 
-    const openLinkButton = getByRole("button");
-
     // エラーが発生しても例外がスローされないことを確認
     expect(() => {
-      fireEvent.press(openLinkButton);
+      fireEvent.press(getByRole("button"));
     }).not.toThrow();
 
     // エラーログが出力されることを確認

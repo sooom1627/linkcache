@@ -109,7 +109,7 @@ function PreviewStateView({
         {preview.imageUrl ? (
           <Image
             source={{ uri: preview.imageUrl }}
-            style={{ width: "100%", height: 140 }}
+            style={{ width: "100%", height: 170 }}
             contentFit="cover"
             placeholder={{ blurhash: "L6PZfSjE.AyE_3t7t7R**0o#DgR4" }}
             transition={200}

@@ -153,7 +153,19 @@
     },
     "card": {
       "open_link_label": "Open link",
-      "open_link_hint": "Opens the link in browser"
+      "open_link_hint": "Opens the link in browser",
+      "action_modal": {
+        "title": "Have you read this link?",
+        "status_section": "Status",
+        "read_status_section": "Read Status",
+        "mark_as_read": "Mark as Read",
+        "mark_as_unread": "Return to Unread",
+        "status": {
+          "inbox": "Inbox",
+          "read_soon": "Read Soon",
+          "later": "Later"
+        }
+      }
     },
     "dashboard": {
       "add_new_link": "Add New Link",
