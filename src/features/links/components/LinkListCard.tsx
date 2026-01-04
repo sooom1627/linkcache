@@ -1,9 +1,11 @@
 import { useCallback, useState } from "react";
 
-import { Linking, Pressable, Text, View } from "react-native";
+import { Linking, Pressable, Text, TouchableOpacity, View } from "react-native";
 
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
+
+import { EllipsisVertical, Globe } from "lucide-react-native";
 
 import { extractDomain } from "../hooks/useLinkPaste";
 import type { TriageStatus, UserLink } from "../types/linkList.types";
@@ -100,24 +102,31 @@ export function LinkListCard({ link }: LinkListCardProps) {
       <View className="ml-4 flex-1 justify-center py-1">
         {/* タイトル */}
         <Text
-          className="text-[15px] font-medium leading-5 tracking-tight text-slate-800"
+          className="text-base font-medium leading-5 tracking-tight text-slate-800"
           numberOfLines={2}
         >
           {link.title || link.url}
         </Text>
 
         {/* メタ情報 */}
-        <View className="mt-2 flex-row items-center">
-          {/* ステータスドット */}
-          <View className={`mr-2 size-1.5 rounded-full ${statusDotColor}`} />
-
+        <View className="mt-2 w-full flex-row items-center justify-between gap-2">
           {/* Favicon */}
-          {link.favicon_url && (
+          {link.favicon_url ? (
             <Image
-              source={link.favicon_url}
-              className="mr-1.5 size-3.5 rounded"
+              source={link.favicon_url as string}
+              className="mr-1.5 size-3.5 rounded bg-slate-200"
               contentFit="contain"
+              style={{
+                width: 10,
+                height: 10,
+                borderRadius: 100,
+                backgroundColor: "#f1f5f9",
+              }}
             />
+          ) : (
+            <View className="mr-1.5 size-3.5 rounded bg-slate-200">
+              <Globe size={14} color="#94a3b8" strokeWidth={1.5} />
+            </View>
           )}
 
           {/* サイト名 */}
@@ -127,13 +136,28 @@ export function LinkListCard({ link }: LinkListCardProps) {
           >
             {link.site_name || extractDomain(link.url)}
           </Text>
+          {/* ステータスドット */}
+          <View className="flex-row items-center gap-1">
+            <View className={`size-1.5 rounded-full ${statusDotColor}`} />
+            <Text className="text-xs font-normal tracking-wide text-slate-400">
+              {link.status}
+            </Text>
+          </View>
         </View>
       </View>
 
       {/* 右矢印アイコン */}
-      <View className="ml-2">
-        <Ionicons name="chevron-forward" size={16} color="#CBD5E1" />
-      </View>
+      <TouchableOpacity
+        className="ml-2"
+        onPress={() => {}}
+        hitSlop={16}
+        activeOpacity={0.8}
+        accessibilityRole="button"
+        accessibilityLabel="Open link"
+        accessibilityHint="Open link"
+      >
+        <EllipsisVertical size={16} color="#6B7280" />
+      </TouchableOpacity>
     </Pressable>
   );
 }
