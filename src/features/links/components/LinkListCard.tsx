@@ -2,8 +2,8 @@ import { useCallback, useState } from "react";
 
 import { Linking, Pressable, Text, TouchableOpacity, View } from "react-native";
 
-import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
+import { Ionicons } from "@expo/vector-icons";
 
 import { EllipsisVertical, Globe } from "lucide-react-native";
 
@@ -74,7 +74,7 @@ export function LinkListCard({ link }: LinkListCardProps) {
   return (
     <Pressable
       onPress={handlePress}
-      className="py-2 flex-row items-center gap-3 rounded-2xl bg-white/80 active:bg-slate-50"
+      className="flex-row items-center gap-3 rounded-2xl bg-white/80 py-2 active:bg-slate-50"
     >
       {/* サムネイル */}
       {showFallback ? (
