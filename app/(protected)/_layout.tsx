@@ -2,7 +2,7 @@ import { useEffect } from "react";
 
 import { ActivityIndicator, Text, TouchableOpacity } from "react-native";
 
-import { Slot, useRouter } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -61,5 +61,10 @@ export default function ProtectedLayout() {
     );
   }
 
-  return <Slot />;
+  return (
+    <Stack>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="link" options={{ headerShown: false }} />
+    </Stack>
+  );
 }

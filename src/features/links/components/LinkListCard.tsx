@@ -3,6 +3,7 @@ import { useCallback, useState } from "react";
 import { Pressable, Text, TouchableOpacity, View } from "react-native";
 
 import { Image } from "expo-image";
+import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
 import { ExternalLink, Globe } from "lucide-react-native";
@@ -63,10 +64,17 @@ function ThumbnailFallback() {
  */
 export function LinkListCard({ link }: LinkListCardProps) {
   const { t } = useTranslation();
+  const router = useRouter();
   const { openLink } = useOpenLink();
   const { ref, present, dismiss } = useBottomSheetModal();
   const [imageError, setImageError] = useState(false);
   const statusDotColor = getStatusDotColor(link.status);
+
+  const handlePress = useCallback(() => {
+    console.log("Navigating to link detail:", link.link_id);
+    // Shared routeへの遷移: グループ名を除いたパスを指定
+    router.push(`/link/${link.link_id}`);
+  }, [router, link.link_id]);
 
   const handleOpenLink = useCallback(() => {
     openLink(link.url);
@@ -74,7 +82,7 @@ export function LinkListCard({ link }: LinkListCardProps) {
     setTimeout(() => {
       present();
     }, 500);
-  }, [openLink, present]);
+  }, [openLink, present, link.url]);
 
   const handleLongPress = useCallback(() => {
     present();
@@ -89,7 +97,7 @@ export function LinkListCard({ link }: LinkListCardProps) {
   return (
     <>
       <Pressable
-        onPress={() => {}}
+        onPress={handlePress}
         onLongPress={handleLongPress}
         className="flex-row items-center gap-3 rounded-2xl bg-white/80 p-2 active:bg-slate-50"
       >

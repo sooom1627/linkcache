@@ -15,7 +15,7 @@ import {
 import type { TabItem } from "@/src/shared/types/Tabs.types";
 
 const tabs: TabItem[] = [
-  { name: "index", href: "/", icon: House },
+  { name: "home", href: "/", icon: House },
   { name: "swipes", href: "/swipes", icon: Layers2 },
   { name: "link-list", href: "/link-list", icon: List },
   { name: "dashboard", href: "/dashboard", icon: ChartNoAxesCombined },
