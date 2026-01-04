@@ -24,8 +24,8 @@ const LOADING_ERROR_HEIGHT = 100;
 
 /** タブのインデックス */
 const TAB_INDEX = {
-  read_soon: 0,
-  latest: 1,
+  latest: 0,
+  read_soon: 1,
 } as const;
 
 /**
@@ -54,7 +54,7 @@ function calculateTabHeight(
 }
 
 export function LinkListTabs() {
-  const [activeTab, setActiveTab] = useState<TabType>("read_soon");
+  const [activeTab, setActiveTab] = useState<TabType>("latest");
   const pagerRef = useRef<PagerView>(null);
 
   // Read Soon タブ: status="read_soon", limit=5
@@ -75,7 +75,7 @@ export function LinkListTabs() {
   const handlePageSelected = useCallback(
     (e: { nativeEvent: { position: number } }) => {
       const position = e.nativeEvent.position;
-      const newTab = position === 0 ? "read_soon" : "latest";
+      const newTab = position === 0 ? "latest" : "read_soon";
       setActiveTab(newTab);
     },
     [],
@@ -118,17 +118,6 @@ export function LinkListTabs() {
         initialPage={TAB_INDEX[activeTab]}
         onPageSelected={handlePageSelected}
       >
-        {/* Read Soon タブ */}
-        <View key="read_soon">
-          <LinkListTabContent
-            isLoading={readSoonQuery.isLoading}
-            isError={readSoonQuery.isError}
-            error={readSoonQuery.error}
-            links={readSoonQuery.links}
-            tabType="read_soon"
-          />
-        </View>
-
         {/* Latest タブ */}
         <View key="latest">
           <LinkListTabContent
@@ -137,6 +126,17 @@ export function LinkListTabs() {
             error={latestQuery.error}
             links={latestQuery.links}
             tabType="latest"
+          />
+        </View>
+
+        {/* Read Soon タブ */}
+        <View key="read_soon">
+          <LinkListTabContent
+            isLoading={readSoonQuery.isLoading}
+            isError={readSoonQuery.isError}
+            error={readSoonQuery.error}
+            links={readSoonQuery.links}
+            tabType="read_soon"
           />
         </View>
       </PagerView>

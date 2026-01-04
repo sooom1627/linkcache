@@ -21,24 +21,6 @@ export function LinkListTabHeader({
   return (
     <View className="flex-row gap-8 border-b border-slate-100 pb-0.5">
       <Pressable
-        onPress={() => onTabChange("read_soon")}
-        accessibilityRole="tab"
-        accessibilityState={{ selected: activeTab === "read_soon" }}
-        accessibilityLabel={t("links.dashboard.tabs.read_soon")}
-        className={`border-b-2 pb-2 ${
-          activeTab === "read_soon" ? "border-slate-900" : "border-transparent"
-        }`}
-      >
-        <Text
-          className={`text-base font-bold ${
-            activeTab === "read_soon" ? "text-slate-900" : "text-slate-400"
-          }`}
-        >
-          {t("links.dashboard.tabs.read_soon")}
-        </Text>
-      </Pressable>
-
-      <Pressable
         onPress={() => onTabChange("latest")}
         accessibilityRole="tab"
         accessibilityState={{ selected: activeTab === "latest" }}
@@ -53,6 +35,24 @@ export function LinkListTabHeader({
           }`}
         >
           {t("links.dashboard.tabs.latest")}
+        </Text>
+      </Pressable>
+
+      <Pressable
+        onPress={() => onTabChange("read_soon")}
+        accessibilityRole="tab"
+        accessibilityState={{ selected: activeTab === "read_soon" }}
+        accessibilityLabel={t("links.dashboard.tabs.read_soon")}
+        className={`border-b-2 pb-2 ${
+          activeTab === "read_soon" ? "border-slate-900" : "border-transparent"
+        }`}
+      >
+        <Text
+          className={`text-base font-bold ${
+            activeTab === "read_soon" ? "text-slate-900" : "text-slate-400"
+          }`}
+        >
+          {t("links.dashboard.tabs.read_soon")}
         </Text>
       </Pressable>
     </View>
