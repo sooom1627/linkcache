@@ -1,11 +1,11 @@
 import { useCallback, useRef, useState } from "react";
 
-import { ActivityIndicator, Pressable, Text, View } from "react-native";
+import { View } from "react-native";
 
 import PagerView from "react-native-pager-view";
 
-import { LinkListCard } from "../components/LinkListCard";
-import { LinkListEmpty } from "../components/LinkListEmpty";
+import { LinkListTabContent } from "../components/LinkListTabContent";
+import { LinkListTabHeader } from "../components/LinkListTabHeader";
 import { useLinks } from "../hooks/useLinks";
 
 type TabType = "keep" | "latest";
@@ -24,98 +24,6 @@ const TAB_INDEX = {
   keep: 0,
   latest: 1,
 } as const;
-
-/**
- * タブヘッダーコンポーネント
- */
-function TabHeader({
-  activeTab,
-  onTabChange,
-}: {
-  activeTab: TabType;
-  onTabChange: (tab: TabType) => void;
-}) {
-  return (
-    <View className="flex-row gap-8 border-b border-slate-100 pb-0.5">
-      <Pressable
-        onPress={() => onTabChange("keep")}
-        className={`border-b-2 pb-2 ${
-          activeTab === "keep" ? "border-slate-900" : "border-transparent"
-        }`}
-      >
-        <Text
-          className={`text-base font-bold ${
-            activeTab === "keep" ? "text-slate-900" : "text-slate-400"
-          }`}
-        >
-          Keep
-        </Text>
-      </Pressable>
-
-      <Pressable
-        onPress={() => onTabChange("latest")}
-        className={`border-b-2 pb-2 ${
-          activeTab === "latest" ? "border-slate-900" : "border-transparent"
-        }`}
-      >
-        <Text
-          className={`text-base font-bold ${
-            activeTab === "latest" ? "text-slate-900" : "text-slate-400"
-          }`}
-        >
-          Latest
-        </Text>
-      </Pressable>
-    </View>
-  );
-}
-
-/**
- * タブコンテンツコンポーネント
- */
-function TabContent({
-  isLoading,
-  isError,
-  error,
-  links,
-}: {
-  isLoading: boolean;
-  isError: boolean;
-  error: Error | null;
-  links: ReturnType<typeof useLinks>["links"];
-}) {
-  if (isLoading) {
-    return (
-      <View className="flex-1 items-center justify-center py-8">
-        <ActivityIndicator size="large" color="#6B7280" />
-      </View>
-    );
-  }
-
-  if (isError) {
-    return (
-      <View className="flex-1 items-center justify-center py-8">
-        <Text className="text-sm text-slate-500">
-          {error?.message || "Failed to load links"}
-        </Text>
-      </View>
-    );
-  }
-
-  if (links.length === 0) {
-    return <LinkListEmpty />;
-  }
-
-  return (
-    <View>
-      {links.map((item) => (
-        <View className="py-1" key={item.link_id}>
-          <LinkListCard link={item} />
-        </View>
-      ))}
-    </View>
-  );
-}
 
 /**
  * リンクリストタブコンポーネント
@@ -151,7 +59,7 @@ export function LinkListTabs() {
 
   return (
     <View>
-      <TabHeader activeTab={activeTab} onTabChange={handleTabChange} />
+      <LinkListTabHeader activeTab={activeTab} onTabChange={handleTabChange} />
       <PagerView
         ref={pagerRef}
         style={{ height: PAGER_HEIGHT }}
@@ -160,7 +68,7 @@ export function LinkListTabs() {
       >
         {/* Keep タブ */}
         <View key="keep">
-          <TabContent
+          <LinkListTabContent
             isLoading={keepQuery.isLoading}
             isError={keepQuery.isError}
             error={keepQuery.error}
@@ -170,7 +78,7 @@ export function LinkListTabs() {
 
         {/* Latest タブ */}
         <View key="latest">
-          <TabContent
+          <LinkListTabContent
             isLoading={latestQuery.isLoading}
             isError={latestQuery.isError}
             error={latestQuery.error}
