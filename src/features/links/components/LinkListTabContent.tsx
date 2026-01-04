@@ -1,5 +1,7 @@
 import { ActivityIndicator, Text, View } from "react-native";
 
+import { ArrowRight } from "lucide-react-native";
+
 import type { useLinks } from "../hooks/useLinks";
 
 import { LinkListCard } from "./LinkListCard";
@@ -50,6 +52,10 @@ export function LinkListTabContent({
           <LinkListCard link={item} />
         </View>
       ))}
+      <View className="flex-row items-center justify-center py-4">
+        <Text className="text-sm text-slate-500">View All</Text>
+        <ArrowRight size={14} color="#6B7280" strokeWidth={1.5} />
+      </View>
     </View>
   );
 }
