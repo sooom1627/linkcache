@@ -51,6 +51,9 @@ describe("fetchUserLinks", () => {
       expect(mockRpc).toHaveBeenCalledWith("get_user_links", {
         p_page_size: 20,
         p_page: 0,
+        p_status: null,
+        p_is_read: null,
+        p_limit: null,
       });
       expect(result.data).toHaveLength(1);
       expect(result.hasMore).toBe(false);
@@ -74,9 +77,112 @@ describe("fetchUserLinks", () => {
       expect(mockRpc).toHaveBeenCalledWith("get_user_links", {
         p_page_size: 10,
         p_page: 2,
+        p_status: null,
+        p_is_read: null,
+        p_limit: null,
       });
       expect(result.hasMore).toBe(true);
       expect(result.totalCount).toBe(50);
+    });
+
+    it("statusフィルタを指定して取得できる", async () => {
+      const mockResponse = {
+        data: {
+          data: [],
+          hasMore: false,
+          totalCount: 5,
+        },
+        error: null,
+      };
+
+      mockRpc.mockResolvedValueOnce(mockResponse);
+
+      const result = await fetchUserLinks({ status: "keep" });
+
+      expect(mockRpc).toHaveBeenCalledWith("get_user_links", {
+        p_page_size: 20,
+        p_page: 0,
+        p_status: "keep",
+        p_is_read: null,
+        p_limit: null,
+      });
+      expect(result.totalCount).toBe(5);
+    });
+
+    it("isReadフィルタを指定して取得できる", async () => {
+      const mockResponse = {
+        data: {
+          data: [],
+          hasMore: false,
+          totalCount: 3,
+        },
+        error: null,
+      };
+
+      mockRpc.mockResolvedValueOnce(mockResponse);
+
+      const result = await fetchUserLinks({ isRead: false });
+
+      expect(mockRpc).toHaveBeenCalledWith("get_user_links", {
+        p_page_size: 20,
+        p_page: 0,
+        p_status: null,
+        p_is_read: false,
+        p_limit: null,
+      });
+      expect(result.totalCount).toBe(3);
+    });
+
+    it("limitを指定して取得できる", async () => {
+      const mockResponse = {
+        data: {
+          data: [],
+          hasMore: false,
+          totalCount: 10,
+        },
+        error: null,
+      };
+
+      mockRpc.mockResolvedValueOnce(mockResponse);
+
+      const result = await fetchUserLinks({ limit: 5 });
+
+      expect(mockRpc).toHaveBeenCalledWith("get_user_links", {
+        p_page_size: 20,
+        p_page: 0,
+        p_status: null,
+        p_is_read: null,
+        p_limit: 5,
+      });
+      expect(result.hasMore).toBe(false);
+    });
+
+    it("複合フィルタを指定して取得できる", async () => {
+      const mockResponse = {
+        data: {
+          data: [],
+          hasMore: false,
+          totalCount: 2,
+        },
+        error: null,
+      };
+
+      mockRpc.mockResolvedValueOnce(mockResponse);
+
+      const result = await fetchUserLinks({
+        status: "keep",
+        isRead: true,
+        limit: 5,
+      });
+
+      expect(mockRpc).toHaveBeenCalledWith("get_user_links", {
+        p_page_size: 20,
+        p_page: 0,
+        p_status: "keep",
+        p_is_read: true,
+        p_limit: 5,
+      });
+      expect(result.totalCount).toBe(2);
     });
 
     it("空のデータを正しく処理できる", async () => {

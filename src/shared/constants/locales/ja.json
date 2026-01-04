@@ -154,7 +154,7 @@
     },
     "dashboard": {
       "add_new_link": "リンクを追加",
-      "no_clipboard_link": "ブラウザや他のアプリでコピーして、リンク追加ボタンを押下",
+      "add_new_link_hint": "ブラウザや他のアプリでコピーして、リンク追加ボタンを押下",
       "unsorted_links": "未整理リンク",
       "start_triage": "整理を開始",
       "all_caught_up": "すべて整理済み",

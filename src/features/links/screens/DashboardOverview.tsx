@@ -101,19 +101,19 @@ export function DashboardOverview({
 
       {/* Add link button */}
       <Pressable
-        className="flex-1 flex-row items-center justify-between gap-2 rounded-lg border border-slate-200 bg-white p-4 active:bg-slate-50"
+        className="w-full flex-row items-center justify-between gap-2 rounded-lg border border-slate-200 bg-white p-4 active:bg-slate-50"
         onPress={() => openModal("linkCreate")}
       >
         <View className="flex-row items-center gap-2">
           <View className="flex size-6 items-center justify-center rounded bg-slate-100">
             <Plus size={10} color="#0f172a" strokeWidth={2.5} />
           </View>
-          <View className="flex-1">
+          <View className="gap-0.5">
             <Text className="text-sm font-bold text-slate-900">
               {t("links.dashboard.add_new_link")}
             </Text>
             <Text className="text-xs text-slate-500">
-              {t("links.dashboard.no_clipboard_link")}
+              {t("links.dashboard.add_new_link_hint")}
             </Text>
           </View>
         </View>

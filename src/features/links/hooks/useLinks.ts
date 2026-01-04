@@ -1,13 +1,21 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 
 import { dataHelpers } from "@/src/shared/utils/timezone";
 
 import { fetchUserLinks } from "../api/fetchLinks.api";
 import { linkQueryKeys } from "../constants/queryKeys";
-import type { UserLink } from "../types/linkList.types";
+import type { LinkFilterParams, UserLink } from "../types/linkList.types";
 
 /** デフォルトのページサイズ */
 const DEFAULT_PAGE_SIZE = 20;
+
+/**
+ * useLinks フックのオプション
+ */
+export interface UseLinksOptions extends LinkFilterParams {
+  /** 1ページあたりの件数 (デフォルト: 20) */
+  pageSize?: number;
+}
 
 /**
  * useLinks フックの戻り値
@@ -39,38 +47,87 @@ export interface UseLinksReturn {
  * ユーザーのリンク一覧を取得するフック
  *
  * 無限スクロール対応のページング処理を提供します。
+ * limit を指定した場合は単一ページ取得（無限スクロール無効）になります。
  *
- * @param pageSize - 1ページあたりの件数 (デフォルト: 20)
+ * @param options - フィルタオプション（status, isRead, limit, pageSize）
  * @returns リンク一覧とページング関連の状態・関数
  *
  * @example
  * ```tsx
+ * // 無限スクロール
  * const { links, isLoading, fetchNextPage, hasNextPage } = useLinks();
  *
- * // FlashListのonEndReachedで次ページ取得
- * <FlashList
- *   data={links}
- *   onEndReached={() => hasNextPage && fetchNextPage()}
- * />
+ * // フィルタリング（5件のみ取得）
+ * const { links } = useLinks({ status: "keep", limit: 5 });
  * ```
  */
-export function useLinks(pageSize: number = DEFAULT_PAGE_SIZE): UseLinksReturn {
-  const query = useInfiniteQuery({
-    queryKey: linkQueryKeys.list(),
+export function useLinks(options: UseLinksOptions = {}): UseLinksReturn {
+  const { pageSize = DEFAULT_PAGE_SIZE, status, isRead, limit } = options;
+
+  // フィルタパラメータ（クエリキー用）
+  const filterParams: LinkFilterParams = {
+    ...(status !== undefined && { status }),
+    ...(isRead !== undefined && { isRead }),
+    ...(limit !== undefined && { limit }),
+  };
+
+  // 無限スクロール用のフィルタパラメータ（limitを除く）
+  const infiniteFilterParams: Omit<LinkFilterParams, "limit"> = {
+    ...(status !== undefined && { status }),
+    ...(isRead !== undefined && { isRead }),
+  };
+  const hasInfiniteFilters = Object.keys(infiniteFilterParams).length > 0;
+
+  // limit指定時は単一ページ取得（useQuery）
+  const singlePageQuery = useQuery({
+    queryKey: linkQueryKeys.listLimited(filterParams),
+    queryFn: () => fetchUserLinks({ pageSize, status, isRead, limit }),
+    enabled: limit !== undefined,
+  });
+
+  // limit未指定時は無限スクロール（useInfiniteQuery）
+  const infiniteQuery = useInfiniteQuery({
+    queryKey: linkQueryKeys.list(
+      hasInfiniteFilters ? infiniteFilterParams : undefined,
+    ),
     queryFn: ({ pageParam = 0 }) =>
-      fetchUserLinks({ pageSize, page: pageParam }),
+      fetchUserLinks({ pageSize, page: pageParam, status, isRead }),
     initialPageParam: 0,
     getNextPageParam: (lastPage, _allPages, lastPageParam) => {
-      // hasMoreがtrueなら次のページ番号を返す
       if (lastPage.hasMore) {
         return lastPageParam + 1;
       }
       return undefined;
     },
+    enabled: limit === undefined,
   });
 
-  // 全ページのデータをフラット化
-  const rawLinks = query.data?.pages.flatMap((page) => page.data) ?? [];
+  // limit指定時は単一ページ取得の結果を使用
+  if (limit !== undefined) {
+    const rawLinks = singlePageQuery.data?.data ?? [];
+    const links = dataHelpers.transformTimestamps<UserLink>(rawLinks, [
+      "triaged_at",
+      "read_at",
+      "saved_at",
+      "link_created_at",
+    ]);
+
+    return {
+      links,
+      isLoading: singlePageQuery.isLoading,
+      isFetchingNextPage: false,
+      isError: singlePageQuery.isError,
+      error: singlePageQuery.error,
+      hasNextPage: false, // limit指定時は常にfalse
+      totalCount: singlePageQuery.data?.totalCount ?? 0,
+      fetchNextPage: () => {}, // limit指定時は何もしない
+      refetch: () => void singlePageQuery.refetch(),
+      isRefreshing: singlePageQuery.isRefetching,
+    };
+  }
+
+  // 全ページのデータをフラット化（無限スクロール時）
+  const rawLinks = infiniteQuery.data?.pages.flatMap((page) => page.data) ?? [];
 
   // タイムスタンプフィールドを変換
   const links = dataHelpers.transformTimestamps<UserLink>(rawLinks, [
@@ -82,18 +139,20 @@ export function useLinks(pageSize: number = DEFAULT_PAGE_SIZE): UseLinksReturn {
 
   // 最新ページのtotalCountを取得（なければ0）
   const totalCount =
-    query.data?.pages[query.data.pages.length - 1]?.totalCount ?? 0;
+    infiniteQuery.data?.pages[infiniteQuery.data.pages.length - 1]
+      ?.totalCount ?? 0;
 
   return {
     links,
-    isLoading: query.isLoading,
-    isFetchingNextPage: query.isFetchingNextPage,
-    isError: query.isError,
-    error: query.error,
-    hasNextPage: query.hasNextPage ?? false,
+    isLoading: infiniteQuery.isLoading,
+    isFetchingNextPage: infiniteQuery.isFetchingNextPage,
+    isError: infiniteQuery.isError,
+    error: infiniteQuery.error,
+    hasNextPage: infiniteQuery.hasNextPage ?? false,
     totalCount,
-    fetchNextPage: () => void query.fetchNextPage(),
-    refetch: () => void query.refetch(),
-    isRefreshing: query.isRefetching && !query.isFetchingNextPage,
+    fetchNextPage: () => void infiniteQuery.fetchNextPage(),
+    refetch: () => void infiniteQuery.refetch(),
+    isRefreshing:
+      infiniteQuery.isRefetching && !infiniteQuery.isFetchingNextPage,
   };
 }
