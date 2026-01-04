@@ -1,8 +1,15 @@
 import { useCallback } from "react";
 
-import { ActivityIndicator, RefreshControl, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  RefreshControl,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 import { FlashList } from "@shopify/flash-list";
+import { AlertCircle, RefreshCw } from "lucide-react-native";
 
 import { LinkListCard } from "../components/LinkListCard";
 import { LinkListEmpty } from "../components/LinkListEmpty";
@@ -71,23 +78,35 @@ export function LinkListScreen() {
   // エラー状態
   if (isError) {
     return (
-      <>
-        <View className="items-center">
-          <Text className="mb-2 text-center text-lg font-semibold text-red-600">
-            Error loading links
-          </Text>
-          <Text className="text-center text-sm text-gray-500">
-            {error?.message || "Something went wrong"}
-          </Text>
+      <View className="flex-1 items-center justify-center p-8">
+        <View className="mb-4 rounded-full bg-red-50 p-4">
+          <AlertCircle size={48} color="#EF4444" strokeWidth={1.5} />
         </View>
-      </>
+        <Text className="mb-2 text-center text-lg font-semibold text-slate-800">
+          Something went wrong
+        </Text>
+        <Text className="mb-8 text-center text-sm leading-5 text-slate-500">
+          {error?.message || "Failed to load links. Please try again."}
+        </Text>
+        <TouchableOpacity
+          onPress={refetch}
+          className="flex-row items-center gap-2 rounded-full bg-slate-900 px-6 py-3 active:bg-slate-700"
+        >
+          <RefreshCw size={18} color="white" />
+          <Text className="font-semibold text-white">Try Again</Text>
+        </TouchableOpacity>
+      </View>
     );
   }
 
   return (
     <View className="relative flex-1 ">
       <View className="absolute right-0 z-50 mt-[12px] flex-row items-center gap-2">
-        <LinkListFilterMenu />
+        <LinkListFilterMenu
+          isDisabled={
+            isLoading || isRefreshing || isError || links.length === 0
+          }
+        />
       </View>
       <FlashList
         data={links}

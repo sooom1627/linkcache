@@ -13,7 +13,7 @@ import { LinkListFilterModal } from "./LinkListFilterModal";
  *
  * フィルターアイコンを表示し、タップでフィルターモーダルを開きます。
  */
-export function LinkListFilterMenu() {
+export function LinkListFilterMenu({ isDisabled }: { isDisabled: boolean }) {
   const { ref, present, dismiss } = useBottomSheetModal();
 
   const handlePress = useCallback(() => {
@@ -29,8 +29,14 @@ export function LinkListFilterMenu() {
         accessibilityLabel="Open filter menu"
         accessibilityHint="Tap to filter links by status or read status"
         hitSlop={8}
+        disabled={isDisabled}
+        style={{ opacity: isDisabled ? 0.5 : 1 }}
       >
-        <SlidersHorizontal size={14} color="#475569" strokeWidth={2.5} />
+        <SlidersHorizontal
+          size={14}
+          color={isDisabled ? "#94A3B8" : "#475569"}
+          strokeWidth={2.5}
+        />
         <Text className="text-sm font-medium text-slate-600">Filter</Text>
       </Pressable>
       <LinkListFilterModal ref={ref} onClose={dismiss} />

@@ -1,8 +1,9 @@
-import { Text, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 
-import { Ionicons } from "@expo/vector-icons";
-
+import { Inbox, Plus } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
+
+import { useModal } from "@/src/shared/providers/ModalContext";
 
 /**
  * リンク一覧の空状態コンポーネント
@@ -11,21 +12,34 @@ import { useTranslation } from "react-i18next";
  */
 export function LinkListEmpty() {
   const { t } = useTranslation();
+  const { openModal } = useModal();
 
   return (
-    <View className="mt-16 flex-1 items-center justify-center px-8 py-16">
-      <View className="mb-4 rounded-full bg-gray-100 p-4">
-        <Ionicons name="link-outline" size={48} color="#9CA3AF" />
+    <View className="mt-20 flex-1 items-center justify-center px-8">
+      <View className="mb-6 rounded-full bg-slate-50 p-6">
+        <Inbox size={48} color="#94a3b8" strokeWidth={1} />
       </View>
-      <Text className="mb-2 text-center text-lg font-semibold text-gray-700">
+      <Text className="mb-2 text-center text-lg font-semibold text-slate-800">
         {t("links.list.empty_title", "No links yet")}
       </Text>
-      <Text className="text-center text-sm text-gray-500">
+      <Text className="mb-8 text-center text-sm leading-5 text-slate-500">
         {t(
           "links.list.empty_description",
           "Start saving links to see them here",
         )}
       </Text>
+
+      <TouchableOpacity
+        onPress={() => openModal("linkCreate")}
+        className="flex-row items-center gap-2 rounded-full bg-slate-900 px-6 py-3 shadow-sm active:bg-slate-700"
+        accessibilityRole="button"
+        accessibilityLabel={t("links.create.add_button")}
+      >
+        <Plus size={20} color="white" strokeWidth={2.5} />
+        <Text className="font-semibold text-white">
+          {t("links.create.add_button")}
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 }
