@@ -89,7 +89,7 @@ export function LinkListScreen() {
         data={links}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
-        contentContainerClassName="pt-4 pb-28"
+        contentContainerClassName="pt-16 mt-2 pb-32"
         showsVerticalScrollIndicator={false}
         onEndReached={handleEndReached}
         onEndReachedThreshold={0.5}
