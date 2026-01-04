@@ -15,7 +15,7 @@ export function LinkListEmpty() {
   const { openModal } = useModal();
 
   return (
-    <View className="mt-20 flex-1 items-center justify-center px-8">
+    <View className="mt-20 items-center px-8">
       <View className="mb-6 rounded-full bg-slate-50 p-6">
         <Inbox size={48} color="#94a3b8" strokeWidth={1} />
       </View>

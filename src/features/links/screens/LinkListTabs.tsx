@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 
 import { View } from "react-native";
 
@@ -13,11 +13,14 @@ type TabType = "keep" | "latest";
 /** ダッシュボード用の表示件数制限 */
 const DASHBOARD_LIMIT = 5;
 
-/** カード1件あたりの高さ（OG画像72px + パディング等） */
+/** カード1件あたりの高さ（カードコンテンツ + パディング） */
 const CARD_HEIGHT = 100;
 
-/** PagerViewの高さ（5件 + 余白） */
-const PAGER_HEIGHT = DASHBOARD_LIMIT * CARD_HEIGHT + 16;
+/** 空状態の高さ（mt-20 + アイコン + テキスト + ボタン + パディング） */
+const EMPTY_STATE_HEIGHT = 350;
+
+/** ローディング・エラー状態の高さ */
+const LOADING_ERROR_HEIGHT = 100;
 
 /** タブのインデックス */
 const TAB_INDEX = {
@@ -32,6 +35,24 @@ const TAB_INDEX = {
  * - "Keep" タブ: statusが"keep"のリンクを最大5件表示（APIでフィルタ）
  * - "Latest" タブ: 全てのリンクを最大5件表示（APIでフィルタ）
  */
+/**
+ * タブの状態とデータから高さを計算
+ */
+function calculateTabHeight(
+  isLoading: boolean,
+  isError: boolean,
+  linkCount: number,
+): number {
+  if (isLoading || isError) {
+    return LOADING_ERROR_HEIGHT;
+  }
+  if (linkCount === 0) {
+    return EMPTY_STATE_HEIGHT;
+  }
+  // リンク数 × カード高さ + 上下のパディング
+  return linkCount * CARD_HEIGHT + 16;
+}
+
 export function LinkListTabs() {
   const [activeTab, setActiveTab] = useState<TabType>("keep");
   const pagerRef = useRef<PagerView>(null);
@@ -57,12 +78,36 @@ export function LinkListTabs() {
     [],
   );
 
+  // 各タブの高さを計算
+  const keepTabHeight = useMemo(
+    () =>
+      calculateTabHeight(
+        keepQuery.isLoading,
+        keepQuery.isError,
+        keepQuery.links.length,
+      ),
+    [keepQuery.isLoading, keepQuery.isError, keepQuery.links.length],
+  );
+
+  const latestTabHeight = useMemo(
+    () =>
+      calculateTabHeight(
+        latestQuery.isLoading,
+        latestQuery.isError,
+        latestQuery.links.length,
+      ),
+    [latestQuery.isLoading, latestQuery.isError, latestQuery.links.length],
+  );
+
+  // PagerViewの高さは両タブの最大値を使用
+  const pagerHeight = Math.max(keepTabHeight, latestTabHeight);
+
   return (
     <View>
       <LinkListTabHeader activeTab={activeTab} onTabChange={handleTabChange} />
       <PagerView
         ref={pagerRef}
-        style={{ height: PAGER_HEIGHT }}
+        style={{ height: pagerHeight }}
         initialPage={TAB_INDEX[activeTab]}
         onPageSelected={handlePageSelected}
       >
