@@ -12,6 +12,7 @@ const HEADER_HEIGHT = 64;
 interface ScreenContainerProps {
   children: ReactNode;
   scrollable?: boolean;
+  subtitle?: string;
   centerContent?: boolean;
   noPaddingBottom?: boolean;
   headerTitle?: string;
@@ -21,6 +22,7 @@ interface ScreenContainerProps {
 export function ScreenContainer({
   children,
   headerTitle = "Hello, User",
+  subtitle = "Welcome to Cache",
   scrollable = true,
   centerContent = true,
   noPaddingBottom = false,
@@ -34,7 +36,11 @@ export function ScreenContainer({
   if (scrollable) {
     return (
       <CustomSafeArea>
-        <Header title={headerTitle} topComponent={topComponent} />
+        <Header
+          title={headerTitle}
+          subtitle={subtitle}
+          topComponent={topComponent}
+        />
         <Animated.ScrollView
           className="flex-1"
           style={{ paddingTop: HEADER_HEIGHT }}
@@ -51,7 +57,11 @@ export function ScreenContainer({
 
   return (
     <CustomSafeArea>
-      <Header title={headerTitle} topComponent={topComponent} />
+      <Header
+        title={headerTitle}
+        subtitle={subtitle}
+        topComponent={topComponent}
+      />
       <View className="flex-1">
         <View className={contentClassName}>{children}</View>
       </View>
