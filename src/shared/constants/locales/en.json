@@ -129,6 +129,24 @@
       "error_clipboard_empty": "Clipboard is empty",
       "error_invalid_url": "Invalid URL",
       "error_clipboard_read_failed": "Failed to read clipboard"
+    },
+    "filter": {
+      "title": "Filter",
+      "status": "Status",
+      "read_status": "Read Status",
+      "options": {
+        "all": "All",
+        "inbox": "Inbox",
+        "keep": "Keep",
+        "archived": "Archived",
+        "dismissed": "Dismissed",
+        "unread": "Unread",
+        "read": "Read"
+      }
+    },
+    "header": {
+      "title": "Link List",
+      "subtitle": "You have {{count}} saved links"
     }
   }
 }

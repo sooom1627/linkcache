@@ -6,6 +6,7 @@ import { FlashList } from "@shopify/flash-list";
 
 import { LinkListCard } from "../components/LinkListCard";
 import { LinkListEmpty } from "../components/LinkListEmpty";
+import { LinkListFilterMenu } from "../components/LinkListFilterMenu";
 import { LinkListLoadingFooter } from "../components/LinkListLoadingFooter";
 import { useLinks } from "../hooks/useLinks";
 import type { UserLink } from "../types/linkList.types";
@@ -84,7 +85,10 @@ export function LinkListScreen() {
   }
 
   return (
-    <View className="flex-1">
+    <View className="relative flex-1 ">
+      <View className="absolute right-0 z-50 mt-[12px] flex-row items-center gap-2">
+        <LinkListFilterMenu />
+      </View>
       <FlashList
         data={links}
         renderItem={renderItem}

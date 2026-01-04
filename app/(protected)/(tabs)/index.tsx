@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { useProfile } from "@/src/features/users";
 import { ScreenContainer } from "@/src/shared/components/layout/ScreenContainer";
 import { useModal } from "@/src/shared/providers/ModalContext";
+import { formatDate } from "@/src/shared/utils/timezone";
 
 export default function Index() {
   const { data: profile, isLoading, error, refetch } = useProfile();
@@ -42,7 +43,10 @@ export default function Index() {
     );
   }
   return (
-    <ScreenContainer headerTitle={`Hello, ${profile?.username}`}>
+    <ScreenContainer
+      headerTitle={`Hello, ${profile?.username}`}
+      subtitle={formatDate(new Date(), "long", "en-US")}
+    >
       <Text className="text-center text-gray-600">You are logged in!</Text>
       <Text className="text-center text-gray-600">
         @{profile?.user_id || "..."} / {profile?.username || "..."}

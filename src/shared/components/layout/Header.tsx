@@ -9,16 +9,16 @@ import { Avatar } from "@/src/features/users/components/user/Avatar";
 import { useProfile } from "@/src/features/users/hooks";
 import { useModal } from "@/src/shared/providers";
 
-import { formatDate } from "../../utils/timezone";
-
 export interface HeaderProps {
   title: string;
+  subtitle: string;
   topComponent?: boolean;
 }
 const HEADER_HEIGHT = 64;
 
 export default function Header({
   title = "Hello, User",
+  subtitle = "Welcome to Cache",
   topComponent = true,
 }: HeaderProps) {
   const { openModal } = useModal();
@@ -26,7 +26,7 @@ export default function Header({
 
   return (
     <View
-      className="absolute inset-x-0 top-0 z-50"
+      className="absolute inset-x-0 top-0 z-40"
       style={{ height: HEADER_HEIGHT }}
     >
       <LinearGradient
@@ -48,11 +48,8 @@ export default function Header({
               accessibilityLabel="Open settings"
             />
             <View>
-              {title.includes("Hello") && (
-                <Text className="text-base text-slate-500">
-                  {formatDate(new Date(), "long", "en-US")}
-                </Text>
-              )}
+              <Text className="text-base text-slate-500">{subtitle}</Text>
+
               <Text className="text-xl font-bold text-slate-700">{title}</Text>
             </View>
           </View>
