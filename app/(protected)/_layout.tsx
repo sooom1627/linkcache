@@ -64,7 +64,14 @@ export default function ProtectedLayout() {
   return (
     <Stack>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="link" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="link"
+        options={{
+          headerShown: false,
+          animation: "slide_from_right",
+          presentation: "card",
+        }}
+      />
     </Stack>
   );
 }

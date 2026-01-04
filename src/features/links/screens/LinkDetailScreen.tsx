@@ -128,17 +128,20 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
           {link.image_url ? (
             <Image
               source={{ uri: link.image_url }}
-              style={{ width: "100%", height: 240 }}
+              style={{ width: "100%", aspectRatio: 1.91, borderRadius: 12 }}
               contentFit="cover"
               transition={200}
             />
           ) : (
-            <View className="h-60 items-center justify-center bg-slate-100">
+            <View
+              className="w-full items-center justify-center bg-slate-100"
+              style={{ aspectRatio: 1.91 }}
+            >
               <Globe size={64} color="#cbd5e1" strokeWidth={1.5} />
             </View>
           )}
 
-          <View className="p-6">
+          <View className="px-2 py-6">
             {/* メタ情報 */}
             <View className="mb-4 flex-row items-center gap-2">
               {link.favicon_url ? (

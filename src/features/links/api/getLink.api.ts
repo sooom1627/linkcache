@@ -1,6 +1,9 @@
 import { supabase } from "@/src/shared/lib/supabase";
 
 import { userLinkSchema, type UserLink } from "../types/linkList.types";
+import type { Tables } from "../types/supabase.types";
+
+type UserLinksViewRow = Tables<"user_links_view">;
 
 /**
  * 指定されたlink_idのリンク詳細を取得する
@@ -20,7 +23,7 @@ export async function getLinkById(linkId: string): Promise<UserLink> {
     .from("user_links_view")
     .select("*")
     .eq("link_id", linkId)
-    .single();
+    .single<UserLinksViewRow>();
 
   if (error) {
     throw new Error(`Failed to fetch link: ${error.message}`);
