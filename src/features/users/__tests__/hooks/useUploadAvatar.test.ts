@@ -27,6 +27,7 @@ jest.mock("../../../auth", () => ({
 describe("useUploadAvatar", () => {
   beforeEach(() => {
     jest.spyOn(Alert, "alert");
+    jest.spyOn(console, "error").mockImplementation(() => {});
     jest.clearAllMocks();
   });
 

@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from "@testing-library/react-native";
+import { act, renderHook, waitFor } from "@testing-library/react-native";
 
 import { checkUserIdAvailability } from "../../api";
 import { useCheckUserId } from "../../hooks/useCheckUserId";
@@ -21,7 +21,9 @@ describe("useCheckUserId", () => {
     jest.useFakeTimers();
     const { result } = renderHook(() => useCheckUserId("abc"), { wrapper });
 
-    jest.advanceTimersByTime(1000);
+    act(() => {
+      jest.advanceTimersByTime(1000);
+    });
 
     expect(result.current.isLoading).toBe(false);
     expect(checkUserIdAvailability).not.toHaveBeenCalled();
@@ -64,7 +66,9 @@ describe("useCheckUserId", () => {
       wrapper,
     });
 
-    jest.advanceTimersByTime(1000);
+    act(() => {
+      jest.advanceTimersByTime(1000);
+    });
 
     expect(result.current.isFetching).toBe(false);
     expect(checkUserIdAvailability).not.toHaveBeenCalled();
@@ -86,8 +90,10 @@ describe("useCheckUserId", () => {
     rerender({ id: "user2" });
     rerender({ id: "user3" });
 
-    jest.advanceTimersByTime(500);
-    await jest.runAllTimersAsync();
+    act(() => {
+      jest.advanceTimersByTime(500);
+      jest.runAllTimers();
+    });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true), {
       timeout: 2000,

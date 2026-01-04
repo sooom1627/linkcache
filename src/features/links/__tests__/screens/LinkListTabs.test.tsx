@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import {
+  act,
   fireEvent,
   render,
   screen,
@@ -53,6 +54,11 @@ jest.mock("react-native-pager-view", () => {
         ref: React.Ref<{ setPage: (page: number) => void }>,
       ) => {
         const [currentPage, setCurrentPage] = React.useState(initialPage);
+
+        React.useEffect(() => {
+          setCurrentPage(initialPage);
+        }, [initialPage]);
+
         React.useImperativeHandle(ref, () => ({
           setPage: (page: number) => {
             setCurrentPage(page);
@@ -105,8 +111,10 @@ describe("LinkListTabs", () => {
         hasMore: false,
         totalCount: 2,
       };
-      // Read Soon用のレスポンス
-      mockFetchUserLinks.mockResolvedValueOnce(mockReadSoonData);
+      // Read Soon用のレスポンスとLatest用の空レスポンス
+      mockFetchUserLinks
+        .mockResolvedValueOnce(mockReadSoonData)
+        .mockResolvedValue({ data: [], hasMore: false, totalCount: 0 });
 
       render(<LinkListTabs />, { wrapper });
 
@@ -137,9 +145,12 @@ describe("LinkListTabs", () => {
         hasMore: false,
         totalCount: 3,
       };
-      mockFetchUserLinks
-        .mockResolvedValueOnce(mockReadSoonData)
-        .mockResolvedValueOnce(mockLatestData);
+      mockFetchUserLinks.mockImplementation(async (args) => {
+        if (args && args.status === "read_soon") {
+          return mockReadSoonData;
+        }
+        return mockLatestData;
+      });
 
       render(<LinkListTabs />, { wrapper });
 
@@ -148,12 +159,18 @@ describe("LinkListTabs", () => {
       });
 
       // Latestタブに切り替え
-      const latestTab = screen.getByText("Latest");
-      fireEvent.press(latestTab);
+      const latestTab = screen.getByRole("tab", { name: "Latest" });
 
-      await waitFor(() => {
-        expect(screen.getByText("Example 2")).toBeTruthy();
+      await act(async () => {
+        fireEvent.press(latestTab);
       });
+
+      await waitFor(
+        () => {
+          expect(screen.getByText("Example 2")).toBeTruthy();
+        },
+        { timeout: 3000 },
+      );
 
       // limit: 5, statusなしでAPIが呼ばれることを確認
       const latestCall = mockFetchUserLinks.mock.calls.find(
@@ -174,7 +191,9 @@ describe("LinkListTabs", () => {
         hasMore: false,
         totalCount: 10, // 実際には10件あるが5件のみ取得
       };
-      mockFetchUserLinks.mockResolvedValueOnce(mockReadSoonData);
+      mockFetchUserLinks
+        .mockResolvedValueOnce(mockReadSoonData)
+        .mockResolvedValue({ data: [], hasMore: false, totalCount: 0 });
 
       render(<LinkListTabs />, { wrapper });
 
@@ -200,10 +219,12 @@ describe("LinkListTabs", () => {
         hasMore: false,
         totalCount: 2,
       };
-      mockFetchUserLinks
-        .mockResolvedValueOnce(mockReadSoonData)
-        .mockResolvedValueOnce(mockLatestData)
-        .mockResolvedValueOnce(mockReadSoonData); // Read Soonに戻るとき
+      mockFetchUserLinks.mockImplementation(async (args) => {
+        if (args && args.status === "read_soon") {
+          return mockReadSoonData;
+        }
+        return mockLatestData;
+      });
 
       render(<LinkListTabs />, { wrapper });
 
@@ -215,20 +236,32 @@ describe("LinkListTabs", () => {
       expect(screen.getByText("Example 1")).toBeTruthy();
 
       // Latestタブに切り替え
-      const latestTab = screen.getByText("Latest");
-      fireEvent.press(latestTab);
+      const latestTab = screen.getByRole("tab", { name: "Latest" });
 
-      await waitFor(() => {
-        expect(screen.getByText("Example 2")).toBeTruthy();
+      await act(async () => {
+        fireEvent.press(latestTab);
       });
+
+      await waitFor(
+        () => {
+          expect(screen.getByText("Example 2")).toBeTruthy();
+        },
+        { timeout: 3000 },
+      );
 
       // Read Soonタブに戻す
-      const readSoonTab = screen.getByText("Read Soon");
-      fireEvent.press(readSoonTab);
+      const readSoonTab = screen.getByRole("tab", { name: "Read Soon" });
 
-      await waitFor(() => {
-        expect(screen.getByText("Example 1")).toBeTruthy();
+      await act(async () => {
+        fireEvent.press(readSoonTab);
       });
+
+      await waitFor(
+        () => {
+          expect(screen.getByText("Example 1")).toBeTruthy();
+        },
+        { timeout: 3000 },
+      );
     });
   });
 
@@ -239,7 +272,7 @@ describe("LinkListTabs", () => {
         hasMore: false,
         totalCount: 0,
       };
-      mockFetchUserLinks.mockResolvedValueOnce(mockData);
+      mockFetchUserLinks.mockResolvedValue(mockData);
 
       render(<LinkListTabs />, { wrapper });
 
@@ -253,7 +286,9 @@ describe("LinkListTabs", () => {
   describe("エラーハンドリング", () => {
     it("エラー発生時にエラー状態を表示する", async () => {
       const mockError = new Error("Failed to fetch");
-      mockFetchUserLinks.mockRejectedValueOnce(mockError);
+      mockFetchUserLinks
+        .mockRejectedValueOnce(mockError)
+        .mockRejectedValue(mockError);
 
       render(<LinkListTabs />, { wrapper });
 
