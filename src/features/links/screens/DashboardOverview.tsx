@@ -31,7 +31,7 @@ export function DashboardOverview({
   const { t } = useTranslation();
 
   return (
-    <View className="">
+    <View>
       {/* Dashboard Grid */}
       <View className="mb-3 h-52 flex-row gap-3">
         {/* Left Column: Inbox (Main Action) */}
@@ -39,6 +39,8 @@ export function DashboardOverview({
           <Pressable
             className="flex-1 justify-between rounded-xl bg-slate-900 p-5 active:scale-[0.98] active:opacity-95"
             onPress={() => router.push("/swipes")}
+            accessibilityRole="button"
+            accessibilityLabel={`${inboxCount} ${t("links.dashboard.unsorted_links")}, ${t("links.dashboard.start_triage")}`}
           >
             <View>
               <View className="mb-4 self-start rounded-md bg-slate-800 p-2">
@@ -103,6 +105,9 @@ export function DashboardOverview({
       <Pressable
         className="w-full flex-row items-center justify-between gap-2 rounded-lg border border-slate-200 bg-white p-4 active:bg-slate-50"
         onPress={() => openModal("linkCreate")}
+        accessibilityRole="button"
+        accessibilityLabel={t("links.dashboard.add_new_link")}
+        accessibilityHint={t("links.dashboard.add_new_link_hint")}
       >
         <View className="flex-row items-center gap-2">
           <View className="flex size-6 items-center justify-center rounded bg-slate-100">

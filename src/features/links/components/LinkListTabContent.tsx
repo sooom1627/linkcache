@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 
 import { useRouter } from "expo-router";
@@ -23,7 +24,7 @@ interface LinkListTabContentProps {
 /**
  * タブコンテンツコンポーネント
  */
-export function LinkListTabContent({
+export const LinkListTabContent = memo(function LinkListTabContent({
   isLoading,
   isError,
   error,
@@ -98,4 +99,4 @@ export function LinkListTabContent({
       </View>
     </View>
   );
-}
+});
