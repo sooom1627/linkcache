@@ -86,10 +86,10 @@ export const LinkListFilterModal = forwardRef<
   return (
     <BaseBottomSheetModal
       ref={ref}
-      snapPoints={["40%", "60%"]}
+      snapPoints={["60%", "60%"]}
       enablePanDownToClose={true}
     >
-      <View className="flex-1 px-6 pb-8">
+      <View className="min-h-[600px] flex-1 px-6 pb-8">
         {/* Header */}
         <View className="mb-6">
           <ModalHeader title={t("links.filter.title")} onClose={handleClose} />
