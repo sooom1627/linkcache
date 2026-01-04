@@ -1,9 +1,11 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import {
   createLinkWithStatus,
   type CreateLinkResponse,
 } from "../api/createLink.api";
+import { linkQueryKeys } from "../constants/queryKeys";
+import type { OgpMetadata } from "../utils/metadata";
 import { fetchOgpMetadata } from "../utils/metadata";
 import { normalizeUrl } from "../utils/normalizeUrl";
 
@@ -38,13 +40,21 @@ export interface UseCreateLinkReturn {
  * ```
  */
 export function useCreateLink(): UseCreateLinkReturn {
+  const queryClient = useQueryClient();
+
   const mutation = useMutation({
     mutationFn: async (url: string) => {
       // URLを正規化
       const normalizedUrl = normalizeUrl(url);
 
-      // OGPメタデータを取得（失敗してもnullが返る）
-      const metadata = await fetchOgpMetadata(normalizedUrl);
+      // React Queryのキャッシュを活用してOGPメタデータを取得
+      // キャッシュがあればそれを使用、なければfetchしてキャッシュに保存
+      const metadata = await queryClient.fetchQuery<OgpMetadata | null>({
+        queryKey: linkQueryKeys.ogpMetadata(normalizedUrl),
+        queryFn: () => fetchOgpMetadata(normalizedUrl),
+        staleTime: 24 * 60 * 60 * 1000, // 24時間：OGPは頻繁に変わらない
+        gcTime: 7 * 24 * 60 * 60 * 1000, // 7日間：メモリに保持
+      });
 
       // APIを呼び出してリンクを作成
       return createLinkWithStatus({

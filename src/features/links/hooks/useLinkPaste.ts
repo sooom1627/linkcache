@@ -2,13 +2,16 @@ import { useCallback, useState } from "react";
 
 import * as Clipboard from "expo-clipboard";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
+import { linkQueryKeys } from "../constants/queryKeys";
 import type {
   LinkPasteStatus,
   LinkPreview,
   UseLinkPasteReturn,
 } from "../types/linkPaste.types";
+import type { OgpMetadata } from "../utils/metadata";
 import { fetchOgpMetadata } from "../utils/metadata";
 import { normalizeUrl } from "../utils/normalizeUrl";
 import { isValidUrl } from "../utils/urlValidation";
@@ -16,7 +19,7 @@ import { isValidUrl } from "../utils/urlValidation";
 /**
  * URLからドメインを抽出する
  */
-function extractDomain(url: string): string {
+export function extractDomain(url: string): string {
   try {
     const urlObj = new URL(url);
     return urlObj.hostname.replace(/^www\./, "");
@@ -33,6 +36,7 @@ function extractDomain(url: string): string {
  */
 export function useLinkPaste(): UseLinkPasteReturn {
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
   const [status, setStatus] = useState<LinkPasteStatus>("empty");
   const [preview, setPreview] = useState<LinkPreview | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -71,8 +75,14 @@ export function useLinkPaste(): UseLinkPasteReturn {
 
       const domain = extractDomain(normalizedUrl);
 
-      // OGPメタデータを取得
-      const metadata = await fetchOgpMetadata(normalizedUrl);
+      // React Queryのキャッシュを活用してOGPメタデータを取得
+      // キャッシュがあればそれを使用、なければfetchしてキャッシュに保存
+      const metadata = await queryClient.fetchQuery<OgpMetadata | null>({
+        queryKey: linkQueryKeys.ogpMetadata(normalizedUrl),
+        queryFn: () => fetchOgpMetadata(normalizedUrl),
+        staleTime: 24 * 60 * 60 * 1000, // 24時間：OGPは頻繁に変わらない
+        gcTime: 7 * 24 * 60 * 60 * 1000, // 7日間：メモリに保持
+      });
 
       // OGP画像が取得できたかどうかで状態を判定
       // 画像がある場合は完全なプレビュー、ない場合はnoOgp警告を表示
@@ -92,7 +102,7 @@ export function useLinkPaste(): UseLinkPasteReturn {
       setErrorMessage(t("links.paste.error_clipboard_read_failed"));
       setPreview(null);
     }
-  }, [t]);
+  }, [t, queryClient]);
 
   /**
    * 状態をリセット

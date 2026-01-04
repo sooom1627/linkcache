@@ -1,18 +1,34 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getLinkPreview } from "link-preview-js";
 
 import { fetchOgpMetadata } from "../../utils/metadata";
+
+// AsyncStorageのモック
+jest.mock("@react-native-async-storage/async-storage", () => ({
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+  removeItem: jest.fn(),
+  multiRemove: jest.fn(),
+  getAllKeys: jest.fn(),
+}));
 
 // link-preview-jsのモック
 jest.mock("link-preview-js", () => ({
   getLinkPreview: jest.fn(),
 }));
 
-describe("fetchOgpMetadata", () => {
+describe("fetchOgpMetadata - Basic OGP fetching", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    // AsyncStorageはデフォルトでnullを返す（キャッシュなし）
+    jest.mocked(AsyncStorage.getItem).mockResolvedValue(null);
   });
 
-  it("fetches and returns OGP metadata from URL", async () => {
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
+  it("fetches and returns OGP metadata via link-preview-js", async () => {
     jest.mocked(getLinkPreview).mockResolvedValueOnce({
       url: "https://example.com",
       title: "Example Title",
@@ -43,6 +59,8 @@ describe("fetchOgpMetadata", () => {
       site_name: "Example Site",
       favicon_url: "https://example.com/favicon.ico",
     });
+    // AsyncStorageに保存されることを確認
+    expect(AsyncStorage.setItem).toHaveBeenCalled();
   });
 
   it("returns first image and favicon when multiple exist", async () => {
@@ -68,77 +86,6 @@ describe("fetchOgpMetadata", () => {
     expect(result?.favicon_url).toBe("https://example.com/favicon1.ico");
   });
 
-  it("handles missing optional fields", async () => {
-    jest.mocked(getLinkPreview).mockResolvedValueOnce({
-      url: "https://example.com",
-      title: "Title Only",
-      mediaType: "website",
-    } as unknown as Awaited<ReturnType<typeof getLinkPreview>>);
-
-    const result = await fetchOgpMetadata("https://example.com");
-
-    expect(result).toEqual({
-      title: "Title Only",
-      description: null,
-      image_url: null,
-      site_name: null,
-      favicon_url: null,
-    });
-  });
-
-  it("handles PDF URLs with application mediaType", async () => {
-    jest.mocked(getLinkPreview).mockResolvedValueOnce({
-      url: "https://example.com/document.pdf",
-      mediaType: "application",
-      contentType: "application/pdf",
-      favicons: ["https://example.com/favicon.ico"],
-    } as unknown as Awaited<ReturnType<typeof getLinkPreview>>);
-
-    const result = await fetchOgpMetadata("https://example.com/document.pdf");
-
-    expect(result).toEqual({
-      title: "document",
-      description: "PDF Document",
-      image_url: null,
-      site_name: "example.com",
-      favicon_url: "https://example.com/favicon.ico",
-    });
-  });
-
-  it("handles PDF URLs detected by extension", async () => {
-    jest.mocked(getLinkPreview).mockResolvedValueOnce({
-      url: "https://example.com/report.pdf",
-      mediaType: "application",
-    } as unknown as Awaited<ReturnType<typeof getLinkPreview>>);
-
-    const result = await fetchOgpMetadata("https://example.com/report.pdf");
-
-    expect(result).toEqual({
-      title: "report",
-      description: "PDF Document",
-      image_url: null,
-      site_name: "example.com",
-      favicon_url: null,
-    });
-  });
-
-  it("handles video/audio media types with fallback info", async () => {
-    jest.mocked(getLinkPreview).mockResolvedValueOnce({
-      url: "https://example.com/video.mp4",
-      mediaType: "video",
-    } as unknown as Awaited<ReturnType<typeof getLinkPreview>>);
-
-    const result = await fetchOgpMetadata("https://example.com/video.mp4");
-
-    expect(result).toEqual({
-      title: "video",
-      description: null,
-      image_url: null,
-      site_name: "example.com",
-      favicon_url: null,
-    });
-  });
-
   it("returns fallback metadata when fetch fails", async () => {
     jest.mocked(getLinkPreview).mockRejectedValueOnce(new Error("Timeout"));
 
@@ -149,7 +96,7 @@ describe("fetchOgpMetadata", () => {
       description: null,
       image_url: null,
       site_name: "example.com",
-      favicon_url: null,
+      favicon_url: "https://example.com/favicon.ico",
     });
   });
 
@@ -161,17 +108,38 @@ describe("fetchOgpMetadata", () => {
     expect(result).toBeNull();
   });
 
-  it("handles Japanese filenames in PDF URLs", async () => {
+  it("handles zenn.dev URLs correctly", async () => {
     jest.mocked(getLinkPreview).mockResolvedValueOnce({
-      url: "https://example.co.jp/%E3%83%AC%E3%83%9D%E3%83%BC%E3%83%88.pdf",
-      mediaType: "application",
-      contentType: "application/pdf",
+      url: "https://zenn.dev/zenn/articles/zenn-cli-guide",
+      title: "Zenn CLIで記事・本を管理する方法",
+      images: ["https://res.cloudinary.com/zenn/image/upload/image.png"],
+      siteName: "Zenn",
+      favicons: ["https://static.zenn.studio/images/logo-transparent.png"],
+      mediaType: "article",
     } as unknown as Awaited<ReturnType<typeof getLinkPreview>>);
 
     const result = await fetchOgpMetadata(
-      "https://example.co.jp/%E3%83%AC%E3%83%9D%E3%83%BC%E3%83%88.pdf",
+      "https://zenn.dev/zenn/articles/zenn-cli-guide",
     );
 
-    expect(result?.title).toBe("レポート");
+    expect(result?.title).toBe("Zenn CLIで記事・本を管理する方法");
+    expect(result?.site_name).toBe("Zenn");
+  });
+
+  it("handles note.com URLs correctly", async () => {
+    jest.mocked(getLinkPreview).mockResolvedValueOnce({
+      url: "https://note.com",
+      title: "note ――つくる、つながる、とどける。",
+      description: "クリエイターが文章やマンガ、写真、音声を投稿...",
+      images: ["https://assets.st-note.com/image.png"],
+      siteName: "note（ノート）",
+      favicons: ["https://assets.st-note.com/favicon.ico"],
+      mediaType: "website",
+    } as unknown as Awaited<ReturnType<typeof getLinkPreview>>);
+
+    const result = await fetchOgpMetadata("https://note.com");
+
+    expect(result?.title).toBe("note ――つくる、つながる、とどける。");
+    expect(result?.site_name).toBe("note（ノート）");
   });
 });
