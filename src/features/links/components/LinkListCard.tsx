@@ -2,8 +2,8 @@ import { useCallback, useState } from "react";
 
 import { Linking, Pressable, Text, TouchableOpacity, View } from "react-native";
 
-import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
+import { Image } from "expo-image";
 
 import { EllipsisVertical, Globe } from "lucide-react-native";
 
@@ -74,7 +74,7 @@ export function LinkListCard({ link }: LinkListCardProps) {
   return (
     <Pressable
       onPress={handlePress}
-      className="mb-2 flex-row items-center rounded-2xl bg-white/80 active:bg-slate-50"
+      className="mb-2 flex-row items-center rounded-2xl bg-white/80 active:bg-slate-50 gap-3"
     >
       {/* サムネイル */}
       {showFallback ? (
@@ -99,7 +99,7 @@ export function LinkListCard({ link }: LinkListCardProps) {
       )}
 
       {/* コンテンツ */}
-      <View className="ml-4 flex-1 justify-center py-1">
+      <View className="flex-1 justify-center py-1">
         {/* タイトル */}
         <Text
           className="text-base font-medium leading-5 tracking-tight text-slate-800"
@@ -146,15 +146,14 @@ export function LinkListCard({ link }: LinkListCardProps) {
         </View>
       </View>
 
-      {/* 右矢印アイコン */}
+      {/* メニューアイコン */}
       <TouchableOpacity
         className="ml-2"
         onPress={() => {}}
         hitSlop={16}
-        activeOpacity={0.8}
         accessibilityRole="button"
-        accessibilityLabel="Open link"
-        accessibilityHint="Open link"
+        accessibilityLabel="Menu"
+        accessibilityHint="Menu"
       >
         <EllipsisVertical size={16} color="#6B7280" />
       </TouchableOpacity>
