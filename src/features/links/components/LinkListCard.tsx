@@ -5,7 +5,7 @@ import { Linking, Pressable, Text, TouchableOpacity, View } from "react-native";
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
 
-import { EllipsisVertical, Globe } from "lucide-react-native";
+import { ExternalLink, Globe } from "lucide-react-native";
 
 import { extractDomain } from "../hooks/useLinkPaste";
 import type { TriageStatus, UserLink } from "../types/linkList.types";
@@ -61,7 +61,7 @@ export function LinkListCard({ link }: LinkListCardProps) {
   const [imageError, setImageError] = useState(false);
   const statusDotColor = getStatusDotColor(link.status);
 
-  const handlePress = useCallback(() => {
+  const handleOpenLink = useCallback(() => {
     Linking.openURL(link.url);
   }, [link.url]);
 
@@ -73,8 +73,8 @@ export function LinkListCard({ link }: LinkListCardProps) {
 
   return (
     <Pressable
-      onPress={handlePress}
-      className="flex-row items-center gap-3 rounded-2xl bg-white/80 py-2 active:bg-slate-50"
+      onPress={() => {}}
+      className="flex-row items-center gap-3 rounded-2xl bg-white/80 p-2 active:bg-slate-50"
     >
       {/* サムネイル */}
       {showFallback ? (
@@ -149,13 +149,13 @@ export function LinkListCard({ link }: LinkListCardProps) {
       {/* メニューアイコン */}
       <TouchableOpacity
         className="ml-2"
-        onPress={() => {}}
+        onPress={handleOpenLink}
         hitSlop={16}
         accessibilityRole="button"
         accessibilityLabel="Menu"
         accessibilityHint="Menu"
       >
-        <EllipsisVertical size={16} color="#6B7280" />
+        <ExternalLink size={16} color="#94a3b8" strokeWidth={2.5} />
       </TouchableOpacity>
     </Pressable>
   );
