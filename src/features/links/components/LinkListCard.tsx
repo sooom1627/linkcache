@@ -116,12 +116,16 @@ export function LinkListCard({ link }: LinkListCardProps) {
           {link.favicon_url ? (
             <Image
               source={link.favicon_url as string}
-              className="mr-1.5 size-3.5 rounded-full bg-slate-200"
+              className="mr-1.5 rounded-full bg-slate-200"
               contentFit="contain"
+              style={{ width: 10, height: 10 }}
             />
           ) : (
-            <View className="mr-1.5 size-3.5 rounded-full bg-slate-200">
-              <Globe size={14} color="#94a3b8" strokeWidth={1.5} />
+            <View
+              className="rounded-full bg-slate-200"
+              style={{ width: 10, height: 10 }}
+            >
+              <Globe size={10} color="#94a3b8" strokeWidth={1.5} />
             </View>
           )}
 

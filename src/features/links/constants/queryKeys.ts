@@ -1,3 +1,5 @@
+import type { LinkFilterParams } from "../types/linkList.types";
+
 /**
  * リンク関連のReact Queryキャッシュキー
  *
@@ -5,8 +7,11 @@
  *
  * @example
  * ```ts
- * // リンク一覧取得
+ * // リンク一覧取得（フィルタなし）
  * useInfiniteQuery({ queryKey: linkQueryKeys.list(), ... });
+ *
+ * // フィルタ付きリンク一覧取得
+ * useInfiniteQuery({ queryKey: linkQueryKeys.list({ status: "keep" }), ... });
  *
  * // リンクキャッシュのクリア
  * queryClient.invalidateQueries({ queryKey: linkQueryKeys.all });
@@ -25,9 +30,20 @@ export const linkQueryKeys = {
   lists: () => [...linkQueryKeys.all, "list"] as const,
 
   /**
-   * リンク一覧のクエリキー（ページングはReact Queryが管理）
+   * リンク一覧のクエリキー（無限スクロール用、フィルタパラメータ対応）
+   * @param params - フィルタパラメータ（status, isRead）
    */
-  list: () => [...linkQueryKeys.lists()] as const,
+  list: (params?: Omit<LinkFilterParams, "limit">) =>
+    params
+      ? ([...linkQueryKeys.lists(), "infinite", params] as const)
+      : ([...linkQueryKeys.lists(), "infinite"] as const),
+
+  /**
+   * 制限付きリンク一覧のクエリキー（単一ページ取得用）
+   * @param params - フィルタパラメータ（status, isRead, limit）
+   */
+  listLimited: (params: LinkFilterParams) =>
+    [...linkQueryKeys.lists(), "limited", params] as const,
 
   /**
    * リンク詳細の基底キー

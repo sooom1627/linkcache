@@ -174,4 +174,72 @@ describe("useLinks", () => {
       });
     });
   });
+
+  describe("フィルタリング", () => {
+    it("statusを指定してフィルタリングできる", async () => {
+      const keepLink = { ...createMockLink(1), status: "keep" as const };
+      mockFetchUserLinks.mockResolvedValueOnce({
+        data: [keepLink],
+        hasMore: false,
+        totalCount: 1,
+      });
+
+      const { result } = renderHook(() => useLinks({ status: "keep" }), {
+        wrapper,
+      }) as RenderHookResult<UseLinksReturn, void>;
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      expect(mockFetchUserLinks).toHaveBeenCalledWith(
+        expect.objectContaining({ status: "keep" }),
+      );
+      expect(result.current.links).toHaveLength(1);
+    });
+
+    it("limitを指定すると無限スクロールが無効になる", async () => {
+      mockFetchUserLinks.mockResolvedValueOnce({
+        data: [createMockLink(1), createMockLink(2)],
+        hasMore: false,
+        totalCount: 10,
+      });
+
+      const { result } = renderHook(() => useLinks({ limit: 5 }), {
+        wrapper,
+      }) as RenderHookResult<UseLinksReturn, void>;
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      expect(mockFetchUserLinks).toHaveBeenCalledWith(
+        expect.objectContaining({ limit: 5 }),
+      );
+      // limit指定時はhasNextPageは常にfalse
+      expect(result.current.hasNextPage).toBe(false);
+    });
+
+    it("statusとlimitを組み合わせて使用できる", async () => {
+      const keepLink = { ...createMockLink(1), status: "keep" as const };
+      mockFetchUserLinks.mockResolvedValueOnce({
+        data: [keepLink],
+        hasMore: false,
+        totalCount: 5,
+      });
+
+      const { result } = renderHook(
+        () => useLinks({ status: "keep", limit: 5 }),
+        { wrapper },
+      ) as RenderHookResult<UseLinksReturn, void>;
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      expect(mockFetchUserLinks).toHaveBeenCalledWith(
+        expect.objectContaining({ status: "keep", limit: 5 }),
+      );
+    });
+  });
 });

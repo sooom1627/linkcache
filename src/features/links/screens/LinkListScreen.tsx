@@ -48,9 +48,17 @@ export function LinkListScreen() {
 
   // リストアイテムのレンダリング
   const renderItem = useCallback(
-    ({ item }: { item: UserLink }) => <LinkListCard link={item} />,
+    ({ item }: { item: UserLink }) => (
+      <View className="py-1">
+        <LinkListCard link={item} />
+      </View>
+    ),
     [],
   );
+
+  const renderTopMarginComponent = useCallback(() => {
+    return <View className="h-16" />;
+  }, []);
 
   // キー抽出
   const keyExtractor = useCallback((item: UserLink) => item.status_id, []);
@@ -112,7 +120,8 @@ export function LinkListScreen() {
         data={links}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
-        contentContainerClassName="pt-16 mt-2 pb-32"
+        contentContainerClassName="mt-2 pb-32"
+        ListHeaderComponent={renderTopMarginComponent}
         showsVerticalScrollIndicator={false}
         onEndReached={handleEndReached}
         onEndReachedThreshold={0.5}

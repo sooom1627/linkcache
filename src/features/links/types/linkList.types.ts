@@ -33,9 +33,21 @@ export interface UserLink {
 }
 
 /**
+ * リンクフィルタパラメータ（クエリキーとフック用）
+ */
+export interface LinkFilterParams {
+  /** ステータスフィルタ (undefinedで全件) */
+  status?: TriageStatus;
+  /** 既読状態フィルタ (true=既読, false=未読, undefinedで全件) */
+  isRead?: boolean;
+  /** 件数制限 (ページング無視、undefinedでページング使用) */
+  limit?: number;
+}
+
+/**
  * get_user_links RPC のパラメータ
  */
-export interface GetUserLinksParams {
+export interface GetUserLinksParams extends LinkFilterParams {
   /** 1ページあたりの件数 (デフォルト: 20) */
   pageSize?: number;
   /** ページ番号 (0始まり、デフォルト: 0) */

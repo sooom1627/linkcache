@@ -144,6 +144,10 @@
         "read": "Read"
       }
     },
+    "list": {
+      "empty_title": "No links yet",
+      "empty_description": "Start saving links to see them here"
+    },
     "header": {
       "title": "Link List",
       "subtitle": "You have {{count}} saved links"
@@ -151,6 +155,27 @@
     "card": {
       "open_link_label": "Open link",
       "open_link_hint": "Opens the link in browser"
+    },
+    "dashboard": {
+      "add_new_link": "Add New Link",
+      "add_new_link_hint": "Copy the URL in your browser or other app, then tap this button",
+      "unsorted_links": "Unsorted Links",
+      "start_triage": "Start Triage",
+      "all_caught_up": "All caught up",
+      "no_pending_links": "No pending links",
+      "read_week": "Read (Week)",
+      "all_links": "All Links",
+      "tabs": {
+        "keep": "Keep",
+        "latest": "Latest"
+      },
+      "view_all": "View All",
+      "error_load_failed": "Failed to load links",
+      "empty_keep": {
+        "title": "You've read everything! 🎉",
+        "description": "Let's Triage new links!",
+        "go_to_triage": "Start Triage"
+      }
     }
   }
 }

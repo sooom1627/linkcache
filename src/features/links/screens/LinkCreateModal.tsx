@@ -1,4 +1,4 @@
-import { forwardRef, useCallback, useEffect } from "react";
+import { forwardRef, useCallback, useEffect, useRef } from "react";
 
 import { Alert, View } from "react-native";
 
@@ -35,8 +35,9 @@ export const LinkCreateModal = forwardRef<
   const { t } = useTranslation();
 
   // リンク貼り付けフック
+  // 初期状態をloadingに設定して、モーダルが開いた時点でローディング状態を表示
   const { status, preview, errorMessage, pasteFromClipboard, reset, canSave } =
-    useLinkPaste();
+    useLinkPaste({ initialStatus: "loading" });
 
   // リンク作成フック
   const {
@@ -48,10 +49,31 @@ export const LinkCreateModal = forwardRef<
     reset: resetCreate,
   } = useCreateLink();
 
+  const hasAutoPastedRef = useRef(false);
+
+  // モーダルが開いた時に自動的にクリップボードから貼り付け
+  const handleModalChange = useCallback(
+    (index: number) => {
+      // モーダルが開いた時（index >= 0）かつ、まだ自動貼り付けしていない場合
+      if (index >= 0 && !hasAutoPastedRef.current) {
+        hasAutoPastedRef.current = true;
+        // 即座に貼り付けを実行してローディング状態を表示
+        // pasteFromClipboardは内部でクリップボードをチェックし、statusをloadingに設定する
+        pasteFromClipboard();
+      }
+      // モーダルが閉じた時（index === -1）
+      if (index === -1) {
+        hasAutoPastedRef.current = false;
+      }
+    },
+    [pasteFromClipboard],
+  );
+
   // モーダルを閉じる
   const handleClose = useCallback(() => {
     reset();
     resetCreate();
+    hasAutoPastedRef.current = false; // リセット時にフラグもリセット
     onClose?.();
   }, [onClose, reset, resetCreate]);
 
@@ -92,6 +114,7 @@ export const LinkCreateModal = forwardRef<
       index={0}
       enablePanDownToClose={false}
       stackBehavior="switch"
+      onChange={handleModalChange}
     >
       <View className="flex-1 px-5 pb-8">
         <ModalHeader title={t("links.create.title")} onClose={handleClose} />

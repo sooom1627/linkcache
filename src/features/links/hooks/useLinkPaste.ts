@@ -28,16 +28,28 @@ export function extractDomain(url: string): string {
   }
 }
 
+interface UseLinkPasteOptions {
+  /**
+   * 初期状態
+   * @default "empty"
+   */
+  initialStatus?: LinkPasteStatus;
+}
+
 /**
  * リンク貼り付けフック
  *
  * クリップボードからURLを読み取り、OGPメタデータを取得します。
  * 状態に応じたUIを表示するための情報を提供します。
  */
-export function useLinkPaste(): UseLinkPasteReturn {
+export function useLinkPaste(
+  options?: UseLinkPasteOptions,
+): UseLinkPasteReturn {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-  const [status, setStatus] = useState<LinkPasteStatus>("empty");
+  const [status, setStatus] = useState<LinkPasteStatus>(
+    options?.initialStatus ?? "empty",
+  );
   const [preview, setPreview] = useState<LinkPreview | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 

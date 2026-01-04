@@ -25,7 +25,7 @@ function RootNavigator() {
   return (
     <Stack
       screenOptions={{
-        contentStyle: { backgroundColor: "white", flex: 1 },
+        contentStyle: { backgroundColor: "#f8fafc", flex: 1 },
         animation: "fade",
         headerShown: false,
       }}
