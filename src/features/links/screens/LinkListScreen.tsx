@@ -48,7 +48,11 @@ export function LinkListScreen() {
 
   // リストアイテムのレンダリング
   const renderItem = useCallback(
-    ({ item }: { item: UserLink }) => <LinkListCard link={item} />,
+    ({ item }: { item: UserLink }) => (
+      <View className="py-1">
+        <LinkListCard link={item} />
+      </View>
+    ),
     [],
   );
 

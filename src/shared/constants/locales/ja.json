@@ -151,6 +151,16 @@
     "card": {
       "open_link_label": "リンクを開く",
       "open_link_hint": "ブラウザでリンクを開きます"
+    },
+    "dashboard": {
+      "add_new_link": "リンクを追加",
+      "no_clipboard_link": "ブラウザや他のアプリでコピーして、リンク追加ボタンを押下",
+      "unsorted_links": "未整理リンク",
+      "start_triage": "整理を開始",
+      "all_caught_up": "すべて整理済み",
+      "no_pending_links": "保留中のリンクはありません",
+      "read_week": "週間読了",
+      "all_links": "全リンク"
     }
   }
 }

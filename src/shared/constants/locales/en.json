@@ -151,6 +151,16 @@
     "card": {
       "open_link_label": "Open link",
       "open_link_hint": "Opens the link in browser"
+    },
+    "dashboard": {
+      "add_new_link": "Add New Link",
+      "no_clipboard_link": "Copy the URL in your browser or other app, then tap this button",
+      "unsorted_links": "Unsorted Links",
+      "start_triage": "Start Triage",
+      "all_caught_up": "All caught up",
+      "no_pending_links": "No pending links",
+      "read_week": "Read (Week)",
+      "all_links": "All Links"
     }
   }
 }

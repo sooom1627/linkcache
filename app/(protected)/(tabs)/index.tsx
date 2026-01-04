@@ -1,77 +1,99 @@
-import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
-
-import { Plus } from "lucide-react-native";
-import { useTranslation } from "react-i18next";
-
+import { DashboardOverview, LinkListTabs } from "@/src/features/links/screens";
+import type { UserLink } from "@/src/features/links/types/linkList.types";
 import { useProfile } from "@/src/features/users";
 import { ScreenContainer } from "@/src/shared/components/layout/ScreenContainer";
-import { useModal } from "@/src/shared/providers/ModalContext";
 import { formatDate } from "@/src/shared/utils/timezone";
 
-export default function Index() {
-  const { data: profile, isLoading, error, refetch } = useProfile();
-  const { t } = useTranslation();
-  const { openModal } = useModal();
+// Mock Data
+const MOCK_LINKS: UserLink[] = [
+  {
+    status_id: "1",
+    user_id: "u1",
+    status: "keep",
+    triaged_at: new Date().toISOString(),
+    read_at: null,
+    saved_at: new Date().toISOString(),
+    link_id: "l1",
+    url: "https://reactnative.dev/blog/2024/10/24/the-new-architecture-is-here",
+    title: "The New Architecture is Here",
+    description: "React Native's new architecture is now default.",
+    image_url: null,
+    favicon_url: null,
+    site_name: "React Native",
+    link_created_at: new Date().toISOString(),
+  },
+  {
+    status_id: "2",
+    user_id: "u1",
+    status: "inbox", // This one is latest but not kept
+    triaged_at: null,
+    read_at: null,
+    saved_at: new Date(Date.now() - 3600000).toISOString(),
+    link_id: "l2",
+    url: "https://supabase.com/blog/supabase-auth-sso-pkce",
+    title: "Supabase Auth Updates",
+    description: "New features in Supabase Authentication.",
+    image_url: null,
+    favicon_url: null,
+    site_name: "Supabase",
+    link_created_at: new Date(Date.now() - 3600000).toISOString(),
+  },
+  {
+    status_id: "3",
+    user_id: "u1",
+    status: "keep",
+    triaged_at: new Date(Date.now() - 86400000).toISOString(),
+    read_at: null,
+    saved_at: new Date(Date.now() - 86400000).toISOString(),
+    link_id: "l3",
+    url: "https://tkdodo.eu/blog/react-query-and-forms",
+    title: "React Query and Forms",
+    description: "How to handle forms with server state.",
+    image_url: null,
+    favicon_url: null,
+    site_name: "TkDodo",
+    link_created_at: new Date(Date.now() - 86400000).toISOString(),
+  },
+  {
+    status_id: "4",
+    user_id: "u1",
+    status: "archived",
+    triaged_at: new Date(Date.now() - 172800000).toISOString(),
+    read_at: new Date().toISOString(),
+    saved_at: new Date(Date.now() - 172800000).toISOString(),
+    link_id: "l4",
+    url: "https://nativewind.dev/",
+    title: "NativeWind v4",
+    description: "Tailwind CSS for React Native.",
+    image_url: null,
+    favicon_url: null,
+    site_name: "NativeWind",
+    link_created_at: new Date(Date.now() - 172800000).toISOString(),
+  },
+];
 
-  if (isLoading) {
-    return (
-      <ScreenContainer scrollable={false}>
-        <ActivityIndicator size="large" />
-      </ScreenContainer>
-    );
-  }
+const MOCK_INBOX_COUNT = 12;
+const MOCK_READ_COUNT = 8;
+const MOCK_ALL_LINKS_COUNT = 142;
 
-  if (error) {
-    return (
-      <ScreenContainer scrollable={false}>
-        <Text className="text-center text-red-600">
-          プロフィールの読み込みに失敗しました
-        </Text>
-        <TouchableOpacity
-          className="mt-4 rounded-lg bg-blue-500 px-6 py-3"
-          accessibilityRole="button"
-          accessibilityLabel="プロフィールを再読み込み"
-          onPress={() => {
-            refetch();
-          }}
-        >
-          <Text className="text-center font-semibold text-white">
-            再読み込み
-          </Text>
-        </TouchableOpacity>
-      </ScreenContainer>
-    );
-  }
+export default function Home() {
+  const { data: profile } = useProfile();
+
   return (
     <ScreenContainer
-      headerTitle={`Hello, ${profile?.username}`}
+      headerTitle={`Hi, ${profile?.username}👋`}
       subtitle={formatDate(new Date(), "long", "en-US")}
+      topComponent={true}
+      scrollable={true}
+      centerContent={false}
+      noPaddingBottom={false}
     >
-      <Text className="text-center text-gray-600">You are logged in!</Text>
-      <Text className="text-center text-gray-600">
-        @{profile?.user_id || "..."} / {profile?.username || "..."}
-      </Text>
-      <Text>{t("welcome_message")}</Text>
-
-      {/* リンク追加ボタン（仮） */}
-      <TouchableOpacity
-        className="flex-row items-center gap-2 rounded-lg bg-blue-500 px-6 py-3"
-        accessibilityRole="button"
-        accessibilityLabel={t("links.create.add_button")}
-        onPress={() => openModal("linkCreate")}
-      >
-        <Plus size={20} color="white" />
-        <Text className="font-semibold text-white">
-          {t("links.create.add_button")}
-        </Text>
-      </TouchableOpacity>
-
-      {Array.from({ length: 10 }).map((_, index) => (
-        <View key={index} className="mb-4">
-          <Text className="text-lg font-bold">Swipe {index + 1}</Text>
-          <Text className="text-sm text-gray-500">Description {index + 1}</Text>
-        </View>
-      ))}
+      <DashboardOverview
+        inboxCount={MOCK_INBOX_COUNT}
+        readCount={MOCK_READ_COUNT}
+        allLinksCount={MOCK_ALL_LINKS_COUNT}
+      />
+      <LinkListTabs links={MOCK_LINKS} />
     </ScreenContainer>
   );
 }

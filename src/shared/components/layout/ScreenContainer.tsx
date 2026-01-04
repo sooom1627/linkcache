@@ -42,7 +42,7 @@ export function ScreenContainer({
           topComponent={topComponent}
         />
         <Animated.ScrollView
-          className="flex-1"
+          className="flex-1 bg-slate-50"
           style={{ paddingTop: HEADER_HEIGHT }}
           contentContainerClassName="grow"
           scrollEventThrottle={16}
@@ -62,7 +62,7 @@ export function ScreenContainer({
         subtitle={subtitle}
         topComponent={topComponent}
       />
-      <View className="flex-1">
+      <View className="flex-1 bg-slate-50">
         <View className={contentClassName}>{children}</View>
       </View>
     </CustomSafeArea>
