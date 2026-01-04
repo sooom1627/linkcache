@@ -1,9 +1,9 @@
 import { useCallback, useState } from "react";
 
-import { Linking, Pressable, Text, View } from "react-native";
+import { Alert, Linking, Pressable, Text, View } from "react-native";
 
-import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
+import { Image } from "expo-image";
 
 import { extractDomain } from "../hooks/useLinkPaste";
 import type { TriageStatus, UserLink } from "../types/linkList.types";
@@ -41,7 +41,7 @@ const OG_IMAGE_WIDTH = Math.round(OG_IMAGE_HEIGHT * 1.91);
 function ThumbnailFallback() {
   return (
     <View
-      className="items-center justify-center rounded-lg bg-slate-50 bg-gradient-to-br"
+      className="items-center justify-center rounded-lg bg-slate-50"
       style={{ width: OG_IMAGE_WIDTH, height: OG_IMAGE_HEIGHT }}
     >
       <Ionicons name="link-outline" size={24} color="#CBD5E1" />
@@ -59,8 +59,25 @@ export function LinkListCard({ link }: LinkListCardProps) {
   const [imageError, setImageError] = useState(false);
   const statusDotColor = getStatusDotColor(link.status);
 
-  const handlePress = useCallback(() => {
-    Linking.openURL(link.url);
+  const handlePress = useCallback(async () => {
+    try {
+      // URLが開けるか事前チェック
+      const canOpen = await Linking.canOpenURL(link.url);
+      if (!canOpen) {
+        Alert.alert(
+          "Unable to Open Link",
+          "This URL cannot be opened on your device.",
+        );
+        return;
+      }
+
+      // URLを開く
+      await Linking.openURL(link.url);
+    } catch (error) {
+      // エラーが発生した場合の処理
+      Alert.alert("Error", "Failed to open the link. Please try again.");
+      throw error;
+    }
   }, [link.url]);
 
   const handleImageError = useCallback(() => {

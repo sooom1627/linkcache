@@ -72,8 +72,8 @@ export function useLinks(pageSize: number = DEFAULT_PAGE_SIZE): UseLinksReturn {
   // 全ページのデータをフラット化
   const rawLinks = query.data?.pages.flatMap((page) => page.data) ?? [];
 
-  // タイムスタンプフィールドを変換
-  const links = dataHelpers.transformTimestamps<UserLink>(rawLinks, [
+  // タイムスタンプフィールドを検証
+  const links = dataHelpers.validateTimestamps<UserLink>(rawLinks, [
     "triaged_at",
     "read_at",
     "saved_at",

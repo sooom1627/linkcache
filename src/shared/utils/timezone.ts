@@ -419,14 +419,18 @@ export function toUTC(localDate: Date): string {
  */
 export const dataHelpers = {
   /**
-   * データ配列のタイムスタンプフィールドを変換
+   * データ配列のタイムスタンプフィールドを検証
    *
-   * 各データオブジェクトの指定されたタイムスタンプフィールドを変換します。
+   * 各データオブジェクトの指定されたタイムスタンプフィールドが有効な日付形式かどうかを検証します。
    * 元のデータは変更せず、新しいオブジェクトを返します。
    *
-   * @param data - 変換対象のデータ配列
-   * @param timestampFields - 変換するタイムスタンプフィールド名の配列
-   * @returns 変換されたデータ配列
+   * @note
+   * 現在は検証のみを行い、実際の変換は行っていません（元の文字列をそのまま保持）。
+   * 将来的にUTC文字列をローカルDateオブジェクトに変換する機能を追加予定です。
+   *
+   * @param data - 検証対象のデータ配列
+   * @param timestampFields - 検証するタイムスタンプフィールド名の配列
+   * @returns 検証済みのデータ配列（現時点では元のデータと同じ）
    *
    * @example
    * ```typescript
@@ -435,13 +439,13 @@ export const dataHelpers = {
    *   { id: "2", triaged_at: null, read_at: "2025-01-02T12:00:00Z" },
    * ];
    *
-   * const transformed = dataHelpers.transformTimestamps(links, [
+   * const validated = dataHelpers.validateTimestamps(links, [
    *   "triaged_at",
    *   "read_at",
    * ]);
    * ```
    */
-  transformTimestamps: <T>(data: T[], timestampFields: (keyof T)[]): T[] => {
+  validateTimestamps: <T>(data: T[], timestampFields: (keyof T)[]): T[] => {
     return data.map((item) => {
       const transformed = { ...item };
 
@@ -457,8 +461,8 @@ export const dataHelpers = {
         if (typeof value === "string") {
           const date = toValidDate(value);
           if (date) {
-            // 有効な日付の場合はそのまま保持（必要に応じて変換可能）
-            // 現時点では元の文字列を保持
+            // 有効な日付の場合はそのまま保持
+            // 将来的に変換機能を追加する場合は、ここでDateオブジェクトに変換する
             transformed[field] = value as T[keyof T];
           }
         }
