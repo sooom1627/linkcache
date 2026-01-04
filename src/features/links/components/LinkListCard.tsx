@@ -4,9 +4,9 @@ import { Linking, Pressable, Text, TouchableOpacity, View } from "react-native";
 
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
-import { useTranslation } from "react-i18next";
 
 import { ExternalLink, Globe } from "lucide-react-native";
+import { useTranslation } from "react-i18next";
 
 import { extractDomain } from "../hooks/useLinkPaste";
 import type { TriageStatus, UserLink } from "../types/linkList.types";
