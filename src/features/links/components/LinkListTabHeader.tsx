@@ -1,5 +1,7 @@
 import { Pressable, Text, View } from "react-native";
 
+import { useTranslation } from "react-i18next";
+
 type TabType = "keep" | "latest";
 
 interface LinkListTabHeaderProps {
@@ -14,6 +16,8 @@ export function LinkListTabHeader({
   activeTab,
   onTabChange,
 }: LinkListTabHeaderProps) {
+  const { t } = useTranslation();
+
   return (
     <View className="flex-row gap-8 border-b border-slate-100 pb-0.5">
       <Pressable
@@ -27,7 +31,7 @@ export function LinkListTabHeader({
             activeTab === "keep" ? "text-slate-900" : "text-slate-400"
           }`}
         >
-          Keep
+          {t("links.dashboard.tabs.keep")}
         </Text>
       </Pressable>
 
@@ -42,7 +46,7 @@ export function LinkListTabHeader({
             activeTab === "latest" ? "text-slate-900" : "text-slate-400"
           }`}
         >
-          Latest
+          {t("links.dashboard.tabs.latest")}
         </Text>
       </Pressable>
     </View>

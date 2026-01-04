@@ -144,6 +144,10 @@
         "read": "Read"
       }
     },
+    "list": {
+      "empty_title": "No links yet",
+      "empty_description": "Start saving links to see them here"
+    },
     "header": {
       "title": "Link List",
       "subtitle": "You have {{count}} saved links"
@@ -160,7 +164,18 @@
       "all_caught_up": "All caught up",
       "no_pending_links": "No pending links",
       "read_week": "Read (Week)",
-      "all_links": "All Links"
+      "all_links": "All Links",
+      "tabs": {
+        "keep": "Keep",
+        "latest": "Latest"
+      },
+      "view_all": "View All",
+      "error_load_failed": "Failed to load links",
+      "empty_keep": {
+        "title": "You've read everything! 🎉",
+        "description": "Let's Triage new links!",
+        "go_to_triage": "Start Triage"
+      }
     }
   }
 }

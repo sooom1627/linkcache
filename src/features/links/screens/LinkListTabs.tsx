@@ -118,6 +118,7 @@ export function LinkListTabs() {
             isError={keepQuery.isError}
             error={keepQuery.error}
             links={keepQuery.links}
+            tabType="keep"
           />
         </View>
 
@@ -128,6 +129,7 @@ export function LinkListTabs() {
             isError={latestQuery.isError}
             error={latestQuery.error}
             links={latestQuery.links}
+            tabType="latest"
           />
         </View>
       </PagerView>

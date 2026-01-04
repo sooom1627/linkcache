@@ -17,6 +17,22 @@ jest.mock("../../api/fetchLinks.api", () => ({
   fetchUserLinks: jest.fn(),
 }));
 
+// i18nをモック
+jest.mock("react-i18next", () => ({
+  useTranslation: () => ({
+    t: (key: string) => {
+      // 翻訳キーを実際の値に変換
+      const translations: Record<string, string> = {
+        "links.dashboard.tabs.keep": "Keep",
+        "links.dashboard.tabs.latest": "Latest",
+        "links.dashboard.view_all": "View All",
+        "links.dashboard.error_load_failed": "Failed to load links",
+      };
+      return translations[key] || key;
+    },
+  }),
+}));
+
 // PagerViewをモック
 jest.mock("react-native-pager-view", () => {
   const React = require("react");

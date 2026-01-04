@@ -15,18 +15,15 @@ export function LinkListEmpty() {
   const { openModal } = useModal();
 
   return (
-    <View className="mt-20 items-center px-8">
+    <View className="mt-12 items-center px-8">
       <View className="mb-6 rounded-full bg-slate-50 p-6">
         <Inbox size={48} color="#94a3b8" strokeWidth={1} />
       </View>
       <Text className="mb-2 text-center text-lg font-semibold text-slate-800">
-        {t("links.list.empty_title", "No links yet")}
+        {t("links.list.empty_title")}
       </Text>
       <Text className="mb-8 text-center text-sm leading-5 text-slate-500">
-        {t(
-          "links.list.empty_description",
-          "Start saving links to see them here",
-        )}
+        {t("links.list.empty_description")}
       </Text>
 
       <TouchableOpacity
