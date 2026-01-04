@@ -201,7 +201,14 @@
       "no_description": "No description available",
       "loading": "Loading...",
       "error": "An error occurred",
-      "not_read_yet": "Not read yet"
+      "not_read_yet": "Not read yet",
+      "delete_confirm": {
+        "title": "Delete Link",
+        "message": "Are you sure you want to delete this link?",
+        "description": "This action cannot be undone.",
+        "cancel": "Cancel",
+        "confirm": "Delete"
+      }
     }
   },
   "common": {

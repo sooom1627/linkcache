@@ -2,6 +2,7 @@ import { useCallback } from "react";
 
 import {
   ActivityIndicator,
+  Alert,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -11,7 +12,13 @@ import {
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 
-import { Calendar, Clock, ExternalLink, Globe } from "lucide-react-native";
+import {
+  Calendar,
+  Clock,
+  ExternalLink,
+  Globe,
+  Trash2,
+} from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 
 import { useBottomSheetModal } from "@/src/shared/hooks/useBottomSheetModal";
@@ -69,7 +76,11 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
   const router = useRouter();
   const { openLink } = useOpenLink();
   const { data: link, isLoading, error } = useLinkDetail(linkId);
-  const { ref, present, dismiss } = useBottomSheetModal();
+  const {
+    ref: statusModalRef,
+    present: presentStatusModal,
+    dismiss: dismissStatusModal,
+  } = useBottomSheetModal();
 
   const handleBack = useCallback(() => {
     router.back();
@@ -82,8 +93,33 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
   }, [link, openLink]);
 
   const handleChangeStatus = useCallback(() => {
-    present();
-  }, [present]);
+    presentStatusModal();
+  }, [presentStatusModal]);
+
+  const handleDelete = useCallback(() => {
+    if (!link) return;
+
+    Alert.alert(
+      t("links.detail.delete_confirm.title"),
+      t("links.detail.delete_confirm.message"),
+      [
+        {
+          text: t("links.detail.delete_confirm.cancel"),
+          style: "cancel",
+        },
+        {
+          text: t("links.detail.delete_confirm.confirm"),
+          style: "destructive",
+          onPress: () => {
+            // TODO: 削除処理を実装
+            // 現時点ではUIのみの実装
+            router.back();
+          },
+        },
+      ],
+      { cancelable: true },
+    );
+  }, [link, t, router]);
 
   // ローディング状態
   if (isLoading) {
@@ -250,13 +286,29 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
                   {t("links.detail.change_status")}
                 </Text>
               </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={handleDelete}
+                className="flex-row items-center justify-center gap-2 rounded-xl border-2 border-red-300 bg-white px-6 py-4 active:bg-red-50"
+                accessibilityRole="button"
+                accessibilityLabel={t("links.detail.delete_link")}
+              >
+                <Trash2 size={20} color="#ef4444" strokeWidth={2.5} />
+                <Text className="text-base font-semibold text-red-600">
+                  {t("links.detail.delete_link")}
+                </Text>
+              </TouchableOpacity>
             </View>
           </View>
         </ScrollView>
       </View>
 
       {/* ステータス変更モーダル */}
-      <LinkReadStatusModal ref={ref} link={link} onClose={dismiss} />
+      <LinkReadStatusModal
+        ref={statusModalRef}
+        link={link}
+        onClose={dismissStatusModal}
+      />
     </>
   );
 }
