@@ -1,6 +1,6 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 
-import { Linking, Pressable, Text, TouchableOpacity, View } from "react-native";
+import { Pressable, Text, TouchableOpacity, View } from "react-native";
 
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
@@ -9,6 +9,7 @@ import { ExternalLink, Globe } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 
 import { extractDomain } from "../hooks/useLinkPaste";
+import { useOpenLink } from "../hooks/useOpenLink";
 import type { TriageStatus, UserLink } from "../types/linkList.types";
 
 interface LinkListCardProps {
@@ -58,16 +59,17 @@ function ThumbnailFallback() {
  */
 export function LinkListCard({ link }: LinkListCardProps) {
   const { t } = useTranslation();
+  const { openLink } = useOpenLink();
   const [imageError, setImageError] = useState(false);
   const statusDotColor = getStatusDotColor(link.status);
 
-  const handleOpenLink = useCallback(() => {
-    Linking.openURL(link.url);
-  }, [link.url]);
+  const handleOpenLink = () => {
+    openLink(link.url);
+  };
 
-  const handleImageError = useCallback(() => {
+  const handleImageError = () => {
     setImageError(true);
-  }, []);
+  };
 
   const showFallback = !link.image_url || imageError;
 
