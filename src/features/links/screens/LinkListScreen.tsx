@@ -84,23 +84,25 @@ export function LinkListScreen() {
   }
 
   return (
-    <FlashList
-      data={links}
-      renderItem={renderItem}
-      keyExtractor={keyExtractor}
-      contentContainerClassName="pt-4 pb-28"
-      showsVerticalScrollIndicator={false}
-      onEndReached={handleEndReached}
-      onEndReachedThreshold={0.5}
-      ListFooterComponent={renderFooter}
-      ListEmptyComponent={renderEmpty}
-      refreshControl={
-        <RefreshControl
-          refreshing={isRefreshing}
-          onRefresh={refetch}
-          tintColor="#6B7280"
-        />
-      }
-    />
+    <View className="flex-1">
+      <FlashList
+        data={links}
+        renderItem={renderItem}
+        keyExtractor={keyExtractor}
+        contentContainerClassName="pt-4 pb-28"
+        showsVerticalScrollIndicator={false}
+        onEndReached={handleEndReached}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={renderFooter}
+        ListEmptyComponent={renderEmpty}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={refetch}
+            tintColor="#6B7280"
+          />
+        }
+      />
+    </View>
   );
 }
