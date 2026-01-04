@@ -10,6 +10,7 @@ interface UseClipboardCheckReturn {
   clipboardUrl: string | null;
   checkClipboard: () => Promise<void>;
   isLoading: boolean;
+  error: Error | null;
 }
 
 /**
@@ -22,12 +23,14 @@ export function useClipboardCheck(): UseClipboardCheckReturn {
   const [hasValidUrl, setHasValidUrl] = useState(false);
   const [clipboardUrl, setClipboardUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
   /**
    * クリップボードの内容をチェック
    */
   const checkClipboard = useCallback(async () => {
     setIsLoading(true);
+    setError(null);
     try {
       const clipboardContent = await Clipboard.getStringAsync();
 
@@ -35,7 +38,6 @@ export function useClipboardCheck(): UseClipboardCheckReturn {
       if (!clipboardContent || clipboardContent.trim() === "") {
         setHasValidUrl(false);
         setClipboardUrl(null);
-        setIsLoading(false);
         return;
       }
 
@@ -45,17 +47,25 @@ export function useClipboardCheck(): UseClipboardCheckReturn {
         if (isValidUrl(normalizedUrl)) {
           setHasValidUrl(true);
           setClipboardUrl(normalizedUrl);
+          setError(null); // 有効なURLが見つかった時、エラーをクリア
         } else {
           setHasValidUrl(false);
           setClipboardUrl(null);
+          setError(new Error("Invalid URL format"));
         }
-      } catch {
+      } catch (err) {
         setHasValidUrl(false);
         setClipboardUrl(null);
+        setError(
+          err instanceof Error ? err : new Error("URL validation failed"),
+        );
       }
-    } catch {
+    } catch (err) {
       setHasValidUrl(false);
       setClipboardUrl(null);
+      setError(
+        err instanceof Error ? err : new Error("Failed to access clipboard"),
+      );
     } finally {
       setIsLoading(false);
     }
@@ -71,5 +81,6 @@ export function useClipboardCheck(): UseClipboardCheckReturn {
     clipboardUrl,
     checkClipboard,
     isLoading,
+    error,
   };
 }

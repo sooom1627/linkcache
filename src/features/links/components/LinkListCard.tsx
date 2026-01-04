@@ -116,7 +116,7 @@ export function LinkListCard({ link }: LinkListCardProps) {
           {link.favicon_url ? (
             <Image
               source={link.favicon_url as string}
-              className="mr-1.5 size-3.5 rounded-full bg-slate-200"
+              className="mr-1.5 rounded-full bg-slate-200"
               contentFit="contain"
               style={{ width: 10, height: 10 }}
             />
