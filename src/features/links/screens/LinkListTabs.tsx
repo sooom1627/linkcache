@@ -8,7 +8,7 @@ import { LinkListTabContent } from "../components/LinkListTabContent";
 import { LinkListTabHeader } from "../components/LinkListTabHeader";
 import { useLinks } from "../hooks/useLinks";
 
-type TabType = "keep" | "latest";
+type TabType = "read_soon" | "latest";
 
 /** ダッシュボード用の表示件数制限 */
 const DASHBOARD_LIMIT = 5;
@@ -24,7 +24,7 @@ const LOADING_ERROR_HEIGHT = 100;
 
 /** タブのインデックス */
 const TAB_INDEX = {
-  keep: 0,
+  read_soon: 0,
   latest: 1,
 } as const;
 
@@ -32,7 +32,7 @@ const TAB_INDEX = {
  * リンクリストタブコンポーネント
  *
  * スワイプとタブ切り替えでフィルタリングされたリンクリストを表示します。
- * - "Keep" タブ: statusが"keep"のリンクを最大5件表示（APIでフィルタ）
+ * - "Read Soon" タブ: statusが"read_soon"のリンクを最大5件表示（APIでフィルタ）
  * - "Latest" タブ: 全てのリンクを最大5件表示（APIでフィルタ）
  */
 /**
@@ -54,11 +54,14 @@ function calculateTabHeight(
 }
 
 export function LinkListTabs() {
-  const [activeTab, setActiveTab] = useState<TabType>("keep");
+  const [activeTab, setActiveTab] = useState<TabType>("read_soon");
   const pagerRef = useRef<PagerView>(null);
 
-  // Keep タブ: status="keep", limit=5
-  const keepQuery = useLinks({ status: "keep", limit: DASHBOARD_LIMIT });
+  // Read Soon タブ: status="read_soon", limit=5
+  const readSoonQuery = useLinks({
+    status: "read_soon",
+    limit: DASHBOARD_LIMIT,
+  });
   // Latest タブ: limit=5（全ステータス）
   const latestQuery = useLinks({ limit: DASHBOARD_LIMIT });
 
@@ -72,21 +75,25 @@ export function LinkListTabs() {
   const handlePageSelected = useCallback(
     (e: { nativeEvent: { position: number } }) => {
       const position = e.nativeEvent.position;
-      const newTab = position === 0 ? "keep" : "latest";
+      const newTab = position === 0 ? "read_soon" : "latest";
       setActiveTab(newTab);
     },
     [],
   );
 
   // 各タブの高さを計算
-  const keepTabHeight = useMemo(
+  const readSoonTabHeight = useMemo(
     () =>
       calculateTabHeight(
-        keepQuery.isLoading,
-        keepQuery.isError,
-        keepQuery.links.length,
+        readSoonQuery.isLoading,
+        readSoonQuery.isError,
+        readSoonQuery.links.length,
       ),
-    [keepQuery.isLoading, keepQuery.isError, keepQuery.links.length],
+    [
+      readSoonQuery.isLoading,
+      readSoonQuery.isError,
+      readSoonQuery.links.length,
+    ],
   );
 
   const latestTabHeight = useMemo(
@@ -100,7 +107,7 @@ export function LinkListTabs() {
   );
 
   // PagerViewの高さは両タブの最大値を使用
-  const pagerHeight = Math.max(keepTabHeight, latestTabHeight);
+  const pagerHeight = Math.max(readSoonTabHeight, latestTabHeight);
 
   return (
     <View>
@@ -111,14 +118,14 @@ export function LinkListTabs() {
         initialPage={TAB_INDEX[activeTab]}
         onPageSelected={handlePageSelected}
       >
-        {/* Keep タブ */}
-        <View key="keep">
+        {/* Read Soon タブ */}
+        <View key="read_soon">
           <LinkListTabContent
-            isLoading={keepQuery.isLoading}
-            isError={keepQuery.isError}
-            error={keepQuery.error}
-            links={keepQuery.links}
-            tabType="keep"
+            isLoading={readSoonQuery.isLoading}
+            isError={readSoonQuery.isError}
+            error={readSoonQuery.error}
+            links={readSoonQuery.links}
+            tabType="read_soon"
           />
         </View>
 

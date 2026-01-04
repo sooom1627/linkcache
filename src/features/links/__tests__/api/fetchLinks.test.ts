@@ -97,12 +97,12 @@ describe("fetchUserLinks", () => {
 
       mockRpc.mockResolvedValueOnce(mockResponse);
 
-      const result = await fetchUserLinks({ status: "keep" });
+      const result = await fetchUserLinks({ status: "read_soon" });
 
       expect(mockRpc).toHaveBeenCalledWith("get_user_links", {
         p_page_size: 20,
         p_page: 0,
-        p_status: "keep",
+        p_status: "read_soon",
         p_is_read: null,
         p_limit: null,
       });
@@ -170,7 +170,7 @@ describe("fetchUserLinks", () => {
       mockRpc.mockResolvedValueOnce(mockResponse);
 
       const result = await fetchUserLinks({
-        status: "keep",
+        status: "read_soon",
         isRead: true,
         limit: 5,
       });
@@ -178,7 +178,7 @@ describe("fetchUserLinks", () => {
       expect(mockRpc).toHaveBeenCalledWith("get_user_links", {
         p_page_size: 20,
         p_page: 0,
-        p_status: "keep",
+        p_status: "read_soon",
         p_is_read: true,
         p_limit: 5,
       });

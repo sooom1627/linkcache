@@ -12,7 +12,7 @@ import type { useLinks } from "../hooks/useLinks";
 import { LinkListCard } from "./LinkListCard";
 import { LinkListEmpty } from "./LinkListEmpty";
 
-type TabType = "keep" | "latest";
+type TabType = "read_soon" | "latest";
 
 interface LinkListTabContentProps {
   isLoading: boolean;
@@ -54,18 +54,18 @@ export const LinkListTabContent = memo(function LinkListTabContent({
   }
 
   if (links.length === 0) {
-    // Keepタブの場合はTriageへ誘導するボタンを表示
-    if (tabType === "keep") {
+    // Read Soonタブの場合はTriageへ誘導するボタンを表示
+    if (tabType === "read_soon") {
       return (
         <View className="mt-12 items-center px-8">
           <View className="mb-6 rounded-full bg-slate-50 p-6">
             <Layers2 size={48} color="#3b82f6" strokeWidth={1} />
           </View>
           <Text className="mb-2 text-center text-lg font-semibold text-slate-900">
-            {t("links.dashboard.empty_keep.title")}
+            {t("links.dashboard.empty_read_soon.title")}
           </Text>
           <Text className="mb-8 text-center text-sm leading-5 text-slate-600">
-            {t("links.dashboard.empty_keep.description")}
+            {t("links.dashboard.empty_read_soon.description")}
           </Text>
 
           <Pressable
@@ -73,7 +73,7 @@ export const LinkListTabContent = memo(function LinkListTabContent({
             className="flex-row items-center gap-2 rounded-full bg-slate-900 px-6 py-3 shadow-sm active:bg-slate-700"
           >
             <Text className="font-semibold text-white">
-              {t("links.dashboard.empty_keep.go_to_triage")}
+              {t("links.dashboard.empty_read_soon.go_to_triage")}
             </Text>
             <ArrowRight size={20} color="white" strokeWidth={1.5} />
           </Pressable>

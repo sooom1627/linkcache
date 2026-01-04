@@ -2,7 +2,7 @@ import { Pressable, Text, View } from "react-native";
 
 import { useTranslation } from "react-i18next";
 
-type TabType = "keep" | "latest";
+type TabType = "read_soon" | "latest";
 
 interface LinkListTabHeaderProps {
   activeTab: TabType;
@@ -21,20 +21,20 @@ export function LinkListTabHeader({
   return (
     <View className="flex-row gap-8 border-b border-slate-100 pb-0.5">
       <Pressable
-        onPress={() => onTabChange("keep")}
+        onPress={() => onTabChange("read_soon")}
         accessibilityRole="tab"
-        accessibilityState={{ selected: activeTab === "keep" }}
-        accessibilityLabel={t("links.dashboard.tabs.keep")}
+        accessibilityState={{ selected: activeTab === "read_soon" }}
+        accessibilityLabel={t("links.dashboard.tabs.read_soon")}
         className={`border-b-2 pb-2 ${
-          activeTab === "keep" ? "border-slate-900" : "border-transparent"
+          activeTab === "read_soon" ? "border-slate-900" : "border-transparent"
         }`}
       >
         <Text
           className={`text-base font-bold ${
-            activeTab === "keep" ? "text-slate-900" : "text-slate-400"
+            activeTab === "read_soon" ? "text-slate-900" : "text-slate-400"
           }`}
         >
-          {t("links.dashboard.tabs.keep")}
+          {t("links.dashboard.tabs.read_soon")}
         </Text>
       </Pressable>
 

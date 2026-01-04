@@ -11,7 +11,7 @@ import type { LinkFilterParams } from "../types/linkList.types";
  * useInfiniteQuery({ queryKey: linkQueryKeys.list(), ... });
  *
  * // フィルタ付きリンク一覧取得
- * useInfiniteQuery({ queryKey: linkQueryKeys.list({ status: "keep" }), ... });
+ * useInfiniteQuery({ queryKey: linkQueryKeys.list({ status: "read_soon" }), ... });
  *
  * // リンクキャッシュのクリア
  * queryClient.invalidateQueries({ queryKey: linkQueryKeys.all });

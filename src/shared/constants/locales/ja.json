@@ -137,9 +137,8 @@
       "options": {
         "all": "すべて",
         "inbox": "インボックス",
-        "keep": "キープ",
-        "archived": "アーカイブ",
-        "dismissed": "見送り",
+        "read_soon": "すぐ読む",
+        "later": "後で",
         "unread": "未読",
         "read": "既読"
       }
@@ -166,12 +165,12 @@
       "read_week": "週間読了",
       "all_links": "全リンク",
       "tabs": {
-        "keep": "Keep",
-        "latest": "Latest"
+        "read_soon": "Read Soon",
+        "latest": "Latest Added"
       },
       "view_all": "すべて表示",
       "error_load_failed": "リンクの読み込みに失敗しました",
-      "empty_keep": {
+      "empty_read_soon": {
         "title": "全て読んでいます！🎉",
         "description": "新しくTriageしましょう！",
         "go_to_triage": "整理を開始"

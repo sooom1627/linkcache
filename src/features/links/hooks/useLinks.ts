@@ -58,7 +58,7 @@ export interface UseLinksReturn {
  * const { links, isLoading, fetchNextPage, hasNextPage } = useLinks();
  *
  * // フィルタリング（5件のみ取得）
- * const { links } = useLinks({ status: "keep", limit: 5 });
+ * const { links } = useLinks({ status: "read_soon", limit: 5 });
  * ```
  */
 export function useLinks(options: UseLinksOptions = {}): UseLinksReturn {

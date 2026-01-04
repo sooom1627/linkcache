@@ -25,7 +25,7 @@ export interface CreateLinkParams {
 const createLinkResponseSchema = z.object({
   link_id: z.string().uuid(),
   url: z.string().url(),
-  status: z.enum(["inbox", "keep", "archived", "dismissed"]),
+  status: z.enum(["inbox", "read_soon", "later"]),
 });
 
 /**

@@ -23,7 +23,7 @@ jest.mock("react-i18next", () => ({
     t: (key: string) => {
       // 翻訳キーを実際の値に変換
       const translations: Record<string, string> = {
-        "links.dashboard.tabs.keep": "Keep",
+        "links.dashboard.tabs.read_soon": "Read Soon",
         "links.dashboard.tabs.latest": "Latest",
         "links.dashboard.view_all": "View All",
         "links.dashboard.error_load_failed": "Failed to load links",
@@ -74,7 +74,7 @@ const mockFetchUserLinks = jest.mocked(fetchUserLinks);
 // モックデータヘルパー
 const createMockLink = (
   id: number,
-  status: "inbox" | "keep" | "archived" | "dismissed" = "keep",
+  status: "inbox" | "read_soon" | "later" = "read_soon",
 ) => ({
   status_id: `status-${id}`,
   user_id: "user-1",
@@ -99,14 +99,14 @@ describe("LinkListTabs", () => {
   });
 
   describe("APIレイヤーでのフィルタリング", () => {
-    it("Keepタブはstatus=keep, limit=5でAPIを呼び出す", async () => {
-      const mockKeepData = {
-        data: [createMockLink(1, "keep"), createMockLink(2, "keep")],
+    it("Read Soonタブはstatus=read_soon, limit=5でAPIを呼び出す", async () => {
+      const mockReadSoonData = {
+        data: [createMockLink(1, "read_soon"), createMockLink(2, "read_soon")],
         hasMore: false,
         totalCount: 2,
       };
-      // Keep用のレスポンス
-      mockFetchUserLinks.mockResolvedValueOnce(mockKeepData);
+      // Read Soon用のレスポンス
+      mockFetchUserLinks.mockResolvedValueOnce(mockReadSoonData);
 
       render(<LinkListTabs />, { wrapper });
 
@@ -114,31 +114,31 @@ describe("LinkListTabs", () => {
         expect(screen.getByText("Example 1")).toBeTruthy();
       });
 
-      // status: "keep", limit: 5 でAPIが呼ばれることを確認
+      // status: "read_soon", limit: 5 でAPIが呼ばれることを確認
       expect(mockFetchUserLinks).toHaveBeenCalledWith(
-        expect.objectContaining({ status: "keep", limit: 5 }),
+        expect.objectContaining({ status: "read_soon", limit: 5 }),
       );
     });
 
     it("Latestタブはlimit=5でAPIを呼び出す（statusフィルタなし）", async () => {
-      // Keep用のレスポンス（最初のタブ）
-      const mockKeepData = {
-        data: [createMockLink(1, "keep")],
+      // Read Soon用のレスポンス（最初のタブ）
+      const mockReadSoonData = {
+        data: [createMockLink(1, "read_soon")],
         hasMore: false,
         totalCount: 1,
       };
       // Latest用のレスポンス
       const mockLatestData = {
         data: [
-          createMockLink(1, "keep"),
+          createMockLink(1, "read_soon"),
           createMockLink(2, "inbox"),
-          createMockLink(3, "archived"),
+          createMockLink(3, "later"),
         ],
         hasMore: false,
         totalCount: 3,
       };
       mockFetchUserLinks
-        .mockResolvedValueOnce(mockKeepData)
+        .mockResolvedValueOnce(mockReadSoonData)
         .mockResolvedValueOnce(mockLatestData);
 
       render(<LinkListTabs />, { wrapper });
@@ -162,19 +162,19 @@ describe("LinkListTabs", () => {
       expect(latestCall).toBeTruthy();
     });
 
-    it("Keep/Latestともに最大5件まで表示される", async () => {
-      const mockKeepData = {
+    it("Read Soon/Latestともに最大5件まで表示される", async () => {
+      const mockReadSoonData = {
         data: [
-          createMockLink(1, "keep"),
-          createMockLink(2, "keep"),
-          createMockLink(3, "keep"),
-          createMockLink(4, "keep"),
-          createMockLink(5, "keep"),
+          createMockLink(1, "read_soon"),
+          createMockLink(2, "read_soon"),
+          createMockLink(3, "read_soon"),
+          createMockLink(4, "read_soon"),
+          createMockLink(5, "read_soon"),
         ],
         hasMore: false,
         totalCount: 10, // 実際には10件あるが5件のみ取得
       };
-      mockFetchUserLinks.mockResolvedValueOnce(mockKeepData);
+      mockFetchUserLinks.mockResolvedValueOnce(mockReadSoonData);
 
       render(<LinkListTabs />, { wrapper });
 
@@ -189,21 +189,21 @@ describe("LinkListTabs", () => {
   });
 
   describe("タブ切り替え", () => {
-    it("KeepタブとLatestタブを切り替えできる", async () => {
-      const mockKeepData = {
-        data: [createMockLink(1, "keep")],
+    it("Read SoonタブとLatestタブを切り替えできる", async () => {
+      const mockReadSoonData = {
+        data: [createMockLink(1, "read_soon")],
         hasMore: false,
         totalCount: 1,
       };
       const mockLatestData = {
-        data: [createMockLink(1, "keep"), createMockLink(2, "inbox")],
+        data: [createMockLink(1, "read_soon"), createMockLink(2, "inbox")],
         hasMore: false,
         totalCount: 2,
       };
       mockFetchUserLinks
-        .mockResolvedValueOnce(mockKeepData)
+        .mockResolvedValueOnce(mockReadSoonData)
         .mockResolvedValueOnce(mockLatestData)
-        .mockResolvedValueOnce(mockKeepData); // Keepに戻るとき
+        .mockResolvedValueOnce(mockReadSoonData); // Read Soonに戻るとき
 
       render(<LinkListTabs />, { wrapper });
 
@@ -211,7 +211,7 @@ describe("LinkListTabs", () => {
         expect(screen.getByText("Example 1")).toBeTruthy();
       });
 
-      // 初期状態はKeepタブ
+      // 初期状態はRead Soonタブ
       expect(screen.getByText("Example 1")).toBeTruthy();
 
       // Latestタブに切り替え
@@ -222,9 +222,9 @@ describe("LinkListTabs", () => {
         expect(screen.getByText("Example 2")).toBeTruthy();
       });
 
-      // Keepタブに戻す
-      const keepTab = screen.getByText("Keep");
-      fireEvent.press(keepTab);
+      // Read Soonタブに戻す
+      const readSoonTab = screen.getByText("Read Soon");
+      fireEvent.press(readSoonTab);
 
       await waitFor(() => {
         expect(screen.getByText("Example 1")).toBeTruthy();
@@ -244,7 +244,7 @@ describe("LinkListTabs", () => {
       render(<LinkListTabs />, { wrapper });
 
       await waitFor(() => {
-        expect(screen.getByText("Keep")).toBeTruthy();
+        expect(screen.getByText("Read Soon")).toBeTruthy();
         expect(screen.getByText("Latest")).toBeTruthy();
       });
     });
@@ -259,7 +259,7 @@ describe("LinkListTabs", () => {
 
       await waitFor(() => {
         // エラー状態表示の確認
-        expect(screen.getByText("Keep")).toBeTruthy();
+        expect(screen.getByText("Read Soon")).toBeTruthy();
       });
     });
   });

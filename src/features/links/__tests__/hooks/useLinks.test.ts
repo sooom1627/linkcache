@@ -177,14 +177,17 @@ describe("useLinks", () => {
 
   describe("フィルタリング", () => {
     it("statusを指定してフィルタリングできる", async () => {
-      const keepLink = { ...createMockLink(1), status: "keep" as const };
+      const readSoonLink = {
+        ...createMockLink(1),
+        status: "read_soon" as const,
+      };
       mockFetchUserLinks.mockResolvedValueOnce({
-        data: [keepLink],
+        data: [readSoonLink],
         hasMore: false,
         totalCount: 1,
       });
 
-      const { result } = renderHook(() => useLinks({ status: "keep" }), {
+      const { result } = renderHook(() => useLinks({ status: "read_soon" }), {
         wrapper,
       }) as RenderHookResult<UseLinksReturn, void>;
 
@@ -193,7 +196,7 @@ describe("useLinks", () => {
       });
 
       expect(mockFetchUserLinks).toHaveBeenCalledWith(
-        expect.objectContaining({ status: "keep" }),
+        expect.objectContaining({ status: "read_soon" }),
       );
       expect(result.current.links).toHaveLength(1);
     });
@@ -221,15 +224,18 @@ describe("useLinks", () => {
     });
 
     it("statusとlimitを組み合わせて使用できる", async () => {
-      const keepLink = { ...createMockLink(1), status: "keep" as const };
+      const readSoonLink = {
+        ...createMockLink(1),
+        status: "read_soon" as const,
+      };
       mockFetchUserLinks.mockResolvedValueOnce({
-        data: [keepLink],
+        data: [readSoonLink],
         hasMore: false,
         totalCount: 5,
       });
 
       const { result } = renderHook(
-        () => useLinks({ status: "keep", limit: 5 }),
+        () => useLinks({ status: "read_soon", limit: 5 }),
         { wrapper },
       ) as RenderHookResult<UseLinksReturn, void>;
 
@@ -238,7 +244,7 @@ describe("useLinks", () => {
       });
 
       expect(mockFetchUserLinks).toHaveBeenCalledWith(
-        expect.objectContaining({ status: "keep", limit: 5 }),
+        expect.objectContaining({ status: "read_soon", limit: 5 }),
       );
     });
   });

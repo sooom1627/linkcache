@@ -22,12 +22,10 @@ const getStatusDotColor = (status: TriageStatus | null): string => {
   switch (status) {
     case "inbox":
       return "bg-sky-400";
-    case "keep":
+    case "read_soon":
       return "bg-emerald-400";
-    case "archived":
-      return "bg-slate-300";
-    case "dismissed":
-      return "bg-rose-400";
+    case "later":
+      return "bg-amber-400";
     default:
       return "bg-slate-300";
   }

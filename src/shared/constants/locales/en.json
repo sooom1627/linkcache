@@ -137,9 +137,8 @@
       "options": {
         "all": "All",
         "inbox": "Inbox",
-        "keep": "Keep",
-        "archived": "Archived",
-        "dismissed": "Dismissed",
+        "read_soon": "Read Soon",
+        "later": "Later",
         "unread": "Unread",
         "read": "Read"
       }
@@ -166,12 +165,12 @@
       "read_week": "Read (Week)",
       "all_links": "All Links",
       "tabs": {
-        "keep": "Keep",
-        "latest": "Latest"
+        "read_soon": "Read Soon",
+        "latest": "Latest Added"
       },
       "view_all": "View All",
       "error_load_failed": "Failed to load links",
-      "empty_keep": {
+      "empty_read_soon": {
         "title": "You've read everything! 🎉",
         "description": "Let's Triage new links!",
         "go_to_triage": "Start Triage"
