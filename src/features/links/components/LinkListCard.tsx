@@ -4,6 +4,7 @@ import { Linking, Pressable, Text, TouchableOpacity, View } from "react-native";
 
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
 
 import { ExternalLink, Globe } from "lucide-react-native";
 
@@ -58,6 +59,7 @@ function ThumbnailFallback() {
  * 左にサムネイル、右にコンテンツを配置
  */
 export function LinkListCard({ link }: LinkListCardProps) {
+  const { t } = useTranslation();
   const [imageError, setImageError] = useState(false);
   const statusDotColor = getStatusDotColor(link.status);
 
@@ -114,17 +116,11 @@ export function LinkListCard({ link }: LinkListCardProps) {
           {link.favicon_url ? (
             <Image
               source={link.favicon_url as string}
-              className="mr-1.5 size-3.5 rounded bg-slate-200"
+              className="mr-1.5 size-3.5 rounded-full bg-slate-200"
               contentFit="contain"
-              style={{
-                width: 10,
-                height: 10,
-                borderRadius: 100,
-                backgroundColor: "#f1f5f9",
-              }}
             />
           ) : (
-            <View className="mr-1.5 size-3.5 rounded bg-slate-200">
+            <View className="mr-1.5 size-3.5 rounded-full bg-slate-200">
               <Globe size={14} color="#94a3b8" strokeWidth={1.5} />
             </View>
           )}
@@ -146,14 +142,14 @@ export function LinkListCard({ link }: LinkListCardProps) {
         </View>
       </View>
 
-      {/* メニューアイコン */}
+      {/* リンクを開くボタン */}
       <TouchableOpacity
         className="ml-2"
         onPress={handleOpenLink}
         hitSlop={16}
         accessibilityRole="button"
-        accessibilityLabel="Menu"
-        accessibilityHint="Menu"
+        accessibilityLabel={t("links.card.open_link_label")}
+        accessibilityHint={t("links.card.open_link_hint")}
       >
         <ExternalLink size={16} color="#94a3b8" strokeWidth={2.5} />
       </TouchableOpacity>

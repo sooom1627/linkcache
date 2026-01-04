@@ -147,6 +147,10 @@
     "header": {
       "title": "Link List",
       "subtitle": "You have {{count}} saved links"
+    },
+    "card": {
+      "open_link_label": "Open link",
+      "open_link_hint": "Opens the link in browser"
     }
   }
 }

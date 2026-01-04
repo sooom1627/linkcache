@@ -147,6 +147,10 @@
     "header": {
       "title": "Link List",
       "subtitle": "保存件数：{{count}}件"
+    },
+    "card": {
+      "open_link_label": "リンクを開く",
+      "open_link_hint": "ブラウザでリンクを開きます"
     }
   }
 }
