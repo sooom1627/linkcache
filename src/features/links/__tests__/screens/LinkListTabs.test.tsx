@@ -14,6 +14,42 @@ jest.mock("../../api/fetchLinks.api", () => ({
   fetchUserLinks: jest.fn(),
 }));
 
+// PagerViewをモック
+jest.mock("react-native-pager-view", () => {
+  const React = require("react");
+  const { View } = require("react-native");
+  return {
+    __esModule: true,
+    default: React.forwardRef(
+      (
+        {
+          children,
+          initialPage,
+          onPageSelected,
+        }: {
+          children: React.ReactNode;
+          initialPage: number;
+          onPageSelected?: (e: { nativeEvent: { position: number } }) => void;
+        },
+        ref: React.Ref<{ setPage: (page: number) => void }>,
+      ) => {
+        const [currentPage, setCurrentPage] = React.useState(initialPage);
+        React.useImperativeHandle(ref, () => ({
+          setPage: (page: number) => {
+            setCurrentPage(page);
+            onPageSelected?.({ nativeEvent: { position: page } });
+          },
+        }));
+        return (
+          <View testID="pager-view">
+            {React.Children.toArray(children)[currentPage]}
+          </View>
+        );
+      },
+    ),
+  };
+});
+
 const mockFetchUserLinks = jest.mocked(fetchUserLinks);
 
 // モックデータヘルパー
