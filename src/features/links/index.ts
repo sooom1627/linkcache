@@ -3,6 +3,8 @@ export * from "./types";
 
 // Hooks
 export { useCreateLink } from "./hooks/useCreateLink";
+export { useDeleteLink } from "./hooks/useDeleteLink";
+export type { UseDeleteLinkReturn } from "./hooks/useDeleteLink";
 export { useLinkPaste } from "./hooks/useLinkPaste";
 export { useLinks } from "./hooks/useLinks";
 export type { UseLinksReturn } from "./hooks/useLinks";
@@ -34,6 +36,7 @@ export {
 
 // API
 export { createLinkWithStatus } from "./api/createLink.api";
+export { deleteLinkById } from "./api/deleteLink.api";
 export type {
   CreateLinkParams,
   CreateLinkResponse,
