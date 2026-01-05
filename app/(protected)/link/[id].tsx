@@ -47,7 +47,7 @@ export default function LinkDetail() {
       noPaddingBottom
       centerContent={false}
       topComponent={false}
-      headerTitle="Swipes"
+      headerTitle="Details"
     >
       <LinkDetailScreen linkId={id} />
     </ScreenContainer>
