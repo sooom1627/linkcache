@@ -66,6 +66,13 @@ export function useCreateLink(): UseCreateLinkReturn {
         site_name: metadata?.site_name ?? null,
       });
     },
+    onSuccess: () => {
+      // リンク作成成功時にリンク一覧のキャッシュを無効化
+      // これにより、次回の取得時に最新データが取得される
+      queryClient.invalidateQueries({
+        queryKey: linkQueryKeys.lists(),
+      });
+    },
   });
 
   return {
