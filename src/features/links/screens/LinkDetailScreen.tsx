@@ -89,8 +89,12 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
   const handleOpenLink = useCallback(() => {
     if (link) {
       openLink(link.url);
+      // 500ms後にモーダルを表示
+      setTimeout(() => {
+        presentStatusModal();
+      }, 500);
     }
-  }, [link, openLink]);
+  }, [link, openLink, presentStatusModal]);
 
   const handleChangeStatus = useCallback(() => {
     presentStatusModal();
