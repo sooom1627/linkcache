@@ -49,7 +49,7 @@ describe("getLinkById", () => {
 
     mockFrom.mockReturnValue({
       select: mockSelect,
-    } as any);
+    } as unknown as ReturnType<typeof mockFrom>);
 
     // When: getLinkById(link_id)を呼び出す
     const result = await getLinkById(mockLinkId);
@@ -77,7 +77,7 @@ describe("getLinkById", () => {
 
     mockFrom.mockReturnValue({
       select: mockSelect,
-    } as any);
+    } as unknown as ReturnType<typeof mockFrom>);
 
     // When & Then: getLinkById(link_id)を呼び出すとエラーがthrowされる
     await expect(getLinkById("non-existent-id")).rejects.toThrow(
@@ -100,7 +100,7 @@ describe("getLinkById", () => {
 
     mockFrom.mockReturnValue({
       select: mockSelect,
-    } as any);
+    } as unknown as ReturnType<typeof mockFrom>);
 
     // When & Then: getLinkById(link_id)を呼び出すとエラーがthrowされる
     await expect(getLinkById(mockLinkId)).rejects.toThrow("Link not found");
@@ -126,7 +126,7 @@ describe("getLinkById", () => {
 
     mockFrom.mockReturnValue({
       select: mockSelect,
-    } as any);
+    } as unknown as ReturnType<typeof mockFrom>);
 
     // When & Then: getLinkById(link_id)を呼び出すとバリデーションエラーがthrowされる
     await expect(getLinkById(mockLinkId)).rejects.toThrow();
