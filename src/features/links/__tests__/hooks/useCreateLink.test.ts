@@ -1,9 +1,10 @@
 import { act, renderHook, waitFor } from "@testing-library/react-native";
 
 import { createLinkWithStatus } from "../../api/createLink.api";
+import { linkQueryKeys } from "../../constants/queryKeys";
 import { useCreateLink } from "../../hooks/useCreateLink";
 import { fetchOgpMetadata } from "../../utils/metadata";
-import { clearQueryCache, wrapper } from "../test-utils";
+import { clearQueryCache, testQueryClient, wrapper } from "../test-utils";
 
 // API層のモック
 jest.mock("../../api/createLink.api", () => ({
@@ -187,5 +188,39 @@ describe("useCreateLink", () => {
       favicon_url: null,
       site_name: null,
     });
+  });
+
+  it("invalidates link list cache on successful link creation", async () => {
+    const mockResponse = {
+      link_id: "test-uuid",
+      url: "https://example.com",
+      status: "inbox",
+    };
+
+    (fetchOgpMetadata as jest.Mock).mockResolvedValueOnce(null);
+    (createLinkWithStatus as jest.Mock).mockResolvedValueOnce(mockResponse);
+
+    // invalidateQueriesをスパイ
+    const invalidateQueriesSpy = jest.spyOn(
+      testQueryClient,
+      "invalidateQueries",
+    );
+
+    const { result } = renderHook(() => useCreateLink(), { wrapper });
+
+    act(() => {
+      result.current.createLink("https://example.com");
+    });
+
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true);
+    });
+
+    // リンク一覧のキャッシュが無効化されることを確認
+    expect(invalidateQueriesSpy).toHaveBeenCalledWith({
+      queryKey: linkQueryKeys.lists(),
+    });
+
+    invalidateQueriesSpy.mockRestore();
   });
 });

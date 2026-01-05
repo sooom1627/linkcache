@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 
 import { View } from "react-native";
 
@@ -12,10 +12,10 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 
-import type { TabItem } from "@/src/shared/types/Tabs.types";
+import type { TabItem, TabPath } from "@/src/shared/types/Tabs.types";
 
 const tabs: TabItem[] = [
-  { name: "index", href: "/", icon: House },
+  { name: "home", href: "/", icon: House },
   { name: "swipes", href: "/swipes", icon: Layers2 },
   { name: "link-list", href: "/link-list", icon: List },
   { name: "dashboard", href: "/dashboard", icon: ChartNoAxesCombined },
@@ -34,6 +34,18 @@ const tabBarStyle = {
 export default function TabsLayout() {
   const pathname = usePathname();
   const insets = useSafeAreaInsets();
+  const lastActiveTabRef = useRef<TabPath>("/");
+
+  // タブ内のpathnameのみを取得（/link などの外部ルートを除外）
+  // 外部ルートの場合は最後にアクティブだったタブのpathnameを保持
+  const tabPathname = useMemo((): TabPath => {
+    const tabHrefs = tabs.map((tab) => tab.href);
+    if (tabHrefs.includes(pathname as TabPath)) {
+      lastActiveTabRef.current = pathname as TabPath;
+      return pathname as TabPath;
+    }
+    return lastActiveTabRef.current;
+  }, [pathname]);
 
   const dynamicTabBarStyle = useMemo(
     () => ({ ...tabBarStyle, bottom: insets.bottom }),
@@ -44,7 +56,7 @@ export default function TabsLayout() {
     <SafeAreaView className="flex-1 bg-white" edges={["top", "right", "left"]}>
       <Tabs>
         <Animated.View
-          key={pathname}
+          key={tabPathname}
           entering={FadeIn.duration(300)}
           exiting={FadeOut.duration(200)}
           className="flex-1"

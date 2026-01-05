@@ -1,15 +1,21 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-import { Linking, Pressable, Text, TouchableOpacity, View } from "react-native";
+import { Pressable, Text, TouchableOpacity, View } from "react-native";
 
 import { Image } from "expo-image";
+import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
 import { ExternalLink, Globe } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 
+import { useBottomSheetModal } from "@/src/shared/hooks/useBottomSheetModal";
+
 import { extractDomain } from "../hooks/useLinkPaste";
+import { useOpenLink } from "../hooks/useOpenLink";
 import type { TriageStatus, UserLink } from "../types/linkList.types";
+
+import { LinkReadStatusModal } from "./LinkReadStatusModal";
 
 interface LinkListCardProps {
   link: UserLink;
@@ -58,103 +64,145 @@ function ThumbnailFallback() {
  */
 export function LinkListCard({ link }: LinkListCardProps) {
   const { t } = useTranslation();
+  const router = useRouter();
+  const { openLink } = useOpenLink();
+  const { ref, present, dismiss } = useBottomSheetModal();
   const [imageError, setImageError] = useState(false);
   const statusDotColor = getStatusDotColor(link.status);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handlePress = useCallback(() => {
+    router.push(`/link/${link.link_id}`);
+  }, [router, link.link_id]);
 
   const handleOpenLink = useCallback(() => {
-    Linking.openURL(link.url);
-  }, [link.url]);
+    openLink(link.url);
+    // 既存のタイマーをクリア
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    // 500ms後にモーダルを表示
+    timeoutRef.current = setTimeout(() => {
+      present();
+      timeoutRef.current = null;
+    }, 500);
+  }, [openLink, present, link.url]);
 
-  const handleImageError = useCallback(() => {
-    setImageError(true);
+  // コンポーネントのアンマウント時にタイマーをクリア
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    };
   }, []);
+
+  const handleLongPress = useCallback(() => {
+    present();
+  }, [present]);
+
+  const handleImageError = () => {
+    setImageError(true);
+  };
 
   const showFallback = !link.image_url || imageError;
 
   return (
-    <Pressable
-      onPress={() => {}}
-      className="flex-row items-center gap-3 rounded-2xl bg-white/80 p-2 active:bg-slate-50"
-    >
-      {/* サムネイル */}
-      {showFallback ? (
-        <ThumbnailFallback />
-      ) : (
-        <View
-          style={{ width: OG_IMAGE_WIDTH, height: OG_IMAGE_HEIGHT }}
-          className="rounded-lg"
-        >
-          <Image
-            source={link.image_url as string}
-            style={{
-              width: OG_IMAGE_WIDTH,
-              height: OG_IMAGE_HEIGHT,
-              borderRadius: 8,
-            }}
-            contentFit="cover"
-            transition={150}
-            onError={handleImageError}
-          />
-        </View>
-      )}
-
-      {/* コンテンツ */}
-      <View className="flex-1 justify-center py-1">
-        {/* タイトル */}
-        <Text
-          className="text-base font-medium leading-5 tracking-tight text-slate-800"
-          numberOfLines={2}
-        >
-          {link.title || link.url}
-        </Text>
-
-        {/* メタ情報 */}
-        <View className="mt-2 w-full flex-row items-center justify-between gap-2">
-          {/* Favicon */}
-          {link.favicon_url ? (
-            <Image
-              source={link.favicon_url as string}
-              className="mr-1.5 rounded-full bg-slate-200"
-              contentFit="contain"
-              style={{ width: 10, height: 10 }}
-            />
-          ) : (
-            <View
-              className="rounded-full bg-slate-200"
-              style={{ width: 10, height: 10 }}
-            >
-              <Globe size={10} color="#94a3b8" strokeWidth={1.5} />
-            </View>
-          )}
-
-          {/* サイト名 */}
-          <Text
-            className="flex-1 text-xs font-normal tracking-wide text-slate-400"
-            numberOfLines={1}
+    <>
+      <Pressable
+        onPress={handlePress}
+        onLongPress={handleLongPress}
+        className="flex-row items-center gap-3 rounded-2xl bg-white/80 p-2 active:bg-slate-50"
+      >
+        {/* サムネイル */}
+        {showFallback ? (
+          <ThumbnailFallback />
+        ) : (
+          <View
+            style={{ width: OG_IMAGE_WIDTH, height: OG_IMAGE_HEIGHT }}
+            className="rounded-lg"
           >
-            {link.site_name || extractDomain(link.url)}
+            <Image
+              source={link.image_url as string}
+              style={{
+                width: OG_IMAGE_WIDTH,
+                height: OG_IMAGE_HEIGHT,
+                borderRadius: 8,
+              }}
+              contentFit="cover"
+              transition={150}
+              onError={handleImageError}
+            />
+          </View>
+        )}
+
+        {/* コンテンツ */}
+        <View className="flex-1 justify-center py-1">
+          {/* タイトル */}
+          <Text
+            className="text-base font-medium leading-5 tracking-tight text-slate-800"
+            numberOfLines={2}
+          >
+            {link.title || link.url}
           </Text>
-          {/* ステータスドット */}
-          <View className="flex-row items-center gap-1">
-            <View className={`size-1.5 rounded-full ${statusDotColor}`} />
-            <Text className="text-xs font-normal tracking-wide text-slate-400">
-              {link.status}
+
+          {/* メタ情報 */}
+          <View className="mt-2 w-full flex-row items-center justify-between gap-2">
+            {/* Favicon */}
+            {link.favicon_url ? (
+              <Image
+                source={link.favicon_url as string}
+                className="mr-1.5 rounded-full bg-slate-200"
+                contentFit="contain"
+                style={{ width: 10, height: 10 }}
+              />
+            ) : (
+              <View
+                className="rounded-full bg-slate-200"
+                style={{ width: 10, height: 10 }}
+              >
+                <Globe size={10} color="#94a3b8" strokeWidth={1.5} />
+              </View>
+            )}
+
+            {/* サイト名 */}
+            <Text
+              className="flex-1 text-xs font-normal tracking-wide text-slate-400"
+              numberOfLines={1}
+            >
+              {link.site_name || extractDomain(link.url)}
             </Text>
+            {/* ステータスドット */}
+            <View className="flex-row items-center gap-1">
+              <View className={`size-1.5 rounded-full ${statusDotColor}`} />
+              <Text className="text-xs font-normal tracking-wide text-slate-400">
+                {link.status
+                  ? t(`links.card.action_modal.status.${link.status}`, {
+                      defaultValue: link.status,
+                    })
+                  : ""}
+              </Text>
+            </View>
           </View>
         </View>
-      </View>
 
-      {/* リンクを開くボタン */}
-      <TouchableOpacity
-        className="ml-2"
-        onPress={handleOpenLink}
-        hitSlop={16}
-        accessibilityRole="button"
-        accessibilityLabel={t("links.card.open_link_label")}
-        accessibilityHint={t("links.card.open_link_hint")}
-      >
-        <ExternalLink size={16} color="#94a3b8" strokeWidth={2.5} />
-      </TouchableOpacity>
-    </Pressable>
+        {/* リンクを開くボタン */}
+        <TouchableOpacity
+          className="ml-2"
+          onPress={handleOpenLink}
+          hitSlop={16}
+          accessibilityRole="button"
+          accessibilityLabel={t("links.card.open_link_label")}
+          accessibilityHint={t("links.card.open_link_hint")}
+        >
+          <ExternalLink size={16} color="#94a3b8" strokeWidth={2.5} />
+        </TouchableOpacity>
+      </Pressable>
+
+      {/* 既読状態モーダル */}
+      <LinkReadStatusModal ref={ref} link={link} onClose={dismiss} />
+    </>
   );
 }

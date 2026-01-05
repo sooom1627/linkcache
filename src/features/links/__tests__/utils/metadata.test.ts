@@ -22,6 +22,7 @@ describe("fetchOgpMetadata - Basic OGP fetching", () => {
     jest.clearAllMocks();
     // AsyncStorageはデフォルトでnullを返す（キャッシュなし）
     jest.mocked(AsyncStorage.getItem).mockResolvedValue(null);
+    jest.spyOn(console, "error").mockImplementation(() => {});
   });
 
   afterEach(() => {

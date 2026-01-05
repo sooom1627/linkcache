@@ -15,10 +15,13 @@ import {
  * - gcTime: 未使用のキャッシュがメモリから削除されるまでの時間（10分）
  * - refetchOnWindowFocus: モバイルでは不要（バッテリー節約）
  * - refetchOnReconnect: ネットワーク復帰時に自動再フェッチ
+ * - refetchOnMount: false - staleTime内のデータはキャッシュから取得
+ *   → 画面遷移時の不要な再フェッチを防止し、UXを向上
  *
  * 注意:
  * - 一部のクエリ（例: useProfile）は個別にstaleTime: Infinityを設定
  * - これらは明示的なinvalidate時のみ更新される
+ * - staleTimeを過ぎたデータは自動的に再フェッチされるため、データの鮮度は保たれる
  *
  * HMR対応:
  * - Provider内でuseStateを使用して初期化することで、Fast Refresh時の問題を回避
@@ -40,7 +43,7 @@ function createQueryClient() {
         // モバイル最適化
         refetchOnWindowFocus: false, // フォーカス時の再フェッチを無効
         refetchOnReconnect: true, // ネットワーク復帰時は再フェッチ
-        refetchOnMount: true, // マウント時は再フェッチ
+        refetchOnMount: false, // staleTime内のデータはキャッシュから取得（画面遷移時の不要な再フェッチを防止）
 
         // エラーハンドリング
         throwOnError: false, // エラーを自動でthrowしない

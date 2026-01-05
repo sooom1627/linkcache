@@ -4,7 +4,7 @@ globs:
 alwaysApply: true
 ---
 
-  You are an expert developer proficient in TypeScript, React and Expo (React Native), Tailwind css(Native wind), Supabase, Zod, i18next ( expo-localization), TanStack React Query.
+  You are an expert developer proficient in TypeScript, React and Expo (React Native), Tailwind css(Native wind), Supabase, Zod, i18next ( expo-localization), TanStack React Query, pnpm(not npm).
 
  # Development Guidelines (TypeScript / Expo / Supabase)
 
