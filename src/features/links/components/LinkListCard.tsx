@@ -69,7 +69,7 @@ export function LinkListCard({ link }: LinkListCardProps) {
   const { ref, present, dismiss } = useBottomSheetModal();
   const [imageError, setImageError] = useState(false);
   const statusDotColor = getStatusDotColor(link.status);
-  const timeoutRef = useRef<number | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handlePress = useCallback(() => {
     router.push(`/link/${link.link_id}`);
