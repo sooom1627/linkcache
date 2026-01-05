@@ -32,7 +32,7 @@ export default function ProtectedLayout() {
   if (isLoading) {
     return (
       <SafeAreaView className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator size="large" color="#334155" />
+        <ActivityIndicator size="large" color="#6B7280" />
       </SafeAreaView>
     );
   }
