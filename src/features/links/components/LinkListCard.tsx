@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Pressable, Text, TouchableOpacity, View } from "react-native";
 
@@ -69,20 +69,35 @@ export function LinkListCard({ link }: LinkListCardProps) {
   const { ref, present, dismiss } = useBottomSheetModal();
   const [imageError, setImageError] = useState(false);
   const statusDotColor = getStatusDotColor(link.status);
+  const timeoutRef = useRef<number | null>(null);
 
   const handlePress = useCallback(() => {
-    console.log("Navigating to link detail:", link.link_id);
-    // Shared routeへの遷移: グループ名を除いたパスを指定
     router.push(`/link/${link.link_id}`);
   }, [router, link.link_id]);
 
   const handleOpenLink = useCallback(() => {
     openLink(link.url);
+    // 既存のタイマーをクリア
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
     // 500ms後にモーダルを表示
-    setTimeout(() => {
+    timeoutRef.current = setTimeout(() => {
       present();
+      timeoutRef.current = null;
     }, 500);
   }, [openLink, present, link.url]);
+
+  // コンポーネントのアンマウント時にタイマーをクリア
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    };
+  }, []);
 
   const handleLongPress = useCallback(() => {
     present();
@@ -163,7 +178,11 @@ export function LinkListCard({ link }: LinkListCardProps) {
             <View className="flex-row items-center gap-1">
               <View className={`size-1.5 rounded-full ${statusDotColor}`} />
               <Text className="text-xs font-normal tracking-wide text-slate-400">
-                {link.status}
+                {link.status
+                  ? t(`links.card.action_modal.status.${link.status}`, {
+                      defaultValue: link.status,
+                    })
+                  : ""}
               </Text>
             </View>
           </View>

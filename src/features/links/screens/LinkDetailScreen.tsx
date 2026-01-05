@@ -221,7 +221,11 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
               <View className="mb-3 flex-row items-center gap-2">
                 <View className={`size-2 rounded-full ${statusColor}`} />
                 <Text className={`text-base font-medium ${statusTextColor}`}>
-                  {link.status}
+                  {link.status
+                    ? t(`links.card.action_modal.status.${link.status}`, {
+                        defaultValue: link.status,
+                      })
+                    : ""}
                 </Text>
               </View>
 

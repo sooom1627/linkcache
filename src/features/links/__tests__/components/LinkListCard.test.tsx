@@ -2,8 +2,8 @@ import * as WebBrowser from "expo-web-browser";
 
 import { fireEvent, render } from "@testing-library/react-native";
 
+import { createMockLink } from "../../__mocks__/linkHelpers";
 import { LinkListCard } from "../../components/LinkListCard";
-import type { UserLink } from "../../types/linkList.types";
 import { wrapper } from "../test-utils";
 
 // expo-web-browserのモック（外部依存のみ）
@@ -21,27 +21,6 @@ jest.mock("expo-web-browser", () => ({
 }));
 
 const mockOpenBrowserAsync = jest.mocked(WebBrowser.openBrowserAsync);
-
-// モックデータヘルパー
-const createMockLink = (
-  url: string = "https://example.com",
-  status: "inbox" | "read_soon" | "later" | null = "read_soon",
-): UserLink => ({
-  status_id: "status-1",
-  user_id: "user-1",
-  status,
-  triaged_at: null,
-  read_at: null,
-  saved_at: "2024-01-01T00:00:00Z",
-  link_id: "link-1",
-  url,
-  title: "Example Title",
-  description: "Example Description",
-  image_url: null,
-  favicon_url: null,
-  site_name: "Example Site",
-  link_created_at: "2024-01-01T00:00:00Z",
-});
 
 describe("LinkListCard", () => {
   beforeEach(() => {

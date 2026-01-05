@@ -9,7 +9,7 @@ jest.mock("@/src/shared/lib/supabase", () => ({
   },
 }));
 
-const mockFrom = supabase.from as jest.Mock;
+const mockFrom = jest.mocked(supabase.from);
 
 describe("getLinkById", () => {
   const mockLinkId = "123e4567-e89b-12d3-a456-426614174000";
@@ -36,18 +36,20 @@ describe("getLinkById", () => {
 
   it("指定されたlink_idのリンクデータを取得できる", async () => {
     // Given: モックリンクデータ
-    const mockSelect = jest.fn().mockReturnThis();
-    const mockEq = jest.fn().mockReturnThis();
     const mockSingle = jest.fn().mockResolvedValue({
       data: mockLinkData,
       error: null,
     });
+    const mockEq = jest.fn().mockReturnValue({
+      single: mockSingle,
+    });
+    const mockSelect = jest.fn().mockReturnValue({
+      eq: mockEq,
+    });
 
     mockFrom.mockReturnValue({
       select: mockSelect,
-      eq: mockEq,
-      single: mockSingle,
-    });
+    } as any);
 
     // When: getLinkById(link_id)を呼び出す
     const result = await getLinkById(mockLinkId);
@@ -62,18 +64,20 @@ describe("getLinkById", () => {
 
   it("存在しないlink_idの場合はエラーをthrowする", async () => {
     // Given: 存在しないlink_id
-    const mockSelect = jest.fn().mockReturnThis();
-    const mockEq = jest.fn().mockReturnThis();
     const mockSingle = jest.fn().mockResolvedValue({
       data: null,
       error: { message: "Not found" },
     });
+    const mockEq = jest.fn().mockReturnValue({
+      single: mockSingle,
+    });
+    const mockSelect = jest.fn().mockReturnValue({
+      eq: mockEq,
+    });
 
     mockFrom.mockReturnValue({
       select: mockSelect,
-      eq: mockEq,
-      single: mockSingle,
-    });
+    } as any);
 
     // When & Then: getLinkById(link_id)を呼び出すとエラーがthrowされる
     await expect(getLinkById("non-existent-id")).rejects.toThrow(
@@ -83,18 +87,20 @@ describe("getLinkById", () => {
 
   it("データが返されない場合はエラーをthrowする", async () => {
     // Given: データなし
-    const mockSelect = jest.fn().mockReturnThis();
-    const mockEq = jest.fn().mockReturnThis();
     const mockSingle = jest.fn().mockResolvedValue({
       data: null,
       error: null,
     });
+    const mockEq = jest.fn().mockReturnValue({
+      single: mockSingle,
+    });
+    const mockSelect = jest.fn().mockReturnValue({
+      eq: mockEq,
+    });
 
     mockFrom.mockReturnValue({
       select: mockSelect,
-      eq: mockEq,
-      single: mockSingle,
-    });
+    } as any);
 
     // When & Then: getLinkById(link_id)を呼び出すとエラーがthrowされる
     await expect(getLinkById(mockLinkId)).rejects.toThrow("Link not found");
@@ -107,18 +113,20 @@ describe("getLinkById", () => {
       link_id: "invalid-uuid", // 不正なUUID
     };
 
-    const mockSelect = jest.fn().mockReturnThis();
-    const mockEq = jest.fn().mockReturnThis();
     const mockSingle = jest.fn().mockResolvedValue({
       data: invalidData,
       error: null,
     });
+    const mockEq = jest.fn().mockReturnValue({
+      single: mockSingle,
+    });
+    const mockSelect = jest.fn().mockReturnValue({
+      eq: mockEq,
+    });
 
     mockFrom.mockReturnValue({
       select: mockSelect,
-      eq: mockEq,
-      single: mockSingle,
-    });
+    } as any);
 
     // When & Then: getLinkById(link_id)を呼び出すとバリデーションエラーがthrowされる
     await expect(getLinkById(mockLinkId)).rejects.toThrow();

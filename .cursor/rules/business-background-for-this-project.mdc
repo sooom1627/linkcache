@@ -30,7 +30,7 @@ Instead of just saving links, users "triage" them through a card-based Swipe UI.
 * **OGP Engine:** Automatically fetch Title and Thumbnail Image (Copyright-compliant: store metadata only).
 * **Swipe UI:** Card-stack interface for Inbox sorting (Read Soon vs. Later).
 * **Reading List:** A simple list view of "Read Soon" items.
-* **External Reading:** Tapping a link opens it in the system's default browser.
+* **External Reading:** Tapping a link opens it in an in-app browser (using expo-web-browser) to maintain app context and provide a seamless reading experience.
 * **Authentication:** Basic Sign-up/Login via Supabase Auth.
 * **Collections:** Flexible workspaces (Many-to-Many: one link can be in multiple collections).
 * **Growth Dashboard:** * Counters for Inbox, Read Soon, and Completed items.
@@ -39,7 +39,7 @@ Instead of just saving links, users "triage" them through a card-based Swipe UI.
 
 ## 4. Out of Scope for MVP
 * **Share Extension:** No "Share to app" from external browsers (Phase 2).
-* **In-app Reader:** No clutter-free mode (Always open external browser).
+* **In-app Reader:** Links open in an in-app browser modal. No clutter-free reading mode or external browser redirection (users stay within the app context).
 * **AI Summary:** No automatic text summarization for now.
 * **Team Features:** No shared collections or social feeds (Single-player first).
 * **Advanced Features:** No full-text search, offline access, or link health checks.

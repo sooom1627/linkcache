@@ -5,7 +5,14 @@ import * as WebBrowser from "expo-web-browser";
 /**
  * リンクを開くためのフック
  *
- * WebBrowserを開くロジックを提供します。
+ * expo-web-browserを使用してアプリ内ブラウザでリンクを開きます。
+ *
+ * 設計判断:
+ * - expo-web-browserを使用することで、アプリ内でブラウザを開くことができ、
+ *   ユーザーがアプリのコンテキストを失うことなくリンクを閲覧できます。
+ * - Linking.openURL()はシステムブラウザに切り替えるため、アプリから離脱してしまいます。
+ * - プラットフォーム固有の設定により、iOS/Androidの両方で最適なユーザー体験を提供します。
+ *
  * iOS/Androidの両方で適切な設定を適用します。
  */
 export function useOpenLink() {
