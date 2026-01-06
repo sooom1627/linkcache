@@ -119,9 +119,7 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
           onPress: () => {
             void (async () => {
               try {
-                await (deleteLinkAsync as (linkId: string) => Promise<void>)(
-                  link.link_id,
-                );
+                await deleteLinkAsync(link.link_id);
                 router.back();
               } catch (error: unknown) {
                 const errorMessage =

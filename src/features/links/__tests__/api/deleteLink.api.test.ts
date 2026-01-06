@@ -81,6 +81,6 @@ describe("deleteLinkById", () => {
     } as unknown as ReturnType<typeof mockFrom>);
 
     // When & Then: deleteLinkById(link_id)が正常に完了する
-    await expect(deleteLinkById(MOCK_LINK_ID)).resolves.not.toThrow();
+    await expect(deleteLinkById(MOCK_LINK_ID)).resolves.toBeUndefined();
   });
 });

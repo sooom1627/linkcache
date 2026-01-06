@@ -1,3 +1,4 @@
+import type { MutateOptions } from "@tanstack/react-query";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { deleteLinkById } from "../api/deleteLink.api";
@@ -8,7 +9,16 @@ import { linkQueryKeys } from "../constants/queryKeys";
  */
 export interface UseDeleteLinkReturn {
   deleteLink: (linkId: string) => void;
-  deleteLinkAsync: (linkId: string) => Promise<void>;
+  /**
+   * リンク削除を非同期で実行する関数
+   * React QueryのmutateAsyncと同じシグネチャ
+   * @param linkId - 削除するリンクのID
+   * @param options - React Queryのmutationオプション（オプショナル）
+   */
+  deleteLinkAsync: (
+    linkId: string,
+    options?: MutateOptions<void, Error, string, unknown>,
+  ) => Promise<void>;
   isPending: boolean;
   isError: boolean;
   isSuccess: boolean;
@@ -36,7 +46,7 @@ export interface UseDeleteLinkReturn {
 export function useDeleteLink(): UseDeleteLinkReturn {
   const queryClient = useQueryClient();
 
-  const mutation = useMutation({
+  const mutation = useMutation<void, Error, string>({
     mutationFn: deleteLinkById,
     onSuccess: () => {
       // リンク削除成功時にリンク一覧と詳細のキャッシュを無効化
@@ -52,7 +62,8 @@ export function useDeleteLink(): UseDeleteLinkReturn {
 
   return {
     deleteLink: mutation.mutate,
-    deleteLinkAsync: mutation.mutateAsync,
+    deleteLinkAsync:
+      mutation.mutateAsync as UseDeleteLinkReturn["deleteLinkAsync"],
     isPending: mutation.isPending,
     isError: mutation.isError,
     isSuccess: mutation.isSuccess,

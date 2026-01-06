@@ -47,10 +47,9 @@ describe("useDeleteLink", () => {
       expect(result.current.isSuccess).toBe(true);
     });
 
-    expect(mockDeleteLinkById).toHaveBeenCalledWith(
-      MOCK_LINK_ID,
-      expect.anything(),
-    );
+    // React Query v5ではmutationFnに追加のコンテキスト情報が渡されるため、
+    // 第1引数（linkId）のみを検証
+    expect(mockDeleteLinkById.mock.calls[0][0]).toBe(MOCK_LINK_ID);
   });
 
   it("sets error state when API call fails", async () => {
