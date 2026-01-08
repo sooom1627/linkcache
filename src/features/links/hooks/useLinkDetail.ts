@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { getLinkById } from "../api/getLink.api";
+import { linkQueryKeys } from "../constants/queryKeys";
 import type { UserLink } from "../types/linkList.types";
 
 /**
@@ -22,7 +23,7 @@ import type { UserLink } from "../types/linkList.types";
  */
 export function useLinkDetail(linkId: string) {
   return useQuery<UserLink, Error>({
-    queryKey: ["link", linkId],
+    queryKey: linkQueryKeys.detail(linkId),
     queryFn: () => getLinkById(linkId),
     enabled: !!linkId,
   });
