@@ -40,23 +40,23 @@ interface LinkDetailScreenProps {
 const STATUS_STYLES = {
   inbox: {
     badge: "bg-sky-100",
-    text: "text-sky-700",
-    icon: "#0369a1", // sky-700
+    text: "text-sky-600",
+    icon: "#38bdf8", // sky-400
   },
   read_soon: {
     badge: "bg-emerald-100",
-    text: "text-emerald-700",
-    icon: "#047857", // emerald-700
+    text: "text-emerald-600",
+    icon: "#34d399", // emerald-400
   },
   later: {
     badge: "bg-amber-100",
-    text: "text-amber-700",
-    icon: "#b45309", // amber-700
+    text: "text-amber-600",
+    icon: "#fbbf24", // amber-400
   },
   default: {
     badge: "bg-slate-100",
     text: "text-slate-600",
-    icon: "#475569", // slate-600
+    icon: "#cbd5e1", // slate-300
   },
 } as const;
 
