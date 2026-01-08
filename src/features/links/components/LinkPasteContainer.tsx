@@ -75,7 +75,7 @@ function LoadingStateView() {
       className="items-center justify-center py-16"
     >
       <View className="items-center gap-4">
-        <ActivityIndicator size="small" color="#3b82f6" />
+        <ActivityIndicator size="small" color="#6B7280" />
         <Text className="text-sm text-slate-400">
           {t("links.paste.loading")}
         </Text>

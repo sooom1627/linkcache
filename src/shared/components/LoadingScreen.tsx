@@ -25,7 +25,7 @@ import { ActivityIndicator, View } from "react-native";
 export function LoadingScreen() {
   return (
     <View className="flex-1 items-center justify-center bg-white">
-      <ActivityIndicator size="large" color="#0000ff" />
+      <ActivityIndicator size="large" color="#6B7280" />
     </View>
   );
 }

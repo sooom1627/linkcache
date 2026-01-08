@@ -25,6 +25,7 @@ import { useBottomSheetModal } from "@/src/shared/hooks/useBottomSheetModal";
 import { formatDateTime } from "@/src/shared/utils/timezone";
 
 import { LinkReadStatusModal } from "../components/LinkReadStatusModal";
+import { useDeleteLink } from "../hooks/useDeleteLink";
 import { useLinkDetail } from "../hooks/useLinkDetail";
 import { extractDomain } from "../hooks/useLinkPaste";
 import { useOpenLink } from "../hooks/useOpenLink";
@@ -76,6 +77,7 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
   const router = useRouter();
   const { openLink } = useOpenLink();
   const { data: link, isLoading, error } = useLinkDetail(linkId);
+  const { deleteLinkAsync, isPending: isDeleting } = useDeleteLink();
   const {
     ref: statusModalRef,
     present: presentStatusModal,
@@ -115,21 +117,38 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
           text: t("links.detail.delete_confirm.confirm"),
           style: "destructive",
           onPress: () => {
-            // TODO: 削除処理を実装
-            // 現時点ではUIのみの実装
-            router.back();
+            void (async () => {
+              try {
+                await deleteLinkAsync(link.link_id);
+                router.back();
+              } catch (error: unknown) {
+                const errorMessage =
+                  error instanceof Error
+                    ? error.message
+                    : t("links.detail.delete_error.message", {
+                        defaultValue: "リンクの削除に失敗しました",
+                      });
+                Alert.alert(
+                  t("links.detail.delete_error.title", {
+                    defaultValue: "削除エラー",
+                  }),
+                  errorMessage,
+                  [{ text: t("common.ok", { defaultValue: "OK" }) }],
+                );
+              }
+            })();
           },
         },
       ],
       { cancelable: true },
     );
-  }, [link, t, router]);
+  }, [link, t, router, deleteLinkAsync]);
 
   // ローディング状態
   if (isLoading) {
     return (
       <View className="flex-1 items-center justify-center bg-slate-50">
-        <ActivityIndicator size="large" color="#94a3b8" />
+        <ActivityIndicator size="large" color="#6B7280" />
         <Text className="mt-4 text-base text-slate-500">
           {t("links.detail.loading")}
         </Text>
@@ -162,7 +181,7 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
 
   return (
     <>
-      <View className="flex-1 bg-slate-50">
+      <View className="mb-20 flex-1 bg-slate-50">
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           {/* サムネイル画像 */}
           {link.image_url ? (
@@ -297,11 +316,16 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
 
               <TouchableOpacity
                 onPress={handleDelete}
-                className="flex-row items-center justify-center gap-2 rounded-xl border-2 border-red-300 bg-white px-6 py-4 active:bg-red-50"
+                disabled={isDeleting}
+                className="flex-row items-center justify-center gap-2 rounded-xl border-2 border-red-300 bg-white px-6 py-4 active:bg-red-50 disabled:opacity-50"
                 accessibilityRole="button"
                 accessibilityLabel={t("links.detail.delete_link")}
               >
-                <Trash2 size={20} color="#ef4444" strokeWidth={2.5} />
+                {isDeleting ? (
+                  <ActivityIndicator size="small" color="#ef4444" />
+                ) : (
+                  <Trash2 size={20} color="#ef4444" strokeWidth={2.5} />
+                )}
                 <Text className="text-base font-semibold text-red-600">
                   {t("links.detail.delete_link")}
                 </Text>
