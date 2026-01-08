@@ -6,7 +6,7 @@ import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
-import { ExternalLink, Globe } from "lucide-react-native";
+import { Check, Circle, ExternalLink, Globe } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 
 import { useBottomSheetModal } from "@/src/shared/hooks/useBottomSheetModal";
@@ -21,20 +21,34 @@ interface LinkListCardProps {
   link: UserLink;
 }
 
+const STATUS_STYLES = {
+  inbox: {
+    badge: "bg-sky-100",
+    text: "text-sky-700",
+    icon: "#0369a1", // sky-700
+  },
+  read_soon: {
+    badge: "bg-emerald-100",
+    text: "text-emerald-700",
+    icon: "#047857", // emerald-700
+  },
+  later: {
+    badge: "bg-amber-100",
+    text: "text-amber-700",
+    icon: "#b45309", // amber-700
+  },
+  default: {
+    badge: "bg-slate-100",
+    text: "text-slate-600",
+    icon: "#475569", // slate-600
+  },
+} as const;
+
 /**
- * ステータスに応じたドットカラーを取得
+ * ステータスに応じたスタイル設定を取得
  */
-const getStatusDotColor = (status: TriageStatus | null): string => {
-  switch (status) {
-    case "inbox":
-      return "bg-sky-400";
-    case "read_soon":
-      return "bg-emerald-400";
-    case "later":
-      return "bg-amber-400";
-    default:
-      return "bg-slate-300";
-  }
+const getStatusStyle = (status: TriageStatus | null) => {
+  return STATUS_STYLES[status || "default"] ?? STATUS_STYLES.default;
 };
 
 /** OG画像サイズ（1.91:1 比率） */
@@ -68,7 +82,8 @@ export function LinkListCard({ link }: LinkListCardProps) {
   const { openLink } = useOpenLink();
   const { ref, present, dismiss } = useBottomSheetModal();
   const [imageError, setImageError] = useState(false);
-  const statusDotColor = getStatusDotColor(link.status);
+  const statusStyle = getStatusStyle(link.status);
+  const isRead = link.read_at !== null;
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handlePress = useCallback(() => {
@@ -174,17 +189,34 @@ export function LinkListCard({ link }: LinkListCardProps) {
             >
               {link.site_name || extractDomain(link.url)}
             </Text>
-            {/* ステータスドット */}
-            <View className="flex-row items-center gap-1">
-              <View className={`size-1.5 rounded-full ${statusDotColor}`} />
-              <Text className="text-xs font-normal tracking-wide text-slate-400">
-                {link.status
-                  ? t(`links.card.action_modal.status.${link.status}`, {
-                      defaultValue: link.status,
-                    })
-                  : ""}
-              </Text>
-            </View>
+            {/* ステータス表示 */}
+            {isRead ? (
+              // 既読: シンプルなアイコン+テキスト
+              <View className="flex-row items-center gap-1.5">
+                <Check
+                  size={12}
+                  color="#94a3b8" // slate-400
+                  strokeWidth={2.5}
+                />
+                <Text className="text-xs font-normal text-slate-400">Read</Text>
+              </View>
+            ) : (
+              // 未読: シンプルなアイコン+テキスト
+              <View className="flex-row items-center gap-1.5">
+                <Circle
+                  size={8}
+                  fill={statusStyle.icon}
+                  color={statusStyle.icon}
+                />
+                <Text className={`text-xs font-medium ${statusStyle.text}`}>
+                  {link.status
+                    ? t(`links.card.action_modal.status.${link.status}`, {
+                        defaultValue: link.status,
+                      })
+                    : ""}
+                </Text>
+              </View>
+            )}
           </View>
         </View>
 
