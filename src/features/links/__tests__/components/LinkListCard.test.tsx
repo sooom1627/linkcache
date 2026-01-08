@@ -6,6 +6,13 @@ import { createMockLink } from "../../__mocks__/linkHelpers";
 import { LinkListCard } from "../../components/LinkListCard";
 import { wrapper } from "../test-utils";
 
+// Supabaseクライアントのモック（外部依存のみ）
+jest.mock("@/src/shared/lib/supabase", () => ({
+  supabase: {
+    from: jest.fn(),
+  },
+}));
+
 // expo-web-browserのモック（外部依存のみ）
 jest.mock("expo-web-browser", () => ({
   openBrowserAsync: jest.fn(),

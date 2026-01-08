@@ -10,6 +10,8 @@ export { useLinks } from "./hooks/useLinks";
 export type { UseLinksReturn } from "./hooks/useLinks";
 export { useOgpMetadata } from "./hooks/useOgpMetadata";
 export type { UseOgpMetadataOptions } from "./hooks/useOgpMetadata";
+export { useUpdateLinkReadStatus } from "./hooks/useUpdateLinkReadStatus";
+export type { UseUpdateLinkReadStatusReturn } from "./hooks/useUpdateLinkReadStatus";
 
 // Components
 export { default as LinkCreateForm } from "./components/LinkCreateForm";
@@ -37,6 +39,7 @@ export {
 // API
 export { createLinkWithStatus } from "./api/createLink.api";
 export { deleteLinkById } from "./api/deleteLink.api";
+export { updateLinkReadStatus } from "./api/updateLinkReadStatus.api";
 export type {
   CreateLinkParams,
   CreateLinkResponse,

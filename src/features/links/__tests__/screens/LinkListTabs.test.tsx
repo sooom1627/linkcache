@@ -13,6 +13,13 @@ import { fetchUserLinks } from "../../api/fetchLinks.api";
 import { LinkListTabs } from "../../screens/LinkListTabs";
 import { clearQueryCache, wrapper } from "../test-utils";
 
+// Supabaseクライアントのモック（外部依存のみ）
+jest.mock("@/src/shared/lib/supabase", () => ({
+  supabase: {
+    from: jest.fn(),
+  },
+}));
+
 // API関数をモック（外部依存のみ）
 jest.mock("../../api/fetchLinks.api", () => ({
   fetchUserLinks: jest.fn(),

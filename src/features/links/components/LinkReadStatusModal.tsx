@@ -1,4 +1,4 @@
-import { forwardRef, useCallback, useState } from "react";
+import { forwardRef, useCallback, useEffect, useState } from "react";
 
 import { Text, TouchableOpacity, View } from "react-native";
 
@@ -12,6 +12,7 @@ import { BaseBottomSheetModal } from "@/src/shared/components/modals";
 import ModalHeader from "@/src/shared/components/modals/ModalHeader";
 
 import { extractDomain } from "../hooks/useLinkPaste";
+import { useUpdateLinkReadStatus } from "../hooks/useUpdateLinkReadStatus";
 import type { UserLink } from "../types/linkList.types";
 
 export interface LinkReadStatusModalProps {
@@ -31,20 +32,32 @@ export const LinkReadStatusModal = forwardRef<
 >(({ link, onClose }, ref) => {
   const { t } = useTranslation();
   const [isRead, setIsRead] = useState<boolean>(link.read_at !== null);
+  const { updateReadStatus, isPending, isSuccess } = useUpdateLinkReadStatus();
+
+  // API呼び出し成功時にローカル状態を更新
+  useEffect(() => {
+    if (isSuccess) {
+      // React Queryのキャッシュ更新に依存するため、ローカル状態は更新しない
+      // モーダルを閉じる
+      onClose?.();
+    }
+  }, [isSuccess, onClose]);
 
   // 既読にするハンドラー
   const handleMarkAsRead = useCallback(() => {
+    if (isRead || isPending) return;
+    updateReadStatus(link.link_id, true);
+    // 楽観的更新: 即座にローカル状態を更新
     setIsRead(true);
-    // モーダルを閉じる
-    onClose?.();
-  }, [onClose]);
+  }, [isRead, isPending, link.link_id, updateReadStatus]);
 
   // 未読にするハンドラー
   const handleMarkAsUnread = useCallback(() => {
+    if (!isRead || isPending) return;
+    updateReadStatus(link.link_id, false);
+    // 楽観的更新: 即座にローカル状態を更新
     setIsRead(false);
-    // モーダルを閉じる
-    onClose?.();
-  }, [onClose]);
+  }, [isRead, isPending, link.link_id, updateReadStatus]);
 
   const handleClose = useCallback(() => {
     onClose?.();
@@ -118,14 +131,16 @@ export const LinkReadStatusModal = forwardRef<
           <View className="flex-1">
             <TouchableOpacity
               onPress={handleMarkAsUnread}
-              disabled={!isRead}
+              disabled={!isRead || isPending}
               accessibilityRole="button"
               accessibilityLabel={t("links.card.action_modal.mark_as_unread")}
-              accessibilityState={{ disabled: !isRead }}
+              accessibilityState={{ disabled: !isRead || isPending }}
               className={`w-full flex-row items-center justify-center gap-1.5 rounded-lg p-3 ${
-                !isRead ? "bg-slate-200" : "bg-slate-900 active:bg-slate-800"
+                !isRead || isPending
+                  ? "bg-slate-200"
+                  : "bg-slate-900 active:bg-slate-800"
               }`}
-              activeOpacity={!isRead ? 1 : 0.7}
+              activeOpacity={!isRead || isPending ? 1 : 0.7}
             >
               <Circle
                 size={18}
@@ -147,14 +162,16 @@ export const LinkReadStatusModal = forwardRef<
           <View className="flex-1">
             <TouchableOpacity
               onPress={handleMarkAsRead}
-              disabled={isRead}
+              disabled={isRead || isPending}
               accessibilityRole="button"
               accessibilityLabel={t("links.card.action_modal.mark_as_read")}
-              accessibilityState={{ disabled: isRead }}
+              accessibilityState={{ disabled: isRead || isPending }}
               className={`w-full flex-row items-center justify-center gap-1.5 rounded-lg p-3 ${
-                isRead ? "bg-slate-200" : "bg-slate-900 active:bg-slate-800"
+                isRead || isPending
+                  ? "bg-slate-200"
+                  : "bg-slate-900 active:bg-slate-800"
               }`}
-              activeOpacity={isRead ? 1 : 0.7}
+              activeOpacity={isRead || isPending ? 1 : 0.7}
             >
               <CheckCircle2
                 size={18}
