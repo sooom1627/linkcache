@@ -14,6 +14,8 @@ import { useRouter } from "expo-router";
 
 import {
   Calendar,
+  Check,
+  Circle,
   Clock,
   ExternalLink,
   Globe,
@@ -29,43 +31,11 @@ import { useDeleteLink } from "../hooks/useDeleteLink";
 import { useLinkDetail } from "../hooks/useLinkDetail";
 import { extractDomain } from "../hooks/useLinkPaste";
 import { useOpenLink } from "../hooks/useOpenLink";
-import type { TriageStatus } from "../types/linkList.types";
+import { getStatusStyle } from "../utils/statusStyles";
 
 interface LinkDetailScreenProps {
   linkId: string;
 }
-
-/**
- * ステータスに応じたドットカラーを取得
- */
-const getStatusColor = (status: TriageStatus | null): string => {
-  switch (status) {
-    case "inbox":
-      return "bg-sky-400";
-    case "read_soon":
-      return "bg-emerald-400";
-    case "later":
-      return "bg-amber-400";
-    default:
-      return "bg-slate-300";
-  }
-};
-
-/**
- * ステータスに応じたテキストカラーを取得
- */
-const getStatusTextColor = (status: TriageStatus | null): string => {
-  switch (status) {
-    case "inbox":
-      return "text-sky-600";
-    case "read_soon":
-      return "text-emerald-600";
-    case "later":
-      return "text-amber-600";
-    default:
-      return "text-slate-500";
-  }
-};
 
 /**
  * リンク詳細画面コンポーネント
@@ -176,8 +146,8 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
   }
 
   const domain = extractDomain(link.url);
-  const statusColor = getStatusColor(link.status);
-  const statusTextColor = getStatusTextColor(link.status);
+  const statusStyle = getStatusStyle(link.status);
+  const isRead = link.read_at !== null;
 
   return (
     <>
@@ -238,14 +208,39 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
 
               {/* 現在のステータス */}
               <View className="mb-3 flex-row items-center gap-2">
-                <View className={`size-2 rounded-full ${statusColor}`} />
-                <Text className={`text-base font-medium ${statusTextColor}`}>
-                  {link.status
-                    ? t(`links.card.action_modal.status.${link.status}`, {
-                        defaultValue: link.status,
-                      })
-                    : ""}
-                </Text>
+                {isRead ? (
+                  // 既読: シンプルなアイコン+テキスト
+                  <View className="flex-row items-center gap-1.5">
+                    <Check
+                      size={16}
+                      color="#94a3b8" // slate-400
+                      strokeWidth={2.5}
+                    />
+                    <Text className="text-base font-medium text-slate-400">
+                      {t("links.card.action_modal.status.read", {
+                        defaultValue: "Read",
+                      })}
+                    </Text>
+                  </View>
+                ) : (
+                  // 未読: シンプルなアイコン+テキスト
+                  <View className="flex-row items-center gap-1.5">
+                    <Circle
+                      size={12}
+                      fill={statusStyle.icon}
+                      color={statusStyle.icon}
+                    />
+                    <Text
+                      className={`text-base font-medium ${statusStyle.text}`}
+                    >
+                      {link.status
+                        ? t(`links.card.action_modal.status.${link.status}`, {
+                            defaultValue: link.status,
+                          })
+                        : ""}
+                    </Text>
+                  </View>
+                )}
               </View>
 
               {/* 日時情報 */}

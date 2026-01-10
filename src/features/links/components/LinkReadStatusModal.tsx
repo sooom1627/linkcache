@@ -34,6 +34,11 @@ export const LinkReadStatusModal = forwardRef<
   const [isRead, setIsRead] = useState<boolean>(link.read_at !== null);
   const { updateReadStatus, isPending, isSuccess } = useUpdateLinkReadStatus();
 
+  // propsの変更を検知してローカル状態を更新
+  useEffect(() => {
+    setIsRead(link.read_at !== null);
+  }, [link.read_at]);
+
   // API呼び出し成功時にローカル状態を更新
   useEffect(() => {
     if (isSuccess) {

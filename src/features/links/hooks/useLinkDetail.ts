@@ -1,6 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 
+import { dataHelpers } from "@/src/shared/utils/timezone";
+
 import { getLinkById } from "../api/getLink.api";
+import { linkQueryKeys } from "../constants/queryKeys";
 import type { UserLink } from "../types/linkList.types";
 
 /**
@@ -22,8 +25,16 @@ import type { UserLink } from "../types/linkList.types";
  */
 export function useLinkDetail(linkId: string) {
   return useQuery<UserLink, Error>({
-    queryKey: ["link", linkId],
+    queryKey: linkQueryKeys.detail(linkId),
     queryFn: () => getLinkById(linkId),
     enabled: !!linkId,
+    select: (data) => {
+      // 単一オブジェクトを配列にラップして変換し、最初の要素を返す
+      const transformed = dataHelpers.transformTimestamps<UserLink>(
+        [data],
+        ["triaged_at", "read_at", "saved_at"],
+      );
+      return transformed[0];
+    },
   });
 }

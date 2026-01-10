@@ -154,6 +154,9 @@
     "card": {
       "open_link_label": "Open link",
       "open_link_hint": "Opens the link in browser",
+      "status": {
+        "read": "Read"
+      },
       "action_modal": {
         "title": "Have you read this link?",
         "status_section": "Status",

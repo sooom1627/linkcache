@@ -154,6 +154,9 @@
     "card": {
       "open_link_label": "リンクを開く",
       "open_link_hint": "ブラウザでリンクを開きます",
+      "status": {
+        "read": "既読"
+      },
       "action_modal": {
         "title": "このリンクを読みましたか？",
         "status_section": "ステータス",

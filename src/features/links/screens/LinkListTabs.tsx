@@ -63,7 +63,7 @@ export function LinkListTabs() {
     limit: DASHBOARD_LIMIT,
   });
   // Latest タブ: limit=5（全ステータス）
-  const latestQuery = useLinks({ limit: DASHBOARD_LIMIT });
+  const latestQuery = useLinks({ limit: DASHBOARD_LIMIT, isRead: false });
 
   // タブヘッダーからの切り替え
   const handleTabChange = useCallback((tab: TabType) => {

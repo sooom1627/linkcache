@@ -119,7 +119,7 @@ describe("useUpdateLinkReadStatus", () => {
     });
   });
 
-  it("invalidates link list cache on successful update", async () => {
+  it("invalidates link list and detail cache on successful update", async () => {
     mockUpdateLinkReadStatus.mockResolvedValueOnce(undefined);
 
     // invalidateQueriesをスパイ
@@ -146,6 +146,11 @@ describe("useUpdateLinkReadStatus", () => {
     // リンク詳細のキャッシュが無効化されることを確認
     expect(invalidateQueriesSpy).toHaveBeenCalledWith({
       queryKey: linkQueryKeys.details(),
+    });
+
+    // 特定のリンクIDのキャッシュも無効化されることを確認
+    expect(invalidateQueriesSpy).toHaveBeenCalledWith({
+      queryKey: linkQueryKeys.detail(MOCK_LINK_ID),
     });
 
     invalidateQueriesSpy.mockRestore();

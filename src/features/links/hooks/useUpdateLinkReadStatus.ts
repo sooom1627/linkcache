@@ -51,14 +51,19 @@ export function useUpdateLinkReadStatus(): UseUpdateLinkReadStatusReturn {
 
   const mutation = useMutation<void, Error, [string, boolean]>({
     mutationFn: ([linkId, isRead]) => updateLinkReadStatus(linkId, isRead),
-    onSuccess: () => {
+    onSuccess: (_, [linkId]) => {
       // リンク既読状態更新成功時にリンク一覧と詳細のキャッシュを無効化
       // これにより、次回の取得時に最新データが取得される
       queryClient.invalidateQueries({
         queryKey: linkQueryKeys.lists(),
       });
+      // 全てのリンク詳細のキャッシュを無効化
       queryClient.invalidateQueries({
         queryKey: linkQueryKeys.details(),
+      });
+      // 特定のリンクIDのキャッシュも明示的に無効化（即座に更新されるように）
+      queryClient.invalidateQueries({
+        queryKey: linkQueryKeys.detail(linkId),
       });
     },
   });
