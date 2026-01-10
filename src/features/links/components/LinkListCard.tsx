@@ -13,43 +13,14 @@ import { useBottomSheetModal } from "@/src/shared/hooks/useBottomSheetModal";
 
 import { extractDomain } from "../hooks/useLinkPaste";
 import { useOpenLink } from "../hooks/useOpenLink";
-import type { TriageStatus, UserLink } from "../types/linkList.types";
+import type { UserLink } from "../types/linkList.types";
+import { getStatusStyle } from "../utils/statusStyles";
 
 import { LinkReadStatusModal } from "./LinkReadStatusModal";
 
 interface LinkListCardProps {
   link: UserLink;
 }
-
-const STATUS_STYLES = {
-  inbox: {
-    badge: "bg-sky-100",
-    text: "text-sky-600",
-    icon: "#38bdf8", // sky-400
-  },
-  read_soon: {
-    badge: "bg-emerald-100",
-    text: "text-emerald-600",
-    icon: "#34d399", // emerald-400
-  },
-  later: {
-    badge: "bg-amber-100",
-    text: "text-amber-600",
-    icon: "#fbbf24", // amber-400
-  },
-  default: {
-    badge: "bg-slate-100",
-    text: "text-slate-500",
-    icon: "#cbd5e1", // slate-300
-  },
-} as const;
-
-/**
- * ステータスに応じたスタイル設定を取得
- */
-const getStatusStyle = (status: TriageStatus | null) => {
-  return STATUS_STYLES[status || "default"] ?? STATUS_STYLES.default;
-};
 
 /** OG画像サイズ（1.91:1 比率） */
 const OG_IMAGE_HEIGHT = 72;
@@ -198,7 +169,9 @@ export function LinkListCard({ link }: LinkListCardProps) {
                   color="#94a3b8" // slate-400
                   strokeWidth={2.5}
                 />
-                <Text className="text-xs font-normal text-slate-400">Read</Text>
+                <Text className="text-xs font-normal text-slate-400">
+                  {t("links.card.status.read")}
+                </Text>
               </View>
             ) : (
               // 未読: シンプルなアイコン+テキスト
@@ -208,7 +181,7 @@ export function LinkListCard({ link }: LinkListCardProps) {
                   fill={statusStyle.icon}
                   color={statusStyle.icon}
                 />
-                <Text className="text-xs font-medium text-slate-500">
+                <Text className={`text-xs font-medium ${statusStyle.text}`}>
                   {link.status
                     ? t(`links.card.action_modal.status.${link.status}`, {
                         defaultValue: link.status,
