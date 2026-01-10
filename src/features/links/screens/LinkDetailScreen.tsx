@@ -217,7 +217,9 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
                       strokeWidth={2.5}
                     />
                     <Text className="text-base font-medium text-slate-400">
-                      Read
+                      {t("links.card.action_modal.status.read", {
+                        defaultValue: "Read",
+                      })}
                     </Text>
                   </View>
                 ) : (
