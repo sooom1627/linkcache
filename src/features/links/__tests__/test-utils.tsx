@@ -23,6 +23,14 @@ export const testQueryClient = createTestQueryClient();
 
 // テスト間でキャッシュをクリアするユーティリティ関数
 export const clearQueryCache = () => {
+  // アクティブなクエリをキャンセル
+  testQueryClient
+    .getQueryCache()
+    .getAll()
+    .forEach((query) => {
+      query.cancel();
+    });
+  // キャッシュをクリア
   testQueryClient.clear();
   testQueryClient.getQueryCache().clear();
   testQueryClient.getMutationCache().clear();
