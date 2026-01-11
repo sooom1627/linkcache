@@ -3,346 +3,188 @@ description:
 globs: **.test.*
 alwaysApply: false
 ---
-# プロジェクトテスト戦略
+# Classical TDD テスト戦略
 
-このプロジェクトでは、シンプルで実践的なテスト戦略を採用しています。過度なテストカバレッジよりも、重要な機能の動作保証を重視します。
+## 🎯 Core Philosophy: Classical Testing (Sociable Tests)
 
-# 1. テストの基本原則
+### 基本原則
+**「実際の依存関係と共にテストする」**
 
-## 優先順位（Priority Matrix）
-- ビジネスロジック & 状態遷移: 必須（Context, Reducers, Utils）。
-- 複雑な処理: 必須（データ変換、複雑な計算ロジック）。
-- 重要なユーザーフロー: 統合テストでカバー（認証、主要機能のパス）。
-- 単純なUI・ゲッター: 低優先度（テスト不要）。
+Classical Testing（古典派TDD）では、モジュールを**実際の依存関係と共に**テストします。これは「Sociable Tests（社交的テスト）」とも呼ばれ、London School の「Solitary Tests（孤立テスト）」と対比されます。
 
-## シンプリシティ・ファースト
-- テストファイルサイズ: 100行以内を目指す。
-- 正常系の重視: エラーケースの網羅よりも、主要な「ハッピーパス」の動作保証に集中する。
-- 実装詳細ではなく振る舞いをテスト: 内部の変数名が変わっても壊れないテストを書く。
+**重要な概念：**
+- **本物の関数/モジュールを使う**: 内部の依存関係はモックしない
+- **外部境界のみモック**: プロセス外（DB、API、デバイス）のみモック
+- **統合された動作を検証**: モジュール間の実際の協調動作をテスト
 
-# 2. クラシカルTDD（Classical TDD / Sociable Tests）
-私たちは Sociable Tests（社交的テスト） というアプローチを採用します。
-
-- モックを極力避ける: 内部の関数やフックを個別にモックするのではなく、本物のロジックを結合した状態でテストします。
-- 外部境界のみモック: Supabase、デバイスAPI（カメラ、プッシュ通知）、外部ネットワーク通信など、プロセスの外に出る部分のみをモックの対象とします。
--Workflow: Red (失敗するテストを書く) → Green (最小限の実装でパスさせる) → Refactor (構造を整える)。
-
-## シンプリシティ・ファースト原則
-
-### テストサイズの制御
-- 単一テストファイルは100行以下を目指す
-- 複雑すぎるテストは分割せず、重要な部分のみに絞る
-- エラーハンドリングテストは避け、正常系に集中する
-
-### モック・セットアップの簡素化
-- 複雑なモック設定は避ける
-- 必要最小限のモックのみ作成
-- テストごとの個別設定より共通設定を優先
-
-### 外部ライブラリテスト時の注意点
-- React Query使用時は適切なクリーンアップを実装
-- QueryClientのキャッシュクリアを必須とする
-- Jest exit問題を防ぐためafterEachでリソース解放
-
-## ディレクトリごとのテスト方針
-
-### 1. src/features/ - Feature別モジュール
-
-各featureディレクトリ内でテストを管理します：
-
+### AIへの明確な指示
 ```
-src/features/[feature-name]/
-├── __tests__/              # すべてのテストを集約
-│   ├── context/            # 状態管理のテスト（必須）
-│   ├── hooks/             # カスタムフックのテスト（複雑なロジックのみ）
-│   ├── integration/       # 統合テスト（主要フロー1-2個）
-│   ├── utils/             # ユーティリティのテスト
-│   └── test-utils.tsx     # Feature固有のテストユーティリティ
-├── __mocks__/              # モックファイル
-├── context/
-├── hooks/
-├── components/
-├── screens/
-└── types/
+テストを書く時のルール：
+1. 内部モジュール（hooks, utils, helpers）は実際のものをimportして使う
+2. Supabase、外部API、デバイスAPIのみモックする
+3. テストファイルは100行以内に収める
+4. 正常系の動作を中心にテストする
 ```
 
-**テストすべきもの：**
-- **context** - ビジネスロジックの中心（必須）
-- **hooks** - 複雑なロジックがある場合のみ
-- **utils** - ビジネスロジックを含むユーティリティ
-- **統合テスト** - 主要なユーザーフロー（1-2個）
+## 📊 何をテストするか / しないか
 
-**テスト不要なもの：**
-- 単純なUIコンポーネント
-- 型定義
-- 単純なユーティリティ関数
-- getterのみのカスタムフック
-
-### 2. src/services/ - 外部サービス
-
-**方針：テストは原則不要**
-- 外部サービスのラッパーのため、実装詳細のテストは意味がない
-- 必要なのはモックの提供のみ
-- `__mocks__/` ディレクトリにモックを配置
-
+### ✅ テストを書く（WRITE TESTS）
 ```
-src/services/
-├── __mocks__/             # 他のテストで使用するモック
-│   └── supabase.mock.ts
-└── supabase/
+以下の条件を満たすコードはテストを書く：
+- ビジネスロジック（計算、変換、条件分岐）
+- データ変換・フォーマット処理
+- バリデーション関数
+- 3回以上使われる共通関数
+- 副作用を持つカスタムフック（API呼び出し、状態更新）
 ```
 
-### 3. src/shared/ - 共通コンポーネント・ユーティリティ
-
-**方針：複雑なロジックのみテスト**
-- UIコンポーネント → テスト不要
-- 単純なユーティリティ → テスト不要
-- 複雑な計算・変換ロジック → 必要に応じてテスト
-
-テストが必要な場合は、対象ファイルと同じ階層に配置するか、`__tests__`ディレクトリを作成して配置：
+### ❌ テストを書かない（NO TESTS）
 ```
-src/shared/utils/
-├── dateFormatter.ts
-└── __tests__/
-    └── dateFormatter.test.ts  # 複雑なロジックがある場合のみ
+以下のコードはテストを書かない：
+- UIコンポーネント（View, Text, TouchableOpacity等）
+- スタイリングのみのコード
+- 単純なgetter/setter
+- 1-2箇所でしか使わないヘルパー関数
+- 型定義ファイル
 ```
 
-### 4. app/ - ルーティング・アプリ初期化
+## 🔨 Classical TDD 実装ガイド
 
-**方針：現在作成されているテストは維持**
-- 既存の`__tests__/`内のテストは保持
-- 新規追加は原則不要
-- アプリ初期化やナビゲーションの重要な動作確認に使用
-
-```
-app/
-└── __tests__/
-    ├── navigation/
-    ├── app-basic.test.tsx
-    ├── app-initialization.test.tsx
-    └── test-utils.tsx
-```
-
-## テストの優先順位
-
-### Phase 1: 基礎テスト（最重要）
-- Zustandストアの単体テスト
-- 複雑なビジネスロジック（utils）のテスト
-- 複雑なカスタムフック（hooks）のテスト
-
-### Phase 2: ロジックテスト（重要）
-- フォームバリデーション
-- エラーハンドリング
-- 複雑な状態管理フック
-
-### Phase 3: 統合テスト（必要に応じて）
-- 主要なユーザーフロー
-- 認証フローなどの重要な機能
-
-## モック戦略
-
-シンプルなモックを心がけます。型安全性を高めるため、`jest.mocked()` の使用を推奨します。
+### モックの判断基準（AIが迷わないように）
 
 ```typescript
-// ❌ 避ける: 安全でないキャスト
-(apiClient.get as jest.Mock).mockResolvedValue(data);
+// ❌ 間違い：内部モジュールをモックしない
+jest.mock('../utils/validators');  // ❌ 内部モジュール
+jest.mock('../hooks/useAuth');      // ❌ 内部フック
 
-// ✅ 推奨: 型安全なモック操作
-jest.mocked(apiClient.get).mockResolvedValue(data);
+// ✅ 正解：外部境界のみモック
+jest.mock('@supabase/supabase-js'); // ✅ 外部ライブラリ
+jest.mock('expo-camera');           // ✅ デバイスAPI
 ```
 
-```typescript
-// ❌ 避ける: 過度に複雑なモック
-const complexMock = createMockWithAllMethods();
+## 🏗️ テスト構造テンプレート
 
-// ✅ 推奨: 必要最小限のモック
-jest.mock('@/services/api', () => ({
-  apiClient: {
-    get: jest.fn(),
-    post: jest.fn(),
-  }
-}));
-```
-
-## React Query使用時の必須対応
-
-### キャッシュクリーンアップ
-```typescript
-afterEach(() => {
-  if (queryClient) {
-    queryClient.clear();
-    queryClient.getQueryCache().clear();
-    queryClient.getMutationCache().clear();
-  }
-});
-```
-
-### テスト用QueryClient設定
-```typescript
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: { 
-      retry: false,
-      staleTime: 0,
-      gcTime: 0,
-    },
-  },
-});
-```
-
-## テストファイルの命名規則
-
-- ユニットテスト: `[ファイル名].test.ts`
-- 統合テスト: `[機能名]-flow.test.tsx`
-- テストユーティリティ: `test-utils.test.tsx` (Jestの仕様上、最低1つのテストを含む必要があるため)
-- モック: `[サービス名].mock.ts`
-
-## 実装例
-
-### Store テストの例
+### AIが従うべきテスト構造
 
 ```typescript
-// src/features/[feature]/__tests__/stores/[storeName].test.ts
-import { act, renderHook } from '@testing-library/react-native';
-import { useFeatureStore } from '../../stores/featureStore';
+// [機能名].test.ts - 必ず100行以内
 
-describe('featureStore', () => {
-  beforeEach(() => {
-    // ストアをリセット
-    useFeatureStore.setState({ /* 初期状態 */ });
-  });
-
-  it('重要なアクションが正しく動作する', async () => {
-    const { result } = renderHook(() => useFeatureStore());
-    
-    await act(async () => {
-      await result.current.someAction();
-    });
-    
-    expect(result.current.someState).toBe(expectedValue);
-  });
-});
-```
-
-### Hook テストの例
-
-```typescript
-// src/features/[feature]/__tests__/hooks/useFeature.test.ts
 import { renderHook, act } from '@testing-library/react-native';
-import { useFeature } from '../../hooks/useFeature';
+// 実際のモジュールをimport（モックしない）
+import { actualHelper } from './helpers';
+import { actualValidator } from './validators';
 
-describe('useFeature', () => {
-  it('バリデーションエラーを正しく処理する', () => {
-    const { result } = renderHook(() => useFeature());
+// 外部境界のみモック
+jest.mock('@supabase/supabase-js');
+
+describe('[機能名]', () => {
+  // セットアップは最小限（10行以内）
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  // 正常系を中心に3-5個のテスト
+  it('should [期待される動作] when [条件]', () => {
+    // Arrange: 準備
+    const input = 'test';
     
-    act(() => {
-      result.current.updateField('email', 'invalid');
-    });
+    // Act: 実行
+    const result = actualFunction(input);
     
-    expect(result.current.errors.email).toBeDefined();
+    // Assert: 検証
+    expect(result).toBe(expected);
+  });
+
+  // エラーケースは重要なもののみ（1-2個）
+  it('should handle error when [エラー条件]', () => {
+    // 重要なエラーケースのみ
   });
 });
 ```
 
-### Service モックの例
+## 🚦 判断フローチャート（AIが判断に迷わないように）
 
+```mermaid
+テストを書くべきか判断：
+├─ UIコンポーネント？ → No → テスト不要
+├─ 外部ライブラリのラッパー？ → No → テスト不要  
+├─ ビジネスロジックあり？ → Yes → テスト必須
+├─ 3回以上使用？ → Yes → テスト必須
+└─ それ以外 → No → テスト不要
+```
+
+## ⚠️ AIが陥りがちな間違いと正解
+
+### 1. モックの間違い
 ```typescript
-// src/services/__mocks__/supabase.mock.ts
-export const mockSupabaseClient = {
-  auth: {
-    signIn: jest.fn(),
-    signOut: jest.fn(),
-    getSession: jest.fn(),
-  },
-  from: jest.fn(() => ({
-    select: jest.fn(),
-    insert: jest.fn(),
-    update: jest.fn(),
-  })),
-};
+// ❌ AIがよくする間違い：何でもモックする
+jest.mock('./useProfileForm');
+jest.mock('./validators');
+jest.mock('./formatters');
+
+// ✅ 正解：外部境界のみ
+jest.mock('@supabase/supabase-js');
+// 内部モジュールは実際のものを使う
+import { useProfileForm } from './useProfileForm'; // 実物
 ```
 
-## テスト実行
-
-```bash
-# 全てのテスト
-pnpm test
-
-# Feature別のテスト
-pnpm test src/features/[feature-name]/__tests__
-
-# カバレッジレポート付き
-pnpm run test:coverage
+### 2. テスト配置
+```typescript
+src/features/auth/__tests__/hooks/useAuth.test.ts
 ```
 
-## アンチパターン
+### 3. 過度なテストケース
+```typescript
+// ❌ AIがよくする間違い：全パターン網羅
+it('should handle empty string');
+it('should handle null');
+it('should handle undefined');
+it('should handle special characters');
+// ... 20個のエッジケース
 
-### ❌ 避けるべきこと
+// ✅ 正解：重要なケースのみ（3-5個）
+it('should format valid input correctly');
+it('should return error for invalid format');
+it('should handle empty input');
+```
 
-1. **100%カバレッジを目指す**
-   - 意味のないテストが増える
-   - メンテナンスコストが上がる
+## 📋 React Native 特有の注意点
 
-2. **実装の詳細をテストする**
-   - 内部実装が変わるとテストが壊れる
-   - リファクタリングが困難になる
+### React Query使用時
+```typescript
+// 必須：クリーンアップを忘れない
+afterEach(() => {
+  queryClient.clear();
+});
+```
 
-3. **過度なモック**
-   - テストが複雑になる
-   - 実際の動作と乖離する
+### カスタムフック
+```typescript
+// renderHookを使用
+import { renderHook } from '@testing-library/react-native';
+```
 
-4. **スナップショットテストの乱用**
-   - 変更の度に更新が必要
-   - 何をテストしているか不明確
+## 🎯 品質基準
 
-5. **複雑すぎるテストファイル**
-   - 100行を超えるテストファイルは分割を検討
-   - エラーケースよりも正常系に集中
+### 良いテストの条件
+1. **Fast**: 1秒以内で実行
+2. **Reliable**: 常に同じ結果
+3. **Simple**: 100行以内
+4. **Clear**: テスト名から仕様が分かる
 
-### ✅ 推奨されること
+### カバレッジ目標
+**カバレッジ率の目標は設定しない。** 重要な動作が検証されていることが大切。
 
-1. **ユーザー視点でテストする**
-   - 実際の使用方法に沿ったテスト
-   - 統合テストで実際のフローを確認
+## 最重要指示
 
-2. **重要な機能に集中する**
-   - ビジネスロジック
-   - エラーハンドリング
-   - ユーザー入力の検証
+```
+Classical TDD のルール：
+1. 内部モジュールは実物を使う（モックしない）
+2. 外部境界（Supabase、API、デバイス）のみモック
+3. テストファイルは`__tests__`サブディレクトリに配置する（例：`src/features/[feature]/__tests__/[category]/`）
+4. 100行以内、3-5個のテストケース
+5. UIコンポーネントはテストしない
+6. 正常系を中心にテスト
 
-3. **テストを読みやすく保つ**
-   - わかりやすいテスト名
-   - 適切なコメント
-   - DRYよりも明確さを優先
-
-4. **適切なリソース管理**
-   - 外部ライブラリ使用時のクリーンアップ
-   - Jest exit問題の回避
-
-## 新しいFeatureでのテスト追加手順
-
-1. `src/features/[feature-name]/__tests__/` ディレクトリを作成
-2. 必要なサブディレクトリを作成（stores/, hooks/, integration/, utils/）
-3. 複雑なフックやロジックがあればテストを追加
-4. 主要なフローの統合テストを1つ作成
-
-## カバレッジ目標（参考値）
-
-複雑になりすぎないよう、以下を目安とします：
-
-- **Features (hooks/utils)**: 60-80%（複雑なもののみ）
-- **Features (integration)**: 主要フローの疎通確認
-- **Services**: モックの提供が主（カバレッジ不問）
-- **Shared**: 50%（複雑なユーティリティのみ）
-- **全体**: 50-60%（無理に上げない）
-
-## 参考実装
-
-実際の実装例は [users feature のテスト](mdc:src/features/users/__tests__) を参照してください：
-
-- [profile-setup.utils.test.ts](mdc:src/features/users/__tests__/utils/profile-setup.utils.test.ts) - ユーティリティテストの例
-- [useProfileForm.test.ts](mdc:src/features/users/__tests__/hooks/useProfileForm.test.ts) - フックテストの例
-- [ProfileEditFlow.test.tsx](mdc:src/features/users/__tests__/integration/ProfileEditFlow.test.tsx) - 統合テストの例
-- [test-utils.test.tsx](mdc:src/features/users/__tests__/test-utils.test.tsx) - テストユーティリティの例
-
-これらの方針に従うことで、保守性が高く、価値のあるテストスイートを維持できます。
+これらのルールを必ず守ってテストを書くこと。
+```

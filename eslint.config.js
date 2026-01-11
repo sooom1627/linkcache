@@ -7,6 +7,7 @@ const tsparser = require("@typescript-eslint/parser");
 const react = require("eslint-plugin-react");
 const importPlugin = require("eslint-plugin-import");
 const tailwindcss = require("eslint-plugin-tailwindcss");
+const jest = require("eslint-plugin-jest");
 
 module.exports = [
   // グローバルな無視パターン
@@ -278,6 +279,42 @@ module.exports = [
     files: ["app/**/*.{js,jsx,ts,tsx}"],
     rules: {
       "import/no-default-export": "off",
+    },
+  },
+
+  // テストファイル用の設定: 可読性優先でルールを緩和
+  {
+    files: ["**/*.test.ts", "**/*.test.tsx"],
+    plugins: {
+      jest: jest,
+    },
+    rules: {
+      // ===== 緩和するルール =====
+      // ファイル行数制限を無効化（テストコードは可読性優先）
+      "max-lines": "off",
+      // any型の使用を許可（モック作成用）
+      "@typescript-eslint/no-explicit-any": "off",
+      // 非nullアサーション（!）の使用を許可
+      "@typescript-eslint/no-non-null-assertion": "off",
+      // マジックナンバーの使用を許可（テストデータ直値）
+      "no-magic-numbers": "off",
+      // 関数行数制限を無効化
+      "max-lines-per-function": "off",
+
+      // ===== 維持するルール（厳格） =====
+      // test.only()の使用を禁止
+      "jest/no-focused-tests": "error",
+      // expect文がないテストを禁止
+      "jest/expect-expect": "error",
+      // console.logの使用を禁止
+      "no-console": "error",
+      // 未使用変数をエラーとして扱う
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        { argsIgnorePattern: "^_" },
+      ],
+      // 非同期関数でawaitを必須とする（テストコードではasync関数でawait不要なケースが多いため緩和）
+      "@typescript-eslint/require-await": "off",
     },
   },
 ];
