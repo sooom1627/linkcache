@@ -2,16 +2,16 @@
 
 プロジェクトの核心である「Swipe Triage」を、ユーザーが価値を感じられる最小単位（Vertical Slice）で段階的に実装するためのロードマップです。
 
-## Step 1: Walking Skeleton（歩く骸骨）
+## Step 1: Walking Skeleton（歩く骸骨） ✅ Completed
 
 **目的:** 最もシンプルな状態で「表示して、操作して、保存される」パイプラインを貫通させる。アニメーションやデザインは無視する。
 
 - **User Story:** ユーザーとして、Inboxにあるリンクを1つ処理して、DB上のステータスを変更したい。
 - **実装タスク:**
-  - [ ] **[API]** Inbox (`status = 'inbox'`) のリンクを取得する `fetchInboxLinks` を実装。
-  - [ ] **[API, hooks]** ステータスを更新する `updateLinkStatus` を実装。
-  - [ ] **[UI]** テキストのみのシンプルなカードを表示するコンポーネントを作成。
-  - [ ] **[Action]** 左右のボタンを配置し、「Right」で `read_soon`、「Left」で `later` にDB更新する処理を接続。
+  - [x] **[API]** Inbox (`status = 'inbox'`) のリンクを取得する `fetchInboxLinks` を実装。 (既存の `useLinks` を活用)
+  - [x] **[API, hooks]** ステータスを更新する `updateLinkStatus` を実装。
+  - [x] **[UI]** テキストのみのシンプルなカードを表示するコンポーネントを作成。
+  - [x] **[Action]** 左右のボタンを配置し、「Right」で `read_soon`、「Left」で `later` にDB更新する処理を接続。
 - **完了条件 (AC):**
   - ボタンを押すと画面からカードが消える。
   - Supabase上で該当レコードのステータス変更が確認できる。

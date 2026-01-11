@@ -62,19 +62,6 @@ jest.mock('@supabase/supabase-js'); // ✅ 外部ライブラリ
 jest.mock('expo-camera');           // ✅ デバイスAPI
 ```
 
-### テストファイルの配置
-
-```
-必ず同じディレクトリに配置する：
-src/features/auth/
-├─ useAuth.ts
-├─ useAuth.test.ts        # ✅ 同階層
-├─ validators.ts
-└─ validators.test.ts     # ✅ 同階層
-
-__tests__ディレクトリは使わない  # ❌
-```
-
 ## 🏗️ テスト構造テンプレート
 
 ### AIが従うべきテスト構造
@@ -141,13 +128,9 @@ jest.mock('@supabase/supabase-js');
 import { useProfileForm } from './useProfileForm'; // 実物
 ```
 
-### 2. テスト配置の間違い
+### 2. テスト配置
 ```typescript
-// ❌ AIがよくする間違い：__tests__ディレクトリ
 src/__tests__/features/auth/useAuth.test.ts
-
-// ✅ 正解：同階層配置
-src/features/auth/useAuth.test.ts
 ```
 
 ### 3. 過度なテストケース
