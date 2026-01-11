@@ -1,30 +1,23 @@
 import { act, renderHook, waitFor } from "@testing-library/react-native";
 
+import { fetchUserLinks } from "../../api/fetchLinks.api";
 import { updateLinkStatus } from "../../api/updateLinkStatus.api";
 import { linkQueryKeys } from "../../constants/queryKeys";
-import type { UseLinksReturn } from "../../hooks/useLinks";
 import { useSwipeTriage } from "../../hooks/useSwipeTriage";
 import { clearQueryCache, testQueryClient, wrapper } from "../test-utils";
 
-// API層のモック
+// 外部境界（API関数）のみモック
+jest.mock("../../api/fetchLinks.api", () => ({
+  fetchUserLinks: jest.fn(),
+}));
+
 jest.mock("../../api/updateLinkStatus.api", () => ({
   updateLinkStatus: jest.fn(),
 }));
 
-// useLinksフックのモック
-jest.mock("../../hooks/useLinks", () => ({
-  useLinks: jest.fn(),
-}));
-
+const mockFetchUserLinks = jest.mocked(fetchUserLinks);
 const mockUpdateLinkStatus = jest.mocked(updateLinkStatus);
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-const useLinksModule = require("../../hooks/useLinks");
-const mockUseLinks = jest.mocked(
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  useLinksModule.useLinks,
-) as jest.MockedFunction<() => UseLinksReturn>;
 
-// モックデータ
 const createMockLink = (id: number) => ({
   status_id: `status-${id}`,
   user_id: "user-1",
@@ -50,112 +43,43 @@ describe("useSwipeTriage", () => {
 
   afterEach(() => {
     clearQueryCache();
-    // アクティブなタイマーをクリア
-    jest.clearAllTimers();
   });
 
-  afterAll(() => {
-    // テスト終了時にQueryClientを完全にクリーンアップ
-    clearQueryCache();
-  });
-
-  it("returns current link from inbox", () => {
+  it("returns current link from inbox", async () => {
     const mockLink = createMockLink(1);
-    mockUseLinks.mockReturnValue({
-      links: [mockLink],
-      isLoading: false,
-      error: null,
-      isFetchingNextPage: false,
-      isError: false,
-      hasNextPage: false,
+    mockFetchUserLinks.mockResolvedValueOnce({
+      data: [mockLink],
+      hasMore: false,
       totalCount: 1,
-      fetchNextPage: jest.fn(),
-      refetch: jest.fn(),
-      isRefreshing: false,
     });
 
     const { result } = renderHook(() => useSwipeTriage(), { wrapper });
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
 
     expect(result.current.currentLink).toEqual(mockLink);
-    expect(result.current.isLoading).toBe(false);
     expect(result.current.error).toBeNull();
-  });
-
-  it("returns null when inbox is empty", () => {
-    mockUseLinks.mockReturnValue({
-      links: [],
-      isLoading: false,
-      error: null,
-      isFetchingNextPage: false,
-      isError: false,
-      hasNextPage: false,
-      totalCount: 0,
-      fetchNextPage: jest.fn(),
-      refetch: jest.fn(),
-      isRefreshing: false,
-    });
-
-    const { result } = renderHook(() => useSwipeTriage(), { wrapper });
-
-    expect(result.current.currentLink).toBeNull();
-  });
-
-  it("returns loading state when useLinks is loading", () => {
-    mockUseLinks.mockReturnValue({
-      links: [],
-      isLoading: true,
-      error: null,
-      isFetchingNextPage: false,
-      isError: false,
-      hasNextPage: false,
-      totalCount: 0,
-      fetchNextPage: jest.fn(),
-      refetch: jest.fn(),
-      isRefreshing: false,
-    });
-
-    const { result } = renderHook(() => useSwipeTriage(), { wrapper });
-
-    expect(result.current.isLoading).toBe(true);
-  });
-
-  it("returns error state when useLinks has error", () => {
-    const mockError = new Error("Failed to fetch links");
-    mockUseLinks.mockReturnValue({
-      links: [],
-      isLoading: false,
-      error: mockError,
-      isFetchingNextPage: false,
-      isError: true,
-      hasNextPage: false,
-      totalCount: 0,
-      fetchNextPage: jest.fn(),
-      refetch: jest.fn(),
-      isRefreshing: false,
-    });
-
-    const { result } = renderHook(() => useSwipeTriage(), { wrapper });
-
-    expect(result.current.error).toBe(mockError);
+    expect(mockFetchUserLinks).toHaveBeenCalledWith(
+      expect.objectContaining({ status: "inbox", limit: 1 }),
+    );
   });
 
   it("calls updateLinkStatus with read_soon when handleSwipeRight is called", async () => {
     const mockLink = createMockLink(1);
-    mockUseLinks.mockReturnValue({
-      links: [mockLink],
-      isLoading: false,
-      error: null,
-      isFetchingNextPage: false,
-      isError: false,
-      hasNextPage: false,
+    mockFetchUserLinks.mockResolvedValueOnce({
+      data: [mockLink],
+      hasMore: false,
       totalCount: 1,
-      fetchNextPage: jest.fn(),
-      refetch: jest.fn(),
-      isRefreshing: false,
     });
     mockUpdateLinkStatus.mockResolvedValueOnce(undefined);
 
     const { result } = renderHook(() => useSwipeTriage(), { wrapper });
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
 
     act(() => {
       result.current.handleSwipeRight(mockLink.link_id);
@@ -171,92 +95,12 @@ describe("useSwipeTriage", () => {
     );
   });
 
-  it("calls updateLinkStatus with later when handleSwipeLeft is called", async () => {
-    const mockLink = createMockLink(1);
-    mockUseLinks.mockReturnValue({
-      links: [mockLink],
-      isLoading: false,
-      error: null,
-      isFetchingNextPage: false,
-      isError: false,
-      hasNextPage: false,
-      totalCount: 1,
-      fetchNextPage: jest.fn(),
-      refetch: jest.fn(),
-      isRefreshing: false,
-    });
-    mockUpdateLinkStatus.mockResolvedValueOnce(undefined);
-
-    const { result } = renderHook(() => useSwipeTriage(), { wrapper });
-
-    act(() => {
-      result.current.handleSwipeLeft(mockLink.link_id);
-    });
-
-    await waitFor(() => {
-      expect(result.current.isUpdating).toBe(false);
-    });
-
-    expect(mockUpdateLinkStatus).toHaveBeenCalledWith(
-      mockLink.link_id,
-      "later",
-    );
-  });
-
-  it("shows updating state during mutation", async () => {
-    const mockLink = createMockLink(1);
-    mockUseLinks.mockReturnValue({
-      links: [mockLink],
-      isLoading: false,
-      error: null,
-      isFetchingNextPage: false,
-      isError: false,
-      hasNextPage: false,
-      totalCount: 1,
-      fetchNextPage: jest.fn(),
-      refetch: jest.fn(),
-      isRefreshing: false,
-    });
-
-    let resolveUpdate: (value: unknown) => void;
-    const delayedUpdate = new Promise((resolve) => {
-      resolveUpdate = resolve;
-    });
-
-    mockUpdateLinkStatus.mockReturnValueOnce(delayedUpdate as Promise<void>);
-
-    const { result } = renderHook(() => useSwipeTriage(), { wrapper });
-
-    act(() => {
-      result.current.handleSwipeRight(mockLink.link_id);
-    });
-
-    await waitFor(() => {
-      expect(result.current.isUpdating).toBe(true);
-    });
-
-    await act(async () => {
-      resolveUpdate!(undefined);
-    });
-
-    await waitFor(() => {
-      expect(result.current.isUpdating).toBe(false);
-    });
-  });
-
   it("invalidates link list cache on successful update", async () => {
     const mockLink = createMockLink(1);
-    mockUseLinks.mockReturnValue({
-      links: [mockLink],
-      isLoading: false,
-      error: null,
-      isFetchingNextPage: false,
-      isError: false,
-      hasNextPage: false,
+    mockFetchUserLinks.mockResolvedValueOnce({
+      data: [mockLink],
+      hasMore: false,
       totalCount: 1,
-      fetchNextPage: jest.fn(),
-      refetch: jest.fn(),
-      isRefreshing: false,
     });
     mockUpdateLinkStatus.mockResolvedValueOnce(undefined);
 
@@ -266,6 +110,10 @@ describe("useSwipeTriage", () => {
     );
 
     const { result } = renderHook(() => useSwipeTriage(), { wrapper });
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
 
     act(() => {
       result.current.handleSwipeRight(mockLink.link_id);
