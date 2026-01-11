@@ -130,7 +130,7 @@ import { useProfileForm } from './useProfileForm'; // 実物
 
 ### 2. テスト配置
 ```typescript
-src/__tests__/features/auth/useAuth.test.ts
+src/features/auth/__tests__/hooks/useAuth.test.ts
 ```
 
 ### 3. 過度なテストケース
@@ -181,7 +181,7 @@ import { renderHook } from '@testing-library/react-native';
 Classical TDD のルール：
 1. 内部モジュールは実物を使う（モックしない）
 2. 外部境界（Supabase、API、デバイス）のみモック
-3. テストファイルは対象ファイルと同じディレクトリ
+3. テストファイルは`__tests__`サブディレクトリに配置する（例：`src/features/[feature]/__tests__/[category]/`）
 4. 100行以内、3-5個のテストケース
 5. UIコンポーネントはテストしない
 6. 正常系を中心にテスト

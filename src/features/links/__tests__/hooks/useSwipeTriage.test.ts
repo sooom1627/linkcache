@@ -1,5 +1,6 @@
 import { act, renderHook, waitFor } from "@testing-library/react-native";
 
+import { createMockLink } from "../../__mocks__/linkHelpers";
 import { fetchUserLinks } from "../../api/fetchLinks.api";
 import { updateLinkStatus } from "../../api/updateLinkStatus.api";
 import { linkQueryKeys } from "../../constants/queryKeys";
@@ -17,23 +18,6 @@ jest.mock("../../api/updateLinkStatus.api", () => ({
 
 const mockFetchUserLinks = jest.mocked(fetchUserLinks);
 const mockUpdateLinkStatus = jest.mocked(updateLinkStatus);
-
-const createMockLink = (id: number) => ({
-  status_id: `status-${id}`,
-  user_id: "user-1",
-  status: "inbox" as const,
-  triaged_at: null,
-  read_at: null,
-  saved_at: `2024-01-0${id}T00:00:00Z`,
-  link_id: `link-${id}`,
-  url: `https://example${id}.com`,
-  title: `Example ${id}`,
-  description: `Description ${id}`,
-  image_url: null,
-  favicon_url: null,
-  site_name: `Site ${id}`,
-  link_created_at: `2024-01-0${id}T00:00:00Z`,
-});
 
 describe("useSwipeTriage", () => {
   beforeEach(() => {
