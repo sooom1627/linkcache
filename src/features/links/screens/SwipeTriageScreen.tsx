@@ -1,13 +1,21 @@
-import { Pressable, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, useWindowDimensions, View } from "react-native";
+
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import Animated, {
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from "react-native-reanimated";
 
 import { useSwipeTriage } from "../hooks/useSwipeTriage";
 
 /**
  * Swipe Triage画面コンポーネント
  *
- * Inbox状態のリンクを1件表示し、ボタンでステータスを更新します。
- * - Read Soon (→): read_soonに更新
- * - Later (←): laterに更新
+ * Step 2実装中: シンプルなドラッグ機能のみ
+ * コールバックやアニメーションは後で追加
  */
 export function SwipeTriageScreen() {
   const {
@@ -18,6 +26,60 @@ export function SwipeTriageScreen() {
     handleSwipeLeft,
     handleSwipeRight,
   } = useSwipeTriage();
+
+  const { width: screenWidth } = useWindowDimensions();
+  const SWIPE_THRESHOLD = screenWidth * 0.3; // 画面幅の30%
+
+  // シンプルなドラッグ用のshared values
+  const translateX = useSharedValue(0);
+  const translateY = useSharedValue(0);
+
+  // Pan gesture with threshold detection
+  const panGesture = Gesture.Pan()
+    .onUpdate((e) => {
+      translateX.value = e.translationX;
+      translateY.value = e.translationY;
+    })
+    .onEnd((e) => {
+      const swipedRight = e.translationX > SWIPE_THRESHOLD;
+      const swipedLeft = e.translationX < -SWIPE_THRESHOLD;
+
+      if (swipedRight) {
+        // 右にスワイプ → 画面外へ飛ばしてからコールバック
+        translateX.value = withTiming(
+          screenWidth,
+          { duration: 200 },
+          (finished) => {
+            if (finished && currentLink) {
+              runOnJS(handleSwipeRight)(currentLink.link_id);
+            }
+          },
+        );
+      } else if (swipedLeft) {
+        // 左にスワイプ → 画面外へ飛ばしてからコールバック
+        translateX.value = withTiming(
+          -screenWidth,
+          { duration: 200 },
+          (finished) => {
+            if (finished && currentLink) {
+              runOnJS(handleSwipeLeft)(currentLink.link_id);
+            }
+          },
+        );
+      } else {
+        // 閾値未満 → 中央に戻る
+        translateX.value = withSpring(0);
+        translateY.value = withSpring(0);
+      }
+    });
+
+  // アニメーションスタイル
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: translateX.value },
+      { translateY: translateY.value },
+    ],
+  }));
 
   // Loading State
   if (isLoading) {
@@ -50,17 +112,19 @@ export function SwipeTriageScreen() {
   // Main Content
   return (
     <View className="flex-1 items-center justify-center px-4">
-      {/* Card */}
-      <View className="w-full rounded-lg border border-gray-300 bg-white p-6 shadow-sm">
-        <Text className="text-xl font-bold text-gray-900" numberOfLines={2}>
-          {currentLink.title || "No title"}
-        </Text>
-        <Text className="mt-2 text-sm text-gray-500" numberOfLines={1}>
-          {currentLink.url}
-        </Text>
-      </View>
+      {/* Swipeable Card */}
+      <GestureDetector gesture={panGesture}>
+        <Animated.View style={[styles.card, animatedStyle]}>
+          <Text className="text-xl font-bold text-gray-900" numberOfLines={2}>
+            {currentLink.title || "No title"}
+          </Text>
+          <Text className="mt-2 text-sm text-gray-500" numberOfLines={1}>
+            {currentLink.url}
+          </Text>
+        </Animated.View>
+      </GestureDetector>
 
-      {/* Action Buttons */}
+      {/* Action Buttons（デバッグ用に残す） */}
       <View className="mt-8 w-full flex-row justify-around">
         <Pressable
           onPress={() => handleSwipeLeft(currentLink.link_id)}
@@ -81,3 +145,19 @@ export function SwipeTriageScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  card: {
+    width: "100%",
+    padding: 24,
+    backgroundColor: "white",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#d1d5db",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+});
