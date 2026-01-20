@@ -31,13 +31,15 @@ import { useLinks } from "./useLinks";
 export function useSwipeTriage() {
   const queryClient = useQueryClient();
 
-  // Inboxのリンクを1件取得
+  // Inboxのリンクを3件取得（スタック表示用）
   const { links, isLoading, error } = useLinks({
     status: "inbox",
-    limit: 1,
+    limit: 3,
   });
 
   const currentLink = links[0] ?? null;
+  const nextLink = links[1] ?? null;
+  const queuedLink = links[2] ?? null;
 
   // ステータス更新Mutation
   const updateMutation = useMutation({
@@ -48,8 +50,35 @@ export function useSwipeTriage() {
       linkId: string;
       status: TriageStatus;
     }) => updateLinkStatus(linkId, status),
-    onSuccess: () => {
-      // リンク一覧のキャッシュを無効化して再取得
+    onMutate: async ({ linkId }) => {
+      // 楽観的更新: スワイプしたカードを即座にキャッシュから削除
+      const queryKey = linkQueryKeys.listLimited({ status: "inbox", limit: 3 });
+
+      // 進行中のクエリをキャンセル
+      await queryClient.cancelQueries({ queryKey });
+
+      // 現在のキャッシュを取得
+      const previousData = queryClient.getQueryData(queryKey);
+
+      // キャッシュを更新（スワイプしたカードを削除）
+      queryClient.setQueryData(queryKey, (old: any) => {
+        if (!old?.data) return old;
+        return {
+          ...old,
+          data: old.data.filter((link: any) => link.link_id !== linkId),
+        };
+      });
+
+      return { previousData, queryKey };
+    },
+    onError: (_err, _variables, context) => {
+      // エラー時はキャッシュをロールバック
+      if (context?.previousData) {
+        queryClient.setQueryData(context.queryKey, context.previousData);
+      }
+    },
+    onSettled: () => {
+      // 成功・失敗に関わらず最新データを再取得
       queryClient.invalidateQueries({ queryKey: linkQueryKeys.list() });
     },
   });
@@ -60,6 +89,11 @@ export function useSwipeTriage() {
 
   return {
     currentLink,
+    nextLink,
+    queuedLink,
+    cardStack: [currentLink, nextLink, queuedLink].filter(
+      (link): link is NonNullable<typeof link> => link !== null,
+    ),
     isLoading,
     error,
     isUpdating: updateMutation.isPending,

@@ -29,12 +29,14 @@ describe("useSwipeTriage", () => {
     clearQueryCache();
   });
 
-  it("returns current link from inbox", async () => {
-    const mockLink = createMockLink(1);
+  it("returns current link and card stack from inbox", async () => {
+    const mockLink1 = createMockLink(1);
+    const mockLink2 = createMockLink(2);
+    const mockLink3 = createMockLink(3);
     mockFetchUserLinks.mockResolvedValueOnce({
-      data: [mockLink],
+      data: [mockLink1, mockLink2, mockLink3],
       hasMore: false,
-      totalCount: 1,
+      totalCount: 3,
     });
 
     const { result } = renderHook(() => useSwipeTriage(), { wrapper });
@@ -43,19 +45,22 @@ describe("useSwipeTriage", () => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    expect(result.current.currentLink).toEqual(mockLink);
+    expect(result.current.currentLink).toEqual(mockLink1);
+    expect(result.current.nextLink).toEqual(mockLink2);
+    expect(result.current.queuedLink).toEqual(mockLink3);
+    expect(result.current.cardStack).toHaveLength(3);
     expect(result.current.error).toBeNull();
     expect(mockFetchUserLinks).toHaveBeenCalledWith(
-      expect.objectContaining({ status: "inbox", limit: 1 }),
+      expect.objectContaining({ status: "inbox", limit: 3 }),
     );
   });
 
   it("calls updateLinkStatus with read_soon when handleSwipeRight is called", async () => {
     const mockLink = createMockLink(1);
     mockFetchUserLinks.mockResolvedValueOnce({
-      data: [mockLink],
+      data: [mockLink, createMockLink(2), createMockLink(3)],
       hasMore: false,
-      totalCount: 1,
+      totalCount: 3,
     });
     mockUpdateLinkStatus.mockResolvedValueOnce(undefined);
 
@@ -82,9 +87,9 @@ describe("useSwipeTriage", () => {
   it("invalidates link list cache on successful update", async () => {
     const mockLink = createMockLink(1);
     mockFetchUserLinks.mockResolvedValueOnce({
-      data: [mockLink],
+      data: [mockLink, createMockLink(2), createMockLink(3)],
       hasMore: false,
-      totalCount: 1,
+      totalCount: 3,
     });
     mockUpdateLinkStatus.mockResolvedValueOnce(undefined);
 
