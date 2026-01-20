@@ -1,6 +1,8 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 import { Image } from "expo-image";
+
+import { Globe, Link2 } from "lucide-react-native";
 
 import type { UserLink } from "../types/linkList.types";
 
@@ -11,82 +13,69 @@ interface SwipeCardProps {
 }
 
 /**
+ * URLからドメインを抽出する
+ */
+function extractDomain(url: string): string {
+  try {
+    const urlObj = new URL(url);
+    return urlObj.hostname.replace(/^www\./, "");
+  } catch {
+    return "";
+  }
+}
+
+/**
  * スワイプ可能なカードコンポーネント
  *
  * OGP画像、タイトル、URLを表示します。
  * スタック表示用にindexプロパティを受け取ります。
  */
 export function SwipeCard({ link }: SwipeCardProps) {
-  const hasImage = !!link.image_url;
+  const domain = extractDomain(link.url);
 
   return (
-    <View style={styles.card}>
-      {/* OGP Image */}
-      {hasImage && link.image_url && (
+    <View className="w-full overflow-hidden rounded-2xl border border-slate-200 bg-white">
+      {/* OG画像 */}
+      {link.image_url ? (
         <Image
           source={{ uri: link.image_url }}
-          style={styles.image}
+          style={{ width: "100%", height: 170 }}
           contentFit="cover"
+          placeholder={{ blurhash: "L6PZfSjE.AyE_3t7t7R**0o#DgR4" }}
           transition={200}
         />
+      ) : (
+        <View className="h-32 items-center justify-center bg-slate-50">
+          <Link2 size={32} color="#cbd5e1" strokeWidth={1.5} />
+        </View>
       )}
 
-      {/* Content */}
-      <View style={styles.content}>
-        <Text style={styles.title} numberOfLines={2}>
+      {/* コンテンツ */}
+      <View className="gap-2 p-3">
+        {/* タイトル */}
+        <Text
+          className="text-base font-medium text-slate-800"
+          numberOfLines={2}
+        >
           {link.title || "No title"}
         </Text>
-        <Text style={styles.url} numberOfLines={1}>
-          {link.url}
-        </Text>
-        {link.site_name && (
-          <Text style={styles.siteName} numberOfLines={1}>
-            {link.site_name}
+
+        {/* ドメイン */}
+        <View className="flex-row items-center gap-2">
+          {link.favicon_url ? (
+            <Image
+              source={{ uri: link.favicon_url }}
+              style={{ width: 14, height: 14 }}
+              contentFit="contain"
+            />
+          ) : (
+            <Globe size={14} color="#94a3b8" strokeWidth={1.5} />
+          )}
+          <Text className="text-sm text-slate-400">
+            {domain || link.site_name || ""}
           </Text>
-        )}
+        </View>
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    width: "100%",
-    height: "100%",
-    backgroundColor: "white",
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "#e5e7eb",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 5,
-    overflow: "hidden",
-  },
-  image: {
-    width: "100%",
-    height: 220,
-    backgroundColor: "#f3f4f6",
-  },
-  content: {
-    padding: 20,
-    flex: 1,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#111827",
-    marginBottom: 8,
-  },
-  url: {
-    fontSize: 13,
-    color: "#6b7280",
-    marginBottom: 4,
-  },
-  siteName: {
-    fontSize: 12,
-    color: "#9ca3af",
-    fontWeight: "500",
-  },
-});

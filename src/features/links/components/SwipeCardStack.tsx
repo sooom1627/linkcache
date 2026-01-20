@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-import { StyleSheet, useWindowDimensions, View } from "react-native";
+import { useWindowDimensions, View } from "react-native";
 
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
@@ -90,6 +90,19 @@ export function SwipeCardStack({
       { rotate: `${(translateX.value / screenWidth) * 15}deg` },
     ],
     opacity: Math.max(0, 1 - Math.abs(translateX.value) / (screenWidth * 1.2)),
+    zIndex: 3,
+  }));
+
+  const nextCardStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: 0.95 }, { translateY: 16 }],
+    opacity: 0.7,
+    zIndex: 2,
+  }));
+
+  const queuedCardStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: 0.9 }, { translateY: 32 }],
+    opacity: 0.4,
+    zIndex: 1,
   }));
 
   if (!topCard) {
@@ -97,12 +110,13 @@ export function SwipeCardStack({
   }
 
   return (
-    <View style={styles.container}>
+    <View className="relative h-[450px] w-full items-center justify-center">
       {/* Queued Card (3rd) - 一番後ろ */}
       {queuedCard && (
         <Animated.View
           key={queuedCard.link_id}
-          style={[styles.cardWrapper, styles.queuedCard]}
+          className="absolute h-full w-[99%] max-w-[500px] items-center justify-center"
+          style={queuedCardStyle}
         >
           <SwipeCard link={queuedCard} index={2} />
         </Animated.View>
@@ -112,7 +126,8 @@ export function SwipeCardStack({
       {nextCard && (
         <Animated.View
           key={nextCard.link_id}
-          style={[styles.cardWrapper, styles.nextCard]}
+          className="absolute h-full w-[99%] max-w-[500px] items-center justify-center"
+          style={nextCardStyle}
         >
           <SwipeCard link={nextCard} index={1} />
         </Animated.View>
@@ -122,7 +137,8 @@ export function SwipeCardStack({
       <GestureDetector gesture={panGesture}>
         <Animated.View
           key={topCard.link_id}
-          style={[styles.cardWrapper, styles.topCard, topCardStyle]}
+          className="absolute h-full w-[99%] max-w-[500px] items-center justify-center"
+          style={topCardStyle}
         >
           <SwipeCard link={topCard} index={0} />
         </Animated.View>
@@ -130,32 +146,3 @@ export function SwipeCardStack({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    width: "100%",
-    height: 450,
-    position: "relative",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  cardWrapper: {
-    position: "absolute",
-    width: "90%",
-    maxWidth: 400,
-    height: "100%",
-  },
-  topCard: {
-    zIndex: 3,
-  },
-  nextCard: {
-    zIndex: 2,
-    transform: [{ scale: 0.95 }, { translateY: 8 }],
-    opacity: 0.7,
-  },
-  queuedCard: {
-    zIndex: 1,
-    transform: [{ scale: 0.9 }, { translateY: 16 }],
-    opacity: 0.4,
-  },
-});

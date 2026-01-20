@@ -49,7 +49,7 @@ export function SwipeTriageScreen() {
 
   // Main Content
   return (
-    <View className="flex-1 items-center justify-center px-4">
+    <View className="flex-1 items-center justify-center px-2">
       {/* Card Stack */}
       <SwipeCardStack
         cards={cardStack}
