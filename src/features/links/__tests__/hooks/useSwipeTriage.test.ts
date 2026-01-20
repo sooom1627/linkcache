@@ -113,7 +113,7 @@ describe("useSwipeTriage", () => {
     });
 
     expect(invalidateQueriesSpy).toHaveBeenCalledWith({
-      queryKey: linkQueryKeys.list(),
+      queryKey: linkQueryKeys.lists(),
     });
 
     invalidateQueriesSpy.mockRestore();

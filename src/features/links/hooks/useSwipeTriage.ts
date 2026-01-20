@@ -59,18 +59,27 @@ export function useSwipeTriage() {
       linkId: string;
       status: TriageStatus;
     }) => updateLinkStatus(linkId, status),
-    onMutate: async ({ linkId }) => {
+    onMutate: async ({ linkId, status }) => {
       // 楽観的更新: スワイプしたカードを即座にキャッシュから削除
-      const queryKey = linkQueryKeys.listLimited({ status: "inbox", limit: 3 });
+      const triageQueryKey = linkQueryKeys.listLimited({
+        status: "inbox",
+        limit: 3,
+      });
 
       // 進行中のクエリをキャンセル
-      await queryClient.cancelQueries({ queryKey });
+      await queryClient.cancelQueries({ queryKey: triageQueryKey });
 
-      // 現在のキャッシュを取得
-      const previousData = queryClient.getQueryData(queryKey);
+      // 現在のキャッシュを取得（ロールバック用）
+      const previousTriageData =
+        queryClient.getQueryData<LinksQueryData>(triageQueryKey);
 
-      // キャッシュを更新（スワイプしたカードを削除）
-      queryClient.setQueryData<LinksQueryData>(queryKey, (old) => {
+      // スワイプしたカードのデータを保存（Read Soonタブに追加するため）
+      const swipedCard = previousTriageData?.data.find(
+        (link) => link.link_id === linkId,
+      );
+
+      // Swipe Triageキャッシュを更新（スワイプしたカードを削除）
+      queryClient.setQueryData<LinksQueryData>(triageQueryKey, (old) => {
         if (!old?.data) return old;
         return {
           ...old,
@@ -78,17 +87,59 @@ export function useSwipeTriage() {
         };
       });
 
-      return { previousData, queryKey };
+      // Read Soonタブのキャッシュを更新（右スワイプ時）
+      let previousReadSoonData: LinksQueryData | undefined;
+      if (status === "read_soon" && swipedCard) {
+        const readSoonQueryKey = linkQueryKeys.listLimited({
+          status: "read_soon",
+          limit: 5,
+        });
+        previousReadSoonData =
+          queryClient.getQueryData<LinksQueryData>(readSoonQueryKey);
+
+        // Read Soonタブに追加（先頭に挿入）
+        queryClient.setQueryData<LinksQueryData>(readSoonQueryKey, (old) => {
+          if (!old?.data) return old;
+
+          // ステータスを更新して先頭に追加
+          const updatedCard: UserLink = { ...swipedCard, status: "read_soon" };
+          const newData = [updatedCard, ...old.data].slice(0, 5); // 最大5件
+
+          return {
+            ...old,
+            data: newData,
+            totalCount: old.totalCount + 1,
+          };
+        });
+      }
+
+      return {
+        previousTriageData,
+        previousReadSoonData,
+        triageQueryKey,
+      };
     },
     onError: (_err, _variables, context) => {
       // エラー時はキャッシュをロールバック
-      if (context?.previousData) {
-        queryClient.setQueryData(context.queryKey, context.previousData);
+      if (context?.previousTriageData) {
+        queryClient.setQueryData(
+          context.triageQueryKey,
+          context.previousTriageData,
+        );
+      }
+      // Read Soonタブのロールバック
+      if (context?.previousReadSoonData) {
+        const readSoonQueryKey = linkQueryKeys.listLimited({
+          status: "read_soon",
+          limit: 5,
+        });
+        queryClient.setQueryData(readSoonQueryKey, context.previousReadSoonData);
       }
     },
     onSettled: () => {
-      // 成功・失敗に関わらず最新データを再取得
-      queryClient.invalidateQueries({ queryKey: linkQueryKeys.list() });
+      // 成功・失敗に関わらず、すべての関連キャッシュを無効化して最新データを再取得
+      // 無限スクロールの全リスト
+      queryClient.invalidateQueries({ queryKey: linkQueryKeys.lists() });
     },
   });
 
