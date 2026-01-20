@@ -2,9 +2,18 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { updateLinkStatus } from "../api/updateLinkStatus.api";
 import { linkQueryKeys } from "../constants/queryKeys";
-import type { TriageStatus } from "../types/linkList.types";
+import type { TriageStatus, UserLink } from "../types/linkList.types";
 
 import { useLinks } from "./useLinks";
+
+/**
+ * useLinksのクエリデータ型
+ */
+interface LinksQueryData {
+  data: UserLink[];
+  hasMore: boolean;
+  totalCount: number;
+}
 
 /**
  * Swipe Triage機能のためのカスタムフック
@@ -61,11 +70,11 @@ export function useSwipeTriage() {
       const previousData = queryClient.getQueryData(queryKey);
 
       // キャッシュを更新（スワイプしたカードを削除）
-      queryClient.setQueryData(queryKey, (old: any) => {
+      queryClient.setQueryData<LinksQueryData>(queryKey, (old) => {
         if (!old?.data) return old;
         return {
           ...old,
-          data: old.data.filter((link: any) => link.link_id !== linkId),
+          data: old.data.filter((link) => link.link_id !== linkId),
         };
       });
 

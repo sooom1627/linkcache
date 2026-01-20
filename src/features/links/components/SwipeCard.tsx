@@ -16,7 +16,7 @@ interface SwipeCardProps {
  * OGP画像、タイトル、URLを表示します。
  * スタック表示用にindexプロパティを受け取ります。
  */
-export function SwipeCard({ link, index = 0 }: SwipeCardProps) {
+export function SwipeCard({ link }: SwipeCardProps) {
   const hasImage = !!link.image_url;
 
   return (
