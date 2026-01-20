@@ -51,7 +51,7 @@ describe("useSwipeTriage", () => {
     expect(result.current.cardStack).toHaveLength(3);
     expect(result.current.error).toBeNull();
     expect(mockFetchUserLinks).toHaveBeenCalledWith(
-      expect.objectContaining({ status: "inbox", limit: 3 }),
+      expect.objectContaining({ status: "inbox", limit: 5 }),
     );
   });
 

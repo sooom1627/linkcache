@@ -40,10 +40,11 @@ interface LinksQueryData {
 export function useSwipeTriage() {
   const queryClient = useQueryClient();
 
-  // Inboxのリンクを3件取得（スタック表示用）
+  // Inboxのリンクを5件取得（スタック表示用）
   const { links, isLoading, error } = useLinks({
     status: "inbox",
-    limit: 3,
+    limit: 5,
+    isRead: false,
   });
 
   const currentLink = links[0] ?? null;
@@ -63,7 +64,7 @@ export function useSwipeTriage() {
       // 楽観的更新: スワイプしたカードを即座にキャッシュから削除
       const triageQueryKey = linkQueryKeys.listLimited({
         status: "inbox",
-        limit: 3,
+        limit: 5,
       });
 
       // 進行中のクエリをキャンセル

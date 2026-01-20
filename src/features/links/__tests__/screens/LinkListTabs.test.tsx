@@ -155,16 +155,12 @@ describe("LinkListTabs", () => {
       );
     });
 
-    it("Latestタブはlimit=5でAPIを呼び出す（statusフィルタなし）", async () => {
+    it("Latest Addedタブはlimit=5でAPIを呼び出す（status=inboxでフィルタ）", async () => {
       // Latest用のレスポンス（最初のタブ）
       const mockLatestData = {
-        data: [
-          createMockLink(1, "read_soon"),
-          createMockLink(2, "inbox"),
-          createMockLink(3, "later"),
-        ],
+        data: [createMockLink(2, "inbox")],
         hasMore: false,
-        totalCount: 3,
+        totalCount: 1,
       };
       // Read Soon用のレスポンス
       const mockReadSoonData = {
@@ -183,13 +179,12 @@ describe("LinkListTabs", () => {
 
       // 初期状態はLatestタブなので、Latestタブのデータが表示される
       await waitFor(() => {
-        expect(screen.getByText("Example 1")).toBeTruthy();
         expect(screen.getByText("Example 2")).toBeTruthy();
       });
 
-      // limit: 5, statusなしでAPIが呼ばれることを確認
+      // limit: 5, status: "inbox" でAPIが呼ばれることを確認
       const latestCall = mockFetchUserLinks.mock.calls.find(
-        (call) => call[0]?.status === undefined && call[0]?.limit === 5,
+        (call) => call[0]?.status === "inbox" && call[0]?.limit === 5,
       );
       expect(latestCall).toBeTruthy();
     });

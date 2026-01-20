@@ -61,9 +61,14 @@ export function LinkListTabs() {
   const readSoonQuery = useLinks({
     status: "read_soon",
     limit: DASHBOARD_LIMIT,
+    isRead: false,
   });
   // Latest タブ: limit=5（全ステータス）
-  const latestQuery = useLinks({ limit: DASHBOARD_LIMIT, isRead: false });
+  const latestQuery = useLinks({
+    limit: DASHBOARD_LIMIT,
+    isRead: false,
+    status: "inbox",
+  });
 
   // タブヘッダーからの切り替え
   const handleTabChange = useCallback((tab: TabType) => {
