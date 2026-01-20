@@ -65,6 +65,7 @@ export function useSwipeTriage() {
       const triageQueryKey = linkQueryKeys.listLimited({
         status: "inbox",
         limit: 5,
+        isRead: false,
       });
 
       // 進行中のクエリをキャンセル
@@ -94,6 +95,7 @@ export function useSwipeTriage() {
         const readSoonQueryKey = linkQueryKeys.listLimited({
           status: "read_soon",
           limit: 5,
+          isRead: false,
         });
         previousReadSoonData =
           queryClient.getQueryData<LinksQueryData>(readSoonQueryKey);
@@ -133,6 +135,7 @@ export function useSwipeTriage() {
         const readSoonQueryKey = linkQueryKeys.listLimited({
           status: "read_soon",
           limit: 5,
+          isRead: false,
         });
         queryClient.setQueryData(
           readSoonQueryKey,

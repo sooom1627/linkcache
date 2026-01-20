@@ -33,7 +33,7 @@ const TAB_INDEX = {
  *
  * スワイプとタブ切り替えでフィルタリングされたリンクリストを表示します。
  * - "Read Soon" タブ: statusが"read_soon"のリンクを最大5件表示（APIでフィルタ）
- * - "Latest" タブ: 全てのリンクを最大5件表示（APIでフィルタ）
+ * - "Latest" タブ: statusが"inbox"のリンクを最大5件表示（APIでフィルタ）
  */
 /**
  * タブの状態とデータから高さを計算
@@ -63,7 +63,7 @@ export function LinkListTabs() {
     limit: DASHBOARD_LIMIT,
     isRead: false,
   });
-  // Latest タブ: limit=5（全ステータス）
+  // Latest タブ: limit=5（inboxステータス）
   const latestQuery = useLinks({
     limit: DASHBOARD_LIMIT,
     isRead: false,
