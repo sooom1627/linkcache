@@ -133,7 +133,10 @@ export function useSwipeTriage() {
           status: "read_soon",
           limit: 5,
         });
-        queryClient.setQueryData(readSoonQueryKey, context.previousReadSoonData);
+        queryClient.setQueryData(
+          readSoonQueryKey,
+          context.previousReadSoonData,
+        );
       }
     },
     onSettled: () => {
