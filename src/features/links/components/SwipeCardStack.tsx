@@ -110,7 +110,7 @@ export function SwipeCardStack({
   }
 
   return (
-    <View className="relative h-[450px] w-full items-center justify-center">
+    <View className="relative h-[240px] w-full items-center justify-center">
       {/* Queued Card (3rd) - 一番後ろ */}
       {queuedCard && (
         <Animated.View
