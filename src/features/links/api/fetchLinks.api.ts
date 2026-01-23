@@ -30,7 +30,7 @@ import {
 export async function fetchUserLinks(
   params: GetUserLinksParams = {},
 ): Promise<GetUserLinksResponse> {
-  const { pageSize = 20, page = 0, status, isRead, limit } = params;
+  const { pageSize = 20, page = 0, status, isRead, limit, orderBy } = params;
 
   const response = await supabase.rpc("get_user_links", {
     p_page_size: pageSize,
@@ -38,6 +38,7 @@ export async function fetchUserLinks(
     p_status: status ?? null,
     p_is_read: isRead ?? null,
     p_limit: limit ?? null,
+    p_order_by: orderBy ?? null,
   });
 
   if (response.error) {

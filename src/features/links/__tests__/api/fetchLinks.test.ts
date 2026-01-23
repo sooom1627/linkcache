@@ -54,6 +54,7 @@ describe("fetchUserLinks", () => {
         p_status: null,
         p_is_read: null,
         p_limit: null,
+        p_order_by: null,
       });
       expect(result.data).toHaveLength(1);
       expect(result.hasMore).toBe(false);
@@ -80,6 +81,7 @@ describe("fetchUserLinks", () => {
         p_status: null,
         p_is_read: null,
         p_limit: null,
+        p_order_by: null,
       });
       expect(result.hasMore).toBe(true);
       expect(result.totalCount).toBe(50);
@@ -105,6 +107,7 @@ describe("fetchUserLinks", () => {
         p_status: "read_soon",
         p_is_read: null,
         p_limit: null,
+        p_order_by: null,
       });
       expect(result.totalCount).toBe(5);
     });
@@ -129,6 +132,7 @@ describe("fetchUserLinks", () => {
         p_status: null,
         p_is_read: false,
         p_limit: null,
+        p_order_by: null,
       });
       expect(result.totalCount).toBe(3);
     });
@@ -153,6 +157,7 @@ describe("fetchUserLinks", () => {
         p_status: null,
         p_is_read: null,
         p_limit: 5,
+        p_order_by: null,
       });
       expect(result.hasMore).toBe(false);
     });
@@ -181,8 +186,62 @@ describe("fetchUserLinks", () => {
         p_status: "read_soon",
         p_is_read: true,
         p_limit: 5,
+        p_order_by: null,
       });
       expect(result.totalCount).toBe(2);
+    });
+
+    it("orderByパラメーターを指定して取得できる", async () => {
+      const mockResponse = {
+        data: {
+          data: [],
+          hasMore: false,
+          totalCount: 3,
+        },
+        error: null,
+      };
+
+      mockRpc.mockResolvedValueOnce(mockResponse);
+
+      const result = await fetchUserLinks({
+        status: "later",
+        orderBy: "triaged_at_asc",
+      });
+
+      expect(mockRpc).toHaveBeenCalledWith("get_user_links", {
+        p_page_size: 20,
+        p_page: 0,
+        p_status: "later",
+        p_is_read: null,
+        p_limit: null,
+        p_order_by: "triaged_at_asc",
+      });
+      expect(result.totalCount).toBe(3);
+    });
+
+    it("orderByが未指定の場合はデフォルトで空文字列を渡す", async () => {
+      const mockResponse = {
+        data: {
+          data: [],
+          hasMore: false,
+          totalCount: 1,
+        },
+        error: null,
+      };
+
+      mockRpc.mockResolvedValueOnce(mockResponse);
+
+      const result = await fetchUserLinks();
+
+      expect(mockRpc).toHaveBeenCalledWith("get_user_links", {
+        p_page_size: 20,
+        p_page: 0,
+        p_status: null,
+        p_is_read: null,
+        p_limit: null,
+        p_order_by: null,
+      });
+      expect(result.totalCount).toBe(1);
     });
 
     it("空のデータを正しく処理できる", async () => {

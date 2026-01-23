@@ -57,9 +57,11 @@ export function useSwipeTriage(options?: { sourceType?: "inbox" | "later" }) {
     status: sourceType,
     limit: 5,
     isRead: false,
+    orderBy: sourceType === "later" ? "triaged_at_asc" : null,
   });
 
   // inboxの場合はtriaged_atが古い順にソート（更新日が古いものから表示）
+  // laterの場合はRPC側でtriaged_at昇順でソート済みなのでそのまま使用
   const links = useMemo(() => {
     if (sourceType === "inbox") {
       return [...rawLinks].sort((a, b) => {
@@ -73,6 +75,7 @@ export function useSwipeTriage(options?: { sourceType?: "inbox" | "later" }) {
         );
       });
     }
+    // laterの場合はRPC側でtriaged_at昇順でソート済み
     return rawLinks;
   }, [rawLinks, sourceType]);
 

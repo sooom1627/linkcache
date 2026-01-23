@@ -42,6 +42,8 @@ export interface LinkFilterParams {
   isRead?: boolean;
   /** 件数制限 (ページング無視、undefinedでページング使用) */
   limit?: number;
+  /** ソート順 (デフォルト: null) */
+  orderBy?: string | null;
 }
 
 /**
@@ -52,6 +54,8 @@ export interface GetUserLinksParams extends LinkFilterParams {
   pageSize?: number;
   /** ページ番号 (0始まり、デフォルト: 0) */
   page?: number;
+  /** ソート順 (デフォルト: null) */
+  orderBy?: string | null;
 }
 
 /**

@@ -62,26 +62,34 @@ export interface UseLinksReturn {
  * ```
  */
 export function useLinks(options: UseLinksOptions = {}): UseLinksReturn {
-  const { pageSize = DEFAULT_PAGE_SIZE, status, isRead, limit } = options;
+  const {
+    pageSize = DEFAULT_PAGE_SIZE,
+    status,
+    isRead,
+    limit,
+    orderBy,
+  } = options;
 
   // フィルタパラメータ（クエリキー用）
   const filterParams: LinkFilterParams = {
     ...(status !== undefined && { status }),
     ...(isRead !== undefined && { isRead }),
     ...(limit !== undefined && { limit }),
+    ...(orderBy !== undefined && { orderBy }),
   };
 
   // 無限スクロール用のフィルタパラメータ（limitを除く）
   const infiniteFilterParams: Omit<LinkFilterParams, "limit"> = {
     ...(status !== undefined && { status }),
     ...(isRead !== undefined && { isRead }),
+    ...(orderBy !== undefined && { orderBy }),
   };
   const hasInfiniteFilters = Object.keys(infiniteFilterParams).length > 0;
 
   // limit指定時は単一ページ取得（useQuery）
   const singlePageQuery = useQuery({
     queryKey: linkQueryKeys.listLimited(filterParams),
-    queryFn: () => fetchUserLinks({ pageSize, status, isRead, limit }),
+    queryFn: () => fetchUserLinks({ pageSize, status, isRead, limit, orderBy }),
     enabled: limit !== undefined,
   });
 
@@ -91,7 +99,7 @@ export function useLinks(options: UseLinksOptions = {}): UseLinksReturn {
       hasInfiniteFilters ? infiniteFilterParams : undefined,
     ),
     queryFn: ({ pageParam = 0 }) =>
-      fetchUserLinks({ pageSize, page: pageParam, status, isRead }),
+      fetchUserLinks({ pageSize, page: pageParam, status, isRead, orderBy }),
     initialPageParam: 0,
     getNextPageParam: (lastPage, _allPages, lastPageParam) => {
       if (lastPage.hasMore) {
