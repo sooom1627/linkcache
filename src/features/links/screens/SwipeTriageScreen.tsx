@@ -16,15 +16,8 @@ export function SwipeTriageScreen() {
   const { t } = useTranslation();
   const [sourceType, setSourceType] = useState<"inbox" | "later">("inbox");
 
-  const {
-    cardStack,
-    currentLink,
-    isLoading,
-    error,
-    isUpdating,
-    handleSwipeLeft,
-    handleSwipeRight,
-  } = useSwipeTriage({ sourceType });
+  const { cardStack, isLoading, error, handleSwipeLeft, handleSwipeRight } =
+    useSwipeTriage({ sourceType });
 
   // Loading State
   if (isLoading) {
@@ -57,6 +50,13 @@ export function SwipeTriageScreen() {
   // Main Content
   return (
     <View className="flex-1 items-center justify-center px-2">
+      {/* Card Stack */}
+      <SwipeCardStack
+        cards={cardStack}
+        onSwipeLeft={handleSwipeLeft}
+        onSwipeRight={handleSwipeRight}
+      />
+
       {/* Source Type Selector */}
       <View className="mb-4 flex-row gap-2">
         <Pressable
@@ -99,36 +99,6 @@ export function SwipeTriageScreen() {
           </Text>
         </Pressable>
       </View>
-
-      {/* Card Stack */}
-      <SwipeCardStack
-        cards={cardStack}
-        onSwipeLeft={handleSwipeLeft}
-        onSwipeRight={handleSwipeRight}
-      />
-
-      {/* Action Buttons（デバッグ用） */}
-      {currentLink && (
-        <View className="mt-8 w-full flex-row justify-around">
-          <Pressable
-            onPress={() => handleSwipeLeft(currentLink.link_id)}
-            disabled={isUpdating}
-            className="rounded-lg bg-yellow-500 px-8 py-4 active:bg-yellow-600 disabled:opacity-50"
-          >
-            <Text className="text-lg font-semibold text-white">← Later</Text>
-          </Pressable>
-
-          <Pressable
-            onPress={() => handleSwipeRight(currentLink.link_id)}
-            disabled={isUpdating}
-            className="rounded-lg bg-green-500 px-8 py-4 active:bg-green-600 disabled:opacity-50"
-          >
-            <Text className="text-lg font-semibold text-white">
-              Read Soon →
-            </Text>
-          </Pressable>
-        </View>
-      )}
     </View>
   );
 }
