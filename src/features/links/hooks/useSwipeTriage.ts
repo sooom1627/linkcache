@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { updateLinkStatus } from "../api/updateLinkStatus.api";
@@ -18,13 +20,18 @@ interface LinksQueryData {
 /**
  * Swipe Triage機能のためのカスタムフック
  *
- * Inbox状態のリンクを取得し、ステータス更新（read_soon/later）を提供します。
+ * InboxまたはLater状態のリンクを取得し、ステータス更新（read_soon/later）を提供します。
  *
+ * @param options - オプション
+ * @param options.sourceType - トリアージするリンクのソースタイプ（デフォルト: "inbox"）
  * @returns Swipe Triage関連の状態とハンドラー関数
  *
  * @example
  * ```tsx
  * const { currentLink, isLoading, handleSwipeRight, handleSwipeLeft } = useSwipeTriage();
+ *
+ * // Laterのリンクをトリアージする場合
+ * const { currentLink } = useSwipeTriage({ sourceType: "later" });
  *
  * if (currentLink) {
  *   return (
@@ -37,15 +44,37 @@ interface LinksQueryData {
  * }
  * ```
  */
-export function useSwipeTriage() {
+export function useSwipeTriage(options?: { sourceType?: "inbox" | "later" }) {
   const queryClient = useQueryClient();
+  const sourceType = options?.sourceType ?? "inbox";
 
-  // Inboxのリンクを5件取得（スタック表示用）
-  const { links, isLoading, error } = useLinks({
-    status: "inbox",
+  // 指定されたソースタイプのリンクを5件取得（スタック表示用）
+  const {
+    links: rawLinks,
+    isLoading,
+    error,
+  } = useLinks({
+    status: sourceType,
     limit: 5,
     isRead: false,
   });
+
+  // inboxの場合はtriaged_atが古い順にソート（更新日が古いものから表示）
+  const links = useMemo(() => {
+    if (sourceType === "inbox") {
+      return [...rawLinks].sort((a, b) => {
+        // triaged_atがnullの場合は最後に
+        if (!a.triaged_at && !b.triaged_at) return 0;
+        if (!a.triaged_at) return 1;
+        if (!b.triaged_at) return -1;
+        // 古い順（昇順）
+        return (
+          new Date(a.triaged_at).getTime() - new Date(b.triaged_at).getTime()
+        );
+      });
+    }
+    return rawLinks;
+  }, [rawLinks, sourceType]);
 
   const currentLink = links[0] ?? null;
   const nextLink = links[1] ?? null;
@@ -63,7 +92,7 @@ export function useSwipeTriage() {
     onMutate: async ({ linkId, status }) => {
       // 楽観的更新: スワイプしたカードを即座にキャッシュから削除
       const triageQueryKey = linkQueryKeys.listLimited({
-        status: "inbox",
+        status: sourceType,
         limit: 5,
         isRead: false,
       });
@@ -125,10 +154,12 @@ export function useSwipeTriage() {
     onError: (_err, _variables, context) => {
       // エラー時はキャッシュをロールバック
       if (context?.previousTriageData) {
-        queryClient.setQueryData(
-          context.triageQueryKey,
-          context.previousTriageData,
-        );
+        const triageQueryKey = linkQueryKeys.listLimited({
+          status: sourceType,
+          limit: 5,
+          isRead: false,
+        });
+        queryClient.setQueryData(triageQueryKey, context.previousTriageData);
       }
       // Read Soonタブのロールバック
       if (context?.previousReadSoonData) {

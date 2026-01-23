@@ -118,4 +118,71 @@ describe("useSwipeTriage", () => {
 
     invalidateQueriesSpy.mockRestore();
   });
+
+  it("returns links from inbox when sourceType is inbox", async () => {
+    const mockLink1 = createMockLink(1, { status: "inbox" });
+    const mockLink2 = createMockLink(2, { status: "inbox" });
+    mockFetchUserLinks.mockResolvedValueOnce({
+      data: [mockLink1, mockLink2],
+      hasMore: false,
+      totalCount: 2,
+    });
+
+    const { result } = renderHook(
+      () => useSwipeTriage({ sourceType: "inbox" }),
+      { wrapper },
+    );
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    expect(result.current.currentLink).toEqual(mockLink1);
+    expect(mockFetchUserLinks).toHaveBeenCalledWith(
+      expect.objectContaining({ status: "inbox", limit: 5 }),
+    );
+  });
+
+  it("returns links from later when sourceType is later", async () => {
+    const mockLink1 = createMockLink(1, { status: "later" });
+    const mockLink2 = createMockLink(2, { status: "later" });
+    mockFetchUserLinks.mockResolvedValueOnce({
+      data: [mockLink1, mockLink2],
+      hasMore: false,
+      totalCount: 2,
+    });
+
+    const { result } = renderHook(
+      () => useSwipeTriage({ sourceType: "later" }),
+      { wrapper },
+    );
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    expect(result.current.currentLink).toEqual(mockLink1);
+    expect(mockFetchUserLinks).toHaveBeenCalledWith(
+      expect.objectContaining({ status: "later", limit: 5 }),
+    );
+  });
+
+  it("defaults to inbox when sourceType is not specified", async () => {
+    const mockLink1 = createMockLink(1, { status: "inbox" });
+    mockFetchUserLinks.mockResolvedValueOnce({
+      data: [mockLink1],
+      hasMore: false,
+      totalCount: 1,
+    });
+
+    const { result } = renderHook(() => useSwipeTriage(), { wrapper });
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    expect(mockFetchUserLinks).toHaveBeenCalledWith(
+      expect.objectContaining({ status: "inbox", limit: 5 }),
+    );
+  });
 });
