@@ -12,6 +12,10 @@ import Animated, {
 } from "react-native-reanimated";
 
 import type { UserLink } from "../types/linkList.types";
+import {
+  calculateSwipeThreshold,
+  determineSwipeDirection,
+} from "../utils/swipe-gesture";
 
 import { SwipeCard } from "./SwipeCard";
 
@@ -33,7 +37,7 @@ export function SwipeCardStack({
   onSwipeRight,
 }: SwipeCardStackProps) {
   const { width: screenWidth } = useWindowDimensions();
-  const SWIPE_THRESHOLD = screenWidth * 0.3;
+  const SWIPE_THRESHOLD = calculateSwipeThreshold(screenWidth);
 
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
@@ -54,10 +58,12 @@ export function SwipeCardStack({
       translateY.value = e.translationY;
     })
     .onEnd((e) => {
-      const swipedRight = e.translationX > SWIPE_THRESHOLD;
-      const swipedLeft = e.translationX < -SWIPE_THRESHOLD;
+      const swipeDirection = determineSwipeDirection(
+        e.translationX,
+        SWIPE_THRESHOLD,
+      );
 
-      if (swipedRight && topCard) {
+      if (swipeDirection === "right" && topCard) {
         translateX.value = withTiming(
           screenWidth,
           { duration: 200 },
@@ -67,7 +73,7 @@ export function SwipeCardStack({
             }
           },
         );
-      } else if (swipedLeft && topCard) {
+      } else if (swipeDirection === "left" && topCard) {
         translateX.value = withTiming(
           -screenWidth,
           { duration: 200 },

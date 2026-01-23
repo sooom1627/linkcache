@@ -2,18 +2,13 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { updateLinkStatus } from "../api/updateLinkStatus.api";
 import { linkQueryKeys } from "../constants/queryKeys";
-import type { TriageStatus, UserLink } from "../types/linkList.types";
+import type {
+  GetUserLinksResponse,
+  TriageStatus,
+  UserLink,
+} from "../types/linkList.types";
 
 import { useLinks } from "./useLinks";
-
-/**
- * useLinksのクエリデータ型
- */
-interface LinksQueryData {
-  data: UserLink[];
-  hasMore: boolean;
-  totalCount: number;
-}
 
 /**
  * Swipe Triage機能のためのカスタムフック
@@ -73,7 +68,7 @@ export function useSwipeTriage() {
 
       // 現在のキャッシュを取得（ロールバック用）
       const previousTriageData =
-        queryClient.getQueryData<LinksQueryData>(triageQueryKey);
+        queryClient.getQueryData<GetUserLinksResponse>(triageQueryKey);
 
       // スワイプしたカードのデータを保存（Read Soonタブに追加するため）
       const swipedCard = previousTriageData?.data.find(
@@ -81,7 +76,7 @@ export function useSwipeTriage() {
       );
 
       // Swipe Triageキャッシュを更新（スワイプしたカードを削除）
-      queryClient.setQueryData<LinksQueryData>(triageQueryKey, (old) => {
+      queryClient.setQueryData<GetUserLinksResponse>(triageQueryKey, (old) => {
         if (!old?.data) return old;
         return {
           ...old,
@@ -90,7 +85,7 @@ export function useSwipeTriage() {
       });
 
       // Read Soonタブのキャッシュを更新（右スワイプ時）
-      let previousReadSoonData: LinksQueryData | undefined;
+      let previousReadSoonData: GetUserLinksResponse | undefined;
       if (status === "read_soon" && swipedCard) {
         const readSoonQueryKey = linkQueryKeys.listLimited({
           status: "read_soon",
@@ -98,22 +93,28 @@ export function useSwipeTriage() {
           isRead: false,
         });
         previousReadSoonData =
-          queryClient.getQueryData<LinksQueryData>(readSoonQueryKey);
+          queryClient.getQueryData<GetUserLinksResponse>(readSoonQueryKey);
 
         // Read Soonタブに追加（先頭に挿入）
-        queryClient.setQueryData<LinksQueryData>(readSoonQueryKey, (old) => {
-          if (!old?.data) return old;
+        queryClient.setQueryData<GetUserLinksResponse>(
+          readSoonQueryKey,
+          (old) => {
+            if (!old?.data) return old;
 
-          // ステータスを更新して先頭に追加
-          const updatedCard: UserLink = { ...swipedCard, status: "read_soon" };
-          const newData = [updatedCard, ...old.data].slice(0, 5); // 最大5件
+            // ステータスを更新して先頭に追加
+            const updatedCard: UserLink = {
+              ...swipedCard,
+              status: "read_soon",
+            };
+            const newData = [updatedCard, ...old.data].slice(0, 5); // 最大5件
 
-          return {
-            ...old,
-            data: newData,
-            totalCount: old.totalCount + 1,
-          };
-        });
+            return {
+              ...old,
+              data: newData,
+              totalCount: old.totalCount + 1,
+            };
+          },
+        );
       }
 
       return {
