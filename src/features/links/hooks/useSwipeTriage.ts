@@ -78,9 +78,17 @@ export function useSwipeTriage() {
       // Swipe Triageキャッシュを更新（スワイプしたカードを削除）
       queryClient.setQueryData<GetUserLinksResponse>(triageQueryKey, (old) => {
         if (!old?.data) return old;
+        
+        const newData = old.data.filter((link) => link.link_id !== linkId);
+        const wasRemoved = old.data.length > newData.length;
+        
         return {
           ...old,
-          data: old.data.filter((link) => link.link_id !== linkId),
+          data: newData,
+          totalCount:
+            wasRemoved && old.totalCount > 0
+              ? old.totalCount - 1
+              : old.totalCount,
         };
       });
 
