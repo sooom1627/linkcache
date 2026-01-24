@@ -42,30 +42,33 @@ export function SwipeCard({ link }: SwipeCardProps) {
         overflow: "hidden",
         borderRadius: 16,
         borderWidth: 1,
+        minHeight: 270,
         borderColor: "#e2e8f0",
         backgroundColor: "#ffffff",
+        justifyContent: "flex-start",
+        alignItems: "center",
       }}
     >
       {/* OG画像 */}
       {link.image_url ? (
         <Image
           source={{ uri: link.image_url }}
-          style={{ width: "100%", height: 170 }}
+          style={{ width: "100%", aspectRatio: 1.91 }}
           contentFit="cover"
           placeholder={{ blurhash: "L6PZfSjE.AyE_3t7t7R**0o#DgR4" }}
           transition={200}
         />
       ) : (
-        <View className="h-32 items-center justify-center bg-slate-50">
+        <View className="h-[170px] w-full items-center justify-center bg-slate-50">
           <Link2 size={32} color="#cbd5e1" strokeWidth={1.5} />
         </View>
       )}
 
       {/* コンテンツ */}
-      <View className="gap-2 p-3">
+      <View className="flex w-full flex-col items-start justify-center gap-2 px-3 py-4">
         {/* タイトル */}
         <Text
-          className="text-base font-medium text-slate-800"
+          className="line-clamp-2 w-full text-left text-base font-medium text-slate-800"
           numberOfLines={2}
         >
           {link.title || "No title"}

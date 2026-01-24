@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { Text, TouchableOpacity, View } from "react-native";
 
-import { Undo2 } from "lucide-react-native";
+import { RotateCcw } from "lucide-react-native";
 import {
   SwipeableCardStack,
   type CardProps,
@@ -112,7 +112,7 @@ export function SwipeTriageScreen() {
           onSwipeEnded={onSwipeEnded}
           allowedPanDirections={["left", "right"]}
           allowedSwipeDirections={["left", "right"]}
-          numberOfUnswipedCardsToRender={3}
+          numberOfUnswipedCardsToRender={5}
           style={{ flex: 1 }}
         />
       </View>
@@ -125,7 +125,7 @@ export function SwipeTriageScreen() {
           canUndo ? "bg-gray-200 active:bg-gray-300" : "bg-gray-100 opacity-50"
         }`}
       >
-        <Undo2 size={18} color={canUndo ? "#4B5563" : "#9CA3AF"} />
+        <RotateCcw size={18} color={canUndo ? "#4B5563" : "#9CA3AF"} />
         <Text
           className={`text-base font-medium ${
             canUndo ? "text-gray-700" : "text-gray-400"
