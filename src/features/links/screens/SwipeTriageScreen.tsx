@@ -8,8 +8,6 @@ import { useSwipeTriage } from "../hooks/useSwipeTriage";
 
 /**
  * Swipe Triage画面コンポーネント
- *
- * Step 4: カードスタックとOGP画像表示
  */
 export function SwipeTriageScreen() {
   const [sourceType, setSourceType] = useState<"inbox" | "later">("inbox");
