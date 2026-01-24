@@ -1,14 +1,9 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 
-import { Pressable, Text, View } from "react-native";
-
-import { CalendarArrowUp, Clock } from "lucide-react-native";
+import { Text, View } from "react-native";
 
 import { SourceTypeDropdown } from "../components/SourceTypeDropdown";
-import {
-  SwipeCardStack,
-  type SwipeCardStackRef,
-} from "../components/SwipeCardStack";
+import { SwipeCardStack } from "../components/SwipeCardStack";
 import { useSwipeTriage } from "../hooks/useSwipeTriage";
 
 /**
@@ -16,18 +11,9 @@ import { useSwipeTriage } from "../hooks/useSwipeTriage";
  */
 export function SwipeTriageScreen() {
   const [sourceType, setSourceType] = useState<"inbox" | "later">("inbox");
-  const cardStackRef = useRef<SwipeCardStackRef>(null);
 
   const { cardStack, isLoading, error, handleSwipeLeft, handleSwipeRight } =
     useSwipeTriage({ sourceType });
-
-  const handleButtonSwipeLeft = () => {
-    cardStackRef.current?.swipeLeft();
-  };
-
-  const handleButtonSwipeRight = () => {
-    cardStackRef.current?.swipeRight();
-  };
 
   const handleSourceTypeChange = (type: "inbox" | "later") => {
     setSourceType(type);
@@ -87,33 +73,10 @@ export function SwipeTriageScreen() {
       {/* Card Stack */}
       <View className="w-full flex-1 items-center justify-center">
         <SwipeCardStack
-          ref={cardStackRef}
           cards={cardStack}
           onSwipeLeft={handleSwipeLeft}
           onSwipeRight={handleSwipeRight}
         />
-      </View>
-
-      {/* Swipe Buttons */}
-      <View className="flex-row items-center justify-center gap-16 pb-4">
-        <Pressable
-          onPress={handleButtonSwipeLeft}
-          className="items-center active:opacity-70"
-        >
-          <View className="size-14 items-center justify-center rounded-full border border-gray-200 bg-white">
-            <Clock size={24} color="#9CA3AF" />
-          </View>
-          <Text className="mt-1 text-xs text-gray-400">Later</Text>
-        </Pressable>
-        <Pressable
-          onPress={handleButtonSwipeRight}
-          className="items-center active:opacity-70"
-        >
-          <View className="size-14 items-center justify-center rounded-full border border-gray-200 bg-white">
-            <CalendarArrowUp size={24} color="#3B82F6" />
-          </View>
-          <Text className="mt-1 text-xs text-blue-500">Read soon</Text>
-        </Pressable>
       </View>
     </View>
   );

@@ -1,6 +1,6 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
+import { useEffect } from "react";
 
-import { useWindowDimensions, View } from "react-native";
+import { Text, useWindowDimensions, View } from "react-native";
 
 import { CalendarArrowUp, Clock } from "lucide-react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
@@ -17,21 +17,10 @@ import type { UserLink } from "../types/linkList.types";
 
 import { SwipeCard } from "./SwipeCard";
 
-export interface SwipeCardStackRef {
-  swipeLeft: () => void;
-  swipeRight: () => void;
-}
-
 interface SwipeCardStackProps {
   cards: UserLink[];
   onSwipeLeft: (linkId: string) => void;
   onSwipeRight: (linkId: string) => void;
-}
-
-// アニメーション中のカードを追跡（連続スワイプ防止＆UIの整合性維持）
-interface AnimatingCard {
-  linkId: string;
-  direction: "left" | "right";
 }
 
 /**
@@ -40,27 +29,20 @@ interface AnimatingCard {
  * 3枚のカード（Top, Next, Queued）をスタック表示し、
  * トップカードのみスワイプ可能にします。
  */
-export const SwipeCardStack = forwardRef<
-  SwipeCardStackRef,
-  SwipeCardStackProps
->(function SwipeCardStack({ cards, onSwipeLeft, onSwipeRight }, ref) {
+export function SwipeCardStack({
+  cards,
+  onSwipeLeft,
+  onSwipeRight,
+}: SwipeCardStackProps) {
   const { width: screenWidth } = useWindowDimensions();
   const SWIPE_THRESHOLD = screenWidth * 0.3;
 
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
 
-  // アニメーション中のカードを追跡（連続スワイプ防止）
-  const animatingCardRef = useRef<AnimatingCard | null>(null);
-
-  // アニメーション中のカードを除外した表示用カード
-  const displayCards = animatingCardRef.current
-    ? cards.filter((card) => card.link_id !== animatingCardRef.current?.linkId)
-    : cards;
-
-  const topCard = displayCards[0];
-  const nextCard = displayCards[1];
-  const queuedCard = displayCards[2];
+  const topCard = cards[0];
+  const nextCard = cards[1];
+  const queuedCard = cards[2];
 
   // Reset animation values when top card changes
   useEffect(() => {
@@ -68,73 +50,35 @@ export const SwipeCardStack = forwardRef<
     translateY.value = 0;
   }, [topCard?.link_id, translateX, translateY]);
 
-  // アニメーション完了時の処理
-  const handleAnimationComplete = () => {
-    animatingCardRef.current = null;
-  };
-
-  // スワイプ実行（optimistic update: callback即座実行）
-  const executeSwipe = (
-    linkId: string,
-    direction: "left" | "right",
-    callback: (linkId: string) => void,
-  ) => {
-    // 既にアニメーション中なら無視
-    if (animatingCardRef.current) return;
-
-    // アニメーション中としてマーク
-    animatingCardRef.current = { linkId, direction };
-
-    // 即座にcallbackを呼んでoptimistic update
-    callback(linkId);
-
-    // アニメーション開始
-    const targetX = direction === "left" ? -screenWidth : screenWidth;
-    translateX.value = withTiming(targetX, { duration: 200 }, (finished) => {
-      if (finished) {
-        runOnJS(handleAnimationComplete)();
-      }
-    });
-  };
-
-  // Expose swipe methods via ref
-  useImperativeHandle(
-    ref,
-    () => ({
-      swipeLeft: () => {
-        const card = cards[0];
-        if (card) {
-          executeSwipe(card.link_id, "left", onSwipeLeft);
-        }
-      },
-      swipeRight: () => {
-        const card = cards[0];
-        if (card) {
-          executeSwipe(card.link_id, "right", onSwipeRight);
-        }
-      },
-    }),
-    [cards, onSwipeLeft, onSwipeRight],
-  );
-
   const panGesture = Gesture.Pan()
     .onUpdate((e) => {
-      // アニメーション中はジェスチャー無視
-      if (animatingCardRef.current) return;
       translateX.value = e.translationX;
       translateY.value = e.translationY;
     })
     .onEnd((e) => {
-      // アニメーション中はジェスチャー無視
-      if (animatingCardRef.current) return;
-
       const swipedRight = e.translationX > SWIPE_THRESHOLD;
       const swipedLeft = e.translationX < -SWIPE_THRESHOLD;
 
       if (swipedRight && topCard) {
-        executeSwipe(topCard.link_id, "right", onSwipeRight);
+        translateX.value = withTiming(
+          screenWidth,
+          { duration: 200 },
+          (finished) => {
+            if (finished) {
+              runOnJS(onSwipeRight)(topCard.link_id);
+            }
+          },
+        );
       } else if (swipedLeft && topCard) {
-        executeSwipe(topCard.link_id, "left", onSwipeLeft);
+        translateX.value = withTiming(
+          -screenWidth,
+          { duration: 200 },
+          (finished) => {
+            if (finished) {
+              runOnJS(onSwipeLeft)(topCard.link_id);
+            }
+          },
+        );
       } else {
         translateX.value = withSpring(0);
         translateY.value = withSpring(0);
@@ -164,24 +108,30 @@ export const SwipeCardStack = forwardRef<
   }));
 
   // 右スワイプ時のフィードバック（Read soon）
-  const rightFeedbackStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(
-      translateX.value,
-      [0, SWIPE_THRESHOLD],
-      [0, 1],
-      "clamp",
-    ),
-  }));
+  const rightFeedbackStyle = useAnimatedStyle(() => {
+    "worklet";
+    return {
+      opacity: interpolate(
+        translateX.value,
+        [0, SWIPE_THRESHOLD],
+        [0, 1],
+        "clamp",
+      ),
+    };
+  });
 
   // 左スワイプ時のフィードバック（Later）
-  const leftFeedbackStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(
-      translateX.value,
-      [0, -SWIPE_THRESHOLD],
-      [0, 1],
-      "clamp",
-    ),
-  }));
+  const leftFeedbackStyle = useAnimatedStyle(() => {
+    "worklet";
+    return {
+      opacity: interpolate(
+        translateX.value,
+        [0, -SWIPE_THRESHOLD],
+        [0, 1],
+        "clamp",
+      ),
+    };
+  });
 
   if (!topCard) {
     return null;
@@ -218,31 +168,33 @@ export const SwipeCardStack = forwardRef<
           className="absolute h-full w-[99%] max-w-[500px] items-center justify-center"
           style={topCardStyle}
         >
-          {/* 右スワイプ: Read soon */}
-          <Animated.View
-            className="absolute left-4 top-4 z-10 flex-row items-center gap-2 rounded-lg border-2 border-blue-600 bg-blue-600 px-3 py-2"
-            style={rightFeedbackStyle}
-          >
-            <CalendarArrowUp size={20} color="#FFFFFF" />
-            <Animated.Text className="text-base font-bold text-white">
-              Read soon
-            </Animated.Text>
-          </Animated.View>
-
-          {/* 左スワイプ: Later */}
-          <Animated.View
-            className="absolute right-4 top-4 z-10 flex-row items-center gap-2 rounded-lg border-2 border-gray-500 bg-gray-500 px-3 py-2"
-            style={leftFeedbackStyle}
-          >
-            <Clock size={20} color="#FFFFFF" />
-            <Animated.Text className="text-base font-bold text-white">
-              Later
-            </Animated.Text>
-          </Animated.View>
-
           <SwipeCard link={topCard} index={0} />
         </Animated.View>
       </GestureDetector>
+
+      {/* スワイプフィードバック（カードの上に独立して配置） */}
+      <View
+        className="pointer-events-none absolute h-full w-[99%] max-w-[500px]"
+        style={{ zIndex: 10 }}
+      >
+        {/* 右スワイプ: Read soon */}
+        <Animated.View
+          className="absolute left-4 top-4 flex-row items-center gap-2 rounded-lg border-2 border-blue-600 bg-blue-600 px-3 py-2"
+          style={rightFeedbackStyle}
+        >
+          <CalendarArrowUp size={20} color="#FFFFFF" />
+          <Text className="text-base font-bold text-white">Read soon</Text>
+        </Animated.View>
+
+        {/* 左スワイプ: Later */}
+        <Animated.View
+          className="absolute right-4 top-4 flex-row items-center gap-2 rounded-lg border-2 border-gray-500 bg-gray-500 px-3 py-2"
+          style={leftFeedbackStyle}
+        >
+          <Clock size={20} color="#FFFFFF" />
+          <Text className="text-base font-bold text-white">Later</Text>
+        </Animated.View>
+      </View>
     </View>
   );
-});
+}
