@@ -2,8 +2,10 @@ import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 
 import { useWindowDimensions, View } from "react-native";
 
+import { CalendarArrowUp, Clock } from "lucide-react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
+  interpolate,
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
@@ -161,6 +163,26 @@ export const SwipeCardStack = forwardRef<
     zIndex: 1,
   }));
 
+  // 右スワイプ時のフィードバック（Read soon）
+  const rightFeedbackStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(
+      translateX.value,
+      [0, SWIPE_THRESHOLD],
+      [0, 1],
+      "clamp",
+    ),
+  }));
+
+  // 左スワイプ時のフィードバック（Later）
+  const leftFeedbackStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(
+      translateX.value,
+      [0, -SWIPE_THRESHOLD],
+      [0, 1],
+      "clamp",
+    ),
+  }));
+
   if (!topCard) {
     return null;
   }
@@ -196,6 +218,28 @@ export const SwipeCardStack = forwardRef<
           className="absolute h-full w-[99%] max-w-[500px] items-center justify-center"
           style={topCardStyle}
         >
+          {/* 右スワイプ: Read soon */}
+          <Animated.View
+            className="absolute left-4 top-4 z-10 flex-row items-center gap-2 rounded-lg border-2 border-blue-600 bg-blue-600 px-3 py-2"
+            style={rightFeedbackStyle}
+          >
+            <CalendarArrowUp size={20} color="#FFFFFF" />
+            <Animated.Text className="text-base font-bold text-white">
+              Read soon
+            </Animated.Text>
+          </Animated.View>
+
+          {/* 左スワイプ: Later */}
+          <Animated.View
+            className="absolute right-4 top-4 z-10 flex-row items-center gap-2 rounded-lg border-2 border-gray-500 bg-gray-500 px-3 py-2"
+            style={leftFeedbackStyle}
+          >
+            <Clock size={20} color="#FFFFFF" />
+            <Animated.Text className="text-base font-bold text-white">
+              Later
+            </Animated.Text>
+          </Animated.View>
+
           <SwipeCard link={topCard} index={0} />
         </Animated.View>
       </GestureDetector>
