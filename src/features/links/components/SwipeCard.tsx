@@ -1,10 +1,12 @@
-import { Text, View } from "react-native";
+import { Dimensions, Text, View } from "react-native";
 
 import { Image } from "expo-image";
 
 import { Globe, Link2 } from "lucide-react-native";
 
 import type { UserLink } from "../types/linkList.types";
+
+const CARD_WIDTH = Dimensions.get("window").width - 40;
 
 interface SwipeCardProps {
   link: UserLink;
@@ -34,7 +36,16 @@ export function SwipeCard({ link }: SwipeCardProps) {
   const domain = extractDomain(link.url);
 
   return (
-    <View className="w-full overflow-hidden rounded-2xl border border-slate-200 bg-white">
+    <View
+      style={{
+        width: CARD_WIDTH,
+        overflow: "hidden",
+        borderRadius: 16,
+        borderWidth: 1,
+        borderColor: "#e2e8f0",
+        backgroundColor: "#ffffff",
+      }}
+    >
       {/* OG画像 */}
       {link.image_url ? (
         <Image
