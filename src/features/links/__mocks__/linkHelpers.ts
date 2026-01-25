@@ -19,15 +19,16 @@ export function createMockLink(
 ): UserLink;
 export function createMockLink(
   url?: string,
-  status?: "inbox" | "read_soon" | "later" | null,
+  status?: "new" | "read_soon" | "stock" | "done" | null,
 ): UserLink;
 export function createMockLink(
   idOrUrl: number | string = "https://example.com",
   overridesOrStatus?:
     | Partial<UserLink>
-    | "inbox"
+    | "new"
     | "read_soon"
-    | "later"
+    | "stock"
+    | "done"
     | null,
 ): UserLink {
   // idベースの呼び出し判定：
@@ -38,9 +39,10 @@ export function createMockLink(
     (typeof idOrUrl === "string" &&
       overridesOrStatus !== undefined &&
       (typeof overridesOrStatus === "object" ||
-        overridesOrStatus === "inbox" ||
+        overridesOrStatus === "new" ||
         overridesOrStatus === "read_soon" ||
-        overridesOrStatus === "later" ||
+        overridesOrStatus === "stock" ||
+        overridesOrStatus === "done" ||
         overridesOrStatus === null));
 
   if (isIdBasedCall) {
@@ -63,7 +65,7 @@ export function createMockLink(
     return {
       status_id: `status-${id}`,
       user_id: "user-1",
-      status: "inbox",
+      status: "new",
       triaged_at: null,
       read_at: null,
       saved_at: `2024-01-${paddedId}T00:00:00Z`,
@@ -84,7 +86,7 @@ export function createMockLink(
   // 第1引数が文字列で、第2引数がundefinedの場合
   const url = idOrUrl as string;
   const status =
-    (overridesOrStatus as "inbox" | "read_soon" | "later" | null) ||
+    (overridesOrStatus as "new" | "read_soon" | "stock" | "done" | null) ||
     "read_soon";
 
   return {

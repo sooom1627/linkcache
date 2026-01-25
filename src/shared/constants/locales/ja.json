@@ -138,8 +138,10 @@
       "options": {
         "all": "すべて",
         "inbox": "インボックス",
+        "new": "新規",
         "read_soon": "すぐ読む",
-        "later": "後で",
+        "stock": "ストック",
+        "done": "完了",
         "unread": "未読",
         "read": "既読"
       }
@@ -171,8 +173,10 @@
         "tap_to_change": "タップしてモードを変更",
         "status": {
           "inbox": "インボックス",
+          "new": "新規",
           "read_soon": "すぐ読む",
-          "later": "後で"
+          "stock": "ストック",
+          "done": "完了"
         }
       }
     },

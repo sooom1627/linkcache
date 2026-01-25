@@ -18,7 +18,7 @@ describe("useLinkListFilter", () => {
 
     it("初期値を指定できる", () => {
       const initialState: LinkListFilterState = {
-        status: "inbox",
+        status: "new",
         readStatus: "unread",
       };
       const { result } = renderHook(() => useLinkListFilter(initialState));
@@ -28,14 +28,14 @@ describe("useLinkListFilter", () => {
   });
 
   describe("ステータスフィルターの更新", () => {
-    it("ステータスを'inbox'に更新できる", () => {
+    it("ステータスを'new'に更新できる", () => {
       const { result } = renderHook(() => useLinkListFilter());
 
       act(() => {
-        result.current.setStatus("inbox");
+        result.current.setStatus("new");
       });
 
-      expect(result.current.filterState.status).toBe("inbox");
+      expect(result.current.filterState.status).toBe("new");
     });
 
     it("ステータスを'read_soon'に更新できる", () => {
@@ -48,19 +48,29 @@ describe("useLinkListFilter", () => {
       expect(result.current.filterState.status).toBe("read_soon");
     });
 
-    it("ステータスを'later'に更新できる", () => {
+    it("ステータスを'stock'に更新できる", () => {
       const { result } = renderHook(() => useLinkListFilter());
 
       act(() => {
-        result.current.setStatus("later");
+        result.current.setStatus("stock");
       });
 
-      expect(result.current.filterState.status).toBe("later");
+      expect(result.current.filterState.status).toBe("stock");
+    });
+
+    it("ステータスを'done'に更新できる", () => {
+      const { result } = renderHook(() => useLinkListFilter());
+
+      act(() => {
+        result.current.setStatus("done");
+      });
+
+      expect(result.current.filterState.status).toBe("done");
     });
 
     it("ステータスを'all'に戻せる", () => {
       const { result } = renderHook(() =>
-        useLinkListFilter({ status: "inbox", readStatus: "all" }),
+        useLinkListFilter({ status: "new", readStatus: "all" }),
       );
 
       act(() => {
@@ -108,7 +118,7 @@ describe("useLinkListFilter", () => {
   describe("フィルターのリセット", () => {
     it("すべてのフィルターをリセットできる", () => {
       const { result } = renderHook(() =>
-        useLinkListFilter({ status: "inbox", readStatus: "unread" }),
+        useLinkListFilter({ status: "new", readStatus: "unread" }),
       );
 
       act(() => {
@@ -131,11 +141,11 @@ describe("useLinkListFilter", () => {
 
     it("statusフィルターが正しく変換される", () => {
       const { result } = renderHook(() =>
-        useLinkListFilter({ status: "inbox", readStatus: "all" }),
+        useLinkListFilter({ status: "new", readStatus: "all" }),
       );
 
       expect(result.current.useLinksOptions).toEqual({
-        status: "inbox",
+        status: "new",
       });
     });
 
@@ -180,7 +190,7 @@ describe("useLinkListFilter", () => {
 
     it("ステータスフィルターのみ適用されている場合は1", () => {
       const { result } = renderHook(() =>
-        useLinkListFilter({ status: "inbox", readStatus: "all" }),
+        useLinkListFilter({ status: "new", readStatus: "all" }),
       );
 
       expect(result.current.activeFilterCount).toBe(1);
@@ -196,7 +206,7 @@ describe("useLinkListFilter", () => {
 
     it("両方のフィルターが適用されている場合は2", () => {
       const { result } = renderHook(() =>
-        useLinkListFilter({ status: "later", readStatus: "read" }),
+        useLinkListFilter({ status: "stock", readStatus: "read" }),
       );
 
       expect(result.current.activeFilterCount).toBe(2);
@@ -212,7 +222,7 @@ describe("useLinkListFilter", () => {
 
     it("いずれかのフィルターが適用されている場合はtrue", () => {
       const { result } = renderHook(() =>
-        useLinkListFilter({ status: "inbox", readStatus: "all" }),
+        useLinkListFilter({ status: "new", readStatus: "all" }),
       );
 
       expect(result.current.hasActiveFilters).toBe(true);

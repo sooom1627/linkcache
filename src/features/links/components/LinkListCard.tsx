@@ -55,6 +55,7 @@ export function LinkListCard({ link }: LinkListCardProps) {
   const [imageError, setImageError] = useState(false);
   const statusStyle = getStatusStyle(link.status);
   const isRead = link.read_at !== null;
+  const isDone = link.status === "done";
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handlePress = useCallback(() => {
@@ -161,7 +162,21 @@ export function LinkListCard({ link }: LinkListCardProps) {
               {link.site_name || extractDomain(link.url)}
             </Text>
             {/* ステータス表示 */}
-            {isRead ? (
+            {isDone ? (
+              // Doneステータス: 優先表示
+              <View className="flex-row items-center gap-1.5">
+                <Circle
+                  size={8}
+                  fill={statusStyle.icon}
+                  color={statusStyle.icon}
+                />
+                <Text className={`text-xs font-medium ${statusStyle.text}`}>
+                  {t(`links.card.action_modal.status.${link.status}`, {
+                    defaultValue: link.status,
+                  })}
+                </Text>
+              </View>
+            ) : isRead ? (
               // 既読: シンプルなアイコン+テキスト
               <View className="flex-row items-center gap-1.5">
                 <Check

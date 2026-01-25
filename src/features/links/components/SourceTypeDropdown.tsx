@@ -11,14 +11,14 @@ import Animated, {
 } from "react-native-reanimated";
 
 interface SourceTypeDropdownProps {
-  value: "inbox" | "later" | "read_soon";
-  onChange: (value: "inbox" | "later" | "read_soon") => void;
+  value: "new" | "read_soon" | "stock" | "done";
+  onChange: (value: "new" | "read_soon" | "stock" | "done") => void;
 }
 
 /**
  * ソースタイプ選択用のドロップダウンメニューコンポーネント
  *
- * inbox/later の選択を提供するドロップダウンメニューです。
+ * new/read_soon/stock/done の選択を提供するドロップダウンメニューです。
  * ChevronDown アイコンの回転アニメーションを含みます。
  */
 export function SourceTypeDropdown({
@@ -41,7 +41,7 @@ export function SourceTypeDropdown({
     transform: [{ rotate: `${rotation.value}deg` }],
   }));
 
-  const handleSelect = (type: "inbox" | "later" | "read_soon") => {
+  const handleSelect = (type: "new" | "read_soon" | "stock" | "done") => {
     onChange(type);
     setIsOpen(false);
   };
@@ -72,20 +72,20 @@ export function SourceTypeDropdown({
       {isOpen && (
         <View className="absolute top-full z-30 mt-2 w-48 rounded-xl border border-slate-100 bg-white shadow-xl">
           <Pressable
-            onPress={() => handleSelect("inbox")}
+            onPress={() => handleSelect("new")}
             accessibilityRole="button"
-            accessibilityState={{ selected: value === "inbox" }}
-            accessibilityLabel={t("links.card.action_modal.status.inbox")}
+            accessibilityState={{ selected: value === "new" }}
+            accessibilityLabel={t("links.card.action_modal.status.new")}
             className={`rounded-t-xl px-4 py-3 ${
-              value === "inbox" ? "bg-slate-50" : "active:bg-slate-50"
+              value === "new" ? "bg-slate-50" : "active:bg-slate-50"
             }`}
           >
             <Text
               className={`text-center text-sm font-medium ${
-                value === "inbox" ? "text-slate-900" : "text-slate-600"
+                value === "new" ? "text-slate-900" : "text-slate-600"
               }`}
             >
-              {t("links.card.action_modal.status.inbox")}
+              {t("links.card.action_modal.status.new")}
             </Text>
           </Pressable>
 
@@ -112,20 +112,40 @@ export function SourceTypeDropdown({
           <View className="h-px w-full bg-slate-100" />
 
           <Pressable
-            onPress={() => handleSelect("later")}
+            onPress={() => handleSelect("stock")}
             accessibilityRole="button"
-            accessibilityState={{ selected: value === "later" }}
-            accessibilityLabel={t("links.card.action_modal.status.later")}
-            className={`rounded-b-xl px-4 py-3 ${
-              value === "later" ? "bg-slate-50" : "active:bg-slate-50"
+            accessibilityState={{ selected: value === "stock" }}
+            accessibilityLabel={t("links.card.action_modal.status.stock")}
+            className={`px-4 py-3 ${
+              value === "stock" ? "bg-slate-50" : "active:bg-slate-50"
             }`}
           >
             <Text
               className={`text-center text-sm font-medium ${
-                value === "later" ? "text-slate-900" : "text-slate-600"
+                value === "stock" ? "text-slate-900" : "text-slate-600"
               }`}
             >
-              {t("links.card.action_modal.status.later")}
+              {t("links.card.action_modal.status.stock")}
+            </Text>
+          </Pressable>
+
+          <View className="h-px w-full bg-slate-100" />
+
+          <Pressable
+            onPress={() => handleSelect("done")}
+            accessibilityRole="button"
+            accessibilityState={{ selected: value === "done" }}
+            accessibilityLabel={t("links.card.action_modal.status.done")}
+            className={`rounded-b-xl px-4 py-3 ${
+              value === "done" ? "bg-slate-50" : "active:bg-slate-50"
+            }`}
+          >
+            <Text
+              className={`text-center text-sm font-medium ${
+                value === "done" ? "text-slate-900" : "text-slate-600"
+              }`}
+            >
+              {t("links.card.action_modal.status.done")}
             </Text>
           </Pressable>
         </View>

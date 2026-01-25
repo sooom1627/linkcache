@@ -46,7 +46,7 @@ describe("useCreateLink", () => {
     const mockResponse = {
       link_id: "test-uuid",
       url: "https://example.com",
-      status: "inbox",
+      status: "new",
     };
 
     (fetchOgpMetadata as jest.Mock).mockResolvedValueOnce(mockMetadata);
@@ -77,7 +77,7 @@ describe("useCreateLink", () => {
     const mockResponse = {
       link_id: "test-uuid",
       url: "https://example.com",
-      status: "inbox",
+      status: "new",
     };
 
     (fetchOgpMetadata as jest.Mock).mockResolvedValueOnce(null);
@@ -133,7 +133,7 @@ describe("useCreateLink", () => {
     (createLinkWithStatus as jest.Mock).mockResolvedValueOnce({
       link_id: "test-uuid",
       url: "https://example.com",
-      status: "inbox",
+      status: "new",
     });
 
     const { result } = renderHook(() => useCreateLink(), { wrapper });
@@ -161,7 +161,7 @@ describe("useCreateLink", () => {
     const mockResponse = {
       link_id: "test-uuid",
       url: "https://example.com",
-      status: "inbox",
+      status: "new",
     };
 
     (fetchOgpMetadata as jest.Mock).mockResolvedValueOnce(null);
@@ -194,7 +194,7 @@ describe("useCreateLink", () => {
     const mockResponse = {
       link_id: "test-uuid",
       url: "https://example.com",
-      status: "inbox",
+      status: "new",
     };
 
     (fetchOgpMetadata as jest.Mock).mockResolvedValueOnce(null);

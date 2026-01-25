@@ -43,7 +43,7 @@ describe("updateLinkStatus", () => {
     expect(mockEq).toHaveBeenCalledWith("link_id", MOCK_LINK_ID);
   });
 
-  it("updates link status to later", async () => {
+  it("updates link status to new", async () => {
     const mockEq = jest.fn().mockResolvedValue({
       error: null,
     });
@@ -55,11 +55,55 @@ describe("updateLinkStatus", () => {
       update: mockUpdate,
     } as unknown as ReturnType<typeof supabase.from>);
 
-    await updateLinkStatus(MOCK_LINK_ID, "later");
+    await updateLinkStatus(MOCK_LINK_ID, "new");
 
     expect(mockUpdate).toHaveBeenCalledWith(
       expect.objectContaining({
-        status: "later",
+        status: "new",
+        triaged_at: expect.any(String) as string,
+      }),
+    );
+  });
+
+  it("updates link status to stock", async () => {
+    const mockEq = jest.fn().mockResolvedValue({
+      error: null,
+    });
+    const mockUpdate = jest.fn().mockReturnValue({
+      eq: mockEq,
+    });
+
+    mockSupabase.from.mockReturnValue({
+      update: mockUpdate,
+    } as unknown as ReturnType<typeof supabase.from>);
+
+    await updateLinkStatus(MOCK_LINK_ID, "stock");
+
+    expect(mockUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: "stock",
+        triaged_at: expect.any(String) as string,
+      }),
+    );
+  });
+
+  it("updates link status to done", async () => {
+    const mockEq = jest.fn().mockResolvedValue({
+      error: null,
+    });
+    const mockUpdate = jest.fn().mockReturnValue({
+      eq: mockEq,
+    });
+
+    mockSupabase.from.mockReturnValue({
+      update: mockUpdate,
+    } as unknown as ReturnType<typeof supabase.from>);
+
+    await updateLinkStatus(MOCK_LINK_ID, "done");
+
+    expect(mockUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: "done",
         triaged_at: expect.any(String) as string,
       }),
     );

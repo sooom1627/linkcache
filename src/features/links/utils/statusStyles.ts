@@ -1,7 +1,7 @@
 import type { TriageStatus } from "../types/linkList.types";
 
 export const statusStyles = {
-  inbox: {
+  new: {
     badge: "bg-sky-100",
     text: "text-sky-600",
     icon: "#38bdf8", // sky-400
@@ -11,10 +11,15 @@ export const statusStyles = {
     text: "text-emerald-600",
     icon: "#34d399", // emerald-400
   },
-  later: {
+  stock: {
     badge: "bg-amber-100",
     text: "text-amber-600",
     icon: "#fbbf24", // amber-400
+  },
+  done: {
+    badge: "bg-purple-100",
+    text: "text-purple-600",
+    icon: "#a78bfa", // purple-400
   },
   default: {
     badge: "bg-slate-100",

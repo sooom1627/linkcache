@@ -116,7 +116,7 @@ const mockFetchUserLinks = jest.mocked(fetchUserLinks);
 // モックデータヘルパー
 const createMockLink = (
   id: number,
-  status: "inbox" | "read_soon" | "later" = "read_soon",
+  status: "new" | "read_soon" | "stock" = "read_soon",
 ) => ({
   status_id: `status-${id}`,
   user_id: "user-1",
@@ -143,7 +143,7 @@ describe("LinkListTabs", () => {
   describe("APIレイヤーでのフィルタリング", () => {
     it("Read Soonタブはstatus=read_soon, limit=5でAPIを呼び出す", async () => {
       const mockLatestData = {
-        data: [createMockLink(1, "inbox")],
+        data: [createMockLink(1, "new")],
         hasMore: false,
         totalCount: 1,
       };
@@ -193,7 +193,7 @@ describe("LinkListTabs", () => {
     it("Latest Addedタブはlimit=5でAPIを呼び出す（status=inboxでフィルタ）", async () => {
       // Latest用のレスポンス（最初のタブ）
       const mockLatestData = {
-        data: [createMockLink(2, "inbox")],
+        data: [createMockLink(2, "new")],
         hasMore: false,
         totalCount: 1,
       };
@@ -222,7 +222,7 @@ describe("LinkListTabs", () => {
 
       // limit: 5, status: "inbox" でAPIが呼ばれることを確認
       const latestCall = mockFetchUserLinks.mock.calls.find(
-        (call) => call[0]?.status === "inbox" && call[0]?.limit === 5,
+        (call) => call[0]?.status === "new" && call[0]?.limit === 5,
       );
       expect(latestCall).toBeTruthy();
     });
@@ -230,11 +230,11 @@ describe("LinkListTabs", () => {
     it("Read Soon/Latestともに最大5件まで表示される", async () => {
       const mockLatestData = {
         data: [
-          createMockLink(1, "inbox"),
-          createMockLink(2, "inbox"),
-          createMockLink(3, "inbox"),
-          createMockLink(4, "inbox"),
-          createMockLink(5, "inbox"),
+          createMockLink(1, "new"),
+          createMockLink(2, "new"),
+          createMockLink(3, "new"),
+          createMockLink(4, "new"),
+          createMockLink(5, "new"),
         ],
         hasMore: false,
         totalCount: 10, // 実際には10件あるが5件のみ取得
@@ -297,7 +297,7 @@ describe("LinkListTabs", () => {
         totalCount: 1,
       };
       const mockLatestData = {
-        data: [createMockLink(1, "read_soon"), createMockLink(2, "inbox")],
+        data: [createMockLink(1, "read_soon"), createMockLink(2, "new")],
         hasMore: false,
         totalCount: 2,
       };

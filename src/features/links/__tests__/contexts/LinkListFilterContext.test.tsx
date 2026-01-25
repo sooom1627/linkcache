@@ -39,10 +39,10 @@ describe("LinkListFilterContext", () => {
       });
 
       act(() => {
-        result.current.setStatus("inbox");
+        result.current.setStatus("new");
       });
 
-      expect(result.current.filterState.status).toBe("inbox");
+      expect(result.current.filterState.status).toBe("new");
     });
 
     it("既読状態フィルターを更新できる", () => {
@@ -63,7 +63,7 @@ describe("LinkListFilterContext", () => {
       });
 
       act(() => {
-        result.current.setStatus("later");
+        result.current.setStatus("stock");
         result.current.setReadStatus("read");
       });
 

@@ -20,7 +20,7 @@ interface SwipeHistory {
 }
 
 interface UseSwipeCardsOptions {
-  sourceType?: "inbox" | "later" | "read_soon";
+  sourceType?: "new" | "stock" | "read_soon";
 }
 
 interface UseSwipeCardsReturn {
@@ -53,7 +53,7 @@ interface UseSwipeCardsReturn {
 export function useSwipeCards(
   options: UseSwipeCardsOptions = {},
 ): UseSwipeCardsReturn {
-  const { sourceType = "inbox" } = options;
+  const { sourceType = "new" } = options;
 
   const queryClient = useQueryClient();
 
@@ -83,7 +83,7 @@ export function useSwipeCards(
     status: sourceType,
     isRead: false,
     orderBy:
-      sourceType === "later" || sourceType === "read_soon"
+      sourceType === "stock" || sourceType === "read_soon"
         ? "triaged_at_asc"
         : null,
   });
@@ -150,7 +150,7 @@ export function useSwipeCards(
       status,
     }: {
       linkId: string;
-      status: "inbox" | "read_soon" | "later";
+      status: "new" | "read_soon" | "stock";
     }) => updateLinkStatus(linkId, status),
     onSuccess: () => {
       void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -170,7 +170,7 @@ export function useSwipeCards(
       status,
     }: {
       linkId: string;
-      status: "inbox" | "read_soon" | "later";
+      status: "new" | "read_soon" | "stock";
       direction: SwipeDirection;
     }) => updateLinkStatus(linkId, status),
     onSuccess: () => {
@@ -203,7 +203,7 @@ export function useSwipeCards(
       if (direction === "right") {
         updateMutation.mutate({ linkId: item.link_id, status: "read_soon" });
       } else {
-        updateMutation.mutate({ linkId: item.link_id, status: "later" });
+        updateMutation.mutate({ linkId: item.link_id, status: "stock" });
       }
 
       // スワイプ後にLinkListTabsとLinkListScreenで使用されるクエリキーを無効化
@@ -219,7 +219,7 @@ export function useSwipeCards(
         });
         void queryClient.invalidateQueries({
           queryKey: linkQueryKeys.listLimited({
-            status: "inbox",
+            status: "new",
             isRead: false,
           }),
         });
@@ -261,7 +261,7 @@ export function useSwipeCards(
         }),
       });
       void queryClient.invalidateQueries({
-        queryKey: linkQueryKeys.listLimited({ status: "inbox", isRead: false }),
+        queryKey: linkQueryKeys.listLimited({ status: "new", isRead: false }),
       });
       void queryClient.invalidateQueries({
         queryKey: linkQueryKeys.list(),
@@ -274,7 +274,7 @@ export function useSwipeCards(
     // キャッシュを無効化して削除
     // useLinksと同じロジックでクエリキーを生成（orderByがundefinedの場合は除外）
     const orderBy =
-      sourceType === "later" || sourceType === "read_soon"
+      sourceType === "stock" || sourceType === "read_soon"
         ? "triaged_at_asc"
         : undefined;
     const filterParams: Omit<

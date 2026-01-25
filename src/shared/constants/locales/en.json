@@ -138,8 +138,10 @@
       "options": {
         "all": "All",
         "inbox": "Inbox",
+        "new": "New",
         "read_soon": "Read Soon",
-        "later": "Later",
+        "stock": "Stock",
+        "done": "Done",
         "unread": "Unread",
         "read": "Read"
       }
@@ -171,8 +173,10 @@
         "tap_to_change": "Tap to change mode",
         "status": {
           "inbox": "Inbox",
+          "new": "New",
           "read_soon": "Read Soon",
-          "later": "Later"
+          "stock": "Stock",
+          "done": "Done"
         }
       }
     },

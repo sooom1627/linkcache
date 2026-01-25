@@ -50,9 +50,10 @@ export const LinkListFilterModal = forwardRef<
   // ステータスオプションのリスト
   const statusOptions: { value: StatusFilterOption; label: string }[] = [
     { value: "all", label: t("links.filter.options.all") },
-    { value: "inbox", label: t("links.filter.options.inbox") },
+    { value: "new", label: t("links.filter.options.new") },
     { value: "read_soon", label: t("links.filter.options.read_soon") },
-    { value: "later", label: t("links.filter.options.later") },
+    { value: "stock", label: t("links.filter.options.stock") },
+    { value: "done", label: t("links.filter.options.done") },
   ];
 
   // 既読状態オプションのリスト
