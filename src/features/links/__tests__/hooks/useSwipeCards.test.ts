@@ -80,6 +80,35 @@ describe("useSwipeCards", () => {
       );
     });
 
+    it("read_soonのカードデータを取得し、triaged_at_ascでソートする", async () => {
+      const mockLink1 = createMockLink(1, { status: "read_soon" });
+      const mockLink2 = createMockLink(2, { status: "read_soon" });
+      mockFetchUserLinks.mockResolvedValueOnce({
+        data: [mockLink1, mockLink2],
+        hasMore: false,
+        totalCount: 2,
+      });
+
+      const { result } = renderHook(
+        () => useSwipeCards({ sourceType: "read_soon" }),
+        {
+          wrapper,
+        },
+      );
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      expect(result.current.cards).toHaveLength(2);
+      expect(mockFetchUserLinks).toHaveBeenCalledWith(
+        expect.objectContaining({
+          status: "read_soon",
+          orderBy: "triaged_at_asc",
+        }),
+      );
+    });
+
     it("デフォルトでinboxを取得する", async () => {
       mockFetchUserLinks.mockResolvedValueOnce({
         data: [],

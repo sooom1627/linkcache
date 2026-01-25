@@ -11,8 +11,8 @@ import Animated, {
 } from "react-native-reanimated";
 
 interface SourceTypeDropdownProps {
-  value: "inbox" | "later";
-  onChange: (value: "inbox" | "later") => void;
+  value: "inbox" | "later" | "read_soon";
+  onChange: (value: "inbox" | "later" | "read_soon") => void;
 }
 
 /**
@@ -41,7 +41,7 @@ export function SourceTypeDropdown({
     transform: [{ rotate: `${rotation.value}deg` }],
   }));
 
-  const handleSelect = (type: "inbox" | "later") => {
+  const handleSelect = (type: "inbox" | "later" | "read_soon") => {
     onChange(type);
     setIsOpen(false);
   };
@@ -82,6 +82,26 @@ export function SourceTypeDropdown({
               }`}
             >
               {t("links.card.action_modal.status.inbox")}
+            </Text>
+          </Pressable>
+
+          <View className="h-px w-full bg-slate-100" />
+
+          <Pressable
+            onPress={() => handleSelect("read_soon")}
+            accessibilityRole="button"
+            accessibilityState={{ selected: value === "read_soon" }}
+            accessibilityLabel={t("links.card.action_modal.status.read_soon")}
+            className={`px-4 py-3 ${
+              value === "read_soon" ? "bg-slate-50" : "active:bg-slate-50"
+            }`}
+          >
+            <Text
+              className={`text-center text-sm font-medium ${
+                value === "read_soon" ? "text-slate-900" : "text-slate-600"
+              }`}
+            >
+              {t("links.card.action_modal.status.read_soon")}
             </Text>
           </Pressable>
 

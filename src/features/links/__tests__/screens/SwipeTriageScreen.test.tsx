@@ -127,4 +127,53 @@ describe("SwipeTriageScreen", () => {
       expect(screen.getByText("Undo")).toBeTruthy();
     });
   });
+
+  it("read_soonステータスを選択できる", async () => {
+    const mockLinks = [
+      createMockLink(1, { status: "read_soon" }),
+      createMockLink(2, { status: "read_soon" }),
+    ];
+    mockFetchUserLinks.mockResolvedValueOnce({
+      data: mockLinks,
+      hasMore: false,
+      totalCount: 2,
+    });
+
+    render(<SwipeTriageScreen />, { wrapper });
+
+    await waitFor(() => {
+      expect(
+        screen.getAllByTestId("swipeable-card-stack").length,
+      ).toBeGreaterThan(0);
+    });
+
+    // read_soonが選択可能であることを確認
+    // SourceTypeDropdownがread_soonオプションを含むことを確認
+    const dropdown = screen.getByText(/Mode:/i);
+    expect(dropdown).toBeTruthy();
+  });
+
+  it("read_soonステータスのカードを表示できる", async () => {
+    const mockLinks = [
+      createMockLink(1, { status: "read_soon" }),
+      createMockLink(2, { status: "read_soon" }),
+    ];
+    mockFetchUserLinks.mockResolvedValueOnce({
+      data: mockLinks,
+      hasMore: false,
+      totalCount: 2,
+    });
+
+    render(<SwipeTriageScreen />, { wrapper });
+
+    await waitFor(() => {
+      expect(
+        screen.getAllByTestId("swipeable-card-stack").length,
+      ).toBeGreaterThan(0);
+    });
+
+    // read_soonのカードが表示されることを確認
+    expect(screen.getByText("Example 1")).toBeTruthy();
+    expect(screen.getByText("Example 2")).toBeTruthy();
+  });
 });

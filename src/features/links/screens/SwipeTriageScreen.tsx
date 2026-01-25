@@ -43,7 +43,7 @@ function RenderCard(props: CardProps<UserLink>) {
  * Swipe Triage画面コンポーネント
  */
 export function SwipeTriageScreen() {
-  const [sourceType, setSourceType] = useState<"inbox" | "later">("inbox");
+  const [sourceType, setSourceType] = useState<"inbox" | "later" | "read_soon">("inbox");
 
   const {
     cards,
@@ -59,7 +59,7 @@ export function SwipeTriageScreen() {
     restart,
   } = useSwipeCards({ sourceType });
 
-  const handleSourceTypeChange = (type: "inbox" | "later") => {
+  const handleSourceTypeChange = (type: "inbox" | "later" | "read_soon") => {
     setSourceType(type);
   };
 

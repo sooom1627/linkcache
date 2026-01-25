@@ -19,7 +19,7 @@ interface SwipeHistory {
 }
 
 interface UseSwipeCardsOptions {
-  sourceType?: "inbox" | "later";
+  sourceType?: "inbox" | "later" | "read_soon";
 }
 
 interface UseSwipeCardsReturn {
@@ -78,7 +78,7 @@ export function useSwipeCards(
   } = useLinks({
     status: sourceType,
     isRead: false,
-    orderBy: sourceType === "later" ? "triaged_at_asc" : null,
+    orderBy: sourceType === "later" || sourceType === "read_soon" ? "triaged_at_asc" : null,
   });
 
   // 前回処理したlinksの長さを追跡
