@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { Alert } from "react-native";
+
 import { useMutation } from "@tanstack/react-query";
+import * as Haptics from "expo-haptics";
 import type { SwipeDirection } from "react-native-swipeable-card-stack";
 
 import { updateLinkStatus } from "../api/updateLinkStatus.api";
@@ -22,11 +25,18 @@ interface UseSwipeCardsReturn {
   cards: UserLink[];
   swipes: SwipeDirection[];
   isLoading: boolean;
+  isFetchingNextPage: boolean;
   error: Error | null;
   handleSwipe: (item: UserLink, direction: SwipeDirection) => void;
   canUndo: boolean;
   undo: () => void;
   isUndoing: boolean;
+  /** 全てのカードをスワイプし終わり、次ページもない状態 */
+  isAllDone: boolean;
+  /** 残りのスワイプ可能カード数 */
+  remainingCount: number;
+  /** セッションをリセットして最新データを再取得 */
+  restart: () => void;
 }
 
 /**
@@ -55,32 +65,75 @@ export function useSwipeCards(
   // 前回のsourceTypeを追跡
   const prevSourceTypeRef = useRef(sourceType);
 
-  // カードデータ取得
-  const { links, isLoading, error } = useLinks({
+  // カードデータ取得（無限スクロール対応）
+  const {
+    links,
+    isLoading,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    refetch,
+  } = useLinks({
     status: sourceType,
-    limit: 10,
     isRead: false,
     orderBy: sourceType === "later" ? "triaged_at_asc" : null,
   });
+
+  // 前回処理したlinksの長さを追跡
+  const prevLinksLengthRef = useRef(0);
 
   // カード一覧の設定ロジック
   useEffect(() => {
     // sourceTypeが変更された場合はリセット
     if (prevSourceTypeRef.current !== sourceType) {
       prevSourceTypeRef.current = sourceType;
+      prevLinksLengthRef.current = 0;
       setFixedCards([]);
       setSwipes([]);
       setSwipeHistory([]);
       return;
     }
 
-    // fixedCardsが空で、linksがある場合に設定
-    if (fixedCards.length === 0 && links.length > 0) {
-      setFixedCards(links);
-      setSwipes([]);
-      setSwipeHistory([]);
+    // linksが増えた場合のみ処理
+    if (links.length > prevLinksLengthRef.current) {
+      if (fixedCards.length === 0) {
+        // 初回設定
+        setFixedCards(links);
+        setSwipes([]);
+        setSwipeHistory([]);
+      } else {
+        // 新しいリンクのみ追加（重複防止）
+        const existingIds = new Set(fixedCards.map((c) => c.link_id));
+        const newLinks = links.filter((l) => !existingIds.has(l.link_id));
+        if (newLinks.length > 0) {
+          setFixedCards((prev) => [...prev, ...newLinks]);
+        }
+      }
+      prevLinksLengthRef.current = links.length;
     }
-  }, [links, sourceType, fixedCards.length]);
+  }, [links, sourceType, fixedCards]);
+
+  // 残りカード数を計算
+  const remainingCount = fixedCards.length - swipes.length;
+
+  // 残りカードが少なくなったら次ページをプリフェッチ（閾値: 3枚）
+  const PREFETCH_THRESHOLD = 3;
+  useEffect(() => {
+    if (
+      remainingCount <= PREFETCH_THRESHOLD &&
+      hasNextPage &&
+      !isFetchingNextPage
+    ) {
+      fetchNextPage();
+    }
+  }, [remainingCount, hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  // UIロールバック用の関数
+  const rollbackSwipe = useCallback(() => {
+    setSwipes((prev) => prev.slice(0, -1));
+    setSwipeHistory((prev) => prev.slice(0, -1));
+  }, []);
 
   // ステータス更新Mutation（invalidateQueriesを呼び出さない）
   const updateMutation = useMutation({
@@ -91,7 +144,15 @@ export function useSwipeCards(
       linkId: string;
       status: "inbox" | "read_soon" | "later";
     }) => updateLinkStatus(linkId, status),
-    // onSuccessでinvalidateQueriesを呼び出さない
+    onSuccess: () => {
+      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    },
+    onError: () => {
+      // 失敗時はUIをロールバック
+      rollbackSwipe();
+      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert("Error", "Failed to update. Please try again.");
+    },
   });
 
   // Undo Mutation
@@ -103,6 +164,16 @@ export function useSwipeCards(
       linkId: string;
       status: "inbox" | "read_soon" | "later";
     }) => updateLinkStatus(linkId, status),
+    onSuccess: () => {
+      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    },
+    onError: () => {
+      // Undo失敗時は再度swipeを追加（元の状態に戻す）
+      // 履歴から方向を復元することはできないので、leftとして扱う
+      setSwipes((prev) => [...prev, "left"]);
+      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert("Error", "Failed to undo. Please try again.");
+    },
   });
 
   // スワイプハンドラー
@@ -143,14 +214,31 @@ export function useSwipeCards(
     });
   }, [swipeHistory, sourceType, undoMutation]);
 
+  // 再スタート（セッションをリセットして最新データを再取得）
+  const restart = useCallback(() => {
+    prevLinksLengthRef.current = 0;
+    setFixedCards([]);
+    setSwipes([]);
+    setSwipeHistory([]);
+    refetch();
+  }, [refetch]);
+
+  // 全てのカードをスワイプし終わり、次ページもない状態
+  const isAllDone =
+    fixedCards.length > 0 && remainingCount === 0 && !hasNextPage;
+
   return {
     cards: fixedCards,
     swipes,
     isLoading: isLoading && fixedCards.length === 0,
+    isFetchingNextPage,
     error,
     handleSwipe,
     canUndo: swipeHistory.length > 0,
     undo,
     isUndoing: undoMutation.isPending,
+    isAllDone,
+    remainingCount,
+    restart,
   };
 }
