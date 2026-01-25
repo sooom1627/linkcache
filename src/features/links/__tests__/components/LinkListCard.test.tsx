@@ -161,20 +161,15 @@ describe("LinkListCard", () => {
       expect(queryByText("links.card.status.read")).toBeNull();
     });
 
-    it("doneステータスでない場合、既読状態が優先される", () => {
+    it("doneステータスでない場合でも、ステータスが表示される", () => {
       const mockLink = createMockLink("https://example.com", "new");
       mockLink.read_at = "2024-01-01T00:00:00Z";
-      const { getByText, queryByText } = render(
-        <LinkListCard link={mockLink} />,
-        {
-          wrapper,
-        },
-      );
+      const { getByText } = render(<LinkListCard link={mockLink} />, {
+        wrapper,
+      });
 
-      // 既読状態が表示される
-      expect(getByText("links.card.status.read")).toBeTruthy();
-      // ステータスは表示されない（既読が優先）
-      expect(queryByText("links.card.action_modal.status.new")).toBeNull();
+      // ステータスが表示される（既読状態の優先表示ロジックは削除された）
+      expect(getByText("links.card.action_modal.status.new")).toBeTruthy();
     });
   });
 });

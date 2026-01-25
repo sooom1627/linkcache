@@ -2,11 +2,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Pressable, Text, TouchableOpacity, View } from "react-native";
 
+import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
 
-import { Check, Circle, ExternalLink, Globe } from "lucide-react-native";
+import { Circle, ExternalLink, Globe } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 
 import { useBottomSheetModal } from "@/src/shared/hooks/useBottomSheetModal";
@@ -54,8 +54,6 @@ export function LinkListCard({ link }: LinkListCardProps) {
   const { ref, present, dismiss } = useBottomSheetModal();
   const [imageError, setImageError] = useState(false);
   const statusStyle = getStatusStyle(link.status);
-  const isRead = link.read_at !== null;
-  const isDone = link.status === "done";
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handlePress = useCallback(() => {
@@ -153,7 +151,6 @@ export function LinkListCard({ link }: LinkListCardProps) {
                 <Globe size={10} color="#94a3b8" strokeWidth={1.5} />
               </View>
             )}
-
             {/* サイト名 */}
             <Text
               className="flex-1 text-xs font-normal tracking-wide text-slate-400"
@@ -162,55 +159,25 @@ export function LinkListCard({ link }: LinkListCardProps) {
               {link.site_name || extractDomain(link.url)}
             </Text>
             {/* ステータス表示 */}
-            {isDone ? (
-              // Doneステータス: 優先表示
-              <View className="flex-row items-center gap-1.5">
-                <Circle
-                  size={8}
-                  fill={statusStyle.icon}
-                  color={statusStyle.icon}
-                />
-                <Text className={`text-xs font-medium ${statusStyle.text}`}>
-                  {t(`links.card.action_modal.status.${link.status}`, {
-                    defaultValue: link.status,
-                  })}
-                </Text>
-              </View>
-            ) : isRead ? (
-              // 既読: シンプルなアイコン+テキスト
-              <View className="flex-row items-center gap-1.5">
-                <Check
-                  size={12}
-                  color="#94a3b8" // slate-400
-                  strokeWidth={2.5}
-                />
-                <Text className="text-xs font-normal text-slate-400">
-                  {t("links.card.status.read")}
-                </Text>
-              </View>
-            ) : (
-              // 未読: シンプルなアイコン+テキスト
-              <View className="flex-row items-center gap-1.5">
-                <Circle
-                  size={8}
-                  fill={statusStyle.icon}
-                  color={statusStyle.icon}
-                />
-                <Text className={`text-xs font-medium ${statusStyle.text}`}>
-                  {link.status
-                    ? t(`links.card.action_modal.status.${link.status}`, {
-                        defaultValue: link.status,
-                      })
-                    : ""}
-                </Text>
-              </View>
-            )}
+            <View className="flex-row items-center gap-1.5">
+              <Circle
+                size={8}
+                fill={statusStyle.icon}
+                color={statusStyle.icon}
+              />
+              <Text className={`text-xs font-medium ${statusStyle.text}`}>
+                {link.status
+                  ? t(`links.card.action_modal.status.${link.status}`, {
+                      defaultValue: link.status,
+                    })
+                  : ""}
+              </Text>
+            </View>
           </View>
         </View>
 
         {/* リンクを開くボタン */}
         <TouchableOpacity
-          className="ml-2"
           onPress={handleOpenLink}
           hitSlop={16}
           accessibilityRole="button"
