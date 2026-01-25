@@ -2,8 +2,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Alert } from "react-native";
 
-import { useMutation } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
+
+import { useMutation } from "@tanstack/react-query";
 import type { SwipeDirection } from "react-native-swipeable-card-stack";
 
 import { updateLinkStatus } from "../api/updateLinkStatus.api";
