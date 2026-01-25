@@ -2,9 +2,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Pressable, Text, TouchableOpacity, View } from "react-native";
 
-import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 
 import { Circle, ExternalLink, Globe } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
