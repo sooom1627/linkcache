@@ -16,13 +16,6 @@ jest.mock("../../api/updateLinkStatus.api", () => ({
   updateLinkStatus: jest.fn().mockResolvedValue(undefined),
 }));
 
-// i18nをモック
-jest.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
-}));
-
 // ライブラリコンポーネントをモック
 // CardProps<T>はT自体を拡張するため、itemではなく直接アイテムのプロパティを渡す
 jest.mock("react-native-swipeable-card-stack", () => {
@@ -148,8 +141,10 @@ describe("SwipeTriageScreen", () => {
     });
 
     // read_soonが選択可能であることを確認
-    // SourceTypeDropdownがread_soonオプションを含むことを確認
-    expect(screen.getByText(/Mode:/i)).toBeTruthy();
+    // SourceTypeDropdownが表示されていることを確認（i18nキーで検索）
+    expect(
+      screen.getByText("links.card.action_modal.mode_label"),
+    ).toBeTruthy();
   });
 
   it("read_soonステータスのカードを表示できる", async () => {

@@ -163,6 +163,9 @@
         "read_status_section": "既読状態",
         "mark_as_read": "既読にする",
         "mark_as_unread": "未読に戻す",
+        "mode_label": "モード:",
+        "current_mode": "現在のモード: {{status}}",
+        "tap_to_change": "タップしてモードを変更",
         "status": {
           "inbox": "インボックス",
           "read_soon": "すぐ読む",

@@ -52,10 +52,14 @@ export function SourceTypeDropdown({
       <Pressable
         onPress={() => setIsOpen(!isOpen)}
         accessibilityRole="button"
-        accessibilityLabel={`Current mode: ${t(`links.card.action_modal.status.${value}`)}. Tap to change mode`}
+        accessibilityLabel={`${t("links.card.action_modal.current_mode", {
+          status: t(`links.card.action_modal.status.${value}`),
+        })}. ${t("links.card.action_modal.tap_to_change")}`}
         className="flex-row items-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-2 active:bg-slate-50"
       >
-        <Text className="text-sm font-medium text-slate-500">Mode:</Text>
+        <Text className="text-sm font-medium text-slate-500">
+          {t("links.card.action_modal.mode_label")}
+        </Text>
         <Text className="text-sm font-bold text-slate-800">
           {t(`links.card.action_modal.status.${value}`)}
         </Text>
