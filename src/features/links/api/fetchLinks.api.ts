@@ -38,7 +38,7 @@ export async function fetchUserLinks(
     p_status: status ?? null,
     p_is_read: isRead ?? null,
     p_limit: limit ?? null,
-    p_order_by: orderBy ?? null,
+    p_order_by: orderBy ?? "",
   });
 
   if (response.error) {

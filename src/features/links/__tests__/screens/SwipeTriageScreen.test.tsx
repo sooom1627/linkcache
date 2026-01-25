@@ -149,8 +149,7 @@ describe("SwipeTriageScreen", () => {
 
     // read_soonが選択可能であることを確認
     // SourceTypeDropdownがread_soonオプションを含むことを確認
-    const dropdown = screen.getByText(/Mode:/i);
-    expect(dropdown).toBeTruthy();
+    expect(screen.getByText(/Mode:/i)).toBeTruthy();
   });
 
   it("read_soonステータスのカードを表示できる", async () => {

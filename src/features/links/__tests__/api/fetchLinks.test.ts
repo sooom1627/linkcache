@@ -54,7 +54,7 @@ describe("fetchUserLinks", () => {
         p_status: null,
         p_is_read: null,
         p_limit: null,
-        p_order_by: null,
+        p_order_by: "",
       });
       expect(result.data).toHaveLength(1);
       expect(result.hasMore).toBe(false);
@@ -81,7 +81,7 @@ describe("fetchUserLinks", () => {
         p_status: null,
         p_is_read: null,
         p_limit: null,
-        p_order_by: null,
+        p_order_by: "",
       });
       expect(result.hasMore).toBe(true);
       expect(result.totalCount).toBe(50);
@@ -107,7 +107,7 @@ describe("fetchUserLinks", () => {
         p_status: "read_soon",
         p_is_read: null,
         p_limit: null,
-        p_order_by: null,
+        p_order_by: "",
       });
       expect(result.totalCount).toBe(5);
     });
@@ -132,7 +132,7 @@ describe("fetchUserLinks", () => {
         p_status: null,
         p_is_read: false,
         p_limit: null,
-        p_order_by: null,
+        p_order_by: "",
       });
       expect(result.totalCount).toBe(3);
     });
@@ -157,7 +157,7 @@ describe("fetchUserLinks", () => {
         p_status: null,
         p_is_read: null,
         p_limit: 5,
-        p_order_by: null,
+        p_order_by: "",
       });
       expect(result.hasMore).toBe(false);
     });
@@ -186,7 +186,7 @@ describe("fetchUserLinks", () => {
         p_status: "read_soon",
         p_is_read: true,
         p_limit: 5,
-        p_order_by: null,
+        p_order_by: "",
       });
       expect(result.totalCount).toBe(2);
     });
@@ -239,7 +239,7 @@ describe("fetchUserLinks", () => {
         p_status: null,
         p_is_read: null,
         p_limit: null,
-        p_order_by: null,
+        p_order_by: "",
       });
       expect(result.totalCount).toBe(1);
     });
