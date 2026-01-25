@@ -2,6 +2,8 @@ import { useCallback, useMemo, useRef, useState } from "react";
 
 import { View } from "react-native";
 
+import { useFocusEffect } from "expo-router";
+
 import PagerView from "react-native-pager-view";
 
 import { LinkListTabContent } from "../components/LinkListTabContent";
@@ -33,7 +35,7 @@ const TAB_INDEX = {
  *
  * スワイプとタブ切り替えでフィルタリングされたリンクリストを表示します。
  * - "Read Soon" タブ: statusが"read_soon"のリンクを最大5件表示（APIでフィルタ）
- * - "Latest" タブ: 全てのリンクを最大5件表示（APIでフィルタ）
+ * - "Latest" タブ: statusが"inbox"のリンクを最大5件表示（APIでフィルタ）
  */
 /**
  * タブの状態とデータから高さを計算
@@ -61,9 +63,23 @@ export function LinkListTabs() {
   const readSoonQuery = useLinks({
     status: "read_soon",
     limit: DASHBOARD_LIMIT,
+    isRead: false,
   });
-  // Latest タブ: limit=5（全ステータス）
-  const latestQuery = useLinks({ limit: DASHBOARD_LIMIT, isRead: false });
+  // Latest タブ: limit=5（inboxステータス）
+  const latestQuery = useLinks({
+    limit: DASHBOARD_LIMIT,
+    isRead: false,
+    status: "inbox",
+  });
+
+  // 画面がフォーカスされた時に最新データを取得（UIの表示がガタガタしないように非同期で）
+  useFocusEffect(
+    useCallback(() => {
+      // バックグラウンドで再フェッチ（既存のデータを表示したまま更新）
+      void readSoonQuery.refetch();
+      void latestQuery.refetch();
+    }, [readSoonQuery, latestQuery]),
+  );
 
   // タブヘッダーからの切り替え
   const handleTabChange = useCallback((tab: TabType) => {

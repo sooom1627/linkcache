@@ -163,6 +163,9 @@
         "read_status_section": "Read Status",
         "mark_as_read": "Mark as Read",
         "mark_as_unread": "Return to Unread",
+        "mode_label": "Mode:",
+        "current_mode": "Current mode: {{status}}",
+        "tap_to_change": "Tap to change mode",
         "status": {
           "inbox": "Inbox",
           "read_soon": "Read Soon",

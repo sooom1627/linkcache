@@ -2,6 +2,7 @@ import { supabase } from "@/src/shared/lib/supabase";
 
 import {
   getUserLinksResponseSchema,
+  orderBySchema,
   type GetUserLinksParams,
   type GetUserLinksResponse,
 } from "../types/linkList.types";
@@ -30,7 +31,10 @@ import {
 export async function fetchUserLinks(
   params: GetUserLinksParams = {},
 ): Promise<GetUserLinksResponse> {
-  const { pageSize = 20, page = 0, status, isRead, limit } = params;
+  const { pageSize = 20, page = 0, status, isRead, limit, orderBy } = params;
+
+  // orderBy を許可リストで検証
+  const validatedOrderBy = orderBySchema.parse(orderBy ?? null);
 
   const response = await supabase.rpc("get_user_links", {
     p_page_size: pageSize,
@@ -38,6 +42,7 @@ export async function fetchUserLinks(
     p_status: status ?? null,
     p_is_read: isRead ?? null,
     p_limit: limit ?? null,
+    p_order_by: validatedOrderBy,
   });
 
   if (response.error) {
