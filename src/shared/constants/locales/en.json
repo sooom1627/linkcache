@@ -132,8 +132,8 @@
     },
     "filter": {
       "title": "Filter",
-      "status": "Status",
-      "read_status": "Read Status",
+      "status": "What do you want to see ?",
+      "read_status": "You've already read ?",
       "reset": "Clear Filters",
       "options": {
         "all": "All",
@@ -142,8 +142,8 @@
         "read_soon": "Read Soon",
         "stock": "Stock",
         "done": "Done",
-        "unread": "Unread",
-        "read": "Read"
+        "unread": "Not yet read",
+        "read": "Already read"
       }
     },
     "list": {

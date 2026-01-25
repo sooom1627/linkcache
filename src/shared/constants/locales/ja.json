@@ -132,18 +132,18 @@
     },
     "filter": {
       "title": "フィルター",
-      "status": "ステータス",
-      "read_status": "既読状態",
+      "status": "何を見たいですか？",
+      "read_status": "既に読んだリンクを見たい？",
       "reset": "フィルターをクリア",
       "options": {
         "all": "すべて",
         "inbox": "インボックス",
-        "new": "新規",
-        "read_soon": "すぐ読む",
-        "stock": "ストック",
-        "done": "完了",
-        "unread": "未読",
-        "read": "既読"
+        "new": "新しいリンク",
+        "read_soon": "すぐ読むリンク",
+        "stock": "ストックリンク",
+        "done": "完了リンク",
+        "unread": "未読のリンク",
+        "read": "既読のリンク"
       }
     },
     "list": {
