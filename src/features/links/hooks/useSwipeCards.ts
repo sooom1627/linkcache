@@ -4,10 +4,11 @@ import { Alert } from "react-native";
 
 import * as Haptics from "expo-haptics";
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { SwipeDirection } from "react-native-swipeable-card-stack";
 
 import { updateLinkStatus } from "../api/updateLinkStatus.api";
+import { linkQueryKeys } from "../constants/queryKeys";
 import type { UserLink } from "../types/linkList.types";
 
 import { useLinks } from "./useLinks";
@@ -54,6 +55,8 @@ export function useSwipeCards(
 ): UseSwipeCardsReturn {
   const { sourceType = "inbox" } = options;
 
+  const queryClient = useQueryClient();
+
   // swipes配列（ライブラリ用）
   const [swipes, setSwipes] = useState<SwipeDirection[]>([]);
 
@@ -74,7 +77,8 @@ export function useSwipeCards(
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-    refetch,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    refetch, // restart関数でinvalidateQueriesを使用するため未使用
   } = useLinks({
     status: sourceType,
     isRead: false,
@@ -196,8 +200,31 @@ export function useSwipeCards(
       } else if (direction === "left") {
         updateMutation.mutate({ linkId: item.link_id, status: "later" });
       }
+
+      // スワイプ後にLinkListTabsとLinkListScreenで使用されるクエリキーを無効化
+      // UIの表示がガタガタしないように、バックグラウンドで再フェッチされる
+      // 次のイベントループで実行して、テスト時のact警告を回避
+      setTimeout(() => {
+        // LinkListTabsで使用されるクエリキー
+        void queryClient.invalidateQueries({
+          queryKey: linkQueryKeys.listLimited({
+            status: "read_soon",
+            isRead: false,
+          }),
+        });
+        void queryClient.invalidateQueries({
+          queryKey: linkQueryKeys.listLimited({
+            status: "inbox",
+            isRead: false,
+          }),
+        });
+        // LinkListScreenで使用されるクエリキー（フィルタなし）
+        void queryClient.invalidateQueries({
+          queryKey: linkQueryKeys.list(),
+        });
+      }, 0);
     },
-    [updateMutation],
+    [updateMutation, queryClient],
   );
 
   // Undo
@@ -218,16 +245,51 @@ export function useSwipeCards(
       status: sourceType,
       direction: lastSwipe.direction,
     });
-  }, [swipeHistory, sourceType, undoMutation]);
+
+    // Undo後もLinkListTabsとLinkListScreenで使用されるクエリキーを無効化
+    // 次のイベントループで実行して、テスト時のact警告を回避
+    setTimeout(() => {
+      void queryClient.invalidateQueries({
+        queryKey: linkQueryKeys.listLimited({
+          status: "read_soon",
+          isRead: false,
+        }),
+      });
+      void queryClient.invalidateQueries({
+        queryKey: linkQueryKeys.listLimited({ status: "inbox", isRead: false }),
+      });
+      void queryClient.invalidateQueries({
+        queryKey: linkQueryKeys.list(),
+      });
+    }, 0);
+  }, [swipeHistory, sourceType, undoMutation, queryClient]);
 
   // 再スタート（セッションをリセットして最新データを再取得）
   const restart = useCallback(() => {
+    // キャッシュを無効化して削除
+    // useLinksと同じロジックでクエリキーを生成（orderByがundefinedの場合は除外）
+    const orderBy =
+      sourceType === "later" || sourceType === "read_soon"
+        ? "triaged_at_asc"
+        : undefined;
+    const filterParams: Omit<
+      Parameters<typeof linkQueryKeys.list>[0],
+      "limit"
+    > = {
+      status: sourceType,
+      isRead: false,
+      ...(orderBy !== undefined && { orderBy }),
+    };
+    queryClient.invalidateQueries({
+      queryKey: linkQueryKeys.list(filterParams),
+    });
+
+    // ローカル状態をリセット
     prevLinksLengthRef.current = 0;
     setFixedCards([]);
     setSwipes([]);
     setSwipeHistory([]);
-    refetch();
-  }, [refetch]);
+  }, [queryClient, sourceType]);
 
   // 全てのカードをスワイプし終わり、次ページもない状態
   const isAllDone =

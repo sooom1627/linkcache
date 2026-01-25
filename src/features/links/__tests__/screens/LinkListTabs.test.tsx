@@ -41,6 +41,27 @@ jest.mock("react-i18next", () => ({
   }),
 }));
 
+// expo-routerをモック
+jest.mock("expo-router", () => {
+  const React = require("react");
+  return {
+    useFocusEffect: jest.fn((callback) => {
+      // テスト環境では即座にコールバックを実行（actでラップ）
+      React.useEffect(() => {
+        // refetchは非同期なので、次のイベントループで実行
+        setTimeout(() => {
+          callback();
+        }, 0);
+      }, [callback]);
+    }),
+    useRouter: jest.fn(() => ({
+      push: jest.fn(),
+      replace: jest.fn(),
+      back: jest.fn(),
+    })),
+  };
+});
+
 // PagerViewをモック
 jest.mock("react-native-pager-view", () => {
   const React = require("react");

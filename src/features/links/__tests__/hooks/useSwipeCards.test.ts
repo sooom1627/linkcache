@@ -162,7 +162,10 @@ describe("useSwipeCards", () => {
         result.current.handleSwipe(mockLink, "right");
       });
 
-      expect(result.current.swipes).toEqual(["right"]);
+      // invalidateQueriesの完了を待つ
+      await waitFor(() => {
+        expect(result.current.swipes).toEqual(["right"]);
+      });
     });
   });
 
@@ -218,6 +221,11 @@ describe("useSwipeCards", () => {
           mockLink.link_id,
           "later",
         );
+      });
+
+      // invalidateQueriesの完了を待つ
+      await waitFor(() => {
+        expect(result.current.swipes).toEqual(["left"]);
       });
     });
   });
@@ -281,6 +289,11 @@ describe("useSwipeCards", () => {
       await waitFor(() => {
         expect(result.current.swipes).toEqual(["right"]);
       });
+
+      // invalidateQueriesの完了を待つ
+      await waitFor(() => {
+        expect(result.current.canUndo).toBe(true);
+      });
     });
 
     it("undoでAPIが元のステータスで呼び出される", async () => {
@@ -326,6 +339,11 @@ describe("useSwipeCards", () => {
           "inbox",
         );
       });
+
+      // invalidateQueriesの完了を待つ
+      await waitFor(() => {
+        expect(result.current.swipes).toEqual([]);
+      });
     });
 
     it("undo後はcanUndoがfalseになる（履歴が空の場合）", async () => {
@@ -355,6 +373,11 @@ describe("useSwipeCards", () => {
 
       await waitFor(() => {
         expect(result.current.canUndo).toBe(false);
+      });
+
+      // invalidateQueriesの完了を待つ
+      await waitFor(() => {
+        expect(result.current.swipes).toEqual([]);
       });
     });
 
@@ -398,6 +421,11 @@ describe("useSwipeCards", () => {
           mockLink.link_id,
           "later",
         );
+      });
+
+      // invalidateQueriesの完了を待つ
+      await waitFor(() => {
+        expect(result.current.swipes).toEqual([]);
       });
     });
   });

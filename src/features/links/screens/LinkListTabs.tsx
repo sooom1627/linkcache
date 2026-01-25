@@ -2,6 +2,8 @@ import { useCallback, useMemo, useRef, useState } from "react";
 
 import { View } from "react-native";
 
+import { useFocusEffect } from "expo-router";
+
 import PagerView from "react-native-pager-view";
 
 import { LinkListTabContent } from "../components/LinkListTabContent";
@@ -69,6 +71,15 @@ export function LinkListTabs() {
     isRead: false,
     status: "inbox",
   });
+
+  // 画面がフォーカスされた時に最新データを取得（UIの表示がガタガタしないように非同期で）
+  useFocusEffect(
+    useCallback(() => {
+      // バックグラウンドで再フェッチ（既存のデータを表示したまま更新）
+      void readSoonQuery.refetch();
+      void latestQuery.refetch();
+    }, [readSoonQuery, latestQuery]),
+  );
 
   // タブヘッダーからの切り替え
   const handleTabChange = useCallback((tab: TabType) => {
