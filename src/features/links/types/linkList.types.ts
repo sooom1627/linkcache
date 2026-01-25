@@ -8,6 +8,17 @@ import type { Database } from "./supabase.types";
 export type TriageStatus = Database["public"]["Enums"]["triage_status"];
 
 /**
+ * orderBy パラメータの許可リスト
+ *
+ * RPC `get_user_links` で使用可能なソート順を定義します。
+ * 未検証の値がRPCに渡されると、SQLエラーの原因となる可能性があるため、
+ * このスキーマで検証してから渡します。
+ */
+export const orderBySchema = z
+  .enum(["triaged_at_asc", "created_at_desc"])
+  .nullable();
+
+/**
  * ユーザーのリンク情報（View: user_links_view に対応）
  *
  * links と link_status を結合したデータ構造

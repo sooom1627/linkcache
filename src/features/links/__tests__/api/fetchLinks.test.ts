@@ -54,7 +54,7 @@ describe("fetchUserLinks", () => {
         p_status: null,
         p_is_read: null,
         p_limit: null,
-        p_order_by: "",
+        p_order_by: null,
       });
       expect(result.data).toHaveLength(1);
       expect(result.hasMore).toBe(false);
@@ -81,7 +81,7 @@ describe("fetchUserLinks", () => {
         p_status: null,
         p_is_read: null,
         p_limit: null,
-        p_order_by: "",
+        p_order_by: null,
       });
       expect(result.hasMore).toBe(true);
       expect(result.totalCount).toBe(50);
@@ -107,7 +107,7 @@ describe("fetchUserLinks", () => {
         p_status: "read_soon",
         p_is_read: null,
         p_limit: null,
-        p_order_by: "",
+        p_order_by: null,
       });
       expect(result.totalCount).toBe(5);
     });
@@ -132,7 +132,7 @@ describe("fetchUserLinks", () => {
         p_status: null,
         p_is_read: false,
         p_limit: null,
-        p_order_by: "",
+        p_order_by: null,
       });
       expect(result.totalCount).toBe(3);
     });
@@ -157,7 +157,7 @@ describe("fetchUserLinks", () => {
         p_status: null,
         p_is_read: null,
         p_limit: 5,
-        p_order_by: "",
+        p_order_by: null,
       });
       expect(result.hasMore).toBe(false);
     });
@@ -186,7 +186,7 @@ describe("fetchUserLinks", () => {
         p_status: "read_soon",
         p_is_read: true,
         p_limit: 5,
-        p_order_by: "",
+        p_order_by: null,
       });
       expect(result.totalCount).toBe(2);
     });
@@ -219,7 +219,34 @@ describe("fetchUserLinks", () => {
       expect(result.totalCount).toBe(3);
     });
 
-    it("orderByが未指定の場合はデフォルトで空文字列を渡す", async () => {
+    it("orderByにcreated_at_descを指定して取得できる", async () => {
+      const mockResponse = {
+        data: {
+          data: [],
+          hasMore: false,
+          totalCount: 5,
+        },
+        error: null,
+      };
+
+      mockRpc.mockResolvedValueOnce(mockResponse);
+
+      const result = await fetchUserLinks({
+        orderBy: "created_at_desc",
+      });
+
+      expect(mockRpc).toHaveBeenCalledWith("get_user_links", {
+        p_page_size: 20,
+        p_page: 0,
+        p_status: null,
+        p_is_read: null,
+        p_limit: null,
+        p_order_by: "created_at_desc",
+      });
+      expect(result.totalCount).toBe(5);
+    });
+
+    it("orderByが未指定の場合はデフォルトでnullを渡す", async () => {
       const mockResponse = {
         data: {
           data: [],
@@ -239,7 +266,7 @@ describe("fetchUserLinks", () => {
         p_status: null,
         p_is_read: null,
         p_limit: null,
-        p_order_by: "",
+        p_order_by: null,
       });
       expect(result.totalCount).toBe(1);
     });
@@ -295,6 +322,12 @@ describe("fetchUserLinks", () => {
       await expect(fetchUserLinks()).rejects.toThrow(
         "Invalid RPC response format",
       );
+    });
+
+    it("無効なorderBy値の場合はエラーをスローする", async () => {
+      await expect(
+        fetchUserLinks({ orderBy: "invalid_order_by" }),
+      ).rejects.toThrow();
     });
   });
 });
