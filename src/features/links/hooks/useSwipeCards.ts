@@ -188,16 +188,21 @@ export function useSwipeCards(
   // スワイプハンドラー
   const handleSwipe = useCallback(
     (item: UserLink, direction: SwipeDirection) => {
+      // 左右スワイプ以外は無視
+      if (direction !== "left" && direction !== "right") {
+        return;
+      }
+
       // swipes配列に追加
       setSwipes((prev) => [...prev, direction]);
 
       // 履歴に追加
       setSwipeHistory((prev) => [...prev, { link: item, direction }]);
 
-      // 左右スワイプのみAPI呼び出し
+      // 左右スワイプのAPI呼び出し
       if (direction === "right") {
         updateMutation.mutate({ linkId: item.link_id, status: "read_soon" });
-      } else if (direction === "left") {
+      } else {
         updateMutation.mutate({ linkId: item.link_id, status: "later" });
       }
 

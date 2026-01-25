@@ -49,9 +49,12 @@ jest.mock("expo-router", () => {
       // テスト環境では即座にコールバックを実行（actでラップ）
       React.useEffect(() => {
         // refetchは非同期なので、次のイベントループで実行
-        setTimeout(() => {
+        const timeoutId = setTimeout(() => {
           callback();
         }, 0);
+        return () => {
+          clearTimeout(timeoutId);
+        };
       }, [callback]);
     }),
     useRouter: jest.fn(() => ({
