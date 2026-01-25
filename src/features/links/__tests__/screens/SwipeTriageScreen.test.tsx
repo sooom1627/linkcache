@@ -142,9 +142,7 @@ describe("SwipeTriageScreen", () => {
 
     // read_soonが選択可能であることを確認
     // SourceTypeDropdownが表示されていることを確認（i18nキーで検索）
-    expect(
-      screen.getByText("links.card.action_modal.mode_label"),
-    ).toBeTruthy();
+    expect(screen.getByText("links.card.action_modal.mode_label")).toBeTruthy();
   });
 
   it("read_soonステータスのカードを表示できる", async () => {
