@@ -175,25 +175,67 @@ export function SwipeTriageScreen() {
       {/* handle buttons */}
       <View className="z-10 mt-[-60px] flex w-full flex-col items-center justify-start gap-2">
         <View className="flex w-full flex-row items-center justify-center gap-8">
-          <TouchableOpacity
-            className="flex-col items-center justify-center gap-2 p-2"
-            onPress={() => handleSwipe(cards[swipes.length], "left")}
-          >
-            <View className="rounded-full bg-slate-200 p-4">
-              <ArrowLeft size={20} color="#4B5563" />
-            </View>
-            <Text className="flex-1 text-center font-medium">Later</Text>
-          </TouchableOpacity>
+          {(() => {
+            const currentCard = cards[swipes.length];
+            const isDisabled = !currentCard;
+            return (
+              <>
+                <TouchableOpacity
+                  disabled={isDisabled}
+                  className="flex-col items-center justify-center gap-2 p-2"
+                  onPress={() => {
+                    if (!currentCard) return;
+                    handleSwipe(currentCard, "left");
+                  }}
+                >
+                  <View
+                    className={`rounded-full p-4 ${
+                      isDisabled ? "bg-slate-100" : "bg-slate-200"
+                    }`}
+                  >
+                    <ArrowLeft
+                      size={20}
+                      color={isDisabled ? "#9CA3AF" : "#4B5563"}
+                    />
+                  </View>
+                  <Text
+                    className={`flex-1 text-center font-medium ${
+                      isDisabled ? "text-slate-400" : "text-slate-700"
+                    }`}
+                  >
+                    Later
+                  </Text>
+                </TouchableOpacity>
 
-          <TouchableOpacity
-            className="flex-col items-center justify-center gap-2 p-2"
-            onPress={() => handleSwipe(cards[swipes.length], "right")}
-          >
-            <View className="rounded-full bg-slate-200 p-4">
-              <ArrowRight size={20} color="#4B5563" />
-            </View>
-            <Text className="text-center font-medium">Read Soon</Text>
-          </TouchableOpacity>
+                <TouchableOpacity
+                  disabled={isDisabled}
+                  className="flex-col items-center justify-center gap-2 p-2"
+                  onPress={() => {
+                    if (!currentCard) return;
+                    handleSwipe(currentCard, "right");
+                  }}
+                >
+                  <View
+                    className={`rounded-full p-4 ${
+                      isDisabled ? "bg-slate-100" : "bg-slate-200"
+                    }`}
+                  >
+                    <ArrowRight
+                      size={20}
+                      color={isDisabled ? "#9CA3AF" : "#4B5563"}
+                    />
+                  </View>
+                  <Text
+                    className={`text-center font-medium ${
+                      isDisabled ? "text-slate-400" : "text-slate-700"
+                    }`}
+                  >
+                    Read Soon
+                  </Text>
+                </TouchableOpacity>
+              </>
+            );
+          })()}
         </View>
 
         {/* Undo Button */}
