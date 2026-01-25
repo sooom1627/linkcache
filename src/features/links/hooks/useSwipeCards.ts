@@ -167,14 +167,15 @@ export function useSwipeCards(
     }: {
       linkId: string;
       status: "inbox" | "read_soon" | "later";
+      direction: SwipeDirection;
     }) => updateLinkStatus(linkId, status),
     onSuccess: () => {
       void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     },
-    onError: () => {
+    onError: (error, variables) => {
       // Undo失敗時は再度swipeを追加（元の状態に戻す）
-      // 履歴から方向を復元することはできないので、leftとして扱う
-      setSwipes((prev) => [...prev, "left"]);
+      // 記録された方向を復元
+      setSwipes((prev) => [...prev, variables.direction]);
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       Alert.alert("Error", "Failed to undo. Please try again.");
     },
@@ -211,10 +212,11 @@ export function useSwipeCards(
     // 履歴から削除
     setSwipeHistory((prev) => prev.slice(0, -1));
 
-    // 元のステータスに戻す
+    // 元のステータスに戻す（方向も渡してエラー時に復元できるようにする）
     undoMutation.mutate({
       linkId: lastSwipe.link.link_id,
       status: sourceType,
+      direction: lastSwipe.direction,
     });
   }, [swipeHistory, sourceType, undoMutation]);
 
