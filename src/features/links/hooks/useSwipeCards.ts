@@ -9,7 +9,7 @@ import type { SwipeDirection } from "react-native-swipeable-card-stack";
 
 import { updateLinkStatus } from "../api/updateLinkStatus.api";
 import { linkQueryKeys } from "../constants/queryKeys";
-import type { UserLink } from "../types/linkList.types";
+import type { TriageStatus, UserLink } from "../types/linkList.types";
 
 import { useLinks } from "./useLinks";
 
@@ -20,7 +20,7 @@ interface SwipeHistory {
 }
 
 interface UseSwipeCardsOptions {
-  sourceType?: "new" | "stock" | "read_soon";
+  sourceType?: TriageStatus;
 }
 
 interface UseSwipeCardsReturn {
@@ -170,7 +170,7 @@ export function useSwipeCards(
       status,
     }: {
       linkId: string;
-      status: "new" | "read_soon" | "stock";
+      status: TriageStatus;
       direction: SwipeDirection;
     }) => updateLinkStatus(linkId, status),
     onSuccess: () => {

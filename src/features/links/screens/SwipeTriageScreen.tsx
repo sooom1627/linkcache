@@ -106,6 +106,7 @@ export function SwipeTriageScreen() {
           <SourceTypeDropdown
             value={sourceType}
             onChange={handleSourceTypeChange}
+            allowedTypes={["new", "read_soon", "stock"]}
           />
         </View>
 
@@ -128,6 +129,7 @@ export function SwipeTriageScreen() {
           <SourceTypeDropdown
             value={sourceType}
             onChange={handleSourceTypeChange}
+            allowedTypes={["new", "read_soon", "stock"]}
           />
         </View>
 
@@ -155,10 +157,11 @@ export function SwipeTriageScreen() {
   return (
     <View className="h-4/5 w-full flex-col items-center justify-between py-24">
       {/* Source Type Selector */}
-      <View className="z-20 w-full items-center">
+      <View className="z-30 w-full items-center">
         <SourceTypeDropdown
           value={sourceType}
           onChange={handleSourceTypeChange}
+          allowedTypes={["new", "read_soon", "stock"]}
         />
         {/* Remaining Count */}
         <Text className="mt-2 text-sm text-gray-500">
@@ -168,7 +171,10 @@ export function SwipeTriageScreen() {
       </View>
 
       {/* Card Stack */}
-      <View className="z-20 flex-col px-2" testID="swipeable-card-stack">
+      <View
+        className="z-20 mt-[-40px] flex-col px-2"
+        testID="swipeable-card-stack"
+      >
         <SwipeableCardStack<UserLink>
           data={cards}
           swipes={swipes}
@@ -183,7 +189,7 @@ export function SwipeTriageScreen() {
       </View>
 
       {/* handle buttons */}
-      <View className="z-10 mt-[-60px] flex w-full flex-col items-center justify-start gap-2">
+      <View className="z-10 mt-[-80px] flex w-full flex-col items-center justify-start gap-2">
         <View className="flex w-full flex-row items-center justify-center gap-8">
           {(() => {
             const currentCard = cards[swipes.length];

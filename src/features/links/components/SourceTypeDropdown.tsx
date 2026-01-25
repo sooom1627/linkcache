@@ -10,9 +10,12 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
+type SourceType = "new" | "read_soon" | "stock" | "done";
+
 interface SourceTypeDropdownProps {
-  value: "new" | "read_soon" | "stock" | "done";
-  onChange: (value: "new" | "read_soon" | "stock" | "done") => void;
+  value: SourceType;
+  onChange: (value: SourceType) => void;
+  allowedTypes?: SourceType[];
 }
 
 /**
@@ -24,6 +27,7 @@ interface SourceTypeDropdownProps {
 export function SourceTypeDropdown({
   value,
   onChange,
+  allowedTypes = ["new", "read_soon", "stock", "done"],
 }: SourceTypeDropdownProps) {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
@@ -41,10 +45,24 @@ export function SourceTypeDropdown({
     transform: [{ rotate: `${rotation.value}deg` }],
   }));
 
-  const handleSelect = (type: "new" | "read_soon" | "stock" | "done") => {
+  const handleSelect = (type: SourceType) => {
     onChange(type);
     setIsOpen(false);
   };
+
+  // 表示するオプションのリスト
+  const options: Array<{ type: SourceType; label: string }> = [
+    { type: "new" as const, label: t("links.card.action_modal.status.new") },
+    {
+      type: "read_soon" as const,
+      label: t("links.card.action_modal.status.read_soon"),
+    },
+    {
+      type: "stock" as const,
+      label: t("links.card.action_modal.status.stock"),
+    },
+    { type: "done" as const, label: t("links.card.action_modal.status.done") },
+  ].filter((option) => allowedTypes.includes(option.type));
 
   return (
     <View className="relative">
@@ -71,83 +89,36 @@ export function SourceTypeDropdown({
       {/* Dropdown Menu */}
       {isOpen && (
         <View className="absolute top-full z-30 mt-2 w-48 rounded-xl border border-slate-100 bg-white shadow-xl">
-          <Pressable
-            onPress={() => handleSelect("new")}
-            accessibilityRole="button"
-            accessibilityState={{ selected: value === "new" }}
-            accessibilityLabel={t("links.card.action_modal.status.new")}
-            className={`rounded-t-xl px-4 py-3 ${
-              value === "new" ? "bg-slate-50" : "active:bg-slate-50"
-            }`}
-          >
-            <Text
-              className={`text-center text-sm font-medium ${
-                value === "new" ? "text-slate-900" : "text-slate-600"
-              }`}
-            >
-              {t("links.card.action_modal.status.new")}
-            </Text>
-          </Pressable>
+          {options.map((option, index) => {
+            const isSelected = value === option.type;
+            const isFirst = index === 0;
+            const isLast = index === options.length - 1;
 
-          <View className="h-px w-full bg-slate-100" />
-
-          <Pressable
-            onPress={() => handleSelect("read_soon")}
-            accessibilityRole="button"
-            accessibilityState={{ selected: value === "read_soon" }}
-            accessibilityLabel={t("links.card.action_modal.status.read_soon")}
-            className={`px-4 py-3 ${
-              value === "read_soon" ? "bg-slate-50" : "active:bg-slate-50"
-            }`}
-          >
-            <Text
-              className={`text-center text-sm font-medium ${
-                value === "read_soon" ? "text-slate-900" : "text-slate-600"
-              }`}
-            >
-              {t("links.card.action_modal.status.read_soon")}
-            </Text>
-          </Pressable>
-
-          <View className="h-px w-full bg-slate-100" />
-
-          <Pressable
-            onPress={() => handleSelect("stock")}
-            accessibilityRole="button"
-            accessibilityState={{ selected: value === "stock" }}
-            accessibilityLabel={t("links.card.action_modal.status.stock")}
-            className={`px-4 py-3 ${
-              value === "stock" ? "bg-slate-50" : "active:bg-slate-50"
-            }`}
-          >
-            <Text
-              className={`text-center text-sm font-medium ${
-                value === "stock" ? "text-slate-900" : "text-slate-600"
-              }`}
-            >
-              {t("links.card.action_modal.status.stock")}
-            </Text>
-          </Pressable>
-
-          <View className="h-px w-full bg-slate-100" />
-
-          <Pressable
-            onPress={() => handleSelect("done")}
-            accessibilityRole="button"
-            accessibilityState={{ selected: value === "done" }}
-            accessibilityLabel={t("links.card.action_modal.status.done")}
-            className={`rounded-b-xl px-4 py-3 ${
-              value === "done" ? "bg-slate-50" : "active:bg-slate-50"
-            }`}
-          >
-            <Text
-              className={`text-center text-sm font-medium ${
-                value === "done" ? "text-slate-900" : "text-slate-600"
-              }`}
-            >
-              {t("links.card.action_modal.status.done")}
-            </Text>
-          </Pressable>
+            return (
+              <View key={option.type}>
+                <Pressable
+                  onPress={() => handleSelect(option.type)}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: isSelected }}
+                  accessibilityLabel={option.label}
+                  className={`px-4 py-3 ${
+                    isFirst ? "rounded-t-xl" : ""
+                  } ${isLast ? "rounded-b-xl" : ""} ${
+                    isSelected ? "bg-slate-50" : "active:bg-slate-50"
+                  }`}
+                >
+                  <Text
+                    className={`text-center text-sm font-medium ${
+                      isSelected ? "text-slate-900" : "text-slate-600"
+                    }`}
+                  >
+                    {option.label}
+                  </Text>
+                </Pressable>
+                {!isLast && <View className="h-px w-full bg-slate-100" />}
+              </View>
+            );
+          })}
         </View>
       )}
     </View>
