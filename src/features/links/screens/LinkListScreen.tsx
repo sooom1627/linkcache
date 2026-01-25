@@ -8,8 +8,6 @@ import {
   View,
 } from "react-native";
 
-import { useFocusEffect } from "expo-router";
-
 import { FlashList } from "@shopify/flash-list";
 import { AlertCircle, RefreshCw } from "lucide-react-native";
 
@@ -40,14 +38,6 @@ export function LinkListScreen() {
     fetchNextPage,
     refetch,
   } = useLinks();
-
-  // 画面がフォーカスされた時に最新データを取得（UIの表示がガタガタしないように非同期で）
-  useFocusEffect(
-    useCallback(() => {
-      // バックグラウンドで再フェッチ（既存のデータを表示したまま更新）
-      void refetch();
-    }, [refetch]),
-  );
 
   // 次ページ読み込み
   const handleEndReached = useCallback(() => {

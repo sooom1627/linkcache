@@ -2,7 +2,7 @@ import { memo } from "react";
 
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 
-import { useRouter } from "expo-router";
+import { Link, useRouter } from "expo-router";
 
 import { ArrowRight, Layers2 } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
@@ -93,9 +93,9 @@ export const LinkListTabContent = memo(function LinkListTabContent({
         </View>
       ))}
       <View className="flex-row items-center justify-center py-4">
-        <Text className="text-sm text-slate-500">
+        <Link href="/links" className="text-sm text-slate-500">
           {t("links.dashboard.view_all")}
-        </Text>
+        </Link>
         <ArrowRight size={14} color="#6B7280" strokeWidth={1.5} />
       </View>
     </View>
