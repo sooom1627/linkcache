@@ -134,6 +134,7 @@
       "title": "フィルター",
       "status": "ステータス",
       "read_status": "既読状態",
+      "reset": "フィルターをクリア",
       "options": {
         "all": "すべて",
         "inbox": "インボックス",
@@ -145,7 +146,9 @@
     },
     "list": {
       "empty_title": "リンクがまだありません",
-      "empty_description": "リンクを保存してここに表示しましょう"
+      "empty_description": "リンクを保存してここに表示しましょう",
+      "filter_empty_title": "該当するリンクがありません",
+      "filter_empty_description": "フィルターを調整して、他のリンクを表示してみましょう"
     },
     "header": {
       "title": "Link List",

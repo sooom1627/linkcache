@@ -134,6 +134,7 @@
       "title": "Filter",
       "status": "Status",
       "read_status": "Read Status",
+      "reset": "Clear Filters",
       "options": {
         "all": "All",
         "inbox": "Inbox",
@@ -145,7 +146,9 @@
     },
     "list": {
       "empty_title": "No links yet",
-      "empty_description": "Start saving links to see them here"
+      "empty_description": "Start saving links to see them here",
+      "filter_empty_title": "No matching links",
+      "filter_empty_description": "Try adjusting your filters to see more links"
     },
     "header": {
       "title": "Link List",
