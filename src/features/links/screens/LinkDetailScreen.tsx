@@ -54,6 +54,8 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
     dismiss: dismissStatusModal,
   } = useBottomSheetModal();
 
+  const isDone = link?.status === "done";
+
   const handleBack = useCallback(() => {
     router.back();
   }, [router]);
@@ -208,7 +210,25 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
 
               {/* 現在のステータス */}
               <View className="mb-3 flex-row items-center gap-2">
-                {isRead ? (
+                {isDone ? (
+                  // Doneステータス: 優先表示
+                  <View className="flex-row items-center gap-1.5">
+                    <Circle
+                      size={12}
+                      fill={statusStyle.icon}
+                      color={statusStyle.icon}
+                    />
+                    <Text
+                      className={`text-base font-medium ${statusStyle.text}`}
+                    >
+                      {link.status
+                        ? t(`links.card.action_modal.status.${link.status}`, {
+                            defaultValue: link.status,
+                          })
+                        : ""}
+                    </Text>
+                  </View>
+                ) : isRead ? (
                   // 既読: シンプルなアイコン+テキスト
                   <View className="flex-row items-center gap-1.5">
                     <Check

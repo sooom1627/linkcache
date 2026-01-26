@@ -8,8 +8,6 @@ import {
   View,
 } from "react-native";
 
-import { useFocusEffect } from "expo-router";
-
 import { FlashList } from "@shopify/flash-list";
 import { AlertCircle, RefreshCw } from "lucide-react-native";
 
@@ -17,6 +15,10 @@ import { LinkListCard } from "../components/LinkListCard";
 import { LinkListEmpty } from "../components/LinkListEmpty";
 import { LinkListFilterMenu } from "../components/LinkListFilterMenu";
 import { LinkListLoadingFooter } from "../components/LinkListLoadingFooter";
+import {
+  LinkListFilterProvider,
+  useLinkListFilterContext,
+} from "../contexts/LinkListFilterContext";
 import { useLinks } from "../hooks/useLinks";
 import type { UserLink } from "../types/linkList.types";
 
@@ -27,8 +29,25 @@ import type { UserLink } from "../types/linkList.types";
  * - Pull-to-refresh対応
  * - 無限スクロール対応
  * - ローディング・エラー・空状態のハンドリング
+ * - フィルター機能（ステータス・既読状態）
  */
 export function LinkListScreen() {
+  return (
+    <LinkListFilterProvider>
+      <LinkListScreenContent />
+    </LinkListFilterProvider>
+  );
+}
+
+/**
+ * リンク一覧画面の内部コンポーネント
+ *
+ * フィルターコンテキストを使用してリンク一覧を表示します。
+ */
+function LinkListScreenContent() {
+  const { useLinksOptions, hasActiveFilters, resetFilters } =
+    useLinkListFilterContext();
+
   const {
     links,
     isLoading,
@@ -39,15 +58,7 @@ export function LinkListScreen() {
     hasNextPage,
     fetchNextPage,
     refetch,
-  } = useLinks();
-
-  // 画面がフォーカスされた時に最新データを取得（UIの表示がガタガタしないように非同期で）
-  useFocusEffect(
-    useCallback(() => {
-      // バックグラウンドで再フェッチ（既存のデータを表示したまま更新）
-      void refetch();
-    }, [refetch]),
-  );
+  } = useLinks(useLinksOptions);
 
   // 次ページ読み込み
   const handleEndReached = useCallback(() => {
@@ -85,8 +96,13 @@ export function LinkListScreen() {
     if (isLoading) {
       return null;
     }
-    return <LinkListEmpty />;
-  }, [isLoading]);
+    return (
+      <LinkListEmpty
+        hasActiveFilters={hasActiveFilters}
+        onResetFilters={resetFilters}
+      />
+    );
+  }, [isLoading, hasActiveFilters, resetFilters]);
 
   // 初回ローディング
   if (isLoading) {
@@ -122,7 +138,10 @@ export function LinkListScreen() {
       <View className="absolute right-0 z-50 mt-[12px] flex-row items-center gap-2">
         <LinkListFilterMenu
           isDisabled={
-            isLoading || isRefreshing || isError || links.length === 0
+            isLoading ||
+            isRefreshing ||
+            isError ||
+            (links.length === 0 && !hasActiveFilters)
           }
         />
       </View>

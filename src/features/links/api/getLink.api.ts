@@ -18,6 +18,22 @@ type UserLinksViewRow = Tables<"user_links_view">;
  * console.log(link.title);
  * ```
  */
+/**
+ * 指定されたlink_idのリンク詳細を取得する
+ *
+ * RLSポリシーにより、現在のユーザーが所有するリンクのみが取得されます。
+ * view経由でもベーステーブル（link_status）のRLSポリシーが適用されます。
+ *
+ * @param linkId - 取得するリンクのID
+ * @returns リンク詳細データ
+ * @throws Supabaseエラーまたはデータが見つからない場合
+ *
+ * @example
+ * ```ts
+ * const link = await getLinkById("123e4567-e89b-12d3-a456-426614174000");
+ * console.log(link.title);
+ * ```
+ */
 export async function getLinkById(linkId: string): Promise<UserLink> {
   const { data, error } = await supabase
     .from("user_links_view")

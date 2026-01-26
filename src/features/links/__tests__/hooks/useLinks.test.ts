@@ -19,7 +19,7 @@ const mockFetchUserLinks = jest.mocked(fetchUserLinks);
 const createMockLink = (id: number) => ({
   status_id: `status-${id}`,
   user_id: "user-1",
-  status: "inbox" as const,
+  status: "new" as const,
   triaged_at: null,
   read_at: null,
   saved_at: `2024-01-0${id}T00:00:00Z`,

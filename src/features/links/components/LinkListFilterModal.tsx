@@ -1,4 +1,4 @@
-import { forwardRef, useCallback, useState } from "react";
+import { forwardRef, useCallback } from "react";
 
 import { Pressable, Text, View } from "react-native";
 
@@ -8,64 +8,52 @@ import { useTranslation } from "react-i18next";
 import { BaseBottomSheetModal } from "@/src/shared/components/modals";
 import ModalHeader from "@/src/shared/components/modals/ModalHeader";
 
-import type { TriageStatus } from "../types/linkList.types";
+import { useLinkListFilterContext } from "../contexts/LinkListFilterContext";
+import type {
+  ReadStatusFilterOption,
+  StatusFilterOption,
+} from "../hooks/useLinkListFilter";
 
 export interface LinkListFilterModalProps {
   onClose?: () => void;
 }
 
 /**
- * ステータスフィルターのオプション
- */
-type StatusFilterOption = "all" | TriageStatus;
-
-/**
- * 既読状態フィルターのオプション
- */
-type ReadStatusFilterOption = "all" | "unread" | "read";
-
-/**
- * フィルター選択状態
- */
-interface FilterState {
-  status: StatusFilterOption;
-  readStatus: ReadStatusFilterOption;
-}
-
-/**
  * リンク一覧のフィルターモーダル
  *
  * ステータスと既読状態でフィルタリングするためのUIを提供します。
+ * フィルター状態はLinkListFilterContextから取得し、共有されます。
  */
 export const LinkListFilterModal = forwardRef<
   BottomSheetModal,
   LinkListFilterModalProps
 >(({ onClose }, ref) => {
   const { t } = useTranslation();
-  const [filterState, setFilterState] = useState<FilterState>({
-    status: "all",
-    readStatus: "all",
-  });
+  const { filterState, setStatus, setReadStatus } = useLinkListFilterContext();
 
   // ステータスフィルターの選択
-  const handleStatusSelect = useCallback((status: StatusFilterOption) => {
-    setFilterState((prev) => ({ ...prev, status }));
-  }, []);
+  const handleStatusSelect = useCallback(
+    (status: StatusFilterOption) => {
+      setStatus(status);
+    },
+    [setStatus],
+  );
 
   // 既読状態フィルターの選択
   const handleReadStatusSelect = useCallback(
     (readStatus: ReadStatusFilterOption) => {
-      setFilterState((prev) => ({ ...prev, readStatus }));
+      setReadStatus(readStatus);
     },
-    [],
+    [setReadStatus],
   );
 
   // ステータスオプションのリスト
   const statusOptions: { value: StatusFilterOption; label: string }[] = [
     { value: "all", label: t("links.filter.options.all") },
-    { value: "inbox", label: t("links.filter.options.inbox") },
+    { value: "new", label: t("links.filter.options.new") },
     { value: "read_soon", label: t("links.filter.options.read_soon") },
-    { value: "later", label: t("links.filter.options.later") },
+    { value: "stock", label: t("links.filter.options.stock") },
+    { value: "done", label: t("links.filter.options.done") },
   ];
 
   // 既読状態オプションのリスト

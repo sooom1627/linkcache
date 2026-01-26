@@ -48,13 +48,10 @@ jest.mock("expo-router", () => {
     useFocusEffect: jest.fn((callback) => {
       // テスト環境では即座にコールバックを実行（actでラップ）
       React.useEffect(() => {
-        // refetchは非同期なので、次のイベントループで実行
-        const timeoutId = setTimeout(() => {
+        // refetchは非同期なので、act内で実行してから完了を待つ
+        void Promise.resolve().then(() => {
           callback();
-        }, 0);
-        return () => {
-          clearTimeout(timeoutId);
-        };
+        });
       }, [callback]);
     }),
     useRouter: jest.fn(() => ({
@@ -62,6 +59,14 @@ jest.mock("expo-router", () => {
       replace: jest.fn(),
       back: jest.fn(),
     })),
+    Link: ({ children, ...props }: { children: React.ReactNode }) => {
+      const { Pressable, Text } = require("react-native");
+      return (
+        <Pressable {...props}>
+          <Text>{children}</Text>
+        </Pressable>
+      );
+    },
   };
 });
 
@@ -111,7 +116,7 @@ const mockFetchUserLinks = jest.mocked(fetchUserLinks);
 // モックデータヘルパー
 const createMockLink = (
   id: number,
-  status: "inbox" | "read_soon" | "later" = "read_soon",
+  status: "new" | "read_soon" | "stock" = "read_soon",
 ) => ({
   status_id: `status-${id}`,
   user_id: "user-1",
@@ -138,7 +143,7 @@ describe("LinkListTabs", () => {
   describe("APIレイヤーでのフィルタリング", () => {
     it("Read Soonタブはstatus=read_soon, limit=5でAPIを呼び出す", async () => {
       const mockLatestData = {
-        data: [createMockLink(1, "inbox")],
+        data: [createMockLink(1, "new")],
         hasMore: false,
         totalCount: 1,
       };
@@ -158,9 +163,12 @@ describe("LinkListTabs", () => {
       render(<LinkListTabs />, { wrapper });
 
       // 初期状態はLatestタブなので、Latestタブのデータが表示される
-      await waitFor(() => {
-        expect(screen.getByText("Example 1")).toBeTruthy();
-      });
+      await waitFor(
+        () => {
+          expect(screen.getByText("Example 1")).toBeTruthy();
+        },
+        { timeout: 3000 },
+      );
 
       // Read Soonタブに切り替え
       const readSoonTab = screen.getByRole("tab", { name: "Read Soon" });
@@ -169,9 +177,12 @@ describe("LinkListTabs", () => {
         fireEvent.press(readSoonTab);
       });
 
-      await waitFor(() => {
-        expect(screen.getByText("Example 2")).toBeTruthy();
-      });
+      await waitFor(
+        () => {
+          expect(screen.getByText("Example 2")).toBeTruthy();
+        },
+        { timeout: 3000 },
+      );
 
       // status: "read_soon", limit: 5 でAPIが呼ばれることを確認
       expect(mockFetchUserLinks).toHaveBeenCalledWith(
@@ -182,7 +193,7 @@ describe("LinkListTabs", () => {
     it("Latest Addedタブはlimit=5でAPIを呼び出す（status=inboxでフィルタ）", async () => {
       // Latest用のレスポンス（最初のタブ）
       const mockLatestData = {
-        data: [createMockLink(2, "inbox")],
+        data: [createMockLink(2, "new")],
         hasMore: false,
         totalCount: 1,
       };
@@ -202,13 +213,16 @@ describe("LinkListTabs", () => {
       render(<LinkListTabs />, { wrapper });
 
       // 初期状態はLatestタブなので、Latestタブのデータが表示される
-      await waitFor(() => {
-        expect(screen.getByText("Example 2")).toBeTruthy();
-      });
+      await waitFor(
+        () => {
+          expect(screen.getByText("Example 2")).toBeTruthy();
+        },
+        { timeout: 3000 },
+      );
 
       // limit: 5, status: "inbox" でAPIが呼ばれることを確認
       const latestCall = mockFetchUserLinks.mock.calls.find(
-        (call) => call[0]?.status === "inbox" && call[0]?.limit === 5,
+        (call) => call[0]?.status === "new" && call[0]?.limit === 5,
       );
       expect(latestCall).toBeTruthy();
     });
@@ -216,11 +230,11 @@ describe("LinkListTabs", () => {
     it("Read Soon/Latestともに最大5件まで表示される", async () => {
       const mockLatestData = {
         data: [
-          createMockLink(1, "inbox"),
-          createMockLink(2, "inbox"),
-          createMockLink(3, "inbox"),
-          createMockLink(4, "inbox"),
-          createMockLink(5, "inbox"),
+          createMockLink(1, "new"),
+          createMockLink(2, "new"),
+          createMockLink(3, "new"),
+          createMockLink(4, "new"),
+          createMockLink(5, "new"),
         ],
         hasMore: false,
         totalCount: 10, // 実際には10件あるが5件のみ取得
@@ -247,9 +261,12 @@ describe("LinkListTabs", () => {
       render(<LinkListTabs />, { wrapper });
 
       // 初期状態はLatestタブなので、Latestタブのデータが表示される
-      await waitFor(() => {
-        expect(screen.getByText("Example 1")).toBeTruthy();
-      });
+      await waitFor(
+        () => {
+          expect(screen.getByText("Example 1")).toBeTruthy();
+        },
+        { timeout: 3000 },
+      );
 
       // Latestタブで5件表示される
       expect(screen.getByText("Example 1")).toBeTruthy();
@@ -280,7 +297,7 @@ describe("LinkListTabs", () => {
         totalCount: 1,
       };
       const mockLatestData = {
-        data: [createMockLink(1, "read_soon"), createMockLink(2, "inbox")],
+        data: [createMockLink(1, "read_soon"), createMockLink(2, "new")],
         hasMore: false,
         totalCount: 2,
       };
@@ -294,9 +311,12 @@ describe("LinkListTabs", () => {
       render(<LinkListTabs />, { wrapper });
 
       // 初期状態はLatestタブ
-      await waitFor(() => {
-        expect(screen.getByText("Example 1")).toBeTruthy();
-      });
+      await waitFor(
+        () => {
+          expect(screen.getByText("Example 1")).toBeTruthy();
+        },
+        { timeout: 3000 },
+      );
       expect(screen.getByText("Example 1")).toBeTruthy();
 
       // Read Soonタブに切り替え

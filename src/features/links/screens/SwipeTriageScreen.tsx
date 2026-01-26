@@ -8,6 +8,7 @@ import {
   RefreshCw,
   RotateCcw,
 } from "lucide-react-native";
+import { useTranslation } from "react-i18next";
 import {
   SwipeableCardStack,
   type CardProps,
@@ -43,9 +44,11 @@ function RenderCard(props: CardProps<UserLink>) {
  * Swipe Triage画面コンポーネント
  */
 export function SwipeTriageScreen() {
-  const [sourceType, setSourceType] = useState<"inbox" | "later" | "read_soon">(
-    "inbox",
+  const [sourceType, setSourceType] = useState<"new" | "stock" | "read_soon">(
+    "new",
   );
+
+  const { t } = useTranslation();
 
   const {
     cards,
@@ -61,7 +64,14 @@ export function SwipeTriageScreen() {
     restart,
   } = useSwipeCards({ sourceType });
 
-  const handleSourceTypeChange = (type: "inbox" | "later" | "read_soon") => {
+  const handleSourceTypeChange = (
+    type: "new" | "stock" | "read_soon" | "done",
+  ) => {
+    // doneはスワイプ画面では使用しないため、newにフォールバック
+    if (type === "done") {
+      setSourceType("new");
+      return;
+    }
     setSourceType(type);
   };
 
@@ -96,6 +106,7 @@ export function SwipeTriageScreen() {
           <SourceTypeDropdown
             value={sourceType}
             onChange={handleSourceTypeChange}
+            allowedTypes={["new", "read_soon", "stock"]}
           />
         </View>
 
@@ -118,6 +129,7 @@ export function SwipeTriageScreen() {
           <SourceTypeDropdown
             value={sourceType}
             onChange={handleSourceTypeChange}
+            allowedTypes={["new", "read_soon", "stock"]}
           />
         </View>
 
@@ -145,10 +157,11 @@ export function SwipeTriageScreen() {
   return (
     <View className="h-4/5 w-full flex-col items-center justify-between py-24">
       {/* Source Type Selector */}
-      <View className="z-20 w-full items-center">
+      <View className="z-30 w-full items-center">
         <SourceTypeDropdown
           value={sourceType}
           onChange={handleSourceTypeChange}
+          allowedTypes={["new", "read_soon", "stock"]}
         />
         {/* Remaining Count */}
         <Text className="mt-2 text-sm text-gray-500">
@@ -158,7 +171,10 @@ export function SwipeTriageScreen() {
       </View>
 
       {/* Card Stack */}
-      <View className="z-20 flex-col px-2" testID="swipeable-card-stack">
+      <View
+        className="z-20 mt-[-40px] flex-col px-2"
+        testID="swipeable-card-stack"
+      >
         <SwipeableCardStack<UserLink>
           data={cards}
           swipes={swipes}
@@ -173,7 +189,7 @@ export function SwipeTriageScreen() {
       </View>
 
       {/* handle buttons */}
-      <View className="z-10 mt-[-60px] flex w-full flex-col items-center justify-start gap-2">
+      <View className="z-10 mt-[-80px] flex w-full flex-col items-center justify-start gap-2">
         <View className="flex w-full flex-row items-center justify-center gap-8">
           {(() => {
             const currentCard = cards[swipes.length];
@@ -203,7 +219,7 @@ export function SwipeTriageScreen() {
                       isDisabled ? "text-slate-400" : "text-slate-700"
                     }`}
                   >
-                    Later
+                    {t("links.card.action_modal.status.stock")}
                   </Text>
                 </TouchableOpacity>
 
@@ -230,7 +246,7 @@ export function SwipeTriageScreen() {
                       isDisabled ? "text-slate-400" : "text-slate-700"
                     }`}
                   >
-                    Read Soon
+                    {t("links.card.action_modal.status.read_soon")}
                   </Text>
                 </TouchableOpacity>
               </>

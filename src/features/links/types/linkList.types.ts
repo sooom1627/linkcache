@@ -87,7 +87,7 @@ export interface GetUserLinksResponse {
 export const userLinkSchema = z.object({
   status_id: z.string().uuid(),
   user_id: z.string().uuid(),
-  status: z.enum(["inbox", "read_soon", "later"]).nullable(),
+  status: z.enum(["new", "read_soon", "stock", "done"]).nullable(),
   triaged_at: z.string().nullable(),
   read_at: z.string().nullable(),
   saved_at: z.string().nullable(),

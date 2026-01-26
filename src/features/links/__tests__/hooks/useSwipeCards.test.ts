@@ -29,10 +29,10 @@ describe("useSwipeCards", () => {
   });
 
   describe("データ取得", () => {
-    it("inboxのカードデータを取得する", async () => {
-      const mockLink1 = createMockLink(1, { status: "inbox" });
-      const mockLink2 = createMockLink(2, { status: "inbox" });
-      const mockLink3 = createMockLink(3, { status: "inbox" });
+    it("newのカードデータを取得する", async () => {
+      const mockLink1 = createMockLink(1, { status: "new" });
+      const mockLink2 = createMockLink(2, { status: "new" });
+      const mockLink3 = createMockLink(3, { status: "new" });
       mockFetchUserLinks.mockResolvedValueOnce({
         data: [mockLink1, mockLink2, mockLink3],
         hasMore: false,
@@ -40,7 +40,7 @@ describe("useSwipeCards", () => {
       });
 
       const { result } = renderHook(
-        () => useSwipeCards({ sourceType: "inbox" }),
+        () => useSwipeCards({ sourceType: "new" }),
         {
           wrapper,
         },
@@ -55,8 +55,8 @@ describe("useSwipeCards", () => {
       expect(result.current.error).toBeNull();
     });
 
-    it("laterのカードデータを取得する", async () => {
-      const mockLink1 = createMockLink(1, { status: "later" });
+    it("stockのカードデータを取得する", async () => {
+      const mockLink1 = createMockLink(1, { status: "stock" });
       mockFetchUserLinks.mockResolvedValueOnce({
         data: [mockLink1],
         hasMore: false,
@@ -64,7 +64,7 @@ describe("useSwipeCards", () => {
       });
 
       const { result } = renderHook(
-        () => useSwipeCards({ sourceType: "later" }),
+        () => useSwipeCards({ sourceType: "stock" }),
         {
           wrapper,
         },
@@ -76,7 +76,7 @@ describe("useSwipeCards", () => {
 
       expect(result.current.cards).toHaveLength(1);
       expect(mockFetchUserLinks).toHaveBeenCalledWith(
-        expect.objectContaining({ status: "later" }),
+        expect.objectContaining({ status: "stock" }),
       );
     });
 
@@ -120,7 +120,7 @@ describe("useSwipeCards", () => {
 
       await waitFor(() => {
         expect(mockFetchUserLinks).toHaveBeenCalledWith(
-          expect.objectContaining({ status: "inbox" }),
+          expect.objectContaining({ status: "new" }),
         );
       });
     });
@@ -197,8 +197,8 @@ describe("useSwipeCards", () => {
       });
     });
 
-    it("左スワイプでupdateLinkStatusをlaterで呼び出す", async () => {
-      const mockLink = createMockLink(1, { status: "inbox" });
+    it("左スワイプでupdateLinkStatusをstockで呼び出す", async () => {
+      const mockLink = createMockLink(1, { status: "new" });
       mockFetchUserLinks.mockResolvedValue({
         data: [mockLink, createMockLink(2)],
         hasMore: false,
@@ -219,7 +219,7 @@ describe("useSwipeCards", () => {
       await waitFor(() => {
         expect(mockUpdateLinkStatus).toHaveBeenCalledWith(
           mockLink.link_id,
-          "later",
+          "stock",
         );
       });
 
@@ -297,7 +297,7 @@ describe("useSwipeCards", () => {
     });
 
     it("undoでAPIが元のステータスで呼び出される", async () => {
-      const mockLink = createMockLink(1, { status: "inbox" });
+      const mockLink = createMockLink(1, { status: "new" });
       mockFetchUserLinks.mockResolvedValue({
         data: [mockLink, createMockLink(2)],
         hasMore: false,
@@ -306,7 +306,7 @@ describe("useSwipeCards", () => {
       mockUpdateLinkStatus.mockResolvedValue(undefined);
 
       const { result } = renderHook(
-        () => useSwipeCards({ sourceType: "inbox" }),
+        () => useSwipeCards({ sourceType: "new" }),
         {
           wrapper,
         },
@@ -328,7 +328,7 @@ describe("useSwipeCards", () => {
         );
       });
 
-      // Undo（inboxに戻す）
+      // Undo（newに戻す）
       act(() => {
         result.current.undo();
       });
@@ -336,7 +336,7 @@ describe("useSwipeCards", () => {
       await waitFor(() => {
         expect(mockUpdateLinkStatus).toHaveBeenLastCalledWith(
           mockLink.link_id,
-          "inbox",
+          "new",
         );
       });
 
@@ -381,8 +381,8 @@ describe("useSwipeCards", () => {
       });
     });
 
-    it("laterソースからのundoはlaterに戻す", async () => {
-      const mockLink = createMockLink(1, { status: "later" });
+    it("stockソースからのundoはstockに戻す", async () => {
+      const mockLink = createMockLink(1, { status: "stock" });
       mockFetchUserLinks.mockResolvedValue({
         data: [mockLink],
         hasMore: false,
@@ -391,7 +391,7 @@ describe("useSwipeCards", () => {
       mockUpdateLinkStatus.mockResolvedValue(undefined);
 
       const { result } = renderHook(
-        () => useSwipeCards({ sourceType: "later" }),
+        () => useSwipeCards({ sourceType: "stock" }),
         {
           wrapper,
         },
@@ -419,7 +419,7 @@ describe("useSwipeCards", () => {
       await waitFor(() => {
         expect(mockUpdateLinkStatus).toHaveBeenLastCalledWith(
           mockLink.link_id,
-          "later",
+          "stock",
         );
       });
 

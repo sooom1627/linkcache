@@ -24,7 +24,7 @@ describe("fetchUserLinks", () => {
             {
               status_id: "550e8400-e29b-41d4-a716-446655440000",
               user_id: "550e8400-e29b-41d4-a716-446655440001",
-              status: "inbox",
+              status: "new",
               triaged_at: null,
               read_at: null,
               saved_at: "2024-01-01T00:00:00Z",
@@ -204,14 +204,14 @@ describe("fetchUserLinks", () => {
       mockRpc.mockResolvedValueOnce(mockResponse);
 
       const result = await fetchUserLinks({
-        status: "later",
+        status: "stock",
         orderBy: "triaged_at_asc",
       });
 
       expect(mockRpc).toHaveBeenCalledWith("get_user_links", {
         p_page_size: 20,
         p_page: 0,
-        p_status: "later",
+        p_status: "stock",
         p_is_read: null,
         p_limit: null,
         p_order_by: "triaged_at_asc",

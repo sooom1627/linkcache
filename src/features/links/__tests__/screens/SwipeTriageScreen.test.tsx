@@ -69,9 +69,9 @@ describe("SwipeTriageScreen", () => {
 
   it("カードがある場合にSwipeableCardStackを表示する", async () => {
     const mockLinks = [
-      createMockLink(1, { status: "inbox" }),
-      createMockLink(2, { status: "inbox" }),
-      createMockLink(3, { status: "inbox" }),
+      createMockLink(1, { status: "new" }),
+      createMockLink(2, { status: "new" }),
+      createMockLink(3, { status: "new" }),
     ];
     mockFetchUserLinks.mockResolvedValueOnce({
       data: mockLinks,

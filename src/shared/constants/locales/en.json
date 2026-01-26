@@ -132,20 +132,25 @@
     },
     "filter": {
       "title": "Filter",
-      "status": "Status",
-      "read_status": "Read Status",
+      "status": "What do you want to see ?",
+      "read_status": "You've already read ?",
+      "reset": "Clear Filters",
       "options": {
         "all": "All",
         "inbox": "Inbox",
+        "new": "New",
         "read_soon": "Read Soon",
-        "later": "Later",
-        "unread": "Unread",
-        "read": "Read"
+        "stock": "Stock",
+        "done": "Done",
+        "unread": "Not yet read",
+        "read": "Already read"
       }
     },
     "list": {
       "empty_title": "No links yet",
-      "empty_description": "Start saving links to see them here"
+      "empty_description": "Start saving links to see them here",
+      "filter_empty_title": "No matching links",
+      "filter_empty_description": "Try adjusting your filters to see more links"
     },
     "header": {
       "title": "Link List",
@@ -168,8 +173,10 @@
         "tap_to_change": "Tap to change mode",
         "status": {
           "inbox": "Inbox",
+          "new": "New",
           "read_soon": "Read Soon",
-          "later": "Later"
+          "stock": "Stock",
+          "done": "Done"
         }
       }
     },

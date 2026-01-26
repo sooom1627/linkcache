@@ -51,7 +51,7 @@ export const LinkReadStatusModal = forwardRef<
   // 既読にするハンドラー
   const handleMarkAsRead = useCallback(() => {
     if (isRead || isPending) return;
-    updateReadStatus(link.link_id, true);
+    updateReadStatus(link.link_id, true, "done");
     // 楽観的更新: 即座にローカル状態を更新
     setIsRead(true);
   }, [isRead, isPending, link.link_id, updateReadStatus]);
@@ -59,7 +59,7 @@ export const LinkReadStatusModal = forwardRef<
   // 未読にするハンドラー
   const handleMarkAsUnread = useCallback(() => {
     if (!isRead || isPending) return;
-    updateReadStatus(link.link_id, false);
+    updateReadStatus(link.link_id, false, "read_soon");
     // 楽観的更新: 即座にローカル状態を更新
     setIsRead(false);
   }, [isRead, isPending, link.link_id, updateReadStatus]);

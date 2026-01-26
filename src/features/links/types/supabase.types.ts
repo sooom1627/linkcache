@@ -252,7 +252,7 @@ export type Database = {
       };
     };
     Enums: {
-      triage_status: "inbox" | "read_soon" | "later";
+      triage_status: "new" | "read_soon" | "stock" | "done";
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -383,7 +383,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      triage_status: ["inbox", "read_soon", "later"],
+      triage_status: ["new", "read_soon", "stock", "done"],
     },
   },
 } as const;

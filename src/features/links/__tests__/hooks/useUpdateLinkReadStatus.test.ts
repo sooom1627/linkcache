@@ -48,9 +48,10 @@ describe("useUpdateLinkReadStatus", () => {
     });
 
     // React Query v5ではmutationFnに追加のコンテキスト情報が渡されるため、
-    // 第1引数（linkId）と第2引数（isRead）のみを検証
+    // 第1引数（linkId）、第2引数（isRead）、第3引数（status）を検証
     expect(mockUpdateLinkReadStatus.mock.calls[0][0]).toBe(MOCK_LINK_ID);
     expect(mockUpdateLinkReadStatus.mock.calls[0][1]).toBe(true);
+    expect(mockUpdateLinkReadStatus.mock.calls[0][2]).toBeUndefined();
   });
 
   it("calls updateLinkReadStatus API with false when marking as unread", async () => {
@@ -68,6 +69,43 @@ describe("useUpdateLinkReadStatus", () => {
 
     expect(mockUpdateLinkReadStatus.mock.calls[0][0]).toBe(MOCK_LINK_ID);
     expect(mockUpdateLinkReadStatus.mock.calls[0][1]).toBe(false);
+    expect(mockUpdateLinkReadStatus.mock.calls[0][2]).toBeUndefined();
+  });
+
+  it("calls updateLinkReadStatus API with status parameter when marking as read", async () => {
+    mockUpdateLinkReadStatus.mockResolvedValueOnce(undefined);
+
+    const { result } = renderHook(() => useUpdateLinkReadStatus(), { wrapper });
+
+    act(() => {
+      result.current.updateReadStatus(MOCK_LINK_ID, true, "done");
+    });
+
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true);
+    });
+
+    expect(mockUpdateLinkReadStatus.mock.calls[0][0]).toBe(MOCK_LINK_ID);
+    expect(mockUpdateLinkReadStatus.mock.calls[0][1]).toBe(true);
+    expect(mockUpdateLinkReadStatus.mock.calls[0][2]).toBe("done");
+  });
+
+  it("calls updateLinkReadStatus API with status parameter when marking as unread", async () => {
+    mockUpdateLinkReadStatus.mockResolvedValueOnce(undefined);
+
+    const { result } = renderHook(() => useUpdateLinkReadStatus(), { wrapper });
+
+    act(() => {
+      result.current.updateReadStatus(MOCK_LINK_ID, false, "read_soon");
+    });
+
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true);
+    });
+
+    expect(mockUpdateLinkReadStatus.mock.calls[0][0]).toBe(MOCK_LINK_ID);
+    expect(mockUpdateLinkReadStatus.mock.calls[0][1]).toBe(false);
+    expect(mockUpdateLinkReadStatus.mock.calls[0][2]).toBe("read_soon");
   });
 
   it("sets error state when API call fails", async () => {
