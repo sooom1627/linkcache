@@ -7,8 +7,9 @@ Add native iOS toolbar items to Stack screens. Items can be placed in the header
 ## Notes app example
 
 ```tsx
-import { Stack } from "expo-router";
 import { ScrollView } from "react-native";
+
+import { Stack } from "expo-router";
 
 export default function FoldersScreen() {
   return (
@@ -45,9 +46,11 @@ export default function FoldersScreen() {
 ## Mail inbox example
 
 ```tsx
-import { Color, Stack } from "expo-router";
 import { useState } from "react";
+
 import { ScrollView, Text, View } from "react-native";
+
+import { Color, Stack } from "expo-router";
 
 export default function InboxScreen() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);

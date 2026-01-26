@@ -109,6 +109,7 @@ Pass async functions as props to expose native functionality to the DOM componen
 ```tsx
 // app/index.tsx (native)
 import { Alert } from "react-native";
+
 import DOMComponent from "@/components/dom-component";
 
 export default function Screen() {
@@ -182,12 +183,12 @@ export default function SyntaxHighlight({ code, language }: Props) {
 "use dom";
 
 import {
-  LineChart,
+  CartesianGrid,
   Line,
+  LineChart,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
 } from "recharts";
 
 interface Props {
@@ -301,6 +302,7 @@ These hooks don't work directly in DOM components because they need synchronous 
 ```tsx
 // app/[id].tsx (native)
 import { useLocalSearchParams, usePathname } from "expo-router";
+
 import DOMComponent from "@/components/dom-component";
 
 export default function Screen() {
@@ -374,9 +376,10 @@ Import and use DOM components like regular components:
 
 ```tsx
 // app/index.tsx
-import { View, Text } from "react-native";
-import WebChart from "@/components/web-chart";
+import { Text, View } from "react-native";
+
 import CodeBlock from "@/components/code-block";
+import WebChart from "@/components/web-chart";
 
 export default function HomeScreen() {
   return (

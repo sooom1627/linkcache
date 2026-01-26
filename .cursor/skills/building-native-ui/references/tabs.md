@@ -8,10 +8,10 @@ Always prefer NativeTabs from 'expo-router/unstable-native-tabs' for the best iO
 
 ```tsx
 import {
-  NativeTabs,
+  Badge,
   Icon,
   Label,
-  Badge,
+  NativeTabs,
 } from "expo-router/unstable-native-tabs";
 
 export default function TabLayout() {
@@ -187,7 +187,10 @@ Native tabs don't render headers. Nest Stacks inside each tab for navigation hea
 
 ```tsx
 // app/(tabs)/_layout.tsx
-import { NativeTabs, Icon, Label } from "expo-router/unstable-native-tabs";
+
+// app/(tabs)/(home)/_layout.tsx
+import Stack from "expo-router/stack";
+import { Icon, Label, NativeTabs } from "expo-router/unstable-native-tabs";
 
 export default function TabLayout() {
   return (
@@ -199,9 +202,6 @@ export default function TabLayout() {
     </NativeTabs>
   );
 }
-
-// app/(tabs)/(home)/_layout.tsx
-import Stack from "expo-router/stack";
 
 export default function HomeStack() {
   return (
@@ -250,7 +250,7 @@ export default function TabLayout() {
 ### After (Native Tabs)
 
 ```tsx
-import { NativeTabs, Icon, Label } from "expo-router/unstable-native-tabs";
+import { Icon, Label, NativeTabs } from "expo-router/unstable-native-tabs";
 
 export default function TabLayout() {
   return (
@@ -285,13 +285,12 @@ export default function TabLayout() {
    ```tsx
    // Remove
    import { Tabs } from "expo-router";
-
    // Add
    import {
-     NativeTabs,
+     Badge,
      Icon,
      Label,
-     Badge,
+     NativeTabs,
    } from "expo-router/unstable-native-tabs";
    ```
 

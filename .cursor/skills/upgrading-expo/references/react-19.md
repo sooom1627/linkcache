@@ -10,11 +10,11 @@ The `use` hook replaces `useContext`:
 
 ```tsx
 // Before (React 18)
-import { useContext } from "react";
+// After (React 19)
+import { use, useContext } from "react";
+
 const value = useContext(MyContext);
 
-// After (React 19)
-import { use } from "react";
 const value = use(MyContext);
 ```
 

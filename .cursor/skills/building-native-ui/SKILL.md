@@ -265,7 +265,8 @@ app/
 
 ```tsx
 // app/_layout.tsx
-import { NativeTabs, Icon, Label } from "expo-router/unstable-native-tabs";
+import { Icon, Label, NativeTabs } from "expo-router/unstable-native-tabs";
+
 import { Theme } from "../components/theme";
 
 export default function Layout() {
@@ -287,8 +288,9 @@ Create a shared group route so both tabs can push common screens:
 
 ```tsx
 // app/(index,search)/_layout.tsx
-import { Stack } from "expo-router/stack";
 import { PlatformColor } from "react-native";
+
+import { Stack } from "expo-router/stack";
 
 export default function Layout({ segment }) {
   const screen = segment.match(/\((.*)\)/)?.[1]!;

@@ -123,6 +123,7 @@ This requires a specialized layout with explicit anchor routes:
 ```tsx
 // app/(index,settings)/_layout.tsx
 import { useMemo } from "react";
+
 import Stack from "expo-router/stack";
 
 export const unstable_settings = {
@@ -183,7 +184,7 @@ export default function RootLayout() {
 
 ```tsx
 // app/(tabs)/_layout.tsx
-import { NativeTabs, Icon, Label } from "expo-router/unstable-native-tabs";
+import { Icon, Label, NativeTabs } from "expo-router/unstable-native-tabs";
 
 export default function TabLayout() {
   return (
@@ -215,8 +216,9 @@ Create a `+not-found.tsx` file to handle unmatched routes:
 
 ```tsx
 // app/+not-found.tsx
+import { Text, View } from "react-native";
+
 import { Link } from "expo-router";
-import { View, Text } from "react-native";
 
 export default function NotFound() {
   return (

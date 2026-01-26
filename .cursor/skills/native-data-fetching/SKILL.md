@@ -143,7 +143,11 @@ function CreateUserForm() {
 
 ```tsx
 class ApiError extends Error {
-  constructor(message: string, public status: number, public code?: string) {
+  constructor(
+    message: string,
+    public status: number,
+    public code?: string,
+  ) {
     super(message);
     this.name = "ApiError";
   }
@@ -158,7 +162,7 @@ const fetchWithErrorHandling = async (url: string, options?: RequestInit) => {
       throw new ApiError(
         error.message || "Request failed",
         response.status,
-        error.code
+        error.code,
       );
     }
 
@@ -179,7 +183,7 @@ const fetchWithErrorHandling = async (url: string, options?: RequestInit) => {
 const fetchWithRetry = async (
   url: string,
   options?: RequestInit,
-  retries = 3
+  retries = 3,
 ) => {
   for (let i = 0; i < retries; i++) {
     try {
@@ -274,8 +278,8 @@ function useNetworkStatus() {
 **Offline-first with React Query**:
 
 ```tsx
-import { onlineManager } from "@tanstack/react-query";
 import NetInfo from "@react-native-community/netinfo";
+import { onlineManager } from "@tanstack/react-query";
 
 // Sync React Query with network status
 onlineManager.setEventListener((setOnline) => {

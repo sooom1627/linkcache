@@ -54,7 +54,7 @@ Use `flex: 1` to allow the content to fill available space, enabling footer posi
 
 ```tsx
 // app/about.tsx
-import { View, Text, StyleSheet } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 export default function AboutSheet() {
   return (
@@ -136,7 +136,8 @@ export default function Layout() {
 
 ```tsx
 // app/confirm.tsx
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+
 import { router } from "expo-router";
 
 export default function ConfirmSheet() {

@@ -7,8 +7,9 @@ Native iOS controls provide built-in haptics, accessibility, and platform-approp
 Use for binary on/off settings. Has built-in haptics.
 
 ```tsx
-import { Switch } from "react-native";
 import { useState } from "react";
+
+import { Switch } from "react-native";
 
 const [enabled, setEnabled] = useState(false);
 
@@ -32,8 +33,9 @@ const [enabled, setEnabled] = useState(false);
 Use for non-navigational tabs or mode selection. Avoid changing default colors.
 
 ```tsx
-import SegmentedControl from "@react-native-segmented-control/segmented-control";
 import { useState } from "react";
+
+import SegmentedControl from "@react-native-segmented-control/segmented-control";
 
 const [index, setIndex] = useState(0);
 
@@ -68,8 +70,9 @@ const [index, setIndex] = useState(0);
 Continuous value selection.
 
 ```tsx
-import Slider from "@react-native-community/slider";
 import { useState } from "react";
+
+import Slider from "@react-native-community/slider";
 
 const [value, setValue] = useState(0.5);
 
@@ -113,8 +116,9 @@ const [value, setValue] = useState(0.5);
 Compact pickers with popovers. Has built-in haptics.
 
 ```tsx
-import DateTimePicker from "@react-native-community/datetimepicker";
 import { useState } from "react";
+
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 const [date, setDate] = useState(new Date());
 
@@ -154,11 +158,7 @@ const [date, setDate] = useState(new Date());
 ### Time Intervals
 
 ```tsx
-<DateTimePicker
-  value={date}
-  mode="time"
-  minuteInterval={15}
-/>
+<DateTimePicker value={date} mode="time" minuteInterval={15} />
 ```
 
 ### Min/Max Dates
@@ -177,8 +177,9 @@ const [date, setDate] = useState(new Date());
 Increment/decrement numeric values.
 
 ```tsx
-import { Stepper } from "react-native";
 import { useState } from "react";
+
+import { Stepper } from "react-native";
 
 const [count, setCount] = useState(0);
 
@@ -206,7 +207,7 @@ import { TextInput } from "react-native";
     borderRadius: 8,
     backgroundColor: "#f0f0f0",
   }}
-/>
+/>;
 ```
 
 ### Keyboard Types
@@ -247,8 +248,9 @@ import { TextInput } from "react-native";
 For selection from many options (5+ items).
 
 ```tsx
-import { Picker } from "@react-native-picker/picker";
 import { useState } from "react";
+
+import { Picker } from "@react-native-picker/picker";
 
 const [selected, setSelected] = useState("js");
 

@@ -51,7 +51,7 @@ BlurView requires `overflow: 'hidden'` to clip rounded corners:
   intensity={100}
   style={{
     borderRadius: 16,
-    overflow: 'hidden',
+    overflow: "hidden",
   }}
 />
 ```
@@ -61,20 +61,20 @@ BlurView requires `overflow: 'hidden'` to clip rounded corners:
 Common pattern for overlaying blur on content:
 
 ```tsx
-<View style={{ position: 'relative' }}>
-  <Image source={{ uri: '...' }} style={{ width: '100%', height: 200 }} />
+<View style={{ position: "relative" }}>
+  <Image source={{ uri: "..." }} style={{ width: "100%", height: 200 }} />
   <BlurView
     tint="systemUltraThinMaterial"
     intensity={80}
     style={{
-      position: 'absolute',
+      position: "absolute",
       bottom: 0,
       left: 0,
       right: 0,
       padding: 16,
     }}
   >
-    <Text style={{ color: 'white' }}>Caption</Text>
+    <Text style={{ color: "white" }}>Caption</Text>
   </BlurView>
 </View>
 ```
@@ -88,7 +88,7 @@ import { GlassView } from "expo-glass-effect";
 
 <GlassView style={{ borderRadius: 16, padding: 16 }}>
   <Text>Content inside glass</Text>
-</GlassView>
+</GlassView>;
 ```
 
 ### Interactive Glass
@@ -96,15 +96,16 @@ import { GlassView } from "expo-glass-effect";
 Add `isInteractive` for buttons and pressable glass:
 
 ```tsx
+import { PlatformColor } from "react-native";
+
 import { GlassView } from "expo-glass-effect";
 import { SymbolView } from "expo-symbols";
-import { PlatformColor } from "react-native";
 
 <GlassView isInteractive style={{ borderRadius: 50 }}>
   <Pressable style={{ padding: 12 }} onPress={handlePress}>
     <SymbolView name="plus" tintColor={PlatformColor("label")} size={36} />
   </Pressable>
-</GlassView>
+</GlassView>;
 ```
 
 ### Glass Buttons
@@ -131,7 +132,9 @@ function GlassButton({ icon, onPress }) {
 
 ```tsx
 <GlassView style={{ borderRadius: 20, padding: 20 }}>
-  <Text style={{ fontSize: 18, fontWeight: '600', color: PlatformColor("label") }}>
+  <Text
+    style={{ fontSize: 18, fontWeight: "600", color: PlatformColor("label") }}
+  >
     Card Title
   </Text>
   <Text style={{ color: PlatformColor("secondaryLabel"), marginTop: 8 }}>
@@ -155,8 +158,8 @@ if (isLiquidGlassAvailable()) {
 ### Fallback Pattern
 
 ```tsx
-import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect";
 import { BlurView } from "expo-blur";
+import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect";
 
 function AdaptiveGlass({ children, style }) {
   if (isLiquidGlassAvailable()) {

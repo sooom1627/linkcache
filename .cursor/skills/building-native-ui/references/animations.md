@@ -30,10 +30,10 @@ Create high-performance scroll animations using Reanimated's hooks:
 
 ```tsx
 import Animated, {
-  useAnimatedRef,
-  useScrollViewOffset,
-  useAnimatedStyle,
   interpolate,
+  useAnimatedRef,
+  useAnimatedStyle,
+  useScrollViewOffset,
 } from "react-native-reanimated";
 
 function Page() {
@@ -135,8 +135,8 @@ Combine with React Native Gesture Handler:
 ```tsx
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
-  useSharedValue,
   useAnimatedStyle,
+  useSharedValue,
   withSpring,
 } from "react-native-reanimated";
 

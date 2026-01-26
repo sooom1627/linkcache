@@ -6,16 +6,15 @@ In SDK 55, `Label`, `Icon`, `Badge`, and `VectorIcon` are now accessed as static
 
 ```tsx
 // SDK 53/54
+// SDK 55+
 import {
-  NativeTabs,
+  Badge,
   Icon,
   Label,
-  Badge,
+  NativeTabs,
+  NativeTabs,
   VectorIcon,
 } from "expo-router/unstable-native-tabs";
-
-// SDK 55+
-import { NativeTabs } from "expo-router/unstable-native-tabs";
 ```
 
 ## Component Changes
@@ -61,10 +60,10 @@ New `md` prop for Material icon glyphs on Android (alongside existing `drawable`
 
 ```tsx
 import {
-  NativeTabs,
+  Badge,
   Icon,
   Label,
-  Badge,
+  NativeTabs,
 } from "expo-router/unstable-native-tabs";
 
 export default function TabLayout() {
