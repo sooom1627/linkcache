@@ -132,12 +132,11 @@
     },
     "filter": {
       "title": "Filter",
-      "status": "What do you want to see ?",
-      "read_status": "You've already read ?",
+      "status": "What do you want to see?",
+      "read_status": "You've already read?",
       "reset": "Clear Filters",
       "options": {
         "all": "All",
-        "inbox": "Inbox",
         "new": "New",
         "read_soon": "Read Soon",
         "stock": "Stock",
@@ -159,9 +158,6 @@
     "card": {
       "open_link_label": "Open link",
       "open_link_hint": "Opens the link in browser",
-      "status": {
-        "read": "Read"
-      },
       "action_modal": {
         "title": "Have you read this link?",
         "status_section": "Status",
@@ -172,11 +168,11 @@
         "current_mode": "Current mode: {{status}}",
         "tap_to_change": "Tap to change mode",
         "status": {
-          "inbox": "Inbox",
           "new": "New",
           "read_soon": "Read Soon",
           "stock": "Stock",
-          "done": "Done"
+          "done": "Done",
+          "read": "Read"
         }
       }
     },

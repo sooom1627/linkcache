@@ -137,7 +137,6 @@
       "reset": "フィルターをクリア",
       "options": {
         "all": "すべて",
-        "inbox": "インボックス",
         "new": "新しいリンク",
         "read_soon": "すぐ読むリンク",
         "stock": "ストックリンク",
@@ -159,9 +158,6 @@
     "card": {
       "open_link_label": "リンクを開く",
       "open_link_hint": "ブラウザでリンクを開きます",
-      "status": {
-        "read": "既読"
-      },
       "action_modal": {
         "title": "このリンクを読みましたか？",
         "status_section": "ステータス",
@@ -172,11 +168,11 @@
         "current_mode": "現在のモード: {{status}}",
         "tap_to_change": "タップしてモードを変更",
         "status": {
-          "inbox": "インボックス",
           "new": "新規",
           "read_soon": "すぐ読む",
           "stock": "ストック",
-          "done": "完了"
+          "done": "完了",
+          "read": "既読"
         }
       }
     },
