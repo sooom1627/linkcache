@@ -9,8 +9,7 @@ import PagerView from "react-native-pager-view";
 import { LinkListTabContent } from "../components/LinkListTabContent";
 import { LinkListTabHeader } from "../components/LinkListTabHeader";
 import { useLinks } from "../hooks/useLinks";
-
-type TabType = "read_soon" | "latest";
+import type { TabType } from "../types/linkList.types";
 
 /** ダッシュボード用の表示件数制限 */
 const DASHBOARD_LIMIT = 5;
@@ -25,10 +24,10 @@ const EMPTY_STATE_HEIGHT = 350;
 const LOADING_ERROR_HEIGHT = 100;
 
 /** タブのインデックス */
-const TAB_INDEX = {
+const TAB_INDEX: Record<TabType, number> = {
   read_soon: 0,
   latest: 1,
-} as const;
+};
 
 /**
  * リンクリストタブコンポーネント
@@ -72,13 +71,16 @@ export function LinkListTabs() {
     status: "new",
   });
 
+  const { refetch: refetchReadSoon } = readSoonQuery;
+  const { refetch: refetchLatest } = latestQuery;
+
   // 画面がフォーカスされた時に最新データを取得（UIの表示がガタガタしないように非同期で）
   useFocusEffect(
     useCallback(() => {
       // バックグラウンドで再フェッチ（既存のデータを表示したまま更新）
-      void readSoonQuery.refetch();
-      void latestQuery.refetch();
-    }, [readSoonQuery, latestQuery]),
+      void refetchReadSoon();
+      void refetchLatest();
+    }, [refetchReadSoon, refetchLatest]),
   );
 
   // タブヘッダーからの切り替え

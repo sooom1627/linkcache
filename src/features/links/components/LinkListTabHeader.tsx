@@ -2,7 +2,7 @@ import { Pressable, Text, View } from "react-native";
 
 import { useTranslation } from "react-i18next";
 
-type TabType = "read_soon" | "latest";
+import type { TabType } from "../types/linkList.types";
 
 interface LinkListTabHeaderProps {
   activeTab: TabType;

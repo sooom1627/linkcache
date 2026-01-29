@@ -8,6 +8,11 @@ import type { Database } from "./supabase.types";
 export type TriageStatus = Database["public"]["Enums"]["triage_status"];
 
 /**
+ * タブタイプ（ダッシュボード用）
+ */
+export type TabType = "read_soon" | "latest";
+
+/**
  * orderBy パラメータの許可リスト
  *
  * RPC `get_user_links` で使用可能なソート順を定義します。

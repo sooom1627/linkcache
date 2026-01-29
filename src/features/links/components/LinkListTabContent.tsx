@@ -8,11 +8,10 @@ import { ArrowRight, Layers2 } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 
 import type { useLinks } from "../hooks/useLinks";
+import type { TabType } from "../types/linkList.types";
 
 import { LinkListCard } from "./LinkListCard";
 import { LinkListEmpty } from "./LinkListEmpty";
-
-type TabType = "read_soon" | "latest";
 
 interface LinkListTabContentProps {
   isLoading: boolean;
