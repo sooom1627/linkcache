@@ -5,12 +5,15 @@ import { Pressable, Text, View } from "react-native";
 import { ChevronDown } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
+    useAnimatedStyle,
+    useSharedValue,
+    withTiming,
 } from "react-native-reanimated";
 
-type SourceType = "new" | "read_soon" | "stock" | "done";
+import type { TriageStatus } from "../types/linkList.types";
+
+/** SourceTypeDropdownで使用可能なステータス（TriageStatusと同義） */
+type SourceType = TriageStatus;
 
 interface SourceTypeDropdownProps {
   value: SourceType;
@@ -51,18 +54,16 @@ export function SourceTypeDropdown({
   };
 
   // 表示するオプションのリスト
-  const options: Array<{ type: SourceType; label: string }> = [
-    { type: "new" as const, label: t("links.card.action_modal.status.new") },
-    {
-      type: "read_soon" as const,
-      label: t("links.card.action_modal.status.read_soon"),
-    },
-    {
-      type: "stock" as const,
-      label: t("links.card.action_modal.status.stock"),
-    },
-    { type: "done" as const, label: t("links.card.action_modal.status.done") },
-  ].filter((option) => allowedTypes.includes(option.type));
+  const options = [
+    { type: "new", label: t("links.card.action_modal.status.new") },
+    { type: "read_soon", label: t("links.card.action_modal.status.read_soon") },
+    { type: "stock", label: t("links.card.action_modal.status.stock") },
+    { type: "done", label: t("links.card.action_modal.status.done") },
+  ] as const satisfies readonly { type: SourceType; label: string }[];
+
+  const filteredOptions = options.filter((option) =>
+    allowedTypes.includes(option.type),
+  );
 
   return (
     <View className="relative">
@@ -89,10 +90,10 @@ export function SourceTypeDropdown({
       {/* Dropdown Menu */}
       {isOpen && (
         <View className="absolute top-full z-30 mt-2 w-48 rounded-xl border border-slate-100 bg-white shadow-xl">
-          {options.map((option, index) => {
+          {filteredOptions.map((option, index) => {
             const isSelected = value === option.type;
             const isFirst = index === 0;
-            const isLast = index === options.length - 1;
+            const isLast = index === filteredOptions.length - 1;
 
             return (
               <View key={option.type}>

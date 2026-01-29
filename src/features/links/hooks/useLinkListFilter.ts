@@ -25,7 +25,7 @@ export interface LinkListFilterState {
 /**
  * デフォルトのフィルター状態
  */
-const DEFAULT_FILTER_STATE: LinkListFilterState = {
+export const defaultFilterState: LinkListFilterState = {
   status: "all",
   readStatus: "all",
 };
@@ -70,7 +70,7 @@ export interface UseLinkListFilterReturn {
  * ```
  */
 export function useLinkListFilter(
-  initialState: LinkListFilterState = DEFAULT_FILTER_STATE,
+  initialState: LinkListFilterState = defaultFilterState,
 ): UseLinkListFilterReturn {
   const [filterState, setFilterState] =
     useState<LinkListFilterState>(initialState);
@@ -84,7 +84,7 @@ export function useLinkListFilter(
   }, []);
 
   const resetFilters = useCallback(() => {
-    setFilterState(DEFAULT_FILTER_STATE);
+    setFilterState(defaultFilterState);
   }, []);
 
   // フィルター状態をuseLinksオプションに変換

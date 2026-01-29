@@ -13,6 +13,9 @@ import type { TriageStatus, UserLink } from "../types/linkList.types";
 
 import { useLinks } from "./useLinks";
 
+/** スワイプ操作で使用可能なステータス（doneはスワイプ不可） */
+type SwipeableStatus = Exclude<TriageStatus, "done">;
+
 /** スワイプ履歴（Undo用） */
 interface SwipeHistory {
   link: UserLink;
@@ -150,7 +153,7 @@ export function useSwipeCards(
       status,
     }: {
       linkId: string;
-      status: "new" | "read_soon" | "stock";
+      status: SwipeableStatus;
     }) => updateLinkStatus(linkId, status),
     onSuccess: () => {
       void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -164,6 +167,8 @@ export function useSwipeCards(
   });
 
   // Undo Mutation
+  // 注意: statusはsourceTypeから来るため、実際にはSwipeableStatusの範囲内だが、
+  // 型定義上はTriageStatusとして受け入れる（sourceTypeがTriageStatus型のため）
   const undoMutation = useMutation({
     mutationFn: ({
       linkId,
