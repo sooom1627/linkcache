@@ -2,6 +2,7 @@ import { createContext, useContext, type ReactNode } from "react";
 
 import {
   useLinkListFilter,
+  type LinkListFilterState,
   type UseLinkListFilterReturn,
 } from "../hooks/useLinkListFilter";
 
@@ -17,9 +18,17 @@ const LinkListFilterContext = createContext<UseLinkListFilterReturn | null>(
  *
  * LinkListScreen、LinkListFilterMenu、LinkListFilterModal間で
  * フィルター状態を共有するために使用します。
+ *
+ * @param initialState - 初期フィルター状態（オプション）
  */
-export function LinkListFilterProvider({ children }: { children: ReactNode }) {
-  const filterHook = useLinkListFilter();
+export function LinkListFilterProvider({
+  children,
+  initialState,
+}: {
+  children: ReactNode;
+  initialState?: LinkListFilterState;
+}) {
+  const filterHook = useLinkListFilter(initialState);
 
   return (
     <LinkListFilterContext.Provider value={filterHook}>

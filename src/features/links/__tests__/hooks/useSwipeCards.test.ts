@@ -145,7 +145,7 @@ describe("useSwipeCards", () => {
 
     it("handleSwipeでswipes配列に方向が追加される", async () => {
       const mockLink = createMockLink(1);
-      mockFetchUserLinks.mockResolvedValueOnce({
+      mockFetchUserLinks.mockResolvedValue({
         data: [mockLink, createMockLink(2)],
         hasMore: false,
         totalCount: 2,
@@ -158,7 +158,7 @@ describe("useSwipeCards", () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      act(() => {
+      await act(async () => {
         result.current.handleSwipe(mockLink, "right");
       });
 
@@ -185,7 +185,7 @@ describe("useSwipeCards", () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      act(() => {
+      await act(async () => {
         result.current.handleSwipe(mockLink, "right");
       });
 
@@ -212,7 +212,7 @@ describe("useSwipeCards", () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      act(() => {
+      await act(async () => {
         result.current.handleSwipe(mockLink, "left");
       });
 
@@ -248,11 +248,13 @@ describe("useSwipeCards", () => {
 
       expect(result.current.canUndo).toBe(false);
 
-      act(() => {
+      await act(async () => {
         result.current.handleSwipe(mockLink, "right");
       });
 
-      expect(result.current.canUndo).toBe(true);
+      await waitFor(() => {
+        expect(result.current.canUndo).toBe(true);
+      });
     });
 
     it("undoでswipes配列から最後の要素が削除される", async () => {
@@ -272,17 +274,19 @@ describe("useSwipeCards", () => {
       });
 
       // 2回スワイプ
-      act(() => {
+      await act(async () => {
         result.current.handleSwipe(mockLink1, "right");
       });
-      act(() => {
+      await act(async () => {
         result.current.handleSwipe(mockLink2, "left");
       });
 
-      expect(result.current.swipes).toEqual(["right", "left"]);
+      await waitFor(() => {
+        expect(result.current.swipes).toEqual(["right", "left"]);
+      });
 
       // Undo
-      act(() => {
+      await act(async () => {
         result.current.undo();
       });
 
@@ -317,7 +321,7 @@ describe("useSwipeCards", () => {
       });
 
       // 右スワイプ（read_soonに更新）
-      act(() => {
+      await act(async () => {
         result.current.handleSwipe(mockLink, "right");
       });
 
@@ -329,7 +333,7 @@ describe("useSwipeCards", () => {
       });
 
       // Undo（newに戻す）
-      act(() => {
+      await act(async () => {
         result.current.undo();
       });
 
@@ -361,13 +365,15 @@ describe("useSwipeCards", () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      act(() => {
+      await act(async () => {
         result.current.handleSwipe(mockLink, "right");
       });
 
-      expect(result.current.canUndo).toBe(true);
+      await waitFor(() => {
+        expect(result.current.canUndo).toBe(true);
+      });
 
-      act(() => {
+      await act(async () => {
         result.current.undo();
       });
 
@@ -401,7 +407,7 @@ describe("useSwipeCards", () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      act(() => {
+      await act(async () => {
         result.current.handleSwipe(mockLink, "right");
       });
 
@@ -412,7 +418,7 @@ describe("useSwipeCards", () => {
         );
       });
 
-      act(() => {
+      await act(async () => {
         result.current.undo();
       });
 

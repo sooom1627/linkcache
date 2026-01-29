@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 
 import {
   ActivityIndicator,
@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+
+import { useLocalSearchParams } from "expo-router";
 
 import { FlashList } from "@shopify/flash-list";
 import { AlertCircle, RefreshCw } from "lucide-react-native";
@@ -19,8 +21,40 @@ import {
   LinkListFilterProvider,
   useLinkListFilterContext,
 } from "../contexts/LinkListFilterContext";
+import type { LinkListFilterState } from "../hooks/useLinkListFilter";
 import { useLinks } from "../hooks/useLinks";
-import type { UserLink } from "../types/linkList.types";
+import type { TriageStatus, UserLink } from "../types/linkList.types";
+
+/**
+ * 有効なTriageStatusかどうかをチェック
+ */
+const isValidTriageStatus = (
+  status: string | string[] | undefined,
+): status is TriageStatus => {
+  if (typeof status !== "string") return false;
+  const validStatuses: TriageStatus[] = ["new", "read_soon", "stock", "done"];
+  return validStatuses.includes(status as TriageStatus);
+};
+
+/**
+ * URLパラメータから初期フィルター状態を構築
+ */
+const buildInitialStateFromParams = (
+  params: Record<string, string | string[] | undefined>,
+): LinkListFilterState | undefined => {
+  const { status } = params;
+
+  // statusパラメータが有効な場合のみ初期状態を構築
+  if (isValidTriageStatus(status)) {
+    return {
+      status,
+      readStatus: "all",
+    };
+  }
+
+  // パラメータがない場合はundefinedを返してデフォルト状態を使用
+  return undefined;
+};
 
 /**
  * リンク一覧画面
@@ -30,10 +64,17 @@ import type { UserLink } from "../types/linkList.types";
  * - 無限スクロール対応
  * - ローディング・エラー・空状態のハンドリング
  * - フィルター機能（ステータス・既読状態）
+ * - URLパラメータからの初期フィルター状態の設定
  */
 export function LinkListScreen() {
+  const params = useLocalSearchParams();
+  const initialState = useMemo(
+    () => buildInitialStateFromParams(params),
+    [params],
+  );
+
   return (
-    <LinkListFilterProvider>
+    <LinkListFilterProvider initialState={initialState}>
       <LinkListScreenContent />
     </LinkListFilterProvider>
   );

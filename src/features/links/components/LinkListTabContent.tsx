@@ -85,6 +85,14 @@ export const LinkListTabContent = memo(function LinkListTabContent({
     return <LinkListEmpty />;
   }
 
+  // タブタイプに基づいて遷移先URLを決定
+  const viewAllHref =
+    tabType === "read_soon"
+      ? "/links?status=read_soon"
+      : tabType === "latest"
+        ? "/links?status=new"
+        : "/links";
+
   return (
     <View>
       {links.map((item) => (
@@ -93,7 +101,7 @@ export const LinkListTabContent = memo(function LinkListTabContent({
         </View>
       ))}
       <View className="flex-row items-center justify-center py-4">
-        <Link href="/links" className="text-sm text-slate-500">
+        <Link href={viewAllHref} className="text-sm text-slate-500">
           {t("links.dashboard.view_all")}
         </Link>
         <ArrowRight size={14} color="#6B7280" strokeWidth={1.5} />
