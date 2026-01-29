@@ -63,7 +63,7 @@ export interface UseLinkListFilterReturn {
  * const { filterState, setStatus, useLinksOptions } = useLinkListFilter();
  *
  * // フィルターモーダルで使用
- * <Button onPress={() => setStatus("inbox")}>Inbox</Button>
+ * <Button onPress={() => setStatus("new")}>New</Button>
  *
  * // useLinksに渡す
  * const { links } = useLinks(useLinksOptions);
