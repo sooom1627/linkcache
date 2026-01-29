@@ -132,20 +132,24 @@
     },
     "filter": {
       "title": "フィルター",
-      "status": "ステータス",
-      "read_status": "既読状態",
+      "status": "何を見たいですか？",
+      "read_status": "既に読んだリンクを見たい？",
+      "reset": "フィルターをクリア",
       "options": {
         "all": "すべて",
-        "inbox": "インボックス",
-        "read_soon": "すぐ読む",
-        "later": "後で",
-        "unread": "未読",
-        "read": "既読"
+        "new": "新しいリンク",
+        "read_soon": "すぐ読むリンク",
+        "stock": "ストックリンク",
+        "done": "完了リンク",
+        "unread": "未読のリンク",
+        "read": "既読のリンク"
       }
     },
     "list": {
       "empty_title": "リンクがまだありません",
-      "empty_description": "リンクを保存してここに表示しましょう"
+      "empty_description": "リンクを保存してここに表示しましょう",
+      "filter_empty_title": "該当するリンクがありません",
+      "filter_empty_description": "フィルターを調整して、他のリンクを表示してみましょう"
     },
     "header": {
       "title": "Link List",
@@ -154,9 +158,6 @@
     "card": {
       "open_link_label": "リンクを開く",
       "open_link_hint": "ブラウザでリンクを開きます",
-      "status": {
-        "read": "既読"
-      },
       "action_modal": {
         "title": "このリンクを読みましたか？",
         "status_section": "ステータス",
@@ -167,9 +168,11 @@
         "current_mode": "現在のモード: {{status}}",
         "tap_to_change": "タップしてモードを変更",
         "status": {
-          "inbox": "インボックス",
+          "new": "新規",
           "read_soon": "すぐ読む",
-          "later": "後で"
+          "stock": "ストック",
+          "done": "完了",
+          "read": "既読"
         }
       }
     },

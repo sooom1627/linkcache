@@ -54,6 +54,8 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
     dismiss: dismissStatusModal,
   } = useBottomSheetModal();
 
+  const isDone = link?.status === "done";
+
   const handleBack = useCallback(() => {
     router.back();
   }, [router]);
@@ -149,6 +151,26 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
   const statusStyle = getStatusStyle(link.status);
   const isRead = link.read_at !== null;
 
+  // ステータス表示用の共通コンポーネント
+  const StatusDisplay = ({
+    status,
+    statusStyle,
+  }: {
+    status: string | null;
+    statusStyle: ReturnType<typeof getStatusStyle>;
+  }) => (
+    <View className="flex-row items-center gap-1.5">
+      <Circle size={12} fill={statusStyle.icon} color={statusStyle.icon} />
+      <Text className={`text-base font-medium ${statusStyle.text}`}>
+        {status
+          ? t(`links.card.action_modal.status.${status}`, {
+              defaultValue: status,
+            })
+          : ""}
+      </Text>
+    </View>
+  );
+
   return (
     <>
       <View className="mb-20 flex-1 bg-slate-50">
@@ -208,7 +230,13 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
 
               {/* 現在のステータス */}
               <View className="mb-3 flex-row items-center gap-2">
-                {isRead ? (
+                {isDone ? (
+                  // Doneステータス: 優先表示
+                  <StatusDisplay
+                    status={link.status}
+                    statusStyle={statusStyle}
+                  />
+                ) : isRead ? (
                   // 既読: シンプルなアイコン+テキスト
                   <View className="flex-row items-center gap-1.5">
                     <Check
@@ -224,22 +252,10 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
                   </View>
                 ) : (
                   // 未読: シンプルなアイコン+テキスト
-                  <View className="flex-row items-center gap-1.5">
-                    <Circle
-                      size={12}
-                      fill={statusStyle.icon}
-                      color={statusStyle.icon}
-                    />
-                    <Text
-                      className={`text-base font-medium ${statusStyle.text}`}
-                    >
-                      {link.status
-                        ? t(`links.card.action_modal.status.${link.status}`, {
-                            defaultValue: link.status,
-                          })
-                        : ""}
-                    </Text>
-                  </View>
+                  <StatusDisplay
+                    status={link.status}
+                    statusStyle={statusStyle}
+                  />
                 )}
               </View>
 

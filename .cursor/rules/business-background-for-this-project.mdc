@@ -1,58 +1,65 @@
 ---
-description: 
-globs: 
+description:
+globs:
 alwaysApply: false
 ---
+
 # Project Brief: Knowledge Triage & Growth Space
 
 # Project Brief: Knowledge Triage & Growth Space
 
 ## 1. Vision & Purpose
+
 A platform where individuals and teams can intuitively filter information, align knowledge, and visualize their growth.
-* **Mission:** Reduce decision fatigue and transform "saved links" into visible personal progress.
-* **Core Philosophy:** Shifting from "passive hoarding" to "active triaging."
-* **Strategy:** Build in Public, prioritizing rapid development and scalability.
+
+- **Mission:** Reduce decision fatigue and transform "saved links" into visible personal progress.
+- **Core Philosophy:** Shifting from "passive hoarding" to "active triaging."
+- **Strategy:** Build in Public, prioritizing rapid development and scalability.
 
 ## 2. Core Mechanism: The Triage Flow
+
 Instead of just saving links, users "triage" them through a card-based Swipe UI.
 
 1.  **Inbox:** A temporary holding area where all new links land.
 2.  **Triage (Swipe UI):**
-    * **Swipe Right (Read Soon):** Move to "Read Soon" or a specific Collection.
-    * **Swipe Left (Later):** Save for later. Removes it from the immediate view.
+    - **Swipe Right (Read Soon):** Move to "Read Soon" or a specific Collection.
+    - **Swipe Left (Stock):** Save for later. Removes it from the immediate view.
 3.  **Action:** Read the "Read Soon" list and mark as "Completed" to see progress.
-
 
 ## 3. MVP Scope Definition
 
 ### Phase 1.0: Core Triage Experience (Must-Haves)
-* **URL Entry:** Manual paste of a URL into the app.
-* **OGP Engine:** Automatically fetch Title and Thumbnail Image (Copyright-compliant: store metadata only).
-* **Swipe UI:** Card-stack interface for Inbox sorting (Read Soon vs. Later).
-* **Reading List:** A simple list view of "Read Soon" items.
-* **External Reading:** Tapping a link opens it in an in-app browser (using expo-web-browser) to maintain app context and provide a seamless reading experience.
-* **Authentication:** Basic Sign-up/Login via Supabase Auth.
-* **Collections:** Flexible workspaces (Many-to-Many: one link can be in multiple collections).
-* **Growth Dashboard:** * Counters for Inbox, Read Soon, and Completed items.
-    * Activity Log: Visualization (e.g., bar chart) of links processed/read over the last 7 days.
-* **Manual "Read" Toggle:** Mark links as "Completed" to track actual learning.
+
+- **URL Entry:** Manual paste of a URL into the app.
+- **OGP Engine:** Automatically fetch Title and Thumbnail Image (Copyright-compliant: store metadata only).
+- **Swipe UI:** Card-stack interface for Inbox sorting (Read Soon vs. Stock).
+- **Reading List:** A simple list view of "Read Soon" items.
+- **External Reading:** Tapping a link opens it in an in-app browser (using expo-web-browser) to maintain app context and provide a seamless reading experience.
+- **Authentication:** Basic Sign-up/Login via Supabase Auth.
+- **Collections:** Flexible workspaces (Many-to-Many: one link can be in multiple collections).
+- **Growth Dashboard:** \* Counters for Inbox, Read Soon, and Completed items.
+  - Activity Log: Visualization (e.g., bar chart) of links processed/read over the last 7 days.
+- **Manual "Read" Toggle:** Mark links as "Completed" to track actual learning.
 
 ## 4. Out of Scope for MVP
-* **Share Extension:** No "Share to app" from external browsers (Phase 2).
-* **In-app Reader:** Links open in an in-app browser modal. No clutter-free reading mode or external browser redirection (users stay within the app context).
-* **AI Summary:** No automatic text summarization for now.
-* **Team Features:** No shared collections or social feeds (Single-player first).
-* **Advanced Features:** No full-text search, offline access, or link health checks.
+
+- **Share Extension:** No "Share to app" from external browsers (Phase 2).
+- **In-app Reader:** Links open in an in-app browser modal. No clutter-free reading mode or external browser redirection (users stay within the app context).
+- **AI Summary:** No automatic text summarization for now.
+- **Team Features:** No shared collections or social feeds (Single-player first).
+- **Advanced Features:** No full-text search, offline access, or link health checks.
 
 ## 5. Technical Stack
-* **Frontend:** React Native / Expo (Prioritize high-performance Swipe UI).
-* **Backend/DB:** Supabase (Auth, PostgreSQL, Real-time sync).
-* **Data Schema Highlights:**
-    * `links`: id, url, title, image_url, created_at.
-    * `link_status`: user_id, link_id, status (inbox, read_soon, later), triaged_at, read_at.
-    * `collections`: id, name, user_id.
-    * `collection_links`: collection_id, link_id.
+
+- **Frontend:** React Native / Expo (Prioritize high-performance Swipe UI).
+- **Backend/DB:** Supabase (Auth, PostgreSQL, Real-time sync).
+- **Data Schema Highlights:**
+  - `links`: id, url, title, image_url, created_at.
+  - `link_status`: user_id, link_id, status (new, read_soon, stock, done), triaged_at, read_at.
+  - `collections`: id, name, user_id.
+  - `collection_links`: collection_id, link_id.
 
 ## 6. UX Principles
-* **Zero-Gravity:** Minimal friction between saving and triaging.
-* **Confidence-Driven:** Focus on "what I have learned" rather than "what I have to do."
+
+- **Zero-Gravity:** Minimal friction between saving and triaging.
+- **Confidence-Driven:** Focus on "what I have learned" rather than "what I have to do."

@@ -20,10 +20,11 @@ describe("updateLinkReadStatus", () => {
   });
 
   it("sets read_at to current timestamp when marking as read", async () => {
+    const mockEq = jest.fn().mockResolvedValue({
+      error: null,
+    });
     const mockUpdate = jest.fn().mockReturnValue({
-      eq: jest.fn().mockResolvedValue({
-        error: null,
-      }),
+      eq: mockEq,
     });
 
     mockSupabase.from.mockReturnValue({
@@ -33,16 +34,23 @@ describe("updateLinkReadStatus", () => {
     await updateLinkReadStatus(MOCK_LINK_ID, true);
 
     expect(mockSupabase.from).toHaveBeenCalledWith("link_status");
-    expect(mockUpdate).toHaveBeenCalled();
-    // mock.callsはunknown[][]型として扱い、適切に型アサーションを行う
-    const firstCall = mockUpdate.mock.calls[0] as
-      | [{ read_at: string }]
-      | undefined;
-    if (firstCall?.[0]) {
-      const updateCall = firstCall[0];
-      expect(updateCall.read_at).toBeDefined();
-      expect(updateCall.read_at).not.toBeNull();
-    }
+    expect(mockUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        read_at: expect.stringMatching(
+          /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/,
+        ) as unknown as string,
+      }),
+    );
+    // statusがundefinedの場合は、更新ペイロードにstatusフィールドを含めない
+    expect(mockUpdate.mock.calls.length).toBeGreaterThan(0);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const updateCall = mockUpdate.mock.calls[0][0] as {
+      read_at: string;
+      status?: unknown;
+    };
+    expect(updateCall).toBeDefined();
+    expect(updateCall).not.toHaveProperty("status");
+    expect(mockEq).toHaveBeenCalledWith("link_id", MOCK_LINK_ID);
   });
 
   it("sets read_at to null when marking as unread", async () => {
@@ -60,8 +68,119 @@ describe("updateLinkReadStatus", () => {
     await updateLinkReadStatus(MOCK_LINK_ID, false);
 
     expect(mockSupabase.from).toHaveBeenCalledWith("link_status");
-    expect(mockUpdate).toHaveBeenCalledWith({ read_at: null });
+    expect(mockUpdate).toHaveBeenCalledWith({
+      read_at: null,
+    });
+    // statusがundefinedの場合は、更新ペイロードにstatusフィールドを含めない
+    expect(mockUpdate.mock.calls.length).toBeGreaterThan(0);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const updateCall = mockUpdate.mock.calls[0][0] as {
+      read_at: null;
+      status?: unknown;
+    };
+    expect(updateCall).toBeDefined();
+    expect(updateCall).not.toHaveProperty("status");
     expect(mockEq).toHaveBeenCalledWith("link_id", MOCK_LINK_ID);
+  });
+
+  it("updates status when provided", async () => {
+    const mockEq = jest.fn().mockResolvedValue({
+      error: null,
+    });
+    const mockUpdate = jest.fn().mockReturnValue({
+      eq: mockEq,
+    });
+
+    mockSupabase.from.mockReturnValue({
+      update: mockUpdate,
+    } as unknown as ReturnType<typeof supabase.from>);
+
+    await updateLinkReadStatus(MOCK_LINK_ID, true, "done");
+
+    expect(mockSupabase.from).toHaveBeenCalledWith("link_status");
+    expect(mockUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        read_at: expect.stringMatching(
+          /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/,
+        ) as unknown as string,
+        status: "done",
+      }),
+    );
+    expect(mockEq).toHaveBeenCalledWith("link_id", MOCK_LINK_ID);
+  });
+
+  it("does not include status in update payload when status is undefined", async () => {
+    const mockEq = jest.fn().mockResolvedValue({
+      error: null,
+    });
+    const mockUpdate = jest.fn().mockReturnValue({
+      eq: mockEq,
+    });
+
+    mockSupabase.from.mockReturnValue({
+      update: mockUpdate,
+    } as unknown as ReturnType<typeof supabase.from>);
+
+    await updateLinkReadStatus(MOCK_LINK_ID, true);
+
+    expect(mockUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        read_at: expect.stringMatching(
+          /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/,
+        ) as unknown as string,
+      }),
+    );
+    // statusがundefinedの場合は、更新ペイロードにstatusフィールドを含めない
+    expect(mockUpdate.mock.calls.length).toBeGreaterThan(0);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const updateCall = mockUpdate.mock.calls[0][0] as {
+      read_at: string;
+      status?: unknown;
+    };
+    expect(updateCall).toBeDefined();
+    expect(updateCall).not.toHaveProperty("status");
+  });
+
+  it("sets status to null when explicitly provided as null", async () => {
+    const mockEq = jest.fn().mockResolvedValue({
+      error: null,
+    });
+    const mockUpdate = jest.fn().mockReturnValue({
+      eq: mockEq,
+    });
+
+    mockSupabase.from.mockReturnValue({
+      update: mockUpdate,
+    } as unknown as ReturnType<typeof supabase.from>);
+
+    await updateLinkReadStatus(MOCK_LINK_ID, true, null);
+
+    expect(mockUpdate).toHaveBeenCalledWith({
+      read_at: expect.stringMatching(
+        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/,
+      ) as unknown as string,
+      status: null,
+    });
+  });
+
+  it("updates status to read_soon when marking as unread with status", async () => {
+    const mockEq = jest.fn().mockResolvedValue({
+      error: null,
+    });
+    const mockUpdate = jest.fn().mockReturnValue({
+      eq: mockEq,
+    });
+
+    mockSupabase.from.mockReturnValue({
+      update: mockUpdate,
+    } as unknown as ReturnType<typeof supabase.from>);
+
+    await updateLinkReadStatus(MOCK_LINK_ID, false, "read_soon");
+
+    expect(mockUpdate).toHaveBeenCalledWith({
+      read_at: null,
+      status: "read_soon",
+    });
   });
 
   it("throws error when Supabase update fails", async () => {

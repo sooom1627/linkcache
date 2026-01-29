@@ -11,9 +11,13 @@ const createTestQueryClient = () =>
         retry: false,
         staleTime: 0,
         gcTime: 0,
+        // テスト環境では非同期更新を同期的に処理
+        networkMode: "offlineFirst",
       },
       mutations: {
         retry: false,
+        // テスト環境では非同期更新を同期的に処理
+        networkMode: "offlineFirst",
       },
     },
   });
@@ -32,8 +36,6 @@ export const clearQueryCache = () => {
     });
   // キャッシュをクリア
   testQueryClient.clear();
-  testQueryClient.getQueryCache().clear();
-  testQueryClient.getMutationCache().clear();
 };
 
 // Wrap components with BottomSheetModalProvider for testing modal interactions

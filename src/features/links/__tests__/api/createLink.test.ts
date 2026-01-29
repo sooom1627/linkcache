@@ -23,7 +23,7 @@ describe("createLinkWithStatus", () => {
       data: {
         link_id: MOCK_UUID_1,
         url: "https://example.com",
-        status: "inbox",
+        status: "new",
       },
       error: null,
     };
@@ -51,7 +51,7 @@ describe("createLinkWithStatus", () => {
     expect(result).toEqual({
       link_id: MOCK_UUID_1,
       url: "https://example.com",
-      status: "inbox",
+      status: "new",
     });
   });
 
@@ -60,7 +60,7 @@ describe("createLinkWithStatus", () => {
       data: {
         link_id: MOCK_UUID_1,
         url: "https://example.com",
-        status: "inbox",
+        status: "new",
       },
       error: null,
     };
@@ -102,7 +102,7 @@ describe("createLinkWithStatus", () => {
       data: {
         link_id: MOCK_UUID_2,
         url: "https://test.com",
-        status: "inbox",
+        status: "new",
       },
       error: null,
     };
@@ -112,6 +112,6 @@ describe("createLinkWithStatus", () => {
 
     expect(result.link_id).toBe(MOCK_UUID_2);
     expect(result.url).toBe("https://test.com");
-    expect(result.status).toBe("inbox");
+    expect(result.status).toBe("new");
   });
 });

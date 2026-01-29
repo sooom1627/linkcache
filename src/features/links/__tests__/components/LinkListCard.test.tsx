@@ -104,4 +104,72 @@ describe("LinkListCard", () => {
 
     consoleErrorSpy.mockRestore();
   });
+
+  describe("ステータス表示", () => {
+    it("newステータスが正しく表示される", () => {
+      const mockLink = createMockLink("https://example.com", "new");
+      const { getByText } = render(<LinkListCard link={mockLink} />, {
+        wrapper,
+      });
+
+      // i18nextのモックはキーをそのまま返す
+      expect(getByText("links.card.action_modal.status.new")).toBeTruthy();
+    });
+
+    it("read_soonステータスが正しく表示される", () => {
+      const mockLink = createMockLink("https://example.com", "read_soon");
+      const { getByText } = render(<LinkListCard link={mockLink} />, {
+        wrapper,
+      });
+
+      expect(
+        getByText("links.card.action_modal.status.read_soon"),
+      ).toBeTruthy();
+    });
+
+    it("stockステータスが正しく表示される", () => {
+      const mockLink = createMockLink("https://example.com", "stock");
+      const { getByText } = render(<LinkListCard link={mockLink} />, {
+        wrapper,
+      });
+
+      expect(getByText("links.card.action_modal.status.stock")).toBeTruthy();
+    });
+
+    it("doneステータスが正しく表示される", () => {
+      const mockLink = createMockLink("https://example.com", "done");
+      const { getByText } = render(<LinkListCard link={mockLink} />, {
+        wrapper,
+      });
+
+      expect(getByText("links.card.action_modal.status.done")).toBeTruthy();
+    });
+
+    it("doneステータスは既読状態より優先して表示される", () => {
+      const mockLink = createMockLink("https://example.com", "done");
+      mockLink.read_at = "2024-01-01T00:00:00Z";
+      const { getByText, queryByText } = render(
+        <LinkListCard link={mockLink} />,
+        {
+          wrapper,
+        },
+      );
+
+      // Doneステータスが表示される
+      expect(getByText("links.card.action_modal.status.done")).toBeTruthy();
+      // 既読状態は表示されない（Doneが優先）
+      expect(queryByText("links.card.status.read")).toBeNull();
+    });
+
+    it("doneステータスでない場合でも、ステータスが表示される", () => {
+      const mockLink = createMockLink("https://example.com", "new");
+      mockLink.read_at = "2024-01-01T00:00:00Z";
+      const { getByText } = render(<LinkListCard link={mockLink} />, {
+        wrapper,
+      });
+
+      // ステータスが表示される（既読状態の優先表示ロジックは削除された）
+      expect(getByText("links.card.action_modal.status.new")).toBeTruthy();
+    });
+  });
 });

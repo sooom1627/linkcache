@@ -2,6 +2,12 @@ import "@gorhom/bottom-sheet/mock";
 import "@testing-library/jest-native/extend-expect";
 import "react-native-gesture-handler/jestSetup";
 
+// React Queryのテスト用設定
+import { notifyManager } from "@tanstack/react-query";
+
+// テスト環境では非同期更新を同期的に処理
+notifyManager.setScheduler((fn) => fn());
+
 // Create a stable t function to avoid infinite loops in useEffect dependencies
 const t = (key: string) => key;
 

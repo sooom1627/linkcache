@@ -8,6 +8,9 @@ type UserLinksViewRow = Tables<"user_links_view">;
 /**
  * 指定されたlink_idのリンク詳細を取得する
  *
+ * RLSポリシーにより、現在のユーザーが所有するリンクのみが取得されます。
+ * view経由でもベーステーブル（link_status）のRLSポリシーが適用されます。
+ *
  * @param linkId - 取得するリンクのID
  * @returns リンク詳細データ
  * @throws Supabaseエラーまたはデータが見つからない場合

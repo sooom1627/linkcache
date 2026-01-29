@@ -9,8 +9,7 @@ import PagerView from "react-native-pager-view";
 import { LinkListTabContent } from "../components/LinkListTabContent";
 import { LinkListTabHeader } from "../components/LinkListTabHeader";
 import { useLinks } from "../hooks/useLinks";
-
-type TabType = "read_soon" | "latest";
+import type { TabType } from "../types/linkList.types";
 
 /** ダッシュボード用の表示件数制限 */
 const DASHBOARD_LIMIT = 5;
@@ -25,17 +24,17 @@ const EMPTY_STATE_HEIGHT = 350;
 const LOADING_ERROR_HEIGHT = 100;
 
 /** タブのインデックス */
-const TAB_INDEX = {
-  latest: 0,
-  read_soon: 1,
-} as const;
+const TAB_INDEX: Record<TabType, number> = {
+  read_soon: 0,
+  latest: 1,
+};
 
 /**
  * リンクリストタブコンポーネント
  *
  * スワイプとタブ切り替えでフィルタリングされたリンクリストを表示します。
  * - "Read Soon" タブ: statusが"read_soon"のリンクを最大5件表示（APIでフィルタ）
- * - "Latest" タブ: statusが"inbox"のリンクを最大5件表示（APIでフィルタ）
+ * - "Latest" タブ: statusが"new"のリンクを最大5件表示（APIでフィルタ）
  */
 /**
  * タブの状態とデータから高さを計算
@@ -56,7 +55,7 @@ function calculateTabHeight(
 }
 
 export function LinkListTabs() {
-  const [activeTab, setActiveTab] = useState<TabType>("latest");
+  const [activeTab, setActiveTab] = useState<TabType>("read_soon");
   const pagerRef = useRef<PagerView>(null);
 
   // Read Soon タブ: status="read_soon", limit=5
@@ -65,20 +64,23 @@ export function LinkListTabs() {
     limit: DASHBOARD_LIMIT,
     isRead: false,
   });
-  // Latest タブ: limit=5（inboxステータス）
+  // Latest タブ: limit=5（newステータス）
   const latestQuery = useLinks({
     limit: DASHBOARD_LIMIT,
     isRead: false,
-    status: "inbox",
+    status: "new",
   });
+
+  const { refetch: refetchReadSoon } = readSoonQuery;
+  const { refetch: refetchLatest } = latestQuery;
 
   // 画面がフォーカスされた時に最新データを取得（UIの表示がガタガタしないように非同期で）
   useFocusEffect(
     useCallback(() => {
       // バックグラウンドで再フェッチ（既存のデータを表示したまま更新）
-      void readSoonQuery.refetch();
-      void latestQuery.refetch();
-    }, [readSoonQuery, latestQuery]),
+      void refetchReadSoon();
+      void refetchLatest();
+    }, [refetchReadSoon, refetchLatest]),
   );
 
   // タブヘッダーからの切り替え
@@ -91,7 +93,7 @@ export function LinkListTabs() {
   const handlePageSelected = useCallback(
     (e: { nativeEvent: { position: number } }) => {
       const position = e.nativeEvent.position;
-      const newTab = position === 0 ? "latest" : "read_soon";
+      const newTab = position === 0 ? "read_soon" : "latest";
       setActiveTab(newTab);
     },
     [],
@@ -134,17 +136,6 @@ export function LinkListTabs() {
         initialPage={TAB_INDEX[activeTab]}
         onPageSelected={handlePageSelected}
       >
-        {/* Latest タブ */}
-        <View key="latest">
-          <LinkListTabContent
-            isLoading={latestQuery.isLoading}
-            isError={latestQuery.isError}
-            error={latestQuery.error}
-            links={latestQuery.links}
-            tabType="latest"
-          />
-        </View>
-
         {/* Read Soon タブ */}
         <View key="read_soon">
           <LinkListTabContent
@@ -153,6 +144,17 @@ export function LinkListTabs() {
             error={readSoonQuery.error}
             links={readSoonQuery.links}
             tabType="read_soon"
+          />
+        </View>
+
+        {/* Latest タブ */}
+        <View key="latest">
+          <LinkListTabContent
+            isLoading={latestQuery.isLoading}
+            isError={latestQuery.isError}
+            error={latestQuery.error}
+            links={latestQuery.links}
+            tabType="latest"
           />
         </View>
       </PagerView>

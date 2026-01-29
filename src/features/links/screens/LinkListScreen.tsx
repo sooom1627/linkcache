@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 
 import {
   ActivityIndicator,
@@ -8,7 +8,7 @@ import {
   View,
 } from "react-native";
 
-import { useFocusEffect } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 
 import { FlashList } from "@shopify/flash-list";
 import { AlertCircle, RefreshCw } from "lucide-react-native";
@@ -17,8 +17,53 @@ import { LinkListCard } from "../components/LinkListCard";
 import { LinkListEmpty } from "../components/LinkListEmpty";
 import { LinkListFilterMenu } from "../components/LinkListFilterMenu";
 import { LinkListLoadingFooter } from "../components/LinkListLoadingFooter";
+import {
+  LinkListFilterProvider,
+  useLinkListFilterContext,
+} from "../contexts/LinkListFilterContext";
+import type { LinkListFilterState } from "../hooks/useLinkListFilter";
 import { useLinks } from "../hooks/useLinks";
-import type { UserLink } from "../types/linkList.types";
+import type { TriageStatus, UserLink } from "../types/linkList.types";
+
+/**
+ * 有効なTriageStatusのリスト
+ */
+const VALID_TRIAGE_STATUSES: readonly TriageStatus[] = [
+  "new",
+  "read_soon",
+  "stock",
+  "done",
+] as const;
+
+/**
+ * 有効なTriageStatusかどうかをチェック
+ */
+const isValidTriageStatus = (
+  status: string | string[] | undefined,
+): status is TriageStatus => {
+  if (typeof status !== "string") return false;
+  return VALID_TRIAGE_STATUSES.includes(status as TriageStatus);
+};
+
+/**
+ * URLパラメータから初期フィルター状態を構築
+ */
+const buildInitialStateFromParams = (
+  params: Record<string, string | string[] | undefined>,
+): LinkListFilterState | undefined => {
+  const { status } = params;
+
+  // statusパラメータが有効な場合のみ初期状態を構築
+  if (isValidTriageStatus(status)) {
+    return {
+      status,
+      readStatus: "all",
+    };
+  }
+
+  // パラメータがない場合はundefinedを返してデフォルト状態を使用
+  return undefined;
+};
 
 /**
  * リンク一覧画面
@@ -27,8 +72,32 @@ import type { UserLink } from "../types/linkList.types";
  * - Pull-to-refresh対応
  * - 無限スクロール対応
  * - ローディング・エラー・空状態のハンドリング
+ * - フィルター機能（ステータス・既読状態）
+ * - URLパラメータからの初期フィルター状態の設定
  */
 export function LinkListScreen() {
+  const params = useLocalSearchParams();
+  const initialState = useMemo(
+    () => buildInitialStateFromParams(params),
+    [params],
+  );
+
+  return (
+    <LinkListFilterProvider initialState={initialState}>
+      <LinkListScreenContent />
+    </LinkListFilterProvider>
+  );
+}
+
+/**
+ * リンク一覧画面の内部コンポーネント
+ *
+ * フィルターコンテキストを使用してリンク一覧を表示します。
+ */
+function LinkListScreenContent() {
+  const { useLinksOptions, hasActiveFilters, resetFilters } =
+    useLinkListFilterContext();
+
   const {
     links,
     isLoading,
@@ -39,15 +108,7 @@ export function LinkListScreen() {
     hasNextPage,
     fetchNextPage,
     refetch,
-  } = useLinks();
-
-  // 画面がフォーカスされた時に最新データを取得（UIの表示がガタガタしないように非同期で）
-  useFocusEffect(
-    useCallback(() => {
-      // バックグラウンドで再フェッチ（既存のデータを表示したまま更新）
-      void refetch();
-    }, [refetch]),
-  );
+  } = useLinks(useLinksOptions);
 
   // 次ページ読み込み
   const handleEndReached = useCallback(() => {
@@ -85,12 +146,21 @@ export function LinkListScreen() {
     if (isLoading) {
       return null;
     }
-    return <LinkListEmpty />;
-  }, [isLoading]);
+    return (
+      <LinkListEmpty
+        hasActiveFilters={hasActiveFilters}
+        onResetFilters={resetFilters}
+      />
+    );
+  }, [isLoading, hasActiveFilters, resetFilters]);
 
   // 初回ローディング
   if (isLoading) {
-    return <ActivityIndicator size="large" color="#6B7280" />;
+    return (
+      <View className="flex-1 items-center justify-center">
+        <ActivityIndicator size="large" color="#6B7280" />
+      </View>
+    );
   }
 
   // エラー状態
@@ -122,7 +192,10 @@ export function LinkListScreen() {
       <View className="absolute right-0 z-50 mt-[12px] flex-row items-center gap-2">
         <LinkListFilterMenu
           isDisabled={
-            isLoading || isRefreshing || isError || links.length === 0
+            isLoading ||
+            isRefreshing ||
+            isError ||
+            (links.length === 0 && !hasActiveFilters)
           }
         />
       </View>

@@ -2,17 +2,16 @@ import { memo } from "react";
 
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 
-import { useRouter } from "expo-router";
+import { Link, useRouter } from "expo-router";
 
 import { ArrowRight, Layers2 } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 
 import type { useLinks } from "../hooks/useLinks";
+import type { TabType } from "../types/linkList.types";
 
 import { LinkListCard } from "./LinkListCard";
 import { LinkListEmpty } from "./LinkListEmpty";
-
-type TabType = "read_soon" | "latest";
 
 interface LinkListTabContentProps {
   isLoading: boolean;
@@ -85,6 +84,14 @@ export const LinkListTabContent = memo(function LinkListTabContent({
     return <LinkListEmpty />;
   }
 
+  // タブタイプに基づいて遷移先URLを決定
+  const viewAllHref =
+    tabType === "read_soon"
+      ? "/links?status=read_soon"
+      : tabType === "latest"
+        ? "/links?status=new"
+        : "/links";
+
   return (
     <View>
       {links.map((item) => (
@@ -93,10 +100,17 @@ export const LinkListTabContent = memo(function LinkListTabContent({
         </View>
       ))}
       <View className="flex-row items-center justify-center py-4">
-        <Text className="text-sm text-slate-500">
-          {t("links.dashboard.view_all")}
-        </Text>
-        <ArrowRight size={14} color="#6B7280" strokeWidth={1.5} />
+        <Link
+          href={viewAllHref}
+          className="rounded-full border border-slate-200 px-4 py-2"
+        >
+          <View className="flex-row items-center justify-center gap-2 ">
+            <Text className="text-center text-sm text-slate-500">
+              {t("links.dashboard.view_all")}
+            </Text>
+            <ArrowRight size={14} color="#6B7280" strokeWidth={1.5} />
+          </View>
+        </Link>
       </View>
     </View>
   );
