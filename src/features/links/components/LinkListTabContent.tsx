@@ -101,10 +101,12 @@ export const LinkListTabContent = memo(function LinkListTabContent({
         </View>
       ))}
       <View className="flex-row items-center justify-center py-4">
-        <Link href={viewAllHref} className="text-sm text-slate-500">
-          {t("links.dashboard.view_all")}
+        <Link href={viewAllHref} className="flex-row items-center gap-2">
+          <Text className="text-sm text-slate-500">
+            {t("links.dashboard.view_all")}
+          </Text>
+          <ArrowRight size={14} color="#6B7280" strokeWidth={1.5} />
         </Link>
-        <ArrowRight size={14} color="#6B7280" strokeWidth={1.5} />
       </View>
     </View>
   );
