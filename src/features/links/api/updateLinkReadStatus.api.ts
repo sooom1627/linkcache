@@ -8,7 +8,7 @@ import type { TriageStatus } from "../types";
  * link_statusテーブルのread_atカラムとstatusカラムを更新します。
  * - 既読時: read_atを現在のタイムスタンプ（ISO 8601形式）に設定
  * - 未読時: read_atをnullに設定
- * - status: オプションでステータスを同時に更新可能（指定しない場合はnull）
+ * - status: オプションでステータスを同時に更新可能（指定しない場合は既存の値が保持される、nullを明示的に指定した場合はnullに更新）
  *
  * RLSポリシーにより、現在のユーザーが所有するリンクのみが更新されます。
  *
@@ -35,14 +35,23 @@ import type { TriageStatus } from "../types";
 export async function updateLinkReadStatus(
   linkId: string,
   isRead: boolean,
-  status?: TriageStatus,
+  status?: TriageStatus | null,
 ): Promise<void> {
+  const updatePayload: {
+    read_at: string | null;
+    status?: TriageStatus | null;
+  } = {
+    read_at: isRead ? new Date().toISOString() : null,
+  };
+
+  // statusが明示的に提供された場合のみ、更新ペイロードに含める
+  if (status !== undefined) {
+    updatePayload.status = status;
+  }
+
   const { error } = await supabase
     .from("link_status")
-    .update({
-      read_at: isRead ? new Date().toISOString() : null,
-      status: status ?? null,
-    })
+    .update(updatePayload)
     .eq("link_id", linkId);
 
   if (error) {
