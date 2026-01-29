@@ -5,9 +5,9 @@ import { Pressable, Text, View } from "react-native";
 import { ChevronDown } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import Animated, {
-    useAnimatedStyle,
-    useSharedValue,
-    withTiming,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
 } from "react-native-reanimated";
 
 import type { TriageStatus } from "../types/linkList.types";

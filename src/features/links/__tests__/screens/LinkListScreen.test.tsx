@@ -1,9 +1,12 @@
+import React from "react";
+
 import { renderHook, waitFor } from "@testing-library/react-native";
 
 import {
   LinkListFilterProvider,
   useLinkListFilterContext,
 } from "../../contexts/LinkListFilterContext";
+import type { LinkListFilterState } from "../../hooks/useLinkListFilter";
 import { clearQueryCache, wrapper } from "../test-utils";
 
 // expo-routerをモック
@@ -17,6 +20,21 @@ jest.mock("expo-router", () => ({
     back: jest.fn(),
   })),
 }));
+
+/**
+ * LinkListFilterProviderを含むカスタムwrapperを作成
+ * @param initialState - 初期フィルター状態（オプション）
+ */
+const createFilterProviderWrapper = (initialState?: LinkListFilterState) => {
+  return ({ children }: { children: React.ReactNode }) =>
+    wrapper({
+      children: (
+        <LinkListFilterProvider initialState={initialState}>
+          {children}
+        </LinkListFilterProvider>
+      ),
+    });
+};
 
 describe("LinkListScreen URLパラメータ", () => {
   beforeEach(() => {
@@ -37,14 +55,7 @@ describe("LinkListScreen URLパラメータ", () => {
       };
 
       const { result } = renderHook(() => useLinkListFilterContext(), {
-        wrapper: ({ children }) =>
-          wrapper({
-            children: (
-              <LinkListFilterProvider initialState={initialState}>
-                {children}
-              </LinkListFilterProvider>
-            ),
-          }),
+        wrapper: createFilterProviderWrapper(initialState),
       });
 
       await waitFor(() => {
@@ -61,14 +72,7 @@ describe("LinkListScreen URLパラメータ", () => {
       };
 
       const { result } = renderHook(() => useLinkListFilterContext(), {
-        wrapper: ({ children }) =>
-          wrapper({
-            children: (
-              <LinkListFilterProvider initialState={initialState}>
-                {children}
-              </LinkListFilterProvider>
-            ),
-          }),
+        wrapper: createFilterProviderWrapper(initialState),
       });
 
       await waitFor(() => {
@@ -80,12 +84,7 @@ describe("LinkListScreen URLパラメータ", () => {
       mockUseLocalSearchParams.mockReturnValue({});
 
       const { result } = renderHook(() => useLinkListFilterContext(), {
-        wrapper: ({ children }) =>
-          wrapper({
-            children: (
-              <LinkListFilterProvider>{children}</LinkListFilterProvider>
-            ),
-          }),
+        wrapper: createFilterProviderWrapper(),
       });
 
       await waitFor(() => {

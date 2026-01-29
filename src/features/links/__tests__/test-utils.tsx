@@ -36,8 +36,6 @@ export const clearQueryCache = () => {
     });
   // キャッシュをクリア
   testQueryClient.clear();
-  testQueryClient.getQueryCache().clear();
-  testQueryClient.getMutationCache().clear();
 };
 
 // Wrap components with BottomSheetModalProvider for testing modal interactions
