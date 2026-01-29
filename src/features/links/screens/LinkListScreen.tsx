@@ -26,14 +26,23 @@ import { useLinks } from "../hooks/useLinks";
 import type { TriageStatus, UserLink } from "../types/linkList.types";
 
 /**
+ * 有効なTriageStatusのリスト
+ */
+const VALID_TRIAGE_STATUSES: readonly TriageStatus[] = [
+  "new",
+  "read_soon",
+  "stock",
+  "done",
+] as const;
+
+/**
  * 有効なTriageStatusかどうかをチェック
  */
 const isValidTriageStatus = (
   status: string | string[] | undefined,
 ): status is TriageStatus => {
   if (typeof status !== "string") return false;
-  const validStatuses: TriageStatus[] = ["new", "read_soon", "stock", "done"];
-  return validStatuses.includes(status as TriageStatus);
+  return VALID_TRIAGE_STATUSES.includes(status as TriageStatus);
 };
 
 /**
@@ -147,7 +156,11 @@ function LinkListScreenContent() {
 
   // 初回ローディング
   if (isLoading) {
-    return <ActivityIndicator size="large" color="#6B7280" />;
+    return (
+      <View className="flex-1 items-center justify-center">
+        <ActivityIndicator size="large" color="#6B7280" />
+      </View>
+    );
   }
 
   // エラー状態
