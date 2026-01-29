@@ -109,7 +109,7 @@ describe("useSwipeCards", () => {
       );
     });
 
-    it("デフォルトでinboxを取得する", async () => {
+    it("デフォルトでnewを取得する", async () => {
       mockFetchUserLinks.mockResolvedValueOnce({
         data: [],
         hasMore: false,

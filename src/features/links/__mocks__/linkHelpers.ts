@@ -62,6 +62,7 @@ export function createMockLink(
         ? overridesOrStatus
         : {};
 
+    // idベースのパスのデフォルトステータスは "new"
     return {
       status_id: `status-${id}`,
       user_id: "user-1",
