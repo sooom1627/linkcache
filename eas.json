@@ -10,7 +10,9 @@
         "resourceClass": "m-medium"
       },
       "env": {
-        "APP_ENV": "production"
+        "APP_ENV": "production",
+        "EXPO_PUBLIC_SUPABASE_URL": "${EXPO_PUBLIC_SUPABASE_URL}",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "${EXPO_PUBLIC_SUPABASE_ANON_KEY}"
       }
     },
     "development": {
@@ -28,7 +30,9 @@
         "simulator": false
       },
       "env": {
-        "APP_ENV": "dev"
+        "APP_ENV": "dev",
+        "EXPO_PUBLIC_SUPABASE_URL": "${EXPO_PUBLIC_SUPABASE_URL}",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "${EXPO_PUBLIC_SUPABASE_ANON_KEY}"
       }
     },
     "preview": {
