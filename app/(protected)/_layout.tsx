@@ -30,9 +30,7 @@ export default function ProtectedLayout() {
   }, [isLoading, shouldGoSignIn, router]);
 
   if (isLoading) {
-    return (
-        <ActivityIndicator size="large" color="#6B7280" />
-    );
+    return <ActivityIndicator size="large" color="#6B7280" />;
   }
 
   if (shouldGoSignIn) {
