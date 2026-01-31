@@ -1,7 +1,8 @@
 const IS_DEV =
   process.env.APP_ENV === "dev" ||
   process.env.EAS_BUILD_PROFILE === "dev" ||
-  process.env.EAS_BUILD_PROFILE === "development";
+  process.env.EAS_BUILD_PROFILE === "development" ||
+  process.env.EAS_BUILD_PROFILE === "preview";
 
 export default {
   expo: {

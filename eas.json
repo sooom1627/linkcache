@@ -39,6 +39,9 @@
       "distribution": "internal",
       "ios": {
         "simulator": false
+      },
+      "env": {
+        "APP_ENV": "dev"
       }
     }
   },
