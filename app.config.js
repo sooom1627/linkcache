@@ -19,6 +19,7 @@ export default {
         ? "com.sooom.linkcache.dev"
         : "com.sooom.linkcache",
       supportsTablet: true,
+      usesNonExemptEncryption: false,
     },
     android: {
       adaptiveIcon: {
