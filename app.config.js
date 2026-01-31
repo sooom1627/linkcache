@@ -1,4 +1,7 @@
-const IS_DEV = process.env.APP_ENV === "dev" || process.env.EAS_BUILD_PROFILE === "dev" || process.env.EAS_BUILD_PROFILE === "development";
+const IS_DEV =
+  process.env.APP_ENV === "dev" ||
+  process.env.EAS_BUILD_PROFILE === "dev" ||
+  process.env.EAS_BUILD_PROFILE === "development";
 
 export default {
   expo: {
@@ -12,7 +15,9 @@ export default {
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
     ios: {
-      bundleIdentifier: IS_DEV ? "com.sooom.linkcache.dev" : "com.sooom.linkcache",
+      bundleIdentifier: IS_DEV
+        ? "com.sooom.linkcache.dev"
+        : "com.sooom.linkcache",
       supportsTablet: true,
     },
     android: {
