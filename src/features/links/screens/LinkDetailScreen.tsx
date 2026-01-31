@@ -14,7 +14,6 @@ import { useRouter } from "expo-router";
 
 import {
   Calendar,
-  Check,
   Circle,
   Clock,
   ExternalLink,
@@ -149,7 +148,6 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
 
   const domain = extractDomain(link.url);
   const statusStyle = getStatusStyle(link.status);
-  const isRead = link.read_at !== null;
 
   // ステータス表示用の共通コンポーネント
   const StatusDisplay = ({
@@ -217,7 +215,7 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
 
             {/* 説明文 */}
             {link.description && (
-              <Text className="mb-6 text-base leading-relaxed text-slate-600">
+              <Text className="mb-6 line-clamp-3 text-base leading-relaxed text-slate-600">
                 {link.description}
               </Text>
             )}
@@ -236,20 +234,6 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
                     status={link.status}
                     statusStyle={statusStyle}
                   />
-                ) : isRead ? (
-                  // 既読: シンプルなアイコン+テキスト
-                  <View className="flex-row items-center gap-1.5">
-                    <Check
-                      size={16}
-                      color="#94a3b8" // slate-400
-                      strokeWidth={2.5}
-                    />
-                    <Text className="text-base font-medium text-slate-400">
-                      {t("links.card.action_modal.status.read", {
-                        defaultValue: "Read",
-                      })}
-                    </Text>
-                  </View>
                 ) : (
                   // 未読: シンプルなアイコン+テキスト
                   <StatusDisplay
