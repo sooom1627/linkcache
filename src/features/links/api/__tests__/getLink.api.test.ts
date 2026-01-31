@@ -19,7 +19,6 @@ describe("getLinkById", () => {
     status: "read_soon" as const,
     triaged_at: "2025-01-01T00:00:00Z",
     read_at: null,
-    saved_at: "2025-01-01T00:00:00Z",
     link_id: mockLinkId,
     url: "https://example.com",
     title: "Example Title",

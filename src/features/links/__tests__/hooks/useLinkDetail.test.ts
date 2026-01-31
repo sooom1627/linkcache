@@ -23,7 +23,6 @@ const createMockLink = (id: string): UserLink => ({
   status: "read_soon" as const,
   triaged_at: "2025-01-01T00:00:00Z",
   read_at: null,
-  saved_at: "2025-01-01T00:00:00Z",
   link_id: id,
   url: `https://example.com/${id}`,
   title: `Example Link ${id}`,

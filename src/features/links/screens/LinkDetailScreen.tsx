@@ -254,15 +254,6 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
                     </Text>
                   </View>
                 )}
-                {link.saved_at && (
-                  <View className="flex-row items-center gap-2">
-                    <Calendar size={14} color="#94a3b8" strokeWidth={2} />
-                    <Text className="text-sm text-slate-500">
-                      {t("links.detail.saved_at")}:{" "}
-                      {formatDateTime(link.saved_at)}
-                    </Text>
-                  </View>
-                )}
                 {link.triaged_at && (
                   <View className="flex-row items-center gap-2">
                     <Clock size={14} color="#94a3b8" strokeWidth={2} />

@@ -32,7 +32,7 @@ export function useLinkDetail(linkId: string) {
       // 単一オブジェクトを配列にラップして変換し、最初の要素を返す
       const transformed = dataHelpers.transformTimestamps<UserLink>(
         [data],
-        ["triaged_at", "read_at", "saved_at"],
+        ["triaged_at", "read_at"],
       );
       return transformed[0];
     },

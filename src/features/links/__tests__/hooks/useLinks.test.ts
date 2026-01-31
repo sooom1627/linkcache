@@ -22,7 +22,6 @@ const createMockLink = (id: number) => ({
   status: "new" as const,
   triaged_at: null,
   read_at: null,
-  saved_at: `2024-01-0${id}T00:00:00Z`,
   link_id: `link-${id}`,
   url: `https://example${id}.com`,
   title: `Example ${id}`,

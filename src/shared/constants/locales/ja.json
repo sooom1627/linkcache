@@ -205,7 +205,6 @@
       "created_at": "作成日時",
       "triaged_at": "トリアージ日時",
       "read_at": "既読日時",
-      "saved_at": "保存日時",
       "status_label": "ステータス",
       "no_description": "説明文はありません",
       "loading": "読み込み中...",

@@ -132,7 +132,6 @@ export function useLinks(options: UseLinksOptions = {}): UseLinksReturn {
     const links = dataHelpers.transformTimestamps<UserLink>(rawLinks, [
       "triaged_at",
       "read_at",
-      "saved_at",
       "link_created_at",
     ]);
 
@@ -157,7 +156,6 @@ export function useLinks(options: UseLinksOptions = {}): UseLinksReturn {
   const links = dataHelpers.transformTimestamps<UserLink>(rawLinks, [
     "triaged_at",
     "read_at",
-    "saved_at",
     "link_created_at",
   ]);
 

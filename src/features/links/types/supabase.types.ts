@@ -214,7 +214,6 @@ export type Database = {
           link_created_at: string | null;
           link_id: string | null;
           read_at: string | null;
-          saved_at: string | null;
           site_name: string | null;
           status: Database["public"]["Enums"]["triage_status"] | null;
           status_id: string | null;

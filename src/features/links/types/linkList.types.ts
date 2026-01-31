@@ -35,7 +35,6 @@ export interface UserLink {
   status: TriageStatus | null;
   triaged_at: string | null;
   read_at: string | null;
-  saved_at: string | null;
 
   // links のカラム
   link_id: string;
@@ -95,7 +94,6 @@ export const userLinkSchema = z.object({
   status: z.enum(["new", "read_soon", "stock", "done"]).nullable(),
   triaged_at: z.string().nullable(),
   read_at: z.string().nullable(),
-  saved_at: z.string().nullable(),
   link_id: z.string().uuid(),
   url: z.string(),
   title: z.string().nullable(),

@@ -27,7 +27,6 @@ describe("fetchUserLinks", () => {
               status: "new",
               triaged_at: null,
               read_at: null,
-              saved_at: "2024-01-01T00:00:00Z",
               link_id: "550e8400-e29b-41d4-a716-446655440002",
               url: "https://example.com",
               title: "Example",

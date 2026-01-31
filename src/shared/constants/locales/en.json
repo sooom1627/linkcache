@@ -205,7 +205,6 @@
       "created_at": "Created At",
       "triaged_at": "Triaged At",
       "read_at": "Read At",
-      "saved_at": "Saved At",
       "status_label": "Status",
       "no_description": "No description available",
       "loading": "Loading...",
