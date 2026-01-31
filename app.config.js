@@ -8,7 +8,7 @@ export default {
     name: IS_DEV ? "linkcache-dev" : "linkcache",
     slug: "linkcache",
     owner: "sooom",
-    version: "0.1.0",
+    version: "0.1.1",
     orientation: "portrait",
     icon: "./assets/images/icon.png",
     scheme: IS_DEV ? "linkcache-dev" : "linkcache",
