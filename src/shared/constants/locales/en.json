@@ -220,6 +220,7 @@
     }
   },
   "common": {
-    "back": "Back"
+    "back": "Back",
+    "retry": "Try Again"
   }
 }

@@ -1,16 +1,12 @@
 import { useCallback, useMemo } from "react";
 
-import {
-  ActivityIndicator,
-  RefreshControl,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ActivityIndicator, RefreshControl, View } from "react-native";
 
 import { useLocalSearchParams } from "expo-router";
 
 import { FlashList } from "@shopify/flash-list";
+
+import { ErrorStateView } from "@/src/shared/components/ErrorStateView";
 
 import { LinkListCard } from "../components/LinkListCard";
 import { LinkListEmpty } from "../components/LinkListEmpty";
@@ -165,17 +161,11 @@ function LinkListScreenContent() {
   // エラー状態
   if (isError) {
     return (
-      <View className="flex-1 items-center justify-center bg-slate-50 px-6">
-        <Text className="text-center text-base text-red-500">
-          {error?.message || "Failed to load links. Please try again."}
-        </Text>
-        <TouchableOpacity
-          onPress={refetch}
-          className="mt-6 rounded-xl bg-slate-800 px-6 py-3"
-        >
-          <Text className="text-base font-medium text-white">Try Again</Text>
-        </TouchableOpacity>
-      </View>
+      <ErrorStateView
+        message={error?.message || "Failed to load links. Please try again."}
+        actionLabel="Try Again"
+        onAction={refetch}
+      />
     );
   }
 

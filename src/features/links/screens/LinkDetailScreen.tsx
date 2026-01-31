@@ -22,6 +22,7 @@ import {
 } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 
+import { ErrorStateView } from "@/src/shared/components/ErrorStateView";
 import { useBottomSheetModal } from "@/src/shared/hooks/useBottomSheetModal";
 import { formatDateTime } from "@/src/shared/utils/timezone";
 
@@ -130,19 +131,11 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
   // エラー状態
   if (error || !link) {
     return (
-      <View className="flex-1 items-center justify-center bg-slate-50 px-6">
-        <Text className="text-center text-base text-red-500">
-          {t("links.detail.error")}
-        </Text>
-        <TouchableOpacity
-          onPress={handleBack}
-          className="mt-6 rounded-xl bg-slate-800 px-6 py-3"
-        >
-          <Text className="text-base font-medium text-white">
-            {t("common.back")}
-          </Text>
-        </TouchableOpacity>
-      </View>
+      <ErrorStateView
+        message={t("links.detail.error")}
+        actionLabel={t("common.back")}
+        onAction={handleBack}
+      />
     );
   }
 
