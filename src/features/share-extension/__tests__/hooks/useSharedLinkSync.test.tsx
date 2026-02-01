@@ -1,7 +1,9 @@
-import { renderHook, waitFor } from "@testing-library/react-native";
 import { AppState, type AppStateStatus } from "react-native";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { renderHook, waitFor } from "@testing-library/react-native";
+
+import { useAuth } from "@/src/features/auth";
 
 import { useSharedLinkSync } from "../../hooks/useSharedLinkSync";
 
@@ -19,8 +21,6 @@ jest.mock("react-native", () => ({
 jest.mock("@/src/features/auth", () => ({
   useAuth: jest.fn(),
 }));
-
-import { useAuth } from "@/src/features/auth";
 
 const mockUseAuth = useAuth as jest.MockedFunction<typeof useAuth>;
 

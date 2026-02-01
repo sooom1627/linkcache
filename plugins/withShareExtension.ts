@@ -170,7 +170,7 @@ const withShareExtension: ConfigPlugin<WithShareExtensionOptions> = (
         path.join(sourceDir, "Info.plist"),
         "utf-8",
       );
-      
+
       // Supabase設定を追加
       let infoPlistUpdated = infoPlistSource;
       if (options.supabaseUrl && options.supabaseAnonKey) {
@@ -184,11 +184,8 @@ const withShareExtension: ConfigPlugin<WithShareExtensionOptions> = (
 </dict>`,
         );
       }
-      
-      fs.writeFileSync(
-        path.join(targetDir, "Info.plist"),
-        infoPlistUpdated,
-      );
+
+      fs.writeFileSync(path.join(targetDir, "Info.plist"), infoPlistUpdated);
 
       // Entitlements をコピー（App Group ID と Keychain Access Group を動的に設定）
       const entitlementsSource = fs.readFileSync(

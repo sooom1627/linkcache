@@ -9,16 +9,19 @@
 #### 0. アーキテクチャ変更: Supabase経由方式を採用
 
 **実装方針の変更**:
+
 - ❌ App Groupディレクトリアクセス方式（実装困難）
 - ✅ Supabase API直接呼び出し方式（MVP完了）
 
 **メリット**:
+
 - Expo Managed Workflow完全対応
 - ネイティブモジュール不要
 - EAS Buildで問題なく動作
 - マルチデバイス対応が容易
 
 **実装内容**:
+
 - ShareExtensionからKeychain経由でSupabaseトークン取得
 - Supabase RPC `create_link_with_status` を直接呼び出し
 - メインアプリは既存のTanStack Queryで自動同期
@@ -198,7 +201,7 @@ useSharedLinkSync フック
 1. **Share Extension側** (完了)
 
    ```
-   URL受信 
+   URL受信
      → Keychainからトークン取得
      → Supabase RPC呼び出し
      → 成功/失敗UI表示
