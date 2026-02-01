@@ -95,7 +95,7 @@ export function LinkDetailActionButtonGroup({
       handleDelete,
       isMoreMenuOpen,
       isDeleting,
-    ]
+    ],
   );
 
   return (

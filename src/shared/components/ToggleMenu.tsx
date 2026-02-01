@@ -10,6 +10,7 @@ import {
 } from "react-native";
 
 import { BlurView } from "expo-blur";
+
 import type { AnimatedStyle } from "react-native-reanimated";
 import Animated, {
   useAnimatedStyle,
