@@ -130,7 +130,7 @@ export function ToggleMenu({
         style={
           [menuAnimatedStyle, { width: width ?? 200 }] as StyleProp<ViewStyle>
         }
-        className={`absolute ${position} overflow-hidden rounded-3xl`}
+        className={`absolute z-50 ${position} overflow-hidden rounded-3xl`}
         pointerEvents={isOpen ? "auto" : "none"}
       >
         <BlurView

@@ -164,7 +164,7 @@ function LinkListScreenContent() {
   if (isError) {
     return (
       <ErrorStateView
-        message={error?.message || "Failed to load links. Please try again."}
+        message={error?.message || t("links.dashboard.error_load_failed")}
         actionLabel={t("common.retry")}
         onAction={refetch}
       />
