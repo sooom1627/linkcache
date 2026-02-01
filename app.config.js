@@ -76,6 +76,8 @@ module.exports = {
           bundleIdentifier: IS_DEV
             ? "com.sooom.linkcache.dev"
             : "com.sooom.linkcache",
+          supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL || "",
+          supabaseAnonKey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || "",
         },
       ],
     ],

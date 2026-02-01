@@ -25,12 +25,5 @@ export {
   isValidSharedItem,
 } from "./utils/sharedItem";
 
-export {
-  getAppGroupId,
-  getSharedItemsPath,
-  readPendingSharedItems,
-  deleteProcessedItem,
-} from "./utils/appGroupReader";
-
 // フックエクスポート
-export { usePendingSharedLinks } from "./hooks/usePendingSharedLinks";
+export { useSharedLinkSync } from "./hooks/useSharedLinkSync";

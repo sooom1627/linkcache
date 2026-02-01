@@ -1,22 +1,32 @@
 import UIKit
 import UniformTypeIdentifiers
+import Security
 
 /**
  * Share Extension のメインビューコントローラ
  *
  * Safari 等から URL を共有した際に表示される UI を提供し、
- * URL を App Group に保存してメインアプリに引き継ぎます。
+ * URL を Supabase API 経由で保存します。
  */
 class ShareViewController: UIViewController {
 
     // MARK: - Constants
 
-    /// App Group ID (開発環境)
-    /// 本番環境では group.com.sooom.linkcache を使用
-    private let appGroupId = "group.com.sooom.linkcache.dev"
+    /// Supabase URL (Info.plistから取得)
+    private var supabaseUrl: String {
+        return Bundle.main.object(forInfoDictionaryKey: "SUPABASE_URL") as? String ?? ""
+    }
 
-    /// 共有アイテム保存ディレクトリ名
-    private let sharedItemsDirectory = "SharedItems"
+    /// Supabase Anon Key (Info.plistから取得)
+    private var supabaseAnonKey: String {
+        return Bundle.main.object(forInfoDictionaryKey: "SUPABASE_ANON_KEY") as? String ?? ""
+    }
+    
+    /// Keychain サービス名（Expo SecureStoreと同じ）
+    private let keychainService = "com.sooom.linkcache.dev"
+    
+    /// Supabase セッションキー（Expo SecureStoreと同じ）
+    private let supabaseSessionKey = "supabase.session"
 
     // MARK: - UI Elements
 
@@ -100,26 +110,39 @@ class ShareViewController: UIViewController {
         extractURL { [weak self] url in
             guard let self = self else { return }
 
-            DispatchQueue.main.async {
-                if let url = url {
-                    // URL の保存を試みる
-                    let success = self.saveToAppGroup(url: url)
-
+            guard let url = url else {
+                DispatchQueue.main.async {
+                    self.showError(message: "URLを取得できませんでした")
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                        self.close()
+                    }
+                }
+                return
+            }
+            
+            // Keychain からトークン取得
+            guard let token = self.getSupabaseToken() else {
+                DispatchQueue.main.async {
+                    self.showError(message: "ログインしてください")
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                        self.close()
+                    }
+                }
+                return
+            }
+            
+            // Supabase に保存
+            self.saveToSupabase(url: url, token: token) { success in
+                DispatchQueue.main.async {
                     if success {
-                        // 成功: 緑の背景で「保存しました」
                         self.showSuccess()
                     } else {
-                        // 保存失敗
                         self.showError(message: "保存に失敗しました")
                     }
-                } else {
-                    // URL 取得失敗
-                    self.showError(message: "URLを取得できませんでした")
-                }
-
-                // 1.5 秒後に自動で閉じる
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                    self.close()
+                    
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                        self.close()
+                    }
                 }
             }
         }
@@ -190,52 +213,117 @@ class ShareViewController: UIViewController {
         return url.scheme == "http" || url.scheme == "https"
     }
 
-    // MARK: - App Group Storage
-
-    @discardableResult
-    private func saveToAppGroup(url: String) -> Bool {
-        guard let containerURL = FileManager.default.containerURL(
-            forSecurityApplicationGroupIdentifier: appGroupId
-        ) else {
-            print("[ShareExtension] Failed to access App Group container")
-            return false
-        }
-
-        let sharedItemsURL = containerURL.appendingPathComponent(sharedItemsDirectory, isDirectory: true)
-
-        // SharedItems ディレクトリを作成 (存在しない場合)
-        do {
-            try FileManager.default.createDirectory(
-                at: sharedItemsURL,
-                withIntermediateDirectories: true,
-                attributes: nil
-            )
-        } catch {
-            print("[ShareExtension] Failed to create SharedItems directory: \(error)")
-            return false
-        }
-
-        // 共有アイテムデータを作成
-        let id = UUID().uuidString
-        let createdAt = ISO8601DateFormatter().string(from: Date())
-
-        let sharedItem: [String: Any] = [
-            "id": id,
-            "url": url,
-            "createdAt": createdAt
+    // MARK: - Keychain Access
+    
+    /**
+     * Keychain から Supabase セッショントークンを取得
+     *
+     * Expo SecureStore と同じ Keychain Access Group を使用して、
+     * メインアプリで保存された認証トークンを読み取ります。
+     */
+    private func getSupabaseToken() -> String? {
+        // Keychainクエリを作成
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: keychainService,
+            kSecAttrAccount as String: supabaseSessionKey,
+            kSecReturnData as String: true,
+            kSecMatchLimit as String: kSecMatchLimitOne
         ]
-
-        // JSON ファイルとして保存
-        let fileURL = sharedItemsURL.appendingPathComponent("\(id).json")
-
-        do {
-            let jsonData = try JSONSerialization.data(withJSONObject: sharedItem, options: .prettyPrinted)
-            try jsonData.write(to: fileURL)
-            print("[ShareExtension] Saved shared item: \(id)")
-            return true
-        } catch {
-            print("[ShareExtension] Failed to save shared item: \(error)")
-            return false
+        
+        var result: AnyObject?
+        let status = SecItemCopyMatching(query as CFDictionary, &result)
+        
+        guard status == errSecSuccess,
+              let data = result as? Data,
+              let jsonString = String(data: data, encoding: .utf8) else {
+            print("[ShareExtension] Failed to retrieve Supabase token from Keychain")
+            return nil
         }
+        
+        // JSON をパースして access_token を取得
+        do {
+            if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+               let accessToken = json["access_token"] as? String {
+                print("[ShareExtension] Successfully retrieved Supabase token")
+                return accessToken
+            }
+        } catch {
+            print("[ShareExtension] Failed to parse Supabase session: \(error)")
+        }
+        
+        return nil
+    }
+    
+    // MARK: - Supabase API
+    
+    /**
+     * Supabase API 経由でリンクを保存
+     *
+     * create_link_with_status RPC を呼び出してリンクを作成します。
+     */
+    private func saveToSupabase(url: String, token: String, completion: @escaping (Bool) -> Void) {
+        // エンドポイント URL を作成
+        let endpoint = "\(supabaseUrl)/rest/v1/rpc/create_link_with_status"
+        
+        guard let endpointURL = URL(string: endpoint) else {
+            print("[ShareExtension] Invalid Supabase URL")
+            completion(false)
+            return
+        }
+        
+        // リクエストボディを作成
+        let body: [String: Any] = [
+            "p_url": url,
+            "p_title": nil as Any,
+            "p_description": nil as Any,
+            "p_image_url": nil as Any,
+            "p_favicon_url": nil as Any,
+            "p_site_name": nil as Any
+        ]
+        
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: body) else {
+            print("[ShareExtension] Failed to serialize request body")
+            completion(false)
+            return
+        }
+        
+        // HTTP リクエストを作成
+        var request = URLRequest(url: endpointURL)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        request.setValue(supabaseAnonKey, forHTTPHeaderField: "apikey")
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.httpBody = jsonData
+        
+        // リクエストを送信
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("[ShareExtension] Network error: \(error)")
+                completion(false)
+                return
+            }
+            
+            guard let httpResponse = response as? HTTPURLResponse else {
+                print("[ShareExtension] Invalid response")
+                completion(false)
+                return
+            }
+            
+            if httpResponse.statusCode == 200 || httpResponse.statusCode == 201 {
+                print("[ShareExtension] Successfully saved link to Supabase")
+                completion(true)
+            } else {
+                if let data = data, let responseBody = String(data: data, encoding: .utf8) {
+                    print("[ShareExtension] Failed to save link. Status: \(httpResponse.statusCode), Body: \(responseBody)")
+                } else {
+                    print("[ShareExtension] Failed to save link. Status: \(httpResponse.statusCode)")
+                }
+                completion(false)
+            }
+        }
+        
+        task.resume()
     }
 }

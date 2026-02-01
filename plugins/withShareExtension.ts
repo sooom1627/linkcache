@@ -14,6 +14,10 @@ interface WithShareExtensionOptions {
   appGroupId: string;
   /** Bundle Identifier */
   bundleIdentifier: string;
+  /** Supabase URL */
+  supabaseUrl?: string;
+  /** Supabase Anon Key */
+  supabaseAnonKey?: string;
 }
 
 /**
@@ -147,34 +151,57 @@ const withShareExtension: ConfigPlugin<WithShareExtensionOptions> = (
         fs.mkdirSync(targetDir, { recursive: true });
       }
 
-      // ShareViewController.swift をコピー（App Group ID を動的に設定）
+      // ShareViewController.swift をコピー（動的設定を適用）
       const viewControllerSource = fs.readFileSync(
         path.join(sourceDir, "ShareViewController.swift"),
         "utf-8",
       );
       const viewControllerUpdated = viewControllerSource.replace(
-        /private let appGroupId = ".*"/,
-        `private let appGroupId = "${appGroupId}"`,
+        /private let keychainService = ".*"/,
+        `private let keychainService = "${bundleIdentifier}"`,
       );
       fs.writeFileSync(
         path.join(targetDir, "ShareViewController.swift"),
         viewControllerUpdated,
       );
 
-      // Info.plist をコピー
-      fs.copyFileSync(
+      // Info.plist をコピー（Supabase設定を追加）
+      const infoPlistSource = fs.readFileSync(
         path.join(sourceDir, "Info.plist"),
+        "utf-8",
+      );
+      
+      // Supabase設定を追加
+      let infoPlistUpdated = infoPlistSource;
+      if (options.supabaseUrl && options.supabaseAnonKey) {
+        // </dict> の直前に Supabase 設定を挿入
+        infoPlistUpdated = infoPlistSource.replace(
+          "</dict>",
+          `    <key>SUPABASE_URL</key>
+    <string>${options.supabaseUrl}</string>
+    <key>SUPABASE_ANON_KEY</key>
+    <string>${options.supabaseAnonKey}</string>
+</dict>`,
+        );
+      }
+      
+      fs.writeFileSync(
         path.join(targetDir, "Info.plist"),
+        infoPlistUpdated,
       );
 
-      // Entitlements をコピー（App Group ID を動的に設定）
+      // Entitlements をコピー（App Group ID と Keychain Access Group を動的に設定）
       const entitlementsSource = fs.readFileSync(
         path.join(sourceDir, "ShareExtension.entitlements"),
         "utf-8",
       );
-      const entitlementsUpdated = entitlementsSource.replace(
+      let entitlementsUpdated = entitlementsSource.replace(
         /<string>group\.com\.sooom\.linkcache\.dev<\/string>/,
         `<string>${appGroupId}</string>`,
+      );
+      entitlementsUpdated = entitlementsUpdated.replace(
+        /<string>\$\(AppIdentifierPrefix\)com\.sooom\.linkcache\.dev<\/string>/,
+        `<string>$(AppIdentifierPrefix)${bundleIdentifier}</string>`,
       );
       fs.writeFileSync(
         path.join(targetDir, `${extensionName}.entitlements`),
