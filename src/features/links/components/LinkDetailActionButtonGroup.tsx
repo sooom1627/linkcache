@@ -8,18 +8,22 @@ import {
   ExternalLink,
   Share,
   Trash2,
+  X,
 } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 
-import { ToggleMenu } from "@/src/shared/components/ToggleMenu";
 import type { ToggleMenuItem } from "@/src/shared/components/ToggleMenu";
+import { ToggleMenu } from "@/src/shared/components/ToggleMenu";
+
+import { useUpdateLinkReadStatus } from "../hooks/useUpdateLinkReadStatus";
 
 interface LinkDetailActionButtonGroupProps {
   isMoreMenuOpen: boolean;
   isDeleting: boolean;
+  isRead: boolean;
+  linkId: string;
   onOpenLink: () => void;
   onDelete: () => void;
-  onChangeStatus: () => void;
   onShare: () => void;
   onMoreOptions: () => void;
 }
@@ -32,13 +36,16 @@ interface LinkDetailActionButtonGroupProps {
 export function LinkDetailActionButtonGroup({
   isMoreMenuOpen,
   isDeleting,
+  isRead,
+  linkId,
   onOpenLink,
   onDelete,
-  onChangeStatus,
   onShare,
   onMoreOptions,
 }: LinkDetailActionButtonGroupProps) {
   const { t } = useTranslation();
+  const { updateReadStatus, isPending: isUpdatingStatus } =
+    useUpdateLinkReadStatus();
 
   // メニューを閉じる処理
   const handleCloseMenu = useCallback(() => {
@@ -49,9 +56,12 @@ export function LinkDetailActionButtonGroup({
 
   // メニュー項目のハンドラー（アクション実行後にメニューを閉じる）
   const handleChangeStatus = useCallback(() => {
-    onChangeStatus();
+    if (isUpdatingStatus) return;
+    // 既読の場合は未読に、未読の場合は既読にする
+    // 既読時はステータスをdoneに、未読時はread_soonに設定
+    updateReadStatus(linkId, !isRead, !isRead ? "done" : "read_soon");
     handleCloseMenu();
-  }, [onChangeStatus, handleCloseMenu]);
+  }, [isUpdatingStatus, updateReadStatus, linkId, isRead, handleCloseMenu]);
 
   const handleShare = useCallback(() => {
     onShare();
@@ -67,10 +77,17 @@ export function LinkDetailActionButtonGroup({
   const menuItems: ToggleMenuItem[] = useMemo(
     () => [
       {
-        icon: <Check size={20} color="#64748B" strokeWidth={2.5} />,
-        label: t("links.detail.mark_as_read"),
+        icon: isRead ? (
+          <X size={20} color="#64748B" strokeWidth={2.5} />
+        ) : (
+          <Check size={20} color="#64748B" strokeWidth={2.5} />
+        ),
+        label: isRead
+          ? t("links.detail.mark_as_unread")
+          : t("links.detail.mark_as_read"),
         onPress: handleChangeStatus,
-        disabled: !isMoreMenuOpen,
+        disabled: !isMoreMenuOpen || isUpdatingStatus,
+        loading: isUpdatingStatus,
       },
       {
         icon: <Share size={20} color="#64748B" strokeWidth={2.5} />,
@@ -95,6 +112,8 @@ export function LinkDetailActionButtonGroup({
       handleDelete,
       isMoreMenuOpen,
       isDeleting,
+      isRead,
+      isUpdatingStatus,
     ],
   );
 

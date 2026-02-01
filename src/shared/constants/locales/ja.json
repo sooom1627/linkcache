@@ -203,6 +203,7 @@
       "change_status": "ステータスを変更",
       "delete_link": "削除",
       "mark_as_read": "既読にする",
+      "mark_as_unread": "未読に戻す",
       "share": "共有",
       "more_options": "その他のオプション",
       "created_at": "作成日時",

@@ -1,13 +1,6 @@
 import { useCallback, useState } from "react";
 
-import {
-  ActivityIndicator,
-  Alert,
-  ScrollView,
-  Share,
-  Text,
-  View,
-} from "react-native";
+import { ActivityIndicator, Alert, ScrollView, Text, View } from "react-native";
 
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
@@ -25,6 +18,7 @@ import { useDeleteLink } from "../hooks/useDeleteLink";
 import { useLinkDetail } from "../hooks/useLinkDetail";
 import { extractDomain } from "../hooks/useLinkPaste";
 import { useOpenLink } from "../hooks/useOpenLink";
+import { shareLink } from "../utils/share";
 import { getStatusStyle } from "../utils/statusStyles";
 
 interface LinkDetailScreenProps {
@@ -58,6 +52,9 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
   const handleOpenLink = useCallback(() => {
     if (link) {
       openLink(link.url);
+    }
+
+    if (!isDone) {
       // 500ms後にモーダルを表示
       setTimeout(() => {
         presentStatusModal();
@@ -69,25 +66,9 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
     setIsMoreMenuOpen((prev) => !prev);
   }, []);
 
-  const handleChangeStatus = useCallback(() => {
-    presentStatusModal();
-  }, [presentStatusModal]);
-
   const handleShare = useCallback(async () => {
     if (!link) return;
-
-    try {
-      await Share.share({
-        message: link.title ? `${link.title}\n${link.url}` : link.url,
-        url: link.url,
-        title: link.title || link.url,
-      });
-    } catch (error) {
-      // Shareダイアログがキャンセルされた場合などはエラーを無視
-      if (error instanceof Error && error.message !== "User did not share") {
-        console.error("Failed to share link:", error);
-      }
-    }
+    await shareLink({ url: link.url, title: link.title });
   }, [link]);
 
   const handleDelete = useCallback(() => {
@@ -293,9 +274,10 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
         <LinkDetailActionButtonGroup
           isMoreMenuOpen={isMoreMenuOpen}
           isDeleting={isDeleting}
+          isRead={link.read_at !== null}
+          linkId={link.link_id}
           onOpenLink={handleOpenLink}
           onDelete={handleDelete}
-          onChangeStatus={handleChangeStatus}
           onShare={handleShare}
           onMoreOptions={handleMoreOptions}
         />

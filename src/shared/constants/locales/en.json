@@ -203,6 +203,7 @@
       "change_status": "Change Status",
       "delete_link": "Delete",
       "mark_as_read": "Mark as Read",
+      "mark_as_unread": "Mark as Unread",
       "share": "Share",
       "more_options": "More Options",
       "created_at": "Created At",
