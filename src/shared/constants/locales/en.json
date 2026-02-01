@@ -225,6 +225,7 @@
   },
   "common": {
     "back": "Back",
-    "retry": "Try Again"
+    "retry": "Try Again",
+    "error_title": "Something went wrong"
   }
 }

@@ -225,6 +225,7 @@
   },
   "common": {
     "back": "戻る",
-    "retry": "再試行"
+    "retry": "再試行",
+    "error_title": "エラーが発生しました"
   }
 }

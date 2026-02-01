@@ -1,6 +1,7 @@
 import { Text, TouchableOpacity, View } from "react-native";
 
 import { AlertCircle, RefreshCw } from "lucide-react-native";
+import { useTranslation } from "react-i18next";
 
 type ErrorStateViewProps = {
   message: string;
@@ -13,13 +14,15 @@ export function ErrorStateView({
   actionLabel,
   onAction,
 }: ErrorStateViewProps) {
+  const { t } = useTranslation();
+
   return (
     <View className="flex-1 items-center justify-center px-8">
       <View className="mb-6 rounded-full bg-red-50 p-6">
         <AlertCircle size={48} color="#f87171" strokeWidth={1.5} />
       </View>
       <Text className="mb-2 text-center text-lg font-semibold text-slate-800">
-        Something went wrong
+        {t("common.error_title")}
       </Text>
       <Text className="mb-8 text-center text-sm leading-5 text-slate-500">
         {message}

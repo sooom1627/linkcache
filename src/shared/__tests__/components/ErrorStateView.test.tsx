@@ -6,7 +6,7 @@ describe("ErrorStateView", () => {
   it("renders error message", () => {
     render(<ErrorStateView message="Network connection failed" />);
 
-    expect(screen.getByText("Something went wrong")).toBeTruthy();
+    expect(screen.getByText("common.error_title")).toBeTruthy();
     expect(screen.getByText("Network connection failed")).toBeTruthy();
   });
 
