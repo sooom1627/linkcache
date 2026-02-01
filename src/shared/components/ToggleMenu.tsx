@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import type { StyleProp, ViewStyle } from "react-native";
 
 import { BlurView } from "expo-blur";
 
@@ -124,8 +125,9 @@ export function ToggleMenu({
       )}
 
       <Animated.View
-        // @ts-expect-error - AnimatedStyleと通常のスタイルを組み合わせる際の型定義の制限
-        style={[menuAnimatedStyle, { width: width ?? 200 }]}
+        style={
+          [menuAnimatedStyle, { width: width ?? 200 }] as StyleProp<ViewStyle>
+        }
         className={`absolute ${position} overflow-hidden rounded-3xl`}
       >
         <BlurView
