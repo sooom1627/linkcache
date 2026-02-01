@@ -15,7 +15,8 @@ import { useAuth } from "@/src/features/auth";
  * @remarks
  * - iOS のみで動作します
  * - 認証済みユーザーのみリンク一覧を再取得します
- * - AppState が 'active' になったときにリンク一覧を無効化して再取得します
+ * - AppState が 'active' になったときにリンク一覧を無効化（非同期）
+ * - 画面フォーカス時の refetch とは独立して動作
  *
  * @example
  * ```tsx
@@ -41,9 +42,18 @@ export function useSharedLinkSync(): void {
       (nextAppState: AppStateStatus) => {
         // フォアグラウンドに復帰した時、かつ認証済みの場合
         if (nextAppState === "active" && user) {
-          // リンク一覧を無効化して再取得
-          queryClient.invalidateQueries({
-            queryKey: ["links"],
+          // 非同期で無効化（画面レンダリングをブロックしない）
+          // setImmediate で次のイベントループで実行
+          //
+          // パフォーマンス最適化:
+          // - invalidateQueries はキャッシュを stale にマークするだけ
+          // - 実際の再取得は useFocusEffect (LinkListTabs) が担当
+          // - これにより重複したネットワークリクエストを防止
+          // - アプリ復帰直後の画面レンダリングに影響しない
+          setImmediate(() => {
+            queryClient.invalidateQueries({
+              queryKey: ["links"],
+            });
           });
         }
       },

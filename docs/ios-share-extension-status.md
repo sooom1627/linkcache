@@ -78,11 +78,16 @@
 
 #### 4. React Native側実装
 
-- **useSharedLinkSync Hook**（TDDで実装）
+- **useSharedLinkSync Hook**（TDDで実装、最適化済み）
   - `src/features/share-extension/hooks/useSharedLinkSync.ts`
-  - AppStateが`active`になったときにリンク一覧を再取得
+  - AppStateが`active`になったときにリンク一覧を無効化
   - 認証済みユーザーのみ動作
   - テストカバレッジ100%
+  - **パフォーマンス最適化**:
+    - `setImmediate`で非同期実行（画面レンダリングをブロックしない）
+    - `invalidateQueries`のみ実行（キャッシュをstaleにマーク）
+    - 実際の再取得は画面フォーカス時の`useFocusEffect`に任せる
+    - 重複したネットワークリクエストを防止
 
 - **AppProviders統合**
   - `src/shared/providers/AppProviders.tsx`でフック呼び出し
@@ -91,6 +96,24 @@
 - **Config Plugin**
   - `plugins/withShareExtension.ts`でInfo.plistにSupabase設定を注入
   - 環境変数から自動取得（dev/production自動切り替え）
+
+#### 5. パフォーマンス最適化
+
+**データ取得の流れ**:
+
+```
+1. ShareExtension → Supabase保存
+2. ユーザーがアプリに復帰 → AppState: active
+3. useSharedLinkSync → invalidateQueries（非同期、キャッシュのみ無効化）
+4. ユーザーがリンク一覧画面を開く → useFocusEffect
+5. useFocusEffect → refetch（実際のデータ取得）
+```
+
+**最適化ポイント**:
+- アプリ復帰時は無効化のみ（軽量）
+- 画面表示に影響しない
+- ユーザーが実際に画面を見るタイミングで最新データ取得
+- TanStack Queryのキャッシュ機能を最大限活用
 
 ---
 

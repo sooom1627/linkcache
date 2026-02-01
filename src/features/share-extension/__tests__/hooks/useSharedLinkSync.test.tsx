@@ -81,11 +81,15 @@ describe("useSharedLinkSync", () => {
     // AppState を 'active' に変更
     listener("active" as AppStateStatus);
 
-    await waitFor(() => {
-      expect(queryClient.invalidateQueries).toHaveBeenCalledWith({
-        queryKey: ["links"],
-      });
-    });
+    // setImmediate で非同期実行されるため、waitFor で待つ
+    await waitFor(
+      () => {
+        expect(queryClient.invalidateQueries).toHaveBeenCalledWith({
+          queryKey: ["links"],
+        });
+      },
+      { timeout: 1000 },
+    );
   });
 
   it("認証なしの場合、AppState が active になっても何もしない", async () => {
@@ -109,10 +113,11 @@ describe("useSharedLinkSync", () => {
     // AppState を 'active' に変更
     listener("active" as AppStateStatus);
 
-    await waitFor(() => {
-      // invalidateQueries が呼ばれていないことを確認
-      expect(queryClient.invalidateQueries).not.toHaveBeenCalled();
-    });
+    // 少し待ってから確認
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    // invalidateQueries が呼ばれていないことを確認
+    expect(queryClient.invalidateQueries).not.toHaveBeenCalled();
   });
 
   it("AppState が background になった場合は何もしない", async () => {
@@ -128,9 +133,10 @@ describe("useSharedLinkSync", () => {
     // AppState を 'background' に変更
     listener("background" as AppStateStatus);
 
-    await waitFor(() => {
-      expect(queryClient.invalidateQueries).not.toHaveBeenCalled();
-    });
+    // 少し待ってから確認
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    expect(queryClient.invalidateQueries).not.toHaveBeenCalled();
   });
 
   it("アンマウント時にリスナーをクリーンアップする", () => {
