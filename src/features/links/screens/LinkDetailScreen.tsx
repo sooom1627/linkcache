@@ -52,15 +52,15 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
   const handleOpenLink = useCallback(() => {
     if (link) {
       openLink(link.url);
-    }
 
-    if (!isDone) {
-      // 500ms後にモーダルを表示
-      setTimeout(() => {
-        presentStatusModal();
-      }, 500);
+      if (!isDone) {
+        // 500ms後にモーダルを表示
+        setTimeout(() => {
+          presentStatusModal();
+        }, 500);
+      }
     }
-  }, [link, openLink, presentStatusModal]);
+  }, [link, isDone, openLink, presentStatusModal]);
 
   const handleMoreOptions = useCallback(() => {
     setIsMoreMenuOpen((prev) => !prev);
