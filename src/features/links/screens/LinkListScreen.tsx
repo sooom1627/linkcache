@@ -5,6 +5,7 @@ import { ActivityIndicator, RefreshControl, View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 
 import { FlashList } from "@shopify/flash-list";
+import { useTranslation } from "react-i18next";
 
 import { ErrorStateView } from "@/src/shared/components/ErrorStateView";
 
@@ -90,6 +91,7 @@ export function LinkListScreen() {
  * フィルターコンテキストを使用してリンク一覧を表示します。
  */
 function LinkListScreenContent() {
+  const { t } = useTranslation();
   const { useLinksOptions, hasActiveFilters, resetFilters } =
     useLinkListFilterContext();
 
@@ -163,7 +165,7 @@ function LinkListScreenContent() {
     return (
       <ErrorStateView
         message={error?.message || "Failed to load links. Please try again."}
-        actionLabel="Try Again"
+        actionLabel={t("common.retry")}
         onAction={refetch}
       />
     );
