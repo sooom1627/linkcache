@@ -7,10 +7,10 @@
 ### ✅ 完了した項目
 
 #### 1. EAS Build設定
+
 - **Config Plugin実装**
   - `plugins/withShareExtension.ts`: ShareExtensionターゲットをXcodeプロジェクトに追加
   - `plugins/withAppGroups.ts`: App Groups capability追加（現在は未使用）
-  
 - **app.config.js設定**
   - `tsx`ライブラリ導入（TypeScript config pluginサポート）
   - `extra.eas.build.experimental.ios.appExtensions`でShareExtension宣言
@@ -24,6 +24,7 @@
   - Distribution Certificate共有設定
 
 #### 2. ShareExtension実装
+
 - **ネイティブコード**
   - `targets/share-extension/ShareViewController.swift`: UI実装完了
   - `targets/share-extension/Info.plist`: 拡張設定
@@ -40,6 +41,7 @@
   - ✅ **URLを受け取って保存する処理が動作**
 
 #### 3. App Groups設定
+
 - **App Group ID**
   - Dev環境: `group.com.sooom.linkcache.dev`
   - Production環境: `group.com.sooom.linkcache`
@@ -56,19 +58,24 @@
 ### メインアプリ側のShare Extension連携機能
 
 #### 1. App Groupディレクトリアクセス
+
 **場所**: `src/features/share-extension/utils/appGroupReader.ts`
 
 **問題点**:
+
 - `react-native-app-group-directory`パッケージに依存
 - このパッケージは実在せず、Expo Managed Workflowでも動作しない
 - Metro bundlerでビルドエラーが発生していた
 
 **現状**:
+
 - `src/shared/providers/AppProviders.tsx`で`usePendingSharedLinks`の呼び出しをコメントアウト
 - ビルドは通るが、共有されたURLをメインアプリで受け取れない
 
 #### 2. 依存ファイル
+
 以下のファイルが実装済みだが未使用：
+
 - `src/features/share-extension/utils/appGroupReader.ts`
 - `src/features/share-extension/utils/sharedItem.ts`
 - `src/features/share-extension/hooks/usePendingSharedLinks.ts`
@@ -83,9 +90,11 @@
 ### Phase 1: App Groupディレクトリアクセス実装
 
 #### Option A: Expo Modules（推奨）
+
 **概要**: カスタムExpo Moduleを作成してネイティブコードからApp Groupディレクトリパスを取得
 
 **必要な作業**:
+
 1. Expo Moduleの作成
    - `expo-modules-core`を使用
    - iOSネイティブコード（Swift）でApp Groupディレクトリパスを取得
@@ -96,18 +105,22 @@
    - `expo-file-system`でファイル読み書き（既存実装）
 
 **メリット**:
+
 - Expo Managed Workflowと完全互換
 - EAS Buildで問題なくビルド可能
 - 公式な方法で推奨される
 
 **デメリット**:
+
 - ネイティブコード（Swift/Objective-C）の知識が必要
 - 初期実装に時間がかかる
 
 #### Option B: Deep Linking（代替案）
+
 **概要**: Share ExtensionからメインアプリにURLを直接渡す
 
 **必要な作業**:
+
 1. ShareViewController.swiftの修正
    - App Groupに保存せず、Custom URL Schemeでメインアプリを起動
    - `linkcache://share?url=...`形式で渡す
@@ -117,18 +130,22 @@
    - 認証状態を確認してリンク保存処理
 
 **メリット**:
+
 - ネイティブモジュール不要
 - 実装が比較的簡単
 
 **デメリット**:
+
 - メインアプリが起動していない場合、URLが失われる可能性
 - バックグラウンドでの処理ができない
 - 複数URLの一括処理が困難
 
 #### Option C: Supabase経由（代替案）
+
 **概要**: ShareExtensionから直接Supabaseにデータを送信
 
 **必要な作業**:
+
 1. ShareViewController.swiftの修正
    - Supabase API呼び出し（Swift）
    - 認証トークン管理
@@ -137,10 +154,12 @@
    - 既存のTanStack Queryで自動取得
 
 **メリット**:
+
 - App Groupディレクトリ不要
 - マルチデバイス対応が容易
 
 **デメリット**:
+
 - オフライン時に動作しない
 - ShareExtensionで認証処理が必要
 - ネットワーク通信のオーバーヘッド
@@ -201,6 +220,7 @@ usePendingSharedLinks フック
 ### データフロー
 
 1. **Share Extension側** (完了)
+
    ```
    URL受信 → 検証 → JSON生成 → App Groupに保存 → UI表示
    ```
@@ -215,17 +235,20 @@ usePendingSharedLinks フック
 ## 📁 関連ファイル一覧
 
 ### Config & Build設定
+
 - `/app.config.js` - Expo設定（App Groups, ShareExtension宣言）
 - `/eas.json` - EASビルド設定
 - `/plugins/withShareExtension.ts` - ShareExtensionターゲット追加
 - `/plugins/withAppGroups.ts` - App Groups capability（未使用）
 
 ### ShareExtension（ネイティブ）
+
 - `/targets/share-extension/ShareViewController.swift` - メインロジック
 - `/targets/share-extension/Info.plist` - 拡張情報
 - `/targets/share-extension/ShareExtension.entitlements` - 権限設定
 
 ### React Native機能実装
+
 - `/src/features/share-extension/`
   - `index.ts` - エクスポート
   - `hooks/usePendingSharedLinks.ts` - 共有リンク監視（未使用）
@@ -236,9 +259,11 @@ usePendingSharedLinks フック
   - `constants/appGroup.ts` - 定数
 
 ### 統合ポイント
+
 - `/src/shared/providers/AppProviders.tsx` - SharedLinkProcessor（一時無効化）
 
 ### テスト
+
 - `/src/features/share-extension/__tests__/` - ユニットテスト群
 - `/src/features/share-extension/__mocks__/` - モック
 
@@ -247,17 +272,20 @@ usePendingSharedLinks フック
 ## 🎯 優先順位
 
 ### High Priority（必須）
+
 1. ✅ **EAS Buildの成功** - 完了
 2. ✅ **ShareSheetへの表示** - 完了
 3. 🔄 **App Groupディレクトリアクセス実装** - 次のステップ
 4. 🔄 **メインアプリでの受信・保存処理** - 次のステップ
 
 ### Medium Priority（重要）
+
 - エラーハンドリングの強化
 - オフライン対応
 - 複数URL処理の最適化
 
 ### Low Priority（改善）
+
 - UI/UXの洗練
 - パフォーマンス最適化
 - アナリティクス追加
@@ -296,16 +324,19 @@ usePendingSharedLinks フック
 ## 🔗 参考リソース
 
 ### Expo公式ドキュメント
+
 - [iOS App Extensions](https://docs.expo.dev/build-reference/app-extensions/)
 - [Config Plugins](https://docs.expo.dev/config-plugins/introduction/)
 - [Expo Modules](https://docs.expo.dev/modules/overview/)
 
 ### Apple公式ドキュメント
+
 - [App Extensions](https://developer.apple.com/app-extensions/)
 - [Share Extension](https://developer.apple.com/library/archive/documentation/General/Conceptual/ExtensibilityPG/Share.html)
 - [App Groups](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_security_application-groups)
 
 ### コミュニティリソース
+
 - [expo-config-plugin-ios-share-extension](https://github.com/timedtext/expo-config-plugin-ios-share-extension)
 - [react-native-shared-group-preferences](https://www.npmjs.com/package/react-native-shared-group-preferences) - Expo非対応
 
@@ -314,12 +345,14 @@ usePendingSharedLinks フック
 ## ✅ 成功基準
 
 ### MVP（Minimum Viable Product）
+
 - [x] ShareSheetに表示される
 - [x] URLを受け取れる
 - [ ] メインアプリでURLを受信できる
 - [ ] 受信したURLがリンクリストに追加される
 
 ### Full Release
+
 - [ ] オフライン対応
 - [ ] エラーハンドリング完備
 - [ ] 複数URL一括処理
