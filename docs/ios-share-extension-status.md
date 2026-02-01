@@ -178,25 +178,106 @@
 
 ### 実装済み設計（Supabase経由）
 
-```
-Safari/他アプリ
-    ↓ (Share Sheet)
-ShareExtension (ShareViewController.swift)
-    ↓ (1) Keychain共有でトークン取得
-Keychain (iOS Secure Storage)
-    ↓ (2) Supabaseセッショントークン
-ShareExtension
-    ↓ (3) HTTP POST (create_link_with_status RPC)
-Supabase API
-    ↓ (4) データベース保存
-メインアプリ (React Native)
-    ↓ (5) AppState: active
-useSharedLinkSync フック
-    ↓ (6) TanStack Query invalidation
-リンク一覧の自動再取得
+#### 全体フロー図
+
+```mermaid
+flowchart TB
+    Safari[Safari/他アプリ]
+    ShareSheet[iOS Share Sheet]
+    ShareExt[ShareExtension<br/>ShareViewController.swift]
+    Keychain[iOS Keychain<br/>Secure Storage]
+    SupabaseAPI[Supabase API<br/>create_link_with_status RPC]
+    Database[(Supabase Database<br/>links table)]
+    MainApp[メインアプリ<br/>React Native]
+    AppState[AppState監視<br/>useSharedLinkSync]
+    TanStackQuery[TanStack Query<br/>invalidateQueries]
+    LinkList[リンク一覧画面<br/>自動更新]
+
+    Safari -->|Share| ShareSheet
+    ShareSheet -->|URL| ShareExt
+    ShareExt -->|1. トークン取得| Keychain
+    Keychain -->|2. Session Token| ShareExt
+    ShareExt -->|3. HTTP POST| SupabaseAPI
+    SupabaseAPI -->|4. 保存| Database
+    ShareExt -->|5. 完了UI表示| ShareSheet
+    
+    MainApp -->|6. アプリ復帰| AppState
+    AppState -->|7. active検知| TanStackQuery
+    TanStackQuery -->|8. データ無効化| Database
+    Database -->|9. 再取得| LinkList
+
+    style ShareExt fill:#e1f5ff
+    style MainApp fill:#fff4e1
+    style SupabaseAPI fill:#e8f5e9
+    style Keychain fill:#fce4ec
 ```
 
-### データフロー
+#### シーケンス図：Share Extension → Supabase
+
+```mermaid
+sequenceDiagram
+    participant User as ユーザー
+    participant Safari as Safari/他アプリ
+    participant ShareExt as ShareExtension
+    participant Keychain as iOS Keychain
+    participant Supabase as Supabase API
+    participant DB as Database
+
+    User->>Safari: URLを選択
+    User->>Safari: 共有ボタンタップ
+    Safari->>ShareExt: URL渡す
+    
+    activate ShareExt
+    ShareExt->>Keychain: セッショントークン取得
+    Keychain-->>ShareExt: access_token
+    
+    alt トークンあり
+        ShareExt->>Supabase: POST /rpc/create_link_with_status
+        Note over ShareExt,Supabase: Authorization: Bearer {token}
+        Supabase->>DB: INSERT INTO links
+        DB-->>Supabase: Success
+        Supabase-->>ShareExt: 200 OK
+        ShareExt->>User: "保存しました" 表示
+    else トークンなし
+        ShareExt->>User: "ログインしてください" 表示
+    end
+    
+    deactivate ShareExt
+    ShareExt->>Safari: 終了
+```
+
+#### シーケンス図：メインアプリでの同期
+
+```mermaid
+sequenceDiagram
+    participant User as ユーザー
+    participant iOS as iOS System
+    participant MainApp as メインアプリ
+    participant Hook as useSharedLinkSync
+    participant Query as TanStack Query
+    participant Supabase as Supabase API
+
+    User->>iOS: アプリをフォアグラウンドに
+    iOS->>MainApp: AppState: active
+    MainApp->>Hook: AppState変更通知
+    
+    activate Hook
+    Hook->>Hook: ユーザー認証確認
+    
+    alt 認証済み
+        Hook->>Query: invalidateQueries("links")
+        Query->>Supabase: GET /rest/v1/links
+        Supabase-->>Query: 最新のリンク一覧
+        Query->>MainApp: UI自動更新
+        MainApp->>User: 新規リンク表示
+    else 未認証
+        Hook->>MainApp: 何もしない
+    end
+    
+    deactivate Hook
+```
+
+### データフロー詳細
 
 1. **Share Extension側** (完了)
 
