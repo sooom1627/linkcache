@@ -20,6 +20,8 @@ import Animated, {
 } from "react-native-reanimated";
 
 export interface ToggleMenuItem {
+  /** 安定キー */
+  id: string;
   /** アイコンコンポーネント（lucide-react-nativeなど） */
   icon: ReactNode;
   /** メニュー項目のラベル */
@@ -136,7 +138,7 @@ export function ToggleMenu({
           className="overflow-hidden rounded-3xl border border-slate-200 bg-slate-100"
         >
           {items.map((item, index) => (
-            <View key={index}>
+            <View key={item.id}>
               <TouchableOpacity
                 onPress={item.onPress}
                 disabled={!isOpen || item.disabled}

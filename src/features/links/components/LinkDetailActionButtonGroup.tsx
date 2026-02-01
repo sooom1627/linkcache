@@ -77,6 +77,7 @@ export function LinkDetailActionButtonGroup({
   const menuItems: ToggleMenuItem[] = useMemo(
     () => [
       {
+        id: "change-status",
         icon: isRead ? (
           <X size={20} color="#64748B" strokeWidth={2.5} />
         ) : (
@@ -90,12 +91,14 @@ export function LinkDetailActionButtonGroup({
         loading: isUpdatingStatus,
       },
       {
+        id: "share",
         icon: <Share size={20} color="#64748B" strokeWidth={2.5} />,
         label: t("links.detail.share"),
         onPress: handleShare,
         disabled: !isMoreMenuOpen,
       },
       {
+        id: "delete",
         icon: <Trash2 size={20} color="#EF4444" strokeWidth={2.5} />,
         label: t("links.detail.delete_link"),
         onPress: handleDelete,
