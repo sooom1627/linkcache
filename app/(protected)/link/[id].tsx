@@ -43,7 +43,7 @@ export default function LinkDetail() {
 
   return (
     <ScreenContainer
-      scrollable={true}
+      scrollable={false}
       noPaddingBottom
       centerContent={false}
       topComponent={false}
