@@ -202,6 +202,10 @@
       "open_link": "Open Link",
       "change_status": "Change Status",
       "delete_link": "Delete",
+      "mark_as_read": "Mark as Read",
+      "mark_as_unread": "Mark as Unread",
+      "share": "Share",
+      "more_options": "More Options",
       "created_at": "Created At",
       "triaged_at": "Triaged At",
       "read_at": "Read At",
@@ -220,6 +224,8 @@
     }
   },
   "common": {
-    "back": "Back"
+    "back": "Back",
+    "retry": "Try Again",
+    "error_title": "Something went wrong"
   }
 }

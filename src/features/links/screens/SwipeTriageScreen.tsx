@@ -15,6 +15,8 @@ import {
   type SwipeDirection,
 } from "react-native-swipeable-card-stack";
 
+import { ErrorStateView } from "@/src/shared/components/ErrorStateView";
+
 import { SourceTypeDropdown } from "../components/SourceTypeDropdown";
 import { SwipeCard } from "../components/SwipeCard";
 import { useSwipeCards } from "../hooks/useSwipeCards";
@@ -91,9 +93,16 @@ export function SwipeTriageScreen() {
   // Error State
   if (error) {
     return (
-      <View className="flex-1 items-center justify-center">
-        <Text className="text-red-600">Error: {error.message}</Text>
-      </View>
+      <ErrorStateView
+        message={
+          error?.message ||
+          t("links.dashboard.error_load_failed", {
+            defaultValue: "Failed to load links. Please try again.",
+          })
+        }
+        actionLabel={t("common.retry")}
+        onAction={restart}
+      />
     );
   }
 

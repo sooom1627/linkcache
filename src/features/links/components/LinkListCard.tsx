@@ -84,10 +84,6 @@ export function LinkListCard({ link }: LinkListCardProps) {
     };
   }, []);
 
-  const handleLongPress = useCallback(() => {
-    present();
-  }, [present]);
-
   const handleImageError = () => {
     setImageError(true);
   };
@@ -98,7 +94,6 @@ export function LinkListCard({ link }: LinkListCardProps) {
     <>
       <Pressable
         onPress={handlePress}
-        onLongPress={handleLongPress}
         className="flex-row items-center gap-3 rounded-2xl bg-white/80 p-2 active:bg-slate-50"
       >
         {/* サムネイル */}

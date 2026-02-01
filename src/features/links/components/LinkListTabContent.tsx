@@ -7,6 +7,8 @@ import { Link, useRouter } from "expo-router";
 import { ArrowRight, Layers2 } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 
+import { ErrorStateView } from "@/src/shared/components/ErrorStateView";
+
 import type { useLinks } from "../hooks/useLinks";
 import type { TabType } from "../types/linkList.types";
 
@@ -45,9 +47,9 @@ export const LinkListTabContent = memo(function LinkListTabContent({
   if (isError) {
     return (
       <View className="flex-1 items-center justify-center py-8">
-        <Text className="text-sm text-slate-500">
-          {error?.message || t("links.dashboard.error_load_failed")}
-        </Text>
+        <ErrorStateView
+          message={error?.message || t("links.dashboard.error_load_failed")}
+        />
       </View>
     );
   }

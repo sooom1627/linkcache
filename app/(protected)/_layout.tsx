@@ -30,11 +30,7 @@ export default function ProtectedLayout() {
   }, [isLoading, shouldGoSignIn, router]);
 
   if (isLoading) {
-    return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator size="large" color="#6B7280" />
-      </SafeAreaView>
-    );
+    return <ActivityIndicator size="large" color="#6B7280" />;
   }
 
   if (shouldGoSignIn) {

@@ -1,35 +1,24 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 
-import {
-  ActivityIndicator,
-  Alert,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ActivityIndicator, Alert, ScrollView, Text, View } from "react-native";
 
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 
-import {
-  Calendar,
-  Circle,
-  Clock,
-  ExternalLink,
-  Globe,
-  Trash2,
-} from "lucide-react-native";
+import { Calendar, Circle, Clock, Globe } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 
+import { ErrorStateView } from "@/src/shared/components/ErrorStateView";
 import { useBottomSheetModal } from "@/src/shared/hooks/useBottomSheetModal";
 import { formatDateTime } from "@/src/shared/utils/timezone";
 
+import { LinkDetailActionButtonGroup } from "../components/LinkDetailActionButtonGroup";
 import { LinkReadStatusModal } from "../components/LinkReadStatusModal";
 import { useDeleteLink } from "../hooks/useDeleteLink";
 import { useLinkDetail } from "../hooks/useLinkDetail";
 import { extractDomain } from "../hooks/useLinkPaste";
 import { useOpenLink } from "../hooks/useOpenLink";
+import { shareLink } from "../utils/share";
 import { getStatusStyle } from "../utils/statusStyles";
 
 interface LinkDetailScreenProps {
@@ -46,6 +35,7 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
   const router = useRouter();
   const { openLink } = useOpenLink();
   const { data: link, isLoading, error } = useLinkDetail(linkId);
+  const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
   const { deleteLinkAsync, isPending: isDeleting } = useDeleteLink();
   const {
     ref: statusModalRef,
@@ -62,16 +52,24 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
   const handleOpenLink = useCallback(() => {
     if (link) {
       openLink(link.url);
-      // 500ms後にモーダルを表示
-      setTimeout(() => {
-        presentStatusModal();
-      }, 500);
-    }
-  }, [link, openLink, presentStatusModal]);
 
-  const handleChangeStatus = useCallback(() => {
-    presentStatusModal();
-  }, [presentStatusModal]);
+      if (!isDone) {
+        // 500ms後にモーダルを表示
+        setTimeout(() => {
+          presentStatusModal();
+        }, 500);
+      }
+    }
+  }, [link, isDone, openLink, presentStatusModal]);
+
+  const handleMoreOptions = useCallback(() => {
+    setIsMoreMenuOpen((prev) => !prev);
+  }, []);
+
+  const handleShare = useCallback(async () => {
+    if (!link) return;
+    await shareLink({ url: link.url, title: link.title });
+  }, [link]);
 
   const handleDelete = useCallback(() => {
     if (!link) return;
@@ -130,19 +128,11 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
   // エラー状態
   if (error || !link) {
     return (
-      <View className="flex-1 items-center justify-center bg-slate-50 px-6">
-        <Text className="text-center text-base text-red-500">
-          {t("links.detail.error")}
-        </Text>
-        <TouchableOpacity
-          onPress={handleBack}
-          className="mt-6 rounded-xl bg-slate-800 px-6 py-3"
-        >
-          <Text className="text-base font-medium text-white">
-            {t("common.back")}
-          </Text>
-        </TouchableOpacity>
-      </View>
+      <ErrorStateView
+        message={t("links.detail.error")}
+        actionLabel={t("common.back")}
+        onAction={handleBack}
+      />
     );
   }
 
@@ -171,8 +161,11 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
 
   return (
     <>
-      <View className="mb-20 flex-1 bg-slate-50">
-        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+      <View className="relative flex-1 bg-slate-50">
+        <ScrollView
+          className="flex-1 pt-20"
+          showsVerticalScrollIndicator={false}
+        >
           {/* サムネイル画像 */}
           {link.image_url ? (
             <Image
@@ -274,51 +267,20 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
                 </View>
               </View>
             </View>
-
-            {/* アクションボタン */}
-            <View className="gap-3">
-              <TouchableOpacity
-                onPress={handleOpenLink}
-                className="flex-row items-center justify-center gap-2 rounded-xl bg-slate-800 px-6 py-4"
-                accessibilityRole="button"
-                accessibilityLabel={t("links.detail.open_link")}
-              >
-                <ExternalLink size={20} color="#ffffff" strokeWidth={2.5} />
-                <Text className="text-base font-semibold text-white">
-                  {t("links.detail.open_link")}
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={handleChangeStatus}
-                className="flex-row items-center justify-center gap-2 rounded-xl border-2 border-slate-300 bg-white px-6 py-4"
-                accessibilityRole="button"
-                accessibilityLabel={t("links.detail.change_status")}
-              >
-                <Text className="text-base font-semibold text-slate-800">
-                  {t("links.detail.change_status")}
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={handleDelete}
-                disabled={isDeleting}
-                className="flex-row items-center justify-center gap-2 rounded-xl border-2 border-red-300 bg-white px-6 py-4 active:bg-red-50 disabled:opacity-50"
-                accessibilityRole="button"
-                accessibilityLabel={t("links.detail.delete_link")}
-              >
-                {isDeleting ? (
-                  <ActivityIndicator size="small" color="#ef4444" />
-                ) : (
-                  <Trash2 size={20} color="#ef4444" strokeWidth={2.5} />
-                )}
-                <Text className="text-base font-semibold text-red-600">
-                  {t("links.detail.delete_link")}
-                </Text>
-              </TouchableOpacity>
-            </View>
           </View>
         </ScrollView>
+
+        {/* アクションボタン */}
+        <LinkDetailActionButtonGroup
+          isMoreMenuOpen={isMoreMenuOpen}
+          isDeleting={isDeleting}
+          isRead={link.read_at !== null}
+          linkId={link.link_id}
+          onOpenLink={handleOpenLink}
+          onDelete={handleDelete}
+          onShare={handleShare}
+          onMoreOptions={handleMoreOptions}
+        />
       </View>
 
       {/* ステータス変更モーダル */}

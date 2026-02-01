@@ -1,17 +1,13 @@
 import { useCallback, useMemo } from "react";
 
-import {
-  ActivityIndicator,
-  RefreshControl,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ActivityIndicator, RefreshControl, View } from "react-native";
 
 import { useLocalSearchParams } from "expo-router";
 
 import { FlashList } from "@shopify/flash-list";
-import { AlertCircle, RefreshCw } from "lucide-react-native";
+import { useTranslation } from "react-i18next";
+
+import { ErrorStateView } from "@/src/shared/components/ErrorStateView";
 
 import { LinkListCard } from "../components/LinkListCard";
 import { LinkListEmpty } from "../components/LinkListEmpty";
@@ -95,6 +91,7 @@ export function LinkListScreen() {
  * フィルターコンテキストを使用してリンク一覧を表示します。
  */
 function LinkListScreenContent() {
+  const { t } = useTranslation();
   const { useLinksOptions, hasActiveFilters, resetFilters } =
     useLinkListFilterContext();
 
@@ -166,24 +163,11 @@ function LinkListScreenContent() {
   // エラー状態
   if (isError) {
     return (
-      <View className="flex-1 items-center justify-center p-8">
-        <View className="mb-4 rounded-full bg-red-50 p-4">
-          <AlertCircle size={48} color="#EF4444" strokeWidth={1.5} />
-        </View>
-        <Text className="mb-2 text-center text-lg font-semibold text-slate-800">
-          Something went wrong
-        </Text>
-        <Text className="mb-8 text-center text-sm leading-5 text-slate-500">
-          {error?.message || "Failed to load links. Please try again."}
-        </Text>
-        <TouchableOpacity
-          onPress={refetch}
-          className="flex-row items-center gap-2 rounded-full bg-slate-900 px-6 py-3 active:bg-slate-700"
-        >
-          <RefreshCw size={18} color="white" />
-          <Text className="font-semibold text-white">Try Again</Text>
-        </TouchableOpacity>
-      </View>
+      <ErrorStateView
+        message={error?.message || t("links.dashboard.error_load_failed")}
+        actionLabel={t("common.retry")}
+        onAction={refetch}
+      />
     );
   }
 
