@@ -5,6 +5,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { AuthProvider } from "@/src/features/auth";
 
+// TODO: Share Extension機能は一時的に無効化（Expo Managed Workflowで動作するように実装中）
+// import { usePendingSharedLinks } from "@/src/features/share-extension";
+
 import { ModalProvider } from "./ModalProvider";
 
 /**
@@ -44,6 +47,10 @@ const queryClient = new QueryClient({
  * 3. BottomSheetModalProvider - モーダルUIの基盤（QueryClient/Authに依存する可能性があるため内側）
  * 4. ModalProvider - グローバルモーダル管理（上記すべてに依存）
  *
+ * Share Extension 統合:
+ * - SharedLinkProcessor コンポーネントで共有リンクを処理
+ * - アプリ起動時・フォアグラウンド復帰時に App Group から読み取り
+ *
  * 将来的な拡張候補:
  * - テーマプロバイダー（Theme）
  * - 国際化プロバイダー（i18n）
@@ -59,13 +66,29 @@ const queryClient = new QueryClient({
  * </UIProviders>
  * ```
  */
+/**
+ * 共有リンク処理コンポーネント
+ *
+ * Share Extension から共有された URL を処理します。
+ * AuthProvider の内側で動作し、認証済みの場合のみ処理を行います。
+ *
+ * TODO: 現在一時的に無効化中
+ */
+function SharedLinkProcessor({ children }: PropsWithChildren) {
+  // TODO: Expo Modulesベースの実装に置き換える
+  // usePendingSharedLinks();
+  return <>{children}</>;
+}
+
 export function AppProviders({ children }: PropsWithChildren) {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <BottomSheetModalProvider>
-          <ModalProvider>{children}</ModalProvider>
-        </BottomSheetModalProvider>
+        <SharedLinkProcessor>
+          <BottomSheetModalProvider>
+            <ModalProvider>{children}</ModalProvider>
+          </BottomSheetModalProvider>
+        </SharedLinkProcessor>
       </AuthProvider>
     </QueryClientProvider>
   );

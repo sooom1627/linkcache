@@ -1,10 +1,17 @@
+import "tsx/cjs";
+
 const IS_DEV =
   process.env.APP_ENV === "dev" ||
   process.env.EAS_BUILD_PROFILE === "dev" ||
   process.env.EAS_BUILD_PROFILE === "development" ||
   process.env.EAS_BUILD_PROFILE === "preview";
 
-export default {
+// App Group ID (Share Extension との共有用)
+const APP_GROUP_ID = IS_DEV
+  ? "group.com.sooom.linkcache.dev"
+  : "group.com.sooom.linkcache";
+
+module.exports = {
   expo: {
     name: IS_DEV ? "linkcache-dev" : "linkcache",
     slug: "linkcache",
@@ -21,6 +28,12 @@ export default {
         : "com.sooom.linkcache",
       supportsTablet: true,
       usesNonExemptEncryption: false,
+      infoPlist: {
+        ITSAppUsesNonExemptEncryption: false,
+      },
+      entitlements: {
+        "com.apple.security.application-groups": [APP_GROUP_ID],
+      },
     },
     android: {
       adaptiveIcon: {
@@ -54,6 +67,17 @@ export default {
           },
         },
       ],
+      // Share Extension ターゲット追加
+      [
+        "./plugins/withShareExtension.ts",
+        {
+          extensionName: "ShareExtension",
+          appGroupId: APP_GROUP_ID,
+          bundleIdentifier: IS_DEV
+            ? "com.sooom.linkcache.dev"
+            : "com.sooom.linkcache",
+        },
+      ],
     ],
     experiments: {
       typedRoutes: true,
@@ -64,6 +88,23 @@ export default {
       supabaseAnonKey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || "",
       eas: {
         projectId: "c60046f0-2206-446f-b59a-3336c0bda04f",
+        build: {
+          experimental: {
+            ios: {
+              appExtensions: [
+                {
+                  targetName: "ShareExtension",
+                  bundleIdentifier: IS_DEV
+                    ? "com.sooom.linkcache.dev.ShareExtension"
+                    : "com.sooom.linkcache.ShareExtension",
+                  entitlements: {
+                    "com.apple.security.application-groups": [APP_GROUP_ID],
+                  },
+                },
+              ],
+            },
+          },
+        },
       },
     },
   },
