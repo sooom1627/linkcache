@@ -11,8 +11,8 @@ module.exports = {
   name: "ShareExtension",
   // Share Sheet に表示される名前
   displayName: "Shift",
-  // iOS 15.0 以上を対象
-  deploymentTarget: "15.0",
+  // iOS 17.0 以上を対象（2026年推奨）
+  deploymentTarget: "17.0",
   // App Group entitlements (メインアプリと共有)
   entitlements: {
     "com.apple.security.application-groups": ["group.com.sooom.linkcache.dev"],

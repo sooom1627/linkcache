@@ -442,7 +442,7 @@ class ShareViewController: UIViewController {
             for attachment in attachments {
                 // URL タイプを確認
                 if attachment.hasItemConformingToTypeIdentifier(UTType.url.identifier) {
-                    attachment.loadItem(forTypeIdentifier: UTType.url.identifier, options: nil) { (data, error) in
+                    attachment.loadItem(forTypeIdentifier: UTType.url.identifier, options: [:]) { (data, error) in
                         if let url = data as? URL {
                             completion(url.absoluteString)
                         } else if let urlString = data as? String {
@@ -456,7 +456,11 @@ class ShareViewController: UIViewController {
 
                 // プレーンテキストとして URL が渡される場合もある
                 if attachment.hasItemConformingToTypeIdentifier(UTType.plainText.identifier) {
-                    attachment.loadItem(forTypeIdentifier: UTType.plainText.identifier, options: nil) { (data, error) in
+                    attachment.loadItem(forTypeIdentifier: UTType.plainText.identifier, options: [:]) { [weak self] (data, error) in
+                        guard let self = self else {
+                            completion(nil)
+                            return
+                        }
                         if let text = data as? String, self.isValidURL(text) {
                             completion(text)
                         } else {

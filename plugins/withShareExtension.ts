@@ -126,7 +126,11 @@ const withShareExtension: ConfigPlugin<WithShareExtensionOptions> = (
           buildSettings["SWIFT_EMIT_LOC_STRINGS"] = "YES";
           buildSettings["SWIFT_VERSION"] = "5.0";
           buildSettings["TARGETED_DEVICE_FAMILY"] = `"1,2"`;
-          buildSettings["IPHONEOS_DEPLOYMENT_TARGET"] = "15.0";
+          // メインアプリのデプロイメントターゲットに合わせる（または明示的に設定）
+          // deploymentTargetはExpoの型定義に含まれていないが、実際には設定可能
+          const deploymentTarget =
+            (config.ios as any)?.deploymentTarget || "17.0";
+          buildSettings["IPHONEOS_DEPLOYMENT_TARGET"] = deploymentTarget;
         }
       }
     }
@@ -182,6 +186,10 @@ const withShareExtension: ConfigPlugin<WithShareExtensionOptions> = (
     <key>SUPABASE_ANON_KEY</key>
     <string>${options.supabaseAnonKey}</string>
 </dict>`,
+        );
+      } else {
+        console.warn(
+          "[withShareExtension] Supabase URL or Anon Key is missing. Share Extension may not work correctly.",
         );
       }
 

@@ -28,6 +28,7 @@ module.exports = {
         : "com.sooom.linkcache",
       supportsTablet: true,
       usesNonExemptEncryption: false,
+      deploymentTarget: "17.0",
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
       },
