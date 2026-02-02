@@ -16,7 +16,7 @@ module.exports = {
     name: IS_DEV ? "linkcache-dev" : "linkcache",
     slug: "linkcache",
     owner: "sooom",
-    version: "0.1.1",
+    version: "0.1.2",
     orientation: "portrait",
     icon: "./assets/images/icon.png",
     scheme: IS_DEV ? "linkcache-dev" : "linkcache",
