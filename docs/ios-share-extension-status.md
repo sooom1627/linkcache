@@ -110,6 +110,7 @@
 ```
 
 **最適化ポイント**:
+
 - アプリ復帰時は無効化のみ（軽量）
 - 画面表示に影響しない
 - ユーザーが実際に画面を見るタイミングで最新データ取得
@@ -223,7 +224,7 @@ flowchart TB
     ShareExt -->|3. HTTP POST| SupabaseAPI
     SupabaseAPI -->|4. 保存| Database
     ShareExt -->|5. 完了UI表示| ShareSheet
-    
+
     MainApp -->|6. アプリ復帰| AppState
     AppState -->|7. active検知| TanStackQuery
     TanStackQuery -->|8. データ無効化| Database
@@ -249,11 +250,11 @@ sequenceDiagram
     User->>Safari: URLを選択
     User->>Safari: 共有ボタンタップ
     Safari->>ShareExt: URL渡す
-    
+
     activate ShareExt
     ShareExt->>Keychain: セッショントークン取得
     Keychain-->>ShareExt: access_token
-    
+
     alt トークンあり
         ShareExt->>Supabase: POST /rpc/create_link_with_status
         Note over ShareExt,Supabase: Authorization: Bearer {token}
@@ -264,7 +265,7 @@ sequenceDiagram
     else トークンなし
         ShareExt->>User: "ログインしてください" 表示
     end
-    
+
     deactivate ShareExt
     ShareExt->>Safari: 終了
 ```
@@ -283,10 +284,10 @@ sequenceDiagram
     User->>iOS: アプリをフォアグラウンドに
     iOS->>MainApp: AppState: active
     MainApp->>Hook: AppState変更通知
-    
+
     activate Hook
     Hook->>Hook: ユーザー認証確認
-    
+
     alt 認証済み
         Hook->>Query: invalidateQueries("links")
         Query->>Supabase: GET /rest/v1/links
@@ -296,7 +297,7 @@ sequenceDiagram
     else 未認証
         Hook->>MainApp: 何もしない
     end
-    
+
     deactivate Hook
 ```
 
