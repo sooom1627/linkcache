@@ -1,9 +1,11 @@
 import { AppState, type AppStateStatus } from "react-native";
 
+import type { Session, User } from "@supabase/supabase-js";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react-native";
 
 import { useAuth } from "@/src/features/auth";
+import type { AuthContextValue } from "@/src/features/auth/context/AuthContext";
 
 import { useSharedLinkSync } from "../../hooks/useSharedLinkSync";
 
@@ -24,9 +26,17 @@ jest.mock("@/src/features/auth", () => ({
 
 const mockUseAuth = useAuth as jest.MockedFunction<typeof useAuth>;
 
+type AppStateEventListener = (status: AppStateStatus) => void;
+type AppStateSubscription = {
+  remove: jest.Mock;
+};
+
 describe("useSharedLinkSync", () => {
   let queryClient: QueryClient;
-  let mockAddEventListener: jest.Mock;
+  let mockAddEventListener: jest.Mock<
+    AppStateSubscription,
+    [string, AppStateEventListener]
+  >;
   let mockRemove: jest.Mock;
 
   beforeEach(() => {
@@ -38,7 +48,10 @@ describe("useSharedLinkSync", () => {
     });
 
     mockRemove = jest.fn();
-    mockAddEventListener = jest.fn(() => ({
+    mockAddEventListener = jest.fn<
+      AppStateSubscription,
+      [string, AppStateEventListener]
+    >(() => ({
       remove: mockRemove,
     }));
 
@@ -60,12 +73,48 @@ describe("useSharedLinkSync", () => {
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
 
+  const createMockAuthValue = (
+    overrides: Omit<Partial<AuthContextValue>, "user" | "session"> & {
+      user?: Partial<User> | null;
+      session?: Partial<Session> | null;
+    },
+  ): AuthContextValue => {
+    const baseValue: AuthContextValue = {
+      session: null,
+      authState: "unauthenticated",
+      user: null,
+      isAuthenticated: false,
+      isLoading: false,
+    };
+    // テスト用のモックなので、型アサーションを使用
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    const result = {
+      ...baseValue,
+      ...overrides,
+      user:
+        overrides.user !== undefined
+          ? (overrides.user as User | null)
+          : baseValue.user,
+      session:
+        overrides.session !== undefined
+          ? (overrides.session as Session | null)
+          : baseValue.session,
+    } as AuthContextValue;
+    return result;
+  };
+
   it("認証済みの場合、AppState が active になったときにリンク一覧を無効化する", async () => {
     // 認証済みユーザーをモック
-    mockUseAuth.mockReturnValue({
-      user: { id: "user-123" },
-      session: { access_token: "token" },
-    } as any);
+    const mockUser: Partial<User> = { id: "user-123" };
+    const mockSession: Partial<Session> = { access_token: "token" };
+    mockUseAuth.mockReturnValue(
+      createMockAuthValue({
+        user: mockUser,
+        session: mockSession,
+        isAuthenticated: true,
+        authState: "authenticated",
+      }),
+    );
 
     renderHook(() => useSharedLinkSync(), { wrapper });
 
@@ -75,11 +124,15 @@ describe("useSharedLinkSync", () => {
       expect.any(Function),
     );
 
-    // リスナー関数を取得
-    const listener = mockAddEventListener.mock.calls[0][1];
+    // リスナー関数を取得（型安全に）
+    const calls = mockAddEventListener.mock.calls;
+    if (calls.length === 0 || !calls[0]?.[1]) {
+      throw new Error("EventListener was not called");
+    }
+    const listener: AppStateEventListener = calls[0][1];
 
     // AppState を 'active' に変更
-    listener("active" as AppStateStatus);
+    listener("active");
 
     // setImmediate で非同期実行されるため、waitFor で待つ
     await waitFor(
@@ -94,10 +147,12 @@ describe("useSharedLinkSync", () => {
 
   it("認証なしの場合、AppState が active になっても何もしない", async () => {
     // 未認証ユーザーをモック
-    mockUseAuth.mockReturnValue({
-      user: null,
-      session: null,
-    } as any);
+    mockUseAuth.mockReturnValue(
+      createMockAuthValue({
+        user: null,
+        session: null,
+      }),
+    );
 
     renderHook(() => useSharedLinkSync(), { wrapper });
 
@@ -107,11 +162,15 @@ describe("useSharedLinkSync", () => {
       expect.any(Function),
     );
 
-    // リスナー関数を取得
-    const listener = mockAddEventListener.mock.calls[0][1];
+    // リスナー関数を取得（型安全に）
+    const calls = mockAddEventListener.mock.calls;
+    if (calls.length === 0 || !calls[0]?.[1]) {
+      throw new Error("EventListener was not called");
+    }
+    const listener: AppStateEventListener = calls[0][1];
 
     // AppState を 'active' に変更
-    listener("active" as AppStateStatus);
+    listener("active");
 
     // 少し待ってから確認
     await new Promise((resolve) => setTimeout(resolve, 100));
@@ -121,17 +180,28 @@ describe("useSharedLinkSync", () => {
   });
 
   it("AppState が background になった場合は何もしない", async () => {
-    mockUseAuth.mockReturnValue({
-      user: { id: "user-123" },
-      session: { access_token: "token" },
-    } as any);
+    const mockUser: Partial<User> = { id: "user-123" };
+    const mockSession: Partial<Session> = { access_token: "token" };
+    mockUseAuth.mockReturnValue(
+      createMockAuthValue({
+        user: mockUser,
+        session: mockSession,
+        isAuthenticated: true,
+        authState: "authenticated",
+      }),
+    );
 
     renderHook(() => useSharedLinkSync(), { wrapper });
 
-    const listener = mockAddEventListener.mock.calls[0][1];
+    // リスナー関数を取得（型安全に）
+    const calls = mockAddEventListener.mock.calls;
+    if (calls.length === 0 || !calls[0]?.[1]) {
+      throw new Error("EventListener was not called");
+    }
+    const listener: AppStateEventListener = calls[0][1];
 
     // AppState を 'background' に変更
-    listener("background" as AppStateStatus);
+    listener("background");
 
     // 少し待ってから確認
     await new Promise((resolve) => setTimeout(resolve, 100));
@@ -140,10 +210,16 @@ describe("useSharedLinkSync", () => {
   });
 
   it("アンマウント時にリスナーをクリーンアップする", () => {
-    mockUseAuth.mockReturnValue({
-      user: { id: "user-123" },
-      session: { access_token: "token" },
-    } as any);
+    const mockUser: Partial<User> = { id: "user-123" };
+    const mockSession: Partial<Session> = { access_token: "token" };
+    mockUseAuth.mockReturnValue(
+      createMockAuthValue({
+        user: mockUser,
+        session: mockSession,
+        isAuthenticated: true,
+        authState: "authenticated",
+      }),
+    );
 
     const { unmount } = renderHook(() => useSharedLinkSync(), { wrapper });
 
