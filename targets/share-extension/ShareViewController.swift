@@ -538,11 +538,11 @@ class ShareViewController: UIViewController {
         // リクエストボディを作成
         let body: [String: Any] = [
             "p_url": url,
-            "p_title": nil as Any,
-            "p_description": nil as Any,
-            "p_image_url": nil as Any,
-            "p_favicon_url": nil as Any,
-            "p_site_name": nil as Any
+            "p_title": NSNull(),
+            "p_description": NSNull(),
+            "p_image_url": NSNull(),
+            "p_favicon_url": NSNull(),
+            "p_site_name": NSNull()
         ]
         
         guard let jsonData = try? JSONSerialization.data(withJSONObject: body) else {
