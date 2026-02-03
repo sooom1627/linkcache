@@ -21,27 +21,189 @@ interface WithShareExtensionOptions {
 }
 
 /**
+ * React Nativeのビルドスクリプト参照を削除する
+ * ShareExtensionは純粋なSwiftコードなので、React Nativeのビルドツールは不要
+ */
+function removeReactNativeBuildSettings(
+  buildSettings: Record<string, any>,
+): void {
+  // React Nativeのビルドスクリプト参照を削除
+  const reactNativeBuildTools = [
+    "CC",
+    "LD",
+    "CXX",
+    "LDPLUSPLUS",
+    "SWIFT",
+    "LIBTOOL",
+    "AR",
+    "RANLIB",
+    "STRIP",
+    "NM",
+    "OBJCOPY",
+    "OBJDUMP",
+    "READELF",
+    "C_COMPILER_LAUNCHER",
+    "CXX_COMPILER_LAUNCHER",
+    "LDPLUSPLUS_COMPILER_LAUNCHER",
+  ];
+
+  for (const tool of reactNativeBuildTools) {
+    delete buildSettings[tool];
+  }
+
+  // CLANG_ENABLE_EXPLICIT_MODULESを無効化（警告を避けるため）
+  buildSettings["CLANG_ENABLE_EXPLICIT_MODULES"] = "NO";
+
+  // React Nativeライブラリのリンクフラグをクリア
+  if (buildSettings["OTHER_LDFLAGS"]) {
+    const otherLdFlags = buildSettings["OTHER_LDFLAGS"];
+    if (typeof otherLdFlags === "string") {
+      buildSettings["OTHER_LDFLAGS"] = "";
+    } else if (Array.isArray(otherLdFlags)) {
+      buildSettings["OTHER_LDFLAGS"] = [];
+    }
+  }
+}
+
+/**
+ * ShareExtensionターゲットのビルド設定を構成する
+ */
+function configureBuildSettings(
+  buildSettings: Record<string, any>,
+  options: {
+    extensionName: string;
+    bundleIdentifier: string;
+    infoPlistPath: string;
+    entitlementsPath: string;
+    currentProjectVersion: string;
+    marketingVersion: string;
+    deploymentTarget: string;
+  },
+): void {
+  const {
+    extensionName,
+    bundleIdentifier,
+    infoPlistPath,
+    entitlementsPath,
+    currentProjectVersion,
+    marketingVersion,
+    deploymentTarget,
+  } = options;
+
+  // 基本設定
+  buildSettings["CLANG_ENABLE_MODULES"] = "YES";
+  buildSettings["INFOPLIST_FILE"] = `"${infoPlistPath}"`;
+  buildSettings["CODE_SIGN_ENTITLEMENTS"] = `"${entitlementsPath}"`;
+  buildSettings["CODE_SIGN_STYLE"] = "Automatic";
+  buildSettings["CURRENT_PROJECT_VERSION"] = `"${currentProjectVersion}"`;
+  buildSettings["GENERATE_INFOPLIST_FILE"] = "NO";
+  buildSettings["MARKETING_VERSION"] = `"${marketingVersion}"`;
+  buildSettings["PRODUCT_BUNDLE_IDENTIFIER"] =
+    `"${bundleIdentifier}.${extensionName}"`;
+  buildSettings["SWIFT_EMIT_LOC_STRINGS"] = "YES";
+  buildSettings["SWIFT_VERSION"] = "5.0";
+  buildSettings["TARGETED_DEVICE_FAMILY"] = `"1,2"`;
+  buildSettings["IPHONEOS_DEPLOYMENT_TARGET"] = deploymentTarget;
+
+  // React Nativeのビルドスクリプト参照を削除
+  removeReactNativeBuildSettings(buildSettings);
+}
+
+/**
+ * ShareExtensionのファイルをコピーする
+ */
+function copyShareExtensionFiles(
+  sourceDir: string,
+  targetDir: string,
+  options: WithShareExtensionOptions,
+): void {
+  const {
+    extensionName,
+    bundleIdentifier,
+    appGroupId,
+    supabaseUrl,
+    supabaseAnonKey,
+  } = options;
+
+  // ターゲットディレクトリを作成
+  if (!fs.existsSync(targetDir)) {
+    fs.mkdirSync(targetDir, { recursive: true });
+  }
+
+  // ShareViewController.swift をコピー（動的設定を適用）
+  const viewControllerSource = fs.readFileSync(
+    path.join(sourceDir, "ShareViewController.swift"),
+    "utf-8",
+  );
+  const viewControllerUpdated = viewControllerSource.replace(
+    /private let keychainService = ".*"/,
+    `private let keychainService = "${bundleIdentifier}"`,
+  );
+  fs.writeFileSync(
+    path.join(targetDir, "ShareViewController.swift"),
+    viewControllerUpdated,
+  );
+
+  // Info.plist をコピー（Supabase設定を追加）
+  const infoPlistSource = fs.readFileSync(
+    path.join(sourceDir, "Info.plist"),
+    "utf-8",
+  );
+
+  let infoPlistUpdated = infoPlistSource;
+  if (supabaseUrl && supabaseAnonKey) {
+    infoPlistUpdated = infoPlistSource.replace(
+      "</dict>",
+      `    <key>SUPABASE_URL</key>
+    <string>${supabaseUrl}</string>
+    <key>SUPABASE_ANON_KEY</key>
+    <string>${supabaseAnonKey}</string>
+</dict>`,
+    );
+  } else {
+    console.warn(
+      "[withShareExtension] Supabase URL or Anon Key is missing. Share Extension may not work correctly.",
+    );
+  }
+
+  fs.writeFileSync(path.join(targetDir, "Info.plist"), infoPlistUpdated);
+
+  // Entitlements をコピー（App Group ID と Keychain Access Group を動的に設定）
+  const entitlementsSource = fs.readFileSync(
+    path.join(sourceDir, "ShareExtension.entitlements"),
+    "utf-8",
+  );
+  let entitlementsUpdated = entitlementsSource.replace(
+    /<string>group\.com\.sooom\.linkcache\.dev<\/string>/,
+    `<string>${appGroupId}</string>`,
+  );
+  entitlementsUpdated = entitlementsUpdated.replace(
+    /<string>\$\(AppIdentifierPrefix\)com\.sooom\.linkcache\.dev<\/string>/,
+    `<string>$(AppIdentifierPrefix)${bundleIdentifier}</string>`,
+  );
+  fs.writeFileSync(
+    path.join(targetDir, `${extensionName}.entitlements`),
+    entitlementsUpdated,
+  );
+}
+
+/**
  * iOS Share Extension ターゲットを追加する Config Plugin
  *
  * このプラグインは以下を行います:
  * 1. Xcodeプロジェクトに ShareExtension ターゲットを追加
  * 2. 必要なソースファイル、リソース、entitlements を設定
- * 3. ビルド設定を構成
- *
- * @param config Expo 設定オブジェクト
- * @param options Share Extension 設定
- * @returns 更新された設定オブジェクト
+ * 3. ビルド設定を構成（React Nativeのビルドスクリプト参照を削除）
  */
 const withShareExtension: ConfigPlugin<WithShareExtensionOptions> = (
   config,
   options,
 ) => {
-  const { extensionName, appGroupId, bundleIdentifier } = options;
+  const { extensionName, bundleIdentifier } = options;
 
   // Xcode プロジェクトにターゲットを追加
   config = withXcodeProject(config, async (config) => {
     const pbxProject = config.modResults;
-    const platformProjectRoot = config.modRequest.platformProjectRoot;
 
     // ShareExtension ターゲットの追加
     const target = pbxProject.addTarget(
@@ -55,23 +217,19 @@ const withShareExtension: ConfigPlugin<WithShareExtensionOptions> = (
       throw new Error("Failed to add ShareExtension target");
     }
 
-    // PBXSourcesBuildPhase を追加（ソースファイル用）
+    // ビルドフェーズを追加
     pbxProject.addBuildPhase(
       [],
       "PBXSourcesBuildPhase",
       "Sources",
       target.uuid,
     );
-
-    // PBXResourcesBuildPhase を追加（リソースファイル用）
     pbxProject.addBuildPhase(
       [],
       "PBXResourcesBuildPhase",
       "Resources",
       target.uuid,
     );
-
-    // PBXFrameworksBuildPhase を追加（フレームワーク用）
     pbxProject.addBuildPhase(
       [],
       "PBXFrameworksBuildPhase",
@@ -87,13 +245,9 @@ const withShareExtension: ConfigPlugin<WithShareExtensionOptions> = (
     const entitlementsPath = `${extensionName}/${extensionName}.entitlements`;
     const viewControllerPath = `${extensionName}/ShareViewController.swift`;
 
-    // Info.plist を追加（ビルドフェーズには含めない）
+    // ファイルを追加
     pbxProject.addFile(infoPlistPath, pbxGroupKey);
-
-    // Entitlements を追加
     pbxProject.addFile(entitlementsPath, pbxGroupKey);
-
-    // ShareViewController.swift を追加
     pbxProject.addSourceFile(
       viewControllerPath,
       { target: target.uuid },
@@ -104,51 +258,24 @@ const withShareExtension: ConfigPlugin<WithShareExtensionOptions> = (
     const configurations = pbxProject.pbxXCBuildConfigurationSection();
     const currentProjectVersion = config.ios?.buildNumber || "1";
     const marketingVersion = config.version || "1.0.0";
+    const deploymentTarget = (config.ios as any)?.deploymentTarget || "17.0";
 
+    // ShareExtensionターゲットのビルド設定を検索して修正
     for (const key in configurations) {
-      if (typeof configurations[key].buildSettings !== "undefined") {
-        const buildSettings = configurations[key].buildSettings;
+      const configItem = configurations[key];
+      if (!configItem.buildSettings) continue;
 
-        if (
-          typeof buildSettings["PRODUCT_NAME"] !== "undefined" &&
-          buildSettings["PRODUCT_NAME"] === `"${extensionName}"`
-        ) {
-          buildSettings["CLANG_ENABLE_MODULES"] = "YES";
-          buildSettings["INFOPLIST_FILE"] = `"${infoPlistPath}"`;
-          buildSettings["CODE_SIGN_ENTITLEMENTS"] = `"${entitlementsPath}"`;
-          buildSettings["CODE_SIGN_STYLE"] = "Automatic";
-          buildSettings["CURRENT_PROJECT_VERSION"] =
-            `"${currentProjectVersion}"`;
-          buildSettings["GENERATE_INFOPLIST_FILE"] = "NO";
-          buildSettings["MARKETING_VERSION"] = `"${marketingVersion}"`;
-          buildSettings["PRODUCT_BUNDLE_IDENTIFIER"] =
-            `"${bundleIdentifier}.${extensionName}"`;
-          buildSettings["SWIFT_EMIT_LOC_STRINGS"] = "YES";
-          buildSettings["SWIFT_VERSION"] = "5.0";
-          buildSettings["TARGETED_DEVICE_FAMILY"] = `"1,2"`;
-          // メインアプリのデプロイメントターゲットに合わせる（または明示的に設定）
-          // deploymentTargetはExpoの型定義に含まれていないが、実際には設定可能
-          const deploymentTarget =
-            (config.ios as any)?.deploymentTarget || "17.0";
-          buildSettings["IPHONEOS_DEPLOYMENT_TARGET"] = deploymentTarget;
-
-          // React Nativeのビルドスクリプト参照を削除
-          // ShareExtensionは標準のXcodeビルドツールを使用する必要がある
-          // Expoプロジェクトではreact-native/scripts/xcode/ccache-clang.shが存在しないため
-          delete buildSettings["CC"];
-          delete buildSettings["LD"];
-          delete buildSettings["CXX"];
-          delete buildSettings["LDPLUSPLUS"];
-          delete buildSettings["SWIFT"];
-          delete buildSettings["LIBTOOL"];
-          delete buildSettings["AR"];
-          delete buildSettings["RANLIB"];
-          delete buildSettings["STRIP"];
-          delete buildSettings["NM"];
-          delete buildSettings["OBJCOPY"];
-          delete buildSettings["OBJDUMP"];
-          delete buildSettings["READELF"];
-        }
+      const buildSettings = configItem.buildSettings;
+      if (buildSettings["PRODUCT_NAME"] === `"${extensionName}"`) {
+        configureBuildSettings(buildSettings, {
+          extensionName,
+          bundleIdentifier,
+          infoPlistPath,
+          entitlementsPath,
+          currentProjectVersion,
+          marketingVersion,
+          deploymentTarget,
+        });
       }
     }
 
@@ -167,68 +294,7 @@ const withShareExtension: ConfigPlugin<WithShareExtensionOptions> = (
       );
       const targetDir = path.join(platformProjectRoot, extensionName);
 
-      // ターゲットディレクトリを作成
-      if (!fs.existsSync(targetDir)) {
-        fs.mkdirSync(targetDir, { recursive: true });
-      }
-
-      // ShareViewController.swift をコピー（動的設定を適用）
-      const viewControllerSource = fs.readFileSync(
-        path.join(sourceDir, "ShareViewController.swift"),
-        "utf-8",
-      );
-      const viewControllerUpdated = viewControllerSource.replace(
-        /private let keychainService = ".*"/,
-        `private let keychainService = "${bundleIdentifier}"`,
-      );
-      fs.writeFileSync(
-        path.join(targetDir, "ShareViewController.swift"),
-        viewControllerUpdated,
-      );
-
-      // Info.plist をコピー（Supabase設定を追加）
-      const infoPlistSource = fs.readFileSync(
-        path.join(sourceDir, "Info.plist"),
-        "utf-8",
-      );
-
-      // Supabase設定を追加
-      let infoPlistUpdated = infoPlistSource;
-      if (options.supabaseUrl && options.supabaseAnonKey) {
-        // </dict> の直前に Supabase 設定を挿入
-        infoPlistUpdated = infoPlistSource.replace(
-          "</dict>",
-          `    <key>SUPABASE_URL</key>
-    <string>${options.supabaseUrl}</string>
-    <key>SUPABASE_ANON_KEY</key>
-    <string>${options.supabaseAnonKey}</string>
-</dict>`,
-        );
-      } else {
-        console.warn(
-          "[withShareExtension] Supabase URL or Anon Key is missing. Share Extension may not work correctly.",
-        );
-      }
-
-      fs.writeFileSync(path.join(targetDir, "Info.plist"), infoPlistUpdated);
-
-      // Entitlements をコピー（App Group ID と Keychain Access Group を動的に設定）
-      const entitlementsSource = fs.readFileSync(
-        path.join(sourceDir, "ShareExtension.entitlements"),
-        "utf-8",
-      );
-      let entitlementsUpdated = entitlementsSource.replace(
-        /<string>group\.com\.sooom\.linkcache\.dev<\/string>/,
-        `<string>${appGroupId}</string>`,
-      );
-      entitlementsUpdated = entitlementsUpdated.replace(
-        /<string>\$\(AppIdentifierPrefix\)com\.sooom\.linkcache\.dev<\/string>/,
-        `<string>$(AppIdentifierPrefix)${bundleIdentifier}</string>`,
-      );
-      fs.writeFileSync(
-        path.join(targetDir, `${extensionName}.entitlements`),
-        entitlementsUpdated,
-      );
+      copyShareExtensionFiles(sourceDir, targetDir, options);
 
       return config;
     },
