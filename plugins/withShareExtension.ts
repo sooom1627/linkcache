@@ -40,10 +40,11 @@ interface BuildSettings {
 function removeReactNativeBuildSettings(buildSettings: BuildSettings): void {
   // 明示的にXcodeの標準コンパイラを設定
   // これによりプロジェクトレベルのccache wrapper設定を確実にオーバーライド
+  // 注意: clang++は特殊文字を含むためクォートで囲む必要がある
   buildSettings["CC"] = "clang";
-  buildSettings["CXX"] = "clang++";
+  buildSettings["CXX"] = '"clang++"';
   buildSettings["LD"] = "clang";
-  buildSettings["LDPLUSPLUS"] = "clang++";
+  buildSettings["LDPLUSPLUS"] = '"clang++"';
 
   // ShareExtensionに不要な設定を削除
   const toolsToRemove = [
