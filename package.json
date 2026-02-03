@@ -17,6 +17,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "check": "pnpm format:fix && pnpm lint && pnpm typecheck && pnpm test",
+    "prebuild": "expo prebuild",
     "prepare": "husky"
   },
   "dependencies": {

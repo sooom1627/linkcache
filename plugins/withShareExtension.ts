@@ -131,6 +131,23 @@ const withShareExtension: ConfigPlugin<WithShareExtensionOptions> = (
           const deploymentTarget =
             (config.ios as any)?.deploymentTarget || "17.0";
           buildSettings["IPHONEOS_DEPLOYMENT_TARGET"] = deploymentTarget;
+
+          // React Nativeのビルドスクリプト参照を削除
+          // ShareExtensionは標準のXcodeビルドツールを使用する必要がある
+          // Expoプロジェクトではreact-native/scripts/xcode/ccache-clang.shが存在しないため
+          delete buildSettings["CC"];
+          delete buildSettings["LD"];
+          delete buildSettings["CXX"];
+          delete buildSettings["LDPLUSPLUS"];
+          delete buildSettings["SWIFT"];
+          delete buildSettings["LIBTOOL"];
+          delete buildSettings["AR"];
+          delete buildSettings["RANLIB"];
+          delete buildSettings["STRIP"];
+          delete buildSettings["NM"];
+          delete buildSettings["OBJCOPY"];
+          delete buildSettings["OBJDUMP"];
+          delete buildSettings["READELF"];
         }
       }
     }
