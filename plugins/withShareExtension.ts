@@ -132,7 +132,7 @@ function configureBuildSettings(
   buildSettings["SWIFT_VERSION"] = "5.0";
   buildSettings["TARGETED_DEVICE_FAMILY"] = `"1,2"`;
   buildSettings["IPHONEOS_DEPLOYMENT_TARGET"] = deploymentTarget;
-  
+
   // 追加の設定: ShareExtensionが標準のXcodeビルドツールを使用することを保証
   buildSettings["SKIP_INSTALL"] = "YES"; // App ExtensionはSKIP_INSTALLが必要
   buildSettings["ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES"] = "NO"; // App Extensionでは不要
