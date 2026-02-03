@@ -21,13 +21,21 @@ interface WithShareExtensionOptions {
 }
 
 /**
- * React Nativeのビルドスクリプト参照を削除する
- * ShareExtensionは純粋なSwiftコードなので、React Nativeのビルドツールは不要
+ * ビルド設定の型定義
  */
-function removeReactNativeBuildSettings(
-  buildSettings: Record<string, any>,
-): void {
-  // React Nativeのビルドスクリプト参照を削除
+interface BuildSettings {
+  [key: string]: string | number | boolean | string[] | undefined;
+}
+
+/**
+ * React Nativeのビルドスクリプト参照を削除する
+ *
+ * ShareExtensionは純粋なSwiftコードなので、React Nativeのビルドツールは不要です。
+ * Expoプロジェクトではreact-native/scripts/xcode/ccache-clang.shが存在しないため、
+ * これらの設定を削除して標準のXcodeビルドツールを使用する必要があります。
+ */
+function removeReactNativeBuildSettings(buildSettings: BuildSettings): void {
+  // React Nativeのビルドスクリプト参照を削除する設定キー
   const reactNativeBuildTools = [
     "CC",
     "LD",
@@ -45,8 +53,9 @@ function removeReactNativeBuildSettings(
     "C_COMPILER_LAUNCHER",
     "CXX_COMPILER_LAUNCHER",
     "LDPLUSPLUS_COMPILER_LAUNCHER",
-  ];
+  ] as const;
 
+  // 各ビルドツールの参照を削除
   for (const tool of reactNativeBuildTools) {
     delete buildSettings[tool];
   }
@@ -68,17 +77,19 @@ function removeReactNativeBuildSettings(
 /**
  * ShareExtensionターゲットのビルド設定を構成する
  */
+interface BuildSettingsOptions {
+  extensionName: string;
+  bundleIdentifier: string;
+  infoPlistPath: string;
+  entitlementsPath: string;
+  currentProjectVersion: string;
+  marketingVersion: string;
+  deploymentTarget: string;
+}
+
 function configureBuildSettings(
-  buildSettings: Record<string, any>,
-  options: {
-    extensionName: string;
-    bundleIdentifier: string;
-    infoPlistPath: string;
-    entitlementsPath: string;
-    currentProjectVersion: string;
-    marketingVersion: string;
-    deploymentTarget: string;
-  },
+  buildSettings: BuildSettings,
+  options: BuildSettingsOptions,
 ): void {
   const {
     extensionName,
@@ -111,6 +122,8 @@ function configureBuildSettings(
 
 /**
  * ShareExtensionのファイルをコピーする
+ *
+ * @throws {Error} ソースファイルが存在しない場合
  */
 function copyShareExtensionFiles(
   sourceDir: string,
@@ -125,16 +138,25 @@ function copyShareExtensionFiles(
     supabaseAnonKey,
   } = options;
 
+  // ソースディレクトリの存在確認
+  if (!fs.existsSync(sourceDir)) {
+    throw new Error(`ShareExtension source directory not found: ${sourceDir}`);
+  }
+
   // ターゲットディレクトリを作成
   if (!fs.existsSync(targetDir)) {
     fs.mkdirSync(targetDir, { recursive: true });
   }
 
   // ShareViewController.swift をコピー（動的設定を適用）
-  const viewControllerSource = fs.readFileSync(
-    path.join(sourceDir, "ShareViewController.swift"),
-    "utf-8",
-  );
+  const viewControllerPath = path.join(sourceDir, "ShareViewController.swift");
+  if (!fs.existsSync(viewControllerPath)) {
+    throw new Error(
+      `ShareViewController.swift not found: ${viewControllerPath}`,
+    );
+  }
+
+  const viewControllerSource = fs.readFileSync(viewControllerPath, "utf-8");
   const viewControllerUpdated = viewControllerSource.replace(
     /private let keychainService = ".*"/,
     `private let keychainService = "${bundleIdentifier}"`,
@@ -145,12 +167,14 @@ function copyShareExtensionFiles(
   );
 
   // Info.plist をコピー（Supabase設定を追加）
-  const infoPlistSource = fs.readFileSync(
-    path.join(sourceDir, "Info.plist"),
-    "utf-8",
-  );
+  const infoPlistPath = path.join(sourceDir, "Info.plist");
+  if (!fs.existsSync(infoPlistPath)) {
+    throw new Error(`Info.plist not found: ${infoPlistPath}`);
+  }
 
+  const infoPlistSource = fs.readFileSync(infoPlistPath, "utf-8");
   let infoPlistUpdated = infoPlistSource;
+
   if (supabaseUrl && supabaseAnonKey) {
     infoPlistUpdated = infoPlistSource.replace(
       "</dict>",
@@ -169,10 +193,14 @@ function copyShareExtensionFiles(
   fs.writeFileSync(path.join(targetDir, "Info.plist"), infoPlistUpdated);
 
   // Entitlements をコピー（App Group ID と Keychain Access Group を動的に設定）
-  const entitlementsSource = fs.readFileSync(
-    path.join(sourceDir, "ShareExtension.entitlements"),
-    "utf-8",
-  );
+  const entitlementsPath = path.join(sourceDir, "ShareExtension.entitlements");
+  if (!fs.existsSync(entitlementsPath)) {
+    throw new Error(
+      `ShareExtension.entitlements not found: ${entitlementsPath}`,
+    );
+  }
+
+  const entitlementsSource = fs.readFileSync(entitlementsPath, "utf-8");
   let entitlementsUpdated = entitlementsSource.replace(
     /<string>group\.com\.sooom\.linkcache\.dev<\/string>/,
     `<string>${appGroupId}</string>`,
@@ -194,6 +222,10 @@ function copyShareExtensionFiles(
  * 1. Xcodeプロジェクトに ShareExtension ターゲットを追加
  * 2. 必要なソースファイル、リソース、entitlements を設定
  * 3. ビルド設定を構成（React Nativeのビルドスクリプト参照を削除）
+ *
+ * @param config Expo 設定オブジェクト
+ * @param options Share Extension 設定
+ * @returns 更新された設定オブジェクト
  */
 const withShareExtension: ConfigPlugin<WithShareExtensionOptions> = (
   config,
@@ -214,7 +246,7 @@ const withShareExtension: ConfigPlugin<WithShareExtensionOptions> = (
     );
 
     if (!target) {
-      throw new Error("Failed to add ShareExtension target");
+      throw new Error(`Failed to add ShareExtension target: ${extensionName}`);
     }
 
     // ビルドフェーズを追加
@@ -261,12 +293,18 @@ const withShareExtension: ConfigPlugin<WithShareExtensionOptions> = (
     const deploymentTarget = (config.ios as any)?.deploymentTarget || "17.0";
 
     // ShareExtensionターゲットのビルド設定を検索して修正
+    // すべての設定（Debug/Release）に対して適用
     for (const key in configurations) {
       const configItem = configurations[key];
-      if (!configItem.buildSettings) continue;
+      if (!configItem || !configItem.buildSettings) {
+        continue;
+      }
 
       const buildSettings = configItem.buildSettings;
-      if (buildSettings["PRODUCT_NAME"] === `"${extensionName}"`) {
+      const productName = buildSettings["PRODUCT_NAME"];
+
+      // PRODUCT_NAMEでShareExtensionターゲットを識別
+      if (productName === `"${extensionName}"`) {
         configureBuildSettings(buildSettings, {
           extensionName,
           bundleIdentifier,
