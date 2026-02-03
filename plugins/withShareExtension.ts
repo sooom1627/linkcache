@@ -176,10 +176,34 @@ function copyShareExtensionFiles(
   }
 
   const viewControllerSource = fs.readFileSync(viewControllerPath, "utf-8");
+  
+  // keychainServiceを動的に設定（dev環境: com.sooom.linkcache.dev）
+  // 正規表現を改善: より確実にマッチするように、行全体をマッチさせる
+  const keychainServicePattern = /private let keychainService = "[^"]*"/;
+  const keychainServiceReplacement = `private let keychainService = "${bundleIdentifier}"`;
+  
+  if (!keychainServicePattern.test(viewControllerSource)) {
+    throw new Error(
+      `Failed to find keychainService pattern in ShareViewController.swift`,
+    );
+  }
+  
   const viewControllerUpdated = viewControllerSource.replace(
-    /private let keychainService = ".*"/,
-    `private let keychainService = "${bundleIdentifier}"`,
+    keychainServicePattern,
+    keychainServiceReplacement,
   );
+  
+  // 置換が成功したことを確認
+  if (!viewControllerUpdated.includes(`keychainService = "${bundleIdentifier}"`)) {
+    throw new Error(
+      `Failed to replace keychainService in ShareViewController.swift. Expected: ${bundleIdentifier}`,
+    );
+  }
+  
+  console.log(
+    `[withShareExtension] Updated keychainService to: ${bundleIdentifier}`,
+  );
+  
   fs.writeFileSync(
     path.join(targetDir, "ShareViewController.swift"),
     viewControllerUpdated,
@@ -220,14 +244,65 @@ function copyShareExtensionFiles(
   }
 
   const entitlementsSource = fs.readFileSync(entitlementsPath, "utf-8");
-  let entitlementsUpdated = entitlementsSource.replace(
-    /<string>group\.com\.sooom\.linkcache\.dev<\/string>/,
-    `<string>${appGroupId}</string>`,
-  );
+  
+  // App Group IDを動的に設定（dev環境: group.com.sooom.linkcache.dev）
+  // より柔軟な正規表現: dev/production環境の両方に対応
+  const appGroupPattern = /<string>group\.com\.sooom\.linkcache(\.dev)?<\/string>/;
+  const appGroupReplacement = `<string>${appGroupId}</string>`;
+  
+  // Keychain Access Groupを動的に設定
+  // $(AppIdentifierPrefix)com.sooom.linkcache.dev または $(AppIdentifierPrefix)com.sooom.linkcache
+  const keychainAccessGroupPattern =
+    /<string>\$\(AppIdentifierPrefix\)com\.sooom\.linkcache(\.dev)?<\/string>/;
+  const keychainAccessGroupReplacement = `<string>$(AppIdentifierPrefix)${bundleIdentifier}</string>`;
+  
+  let entitlementsUpdated = entitlementsSource;
+  
+  // App Group IDの置換
+  if (!appGroupPattern.test(entitlementsSource)) {
+    throw new Error(
+      `Failed to find App Group ID pattern in ShareExtension.entitlements`,
+    );
+  }
   entitlementsUpdated = entitlementsUpdated.replace(
-    /<string>\$\(AppIdentifierPrefix\)com\.sooom\.linkcache\.dev<\/string>/,
-    `<string>$(AppIdentifierPrefix)${bundleIdentifier}</string>`,
+    appGroupPattern,
+    appGroupReplacement,
   );
+  
+  // Keychain Access Groupの置換
+  if (!keychainAccessGroupPattern.test(entitlementsSource)) {
+    throw new Error(
+      `Failed to find Keychain Access Group pattern in ShareExtension.entitlements`,
+    );
+  }
+  entitlementsUpdated = entitlementsUpdated.replace(
+    keychainAccessGroupPattern,
+    keychainAccessGroupReplacement,
+  );
+  
+  // 置換が成功したことを確認
+  if (!entitlementsUpdated.includes(`<string>${appGroupId}</string>`)) {
+    throw new Error(
+      `Failed to replace App Group ID in ShareExtension.entitlements. Expected: ${appGroupId}`,
+    );
+  }
+  if (
+    !entitlementsUpdated.includes(
+      `<string>$(AppIdentifierPrefix)${bundleIdentifier}</string>`,
+    )
+  ) {
+    throw new Error(
+      `Failed to replace Keychain Access Group in ShareExtension.entitlements. Expected: $(AppIdentifierPrefix)${bundleIdentifier}`,
+    );
+  }
+  
+  console.log(
+    `[withShareExtension] Updated App Group ID to: ${appGroupId}`,
+  );
+  console.log(
+    `[withShareExtension] Updated Keychain Access Group to: $(AppIdentifierPrefix)${bundleIdentifier}`,
+  );
+  
   fs.writeFileSync(
     path.join(targetDir, `${extensionName}.entitlements`),
     entitlementsUpdated,
