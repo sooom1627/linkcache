@@ -28,19 +28,25 @@ interface BuildSettings {
 }
 
 /**
- * React Nativeのビルドスクリプト参照を削除する
+ * React Nativeのビルドスクリプト参照を削除し、標準コンパイラを設定する
  *
  * ShareExtensionは純粋なSwiftコードなので、React Nativeのビルドツールは不要です。
- * Expoプロジェクトではreact-native/scripts/xcode/ccache-clang.shが存在しないため、
- * これらの設定を削除して標準のXcodeビルドツールを使用する必要があります。
+ * Expoプロジェクトではreact-native/scripts/xcode/ccache-clang.shへのパスが壊れるため、
+ * 明示的に標準のXcodeコンパイラ（clang/clang++）を設定する必要があります。
+ *
+ * 注意: 空文字列の設定はxcode-projectライブラリで正しく保存されない場合があるため、
+ * 明示的なコンパイラ名を設定することで確実にオーバーライドします。
  */
 function removeReactNativeBuildSettings(buildSettings: BuildSettings): void {
-  // React Nativeのビルドスクリプト参照を削除する設定キー
-  const reactNativeBuildTools = [
-    "CC",
-    "LD",
-    "CXX",
-    "LDPLUSPLUS",
+  // 明示的にXcodeの標準コンパイラを設定
+  // これによりプロジェクトレベルのccache wrapper設定を確実にオーバーライド
+  buildSettings["CC"] = "clang";
+  buildSettings["CXX"] = "clang++";
+  buildSettings["LD"] = "clang";
+  buildSettings["LDPLUSPLUS"] = "clang++";
+
+  // ShareExtensionに不要な設定を削除
+  const toolsToRemove = [
     "SWIFT",
     "LIBTOOL",
     "AR",
@@ -53,23 +59,30 @@ function removeReactNativeBuildSettings(buildSettings: BuildSettings): void {
     "C_COMPILER_LAUNCHER",
     "CXX_COMPILER_LAUNCHER",
     "LDPLUSPLUS_COMPILER_LAUNCHER",
+    "CCACHE_BINARY",
+    "REACT_NATIVE_PATH",
+    "REACT_NATIVE_NODE_MODULES_DIR",
+    "REACT_NATIVE_PACKAGE_JSON",
   ] as const;
 
-  // 各ビルドツールの参照を削除
-  for (const tool of reactNativeBuildTools) {
+  for (const tool of toolsToRemove) {
     delete buildSettings[tool];
   }
 
   // CLANG_ENABLE_EXPLICIT_MODULESを無効化（警告を避けるため）
+  // これは必須: ShareExtensionは標準のXcodeビルドツールを使用するため
   buildSettings["CLANG_ENABLE_EXPLICIT_MODULES"] = "NO";
+
+  // CLANG_ENABLE_EXPLICIT_MODULES_WITH_COMPILER_LAUNCHERも無効化
+  buildSettings["CLANG_ENABLE_EXPLICIT_MODULES_WITH_COMPILER_LAUNCHER"] = "NO";
 
   // React Nativeライブラリのリンクフラグをクリア
   if (buildSettings["OTHER_LDFLAGS"]) {
     const otherLdFlags = buildSettings["OTHER_LDFLAGS"];
     if (typeof otherLdFlags === "string") {
-      buildSettings["OTHER_LDFLAGS"] = "";
+      buildSettings["OTHER_LDFLAGS"] = "$(inherited)";
     } else if (Array.isArray(otherLdFlags)) {
-      buildSettings["OTHER_LDFLAGS"] = [];
+      buildSettings["OTHER_LDFLAGS"] = ["$(inherited)"];
     }
   }
 }
@@ -101,7 +114,11 @@ function configureBuildSettings(
     deploymentTarget,
   } = options;
 
-  // 基本設定
+  // 重要: React Nativeのビルドスクリプト参照を先に削除
+  // これにより、後で設定する値が上書きされないようにする
+  removeReactNativeBuildSettings(buildSettings);
+
+  // 基本設定（ShareExtensionに必要な最小限の設定）
   buildSettings["CLANG_ENABLE_MODULES"] = "YES";
   buildSettings["INFOPLIST_FILE"] = `"${infoPlistPath}"`;
   buildSettings["CODE_SIGN_ENTITLEMENTS"] = `"${entitlementsPath}"`;
@@ -115,9 +132,10 @@ function configureBuildSettings(
   buildSettings["SWIFT_VERSION"] = "5.0";
   buildSettings["TARGETED_DEVICE_FAMILY"] = `"1,2"`;
   buildSettings["IPHONEOS_DEPLOYMENT_TARGET"] = deploymentTarget;
-
-  // React Nativeのビルドスクリプト参照を削除
-  removeReactNativeBuildSettings(buildSettings);
+  
+  // 追加の設定: ShareExtensionが標準のXcodeビルドツールを使用することを保証
+  buildSettings["SKIP_INSTALL"] = "YES"; // App ExtensionはSKIP_INSTALLが必要
+  buildSettings["ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES"] = "NO"; // App Extensionでは不要
 }
 
 /**
@@ -305,6 +323,8 @@ const withShareExtension: ConfigPlugin<WithShareExtensionOptions> = (
 
       // PRODUCT_NAMEでShareExtensionターゲットを識別
       if (productName === `"${extensionName}"`) {
+        // ShareExtensionの設定を構成
+        // configureBuildSettings内でReact Nativeのビルドスクリプト参照が削除される
         configureBuildSettings(buildSettings, {
           extensionName,
           bundleIdentifier,
