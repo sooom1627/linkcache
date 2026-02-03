@@ -40,7 +40,7 @@ interface BuildSettings {
 function removeReactNativeBuildSettings(buildSettings: BuildSettings): void {
   // 明示的にXcodeの標準コンパイラを設定
   // これによりプロジェクトレベルのccache wrapper設定を確実にオーバーライド
-  // 注意: clang++は特殊文字を含むためクォートで囲む必要がある
+  // 注意: clang++はpbxproj形式で+記号が特殊文字扱いされるためクォートが必要
   buildSettings["CC"] = "clang";
   buildSettings["CXX"] = '"clang++"';
   buildSettings["LD"] = "clang";
@@ -354,6 +354,76 @@ const withShareExtension: ConfigPlugin<WithShareExtensionOptions> = (
       const targetDir = path.join(platformProjectRoot, extensionName);
 
       copyShareExtensionFiles(sourceDir, targetDir, options);
+
+      return config;
+    },
+  ]);
+
+  // Podfileを修正してpost_installフックを追加
+  config = withDangerousMod(config, [
+    "ios",
+    async (config) => {
+      const podfilePath = path.join(
+        config.modRequest.platformProjectRoot,
+        "Podfile",
+      );
+
+      if (fs.existsSync(podfilePath)) {
+        let podfileContent = fs.readFileSync(podfilePath, "utf-8");
+
+        // post_installフックにShareExtension用の設定を追加
+        const postInstallAddition = `
+    # ShareExtension: 全Podsターゲットで明示的モジュールを無効化
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |build_config|
+        build_config.build_settings['CLANG_ENABLE_EXPLICIT_MODULES'] = 'NO'
+      end
+    end
+    installer.pods_project.build_configurations.each do |build_config|
+      build_config.build_settings['CLANG_ENABLE_EXPLICIT_MODULES'] = 'NO'
+    end
+    installer.pods_project.save
+
+    # ShareExtension: 標準コンパイラを使用するよう設定
+    main_project = installer.aggregate_targets.first&.user_project
+    if main_project
+      main_project.native_targets.each do |target|
+        if target.name == '${extensionName}'
+          target.build_configurations.each do |build_config|
+            build_config.build_settings['CC'] = 'clang'
+            build_config.build_settings['CXX'] = 'clang++'
+            build_config.build_settings['LD'] = 'clang'
+            build_config.build_settings['LDPLUSPLUS'] = 'clang++'
+            build_config.build_settings.delete('CCACHE_BINARY')
+            build_config.build_settings.delete('C_COMPILER_LAUNCHER')
+            build_config.build_settings.delete('CXX_COMPILER_LAUNCHER')
+            build_config.build_settings.delete('LDPLUSPLUS_COMPILER_LAUNCHER')
+            build_config.build_settings['CLANG_ENABLE_EXPLICIT_MODULES'] = 'NO'
+          end
+        end
+      end
+      main_project.save
+    end`;
+
+        // post_installブロックの末尾（endの前）にコードを挿入
+        // react_native_post_install呼び出しの後に追加
+        const postInstallEndPattern =
+          /(\s*react_native_post_install\s*\([^)]+\)[^)]*\))/;
+        if (postInstallEndPattern.test(podfileContent)) {
+          podfileContent = podfileContent.replace(
+            postInstallEndPattern,
+            `$1${postInstallAddition}`,
+          );
+          fs.writeFileSync(podfilePath, podfileContent, "utf-8");
+          console.log(
+            "[withShareExtension] Added post_install hooks to Podfile",
+          );
+        } else {
+          console.warn(
+            "[withShareExtension] Could not find react_native_post_install in Podfile",
+          );
+        }
+      }
 
       return config;
     },
