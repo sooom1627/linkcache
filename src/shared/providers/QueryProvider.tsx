@@ -11,17 +11,22 @@ import {
  * React Query設定
  *
  * キャッシュ戦略:
- * - staleTime: データが「古い」とみなされるまでの時間（デフォルト5分）
- * - gcTime: 未使用のキャッシュがメモリから削除されるまでの時間（10分）
+ * - staleTime: データが「古い」とみなされるまでの時間（30分）
+ *   → Supabase Egress削減のため延長
+ * - gcTime: 未使用のキャッシュがメモリから削除されるまでの時間（60分）
  * - refetchOnWindowFocus: モバイルでは不要（バッテリー節約）
  * - refetchOnReconnect: ネットワーク復帰時に自動再フェッチ
- * - refetchOnMount: false - staleTime内のデータはキャッシュから取得
- *   → 画面遷移時の不要な再フェッチを防止し、UXを向上
+ * - refetchOnMount: true - stale状態のデータのみ再フェッチ
+ *   → invalidateQueries後の自動更新を有効化
+ *
+ * データ更新フロー:
+ * 1. mutation成功時にinvalidateQueries()でキャッシュをstale化
+ * 2. 画面遷移時、staleなクエリのみ自動refetch
+ * 3. staleTime内のデータはキャッシュから即座に返却（API呼び出しなし）
  *
  * 注意:
  * - 一部のクエリ（例: useProfile）は個別にstaleTime: Infinityを設定
  * - これらは明示的なinvalidate時のみ更新される
- * - staleTimeを過ぎたデータは自動的に再フェッチされるため、データの鮮度は保たれる
  *
  * HMR対応:
  * - Provider内でuseStateを使用して初期化することで、Fast Refresh時の問題を回避
@@ -34,8 +39,8 @@ function createQueryClient() {
     defaultOptions: {
       queries: {
         // データの鮮度管理
-        staleTime: 5 * 60 * 1000, // 5分: ほとんどのデータに適用
-        gcTime: 10 * 60 * 1000, // 10分: キャッシュ保持時間
+        staleTime: 30 * 60 * 1000, // 30分: Egress削減のため延長
+        gcTime: 60 * 60 * 1000, // 60分: キャッシュ保持時間（staleTimeより長く）
 
         // リトライ設定
         retry: 1, // 1回まで再試行
@@ -43,7 +48,7 @@ function createQueryClient() {
         // モバイル最適化
         refetchOnWindowFocus: false, // フォーカス時の再フェッチを無効
         refetchOnReconnect: true, // ネットワーク復帰時は再フェッチ
-        refetchOnMount: false, // staleTime内のデータはキャッシュから取得（画面遷移時の不要な再フェッチを防止）
+        refetchOnMount: true, // invalidateQueries後の自動refetchを有効化（stale時のみrefetch）
 
         // エラーハンドリング
         throwOnError: false, // エラーを自動でthrowしない
