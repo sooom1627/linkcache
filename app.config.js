@@ -34,6 +34,9 @@ module.exports = {
       },
       entitlements: {
         "com.apple.security.application-groups": [APP_GROUP_ID],
+        "keychain-access-groups": [
+          `$(AppIdentifierPrefix)${IS_DEV ? "com.sooom.linkcache.dev" : "com.sooom.linkcache"}`,
+        ],
       },
     },
     android: {
@@ -102,6 +105,9 @@ module.exports = {
                     : "com.sooom.linkcache.ShareExtension",
                   entitlements: {
                     "com.apple.security.application-groups": [APP_GROUP_ID],
+                    "keychain-access-groups": [
+                      `$(AppIdentifierPrefix)${IS_DEV ? "com.sooom.linkcache.dev" : "com.sooom.linkcache"}`,
+                    ],
                   },
                 },
               ],

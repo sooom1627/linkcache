@@ -99,7 +99,10 @@ class ShareViewController: UIViewController {
         return Bundle.main.object(forInfoDictionaryKey: "SUPABASE_ANON_KEY") as? String ?? ""
     }
 
-    /// Keychain サービス名（Expo SecureStoreと同じ）
+    /// Keychain サービス名
+    /// 注意: withShareExtension.tsプラグインがこのプロパティ値を動的に置換します。
+    /// 現在のKeychain検索ではService名を指定しない方式を採用しているため、
+    /// この値は直接使用されていませんが、プラグイン互換性のため保持しています。
     private let keychainService = "com.sooom.linkcache.dev"
 
     /// Supabase セッションキー（Expo SecureStoreと同じ）
@@ -487,19 +490,41 @@ class ShareViewController: UIViewController {
      *
      * Expo SecureStore と同じ Keychain Access Group を使用して、
      * メインアプリで保存された認証トークンを読み取ります。
+     *
+     * 注意: Service名を指定せず、Account名のみで検索することで、
+     * Expo SecureStoreが使用するService名に関係なく検索できます。
      */
     private func getSupabaseToken() -> String? {
         // Keychainクエリを作成
+        // Service名を指定しないことで、Expo SecureStoreが使用するService名に関係なく検索可能
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: keychainService,
+            // kSecAttrServiceは指定しない（Account名のみで検索）
             kSecAttrAccount as String: supabaseSessionKey,
             kSecReturnData as String: true,
             kSecMatchLimit as String: kSecMatchLimitOne
         ]
         
+        // デバッグ: 検索パラメータを出力
+        print("[ShareExtension] Attempting to retrieve token from Keychain")
+        print("[ShareExtension] Account: \(supabaseSessionKey)")
+        print("[ShareExtension] Service: (not specified - searching by account only)")
+        
         var result: AnyObject?
         let status = SecItemCopyMatching(query as CFDictionary, &result)
+        
+        // デバッグ: Keychainアクセスの結果を出力
+        print("[ShareExtension] Keychain access status: \(status)")
+        if status != errSecSuccess {
+            print("[ShareExtension] Keychain error code: \(status)")
+            if status == errSecItemNotFound {
+                print("[ShareExtension] Token not found in Keychain (errSecItemNotFound)")
+            } else if status == errSecAuthFailed {
+                print("[ShareExtension] Keychain access denied (errSecAuthFailed)")
+            } else {
+                print("[ShareExtension] Keychain access failed with error: \(status)")
+            }
+        }
         
         guard status == errSecSuccess,
               let data = result as? Data,
@@ -508,12 +533,21 @@ class ShareViewController: UIViewController {
             return nil
         }
         
+        // デバッグ: 取得したデータのサイズを出力
+        print("[ShareExtension] Retrieved data from Keychain: \(data.count) bytes")
+        
         // JSON をパースして access_token を取得
         do {
             if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
                let accessToken = json["access_token"] as? String {
                 print("[ShareExtension] Successfully retrieved Supabase token")
+                print("[ShareExtension] Token length: \(accessToken.count) characters")
                 return accessToken
+            } else {
+                print("[ShareExtension] Failed to parse access_token from JSON")
+                if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                    print("[ShareExtension] JSON keys: \(json.keys)")
+                }
             }
         } catch {
             print("[ShareExtension] Failed to parse Supabase session: \(error)")
