@@ -60,10 +60,10 @@ enum OGPMetadataFetcher {
             return
         }
 
-        // Create URLSession with 5 second timeout
+        // Create URLSession with 10 second timeout (サーバーが遅い場合も対応)
         let config = URLSessionConfiguration.default
-        config.timeoutIntervalForRequest = 5.0
-        config.timeoutIntervalForResource = 5.0
+        config.timeoutIntervalForRequest = 10.0
+        config.timeoutIntervalForResource = 10.0
         let session = URLSession(configuration: config)
 
         var request = URLRequest(url: requestURL)

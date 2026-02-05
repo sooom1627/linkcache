@@ -63,6 +63,8 @@ class ShareViewController: UIViewController {
         static let successDismissDelay: TimeInterval = 1.2
         static let errorDismissDelay: TimeInterval = 2.0
         static let urlNotFoundDismissDelay: TimeInterval = 1.8
+        /// 各ステップの最小表示時間（UX向上のため）
+        static let minimumStepDuration: TimeInterval = 1.0
     }
 
     // MARK: - Localization
@@ -292,6 +294,7 @@ class ShareViewController: UIViewController {
     // MARK: - Content Processing
 
     private func processSharedContent() {
+        let step1StartTime = Date()
         updateLoadingState(message: localized(.optimizingURL), url: nil)
 
         extractURL { [weak self] url in
@@ -308,15 +311,19 @@ class ShareViewController: UIViewController {
                 return
             }
 
-            // Step 2: リンクを読み込み中 (OGPメタデータ取得)
-            DispatchQueue.main.async { [weak self] in
-                self?.updateLoadingState(message: self?.localized(.loadingLink) ?? "", url: url)
-            }
+            // Step 1完了 - 最小表示時間を確保してからStep 2へ
+            let step1Elapsed = Date().timeIntervalSince(step1StartTime)
+            let step1Delay = max(0, Anim.minimumStepDuration - step1Elapsed)
 
-            // Keychain からトークン取得（認証エラーは早めに検出）
-            guard let token = KeychainService.getSupabaseToken() else {
-                DispatchQueue.main.async { [weak self] in
-                    guard let self = self else { return }
+            DispatchQueue.main.asyncAfter(deadline: .now() + step1Delay) { [weak self] in
+                guard let self = self else { return }
+
+                // Step 2: リンクを読み込み中 (OGPメタデータ取得)
+                let step2StartTime = Date()
+                self.updateLoadingState(message: self.localized(.loadingLink), url: url)
+
+                // Keychain からトークン取得（認証エラーは早めに検出）
+                guard let token = KeychainService.getSupabaseToken() else {
                     self.showError(
                         message: self.localized(.pleaseLogin),
                         subMessage: self.localized(.loginRequired)
@@ -324,35 +331,49 @@ class ShareViewController: UIViewController {
                     DispatchQueue.main.asyncAfter(deadline: .now() + Anim.errorDismissDelay) { [weak self] in
                         self?.animateOut { self?.closeExtension() }
                     }
-                }
-                return
-            }
-
-            // Step 3: OGPメタデータを取得
-            OGPMetadataFetcher.fetch(url: url) { [weak self] metadata in
-                guard let self = self else { return }
-
-                // Step 4: URLを保存中
-                DispatchQueue.main.async { [weak self] in
-                    self?.updateLoadingState(message: self?.localized(.savingURL) ?? "", url: url)
+                    return
                 }
 
-                // Step 5: Supabase に保存（メタデータあり/なし両対応）
-                SupabaseAPIClient.saveLink(url: url, token: token, metadata: metadata) { [weak self] success in
-                    DispatchQueue.main.async { [weak self] in
+                // Step 3: OGPメタデータを取得
+                OGPMetadataFetcher.fetch(url: url) { [weak self] metadata in
+                    guard let self = self else { return }
+
+                    // Step 2完了 - 最小表示時間を確保してからStep 3へ
+                    let step2Elapsed = Date().timeIntervalSince(step2StartTime)
+                    let step2Delay = max(0, Anim.minimumStepDuration - step2Elapsed)
+
+                    DispatchQueue.main.asyncAfter(deadline: .now() + step2Delay) { [weak self] in
                         guard let self = self else { return }
-                        if success {
-                            self.showSuccess(url: url)
-                            DispatchQueue.main.asyncAfter(deadline: .now() + Anim.successDismissDelay) { [weak self] in
-                                self?.animateOut { self?.closeExtension() }
-                            }
-                        } else {
-                            self.showError(
-                                message: self.localized(.saveFailed),
-                                subMessage: self.localized(.tryFromApp)
-                            )
-                            DispatchQueue.main.asyncAfter(deadline: .now() + Anim.errorDismissDelay) { [weak self] in
-                                self?.animateOut { self?.closeExtension() }
+
+                        // Step 4: URLを保存中
+                        let step3StartTime = Date()
+                        self.updateLoadingState(message: self.localized(.savingURL), url: url)
+
+                        // Step 5: Supabase に保存（メタデータあり/なし両対応）
+                        SupabaseAPIClient.saveLink(url: url, token: token, metadata: metadata) { [weak self] success in
+                            guard let self = self else { return }
+
+                            // Step 3完了 - 最小表示時間を確保してからStep 4へ
+                            let step3Elapsed = Date().timeIntervalSince(step3StartTime)
+                            let step3Delay = max(0, Anim.minimumStepDuration - step3Elapsed)
+
+                            DispatchQueue.main.asyncAfter(deadline: .now() + step3Delay) { [weak self] in
+                                guard let self = self else { return }
+
+                                if success {
+                                    self.showSuccess(url: url)
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + Anim.successDismissDelay) { [weak self] in
+                                        self?.animateOut { self?.closeExtension() }
+                                    }
+                                } else {
+                                    self.showError(
+                                        message: self.localized(.saveFailed),
+                                        subMessage: self.localized(.tryFromApp)
+                                    )
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + Anim.errorDismissDelay) { [weak self] in
+                                        self?.animateOut { self?.closeExtension() }
+                                    }
+                                }
                             }
                         }
                     }
