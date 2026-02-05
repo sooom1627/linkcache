@@ -4,9 +4,7 @@ import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { AuthProvider } from "@/src/features/auth";
-
-// TODO: Share Extension機能は一時的に無効化（Expo Managed Workflowで動作するように実装中）
-// import { usePendingSharedLinks } from "@/src/features/share-extension";
+import { useSharedLinkSync } from "@/src/features/share-extension";
 
 import { ModalProvider } from "./ModalProvider";
 
@@ -71,12 +69,9 @@ const queryClient = new QueryClient({
  *
  * Share Extension から共有された URL を処理します。
  * AuthProvider の内側で動作し、認証済みの場合のみ処理を行います。
- *
- * TODO: 現在一時的に無効化中
  */
 function SharedLinkProcessor({ children }: PropsWithChildren) {
-  // TODO: Expo Modulesベースの実装に置き換える
-  // usePendingSharedLinks();
+  useSharedLinkSync();
   return <>{children}</>;
 }
 

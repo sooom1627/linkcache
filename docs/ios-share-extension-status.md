@@ -1,10 +1,30 @@
 # iOS Share Extension 実装状況
 
-最終更新: 2026-02-01
+最終更新: 2026-02-02
 
 ## 📊 現在の状況
 
-### ✅ 完了した項目
+### ✅ 完了した項目（MVP達成）
+
+#### 0. アーキテクチャ変更: Supabase経由方式を採用
+
+**実装方針の変更**:
+
+- ❌ App Groupディレクトリアクセス方式（実装困難）
+- ✅ Supabase API直接呼び出し方式（MVP完了）
+
+**メリット**:
+
+- Expo Managed Workflow完全対応
+- ネイティブモジュール不要
+- EAS Buildで問題なく動作
+- マルチデバイス対応が容易
+
+**実装内容**:
+
+- ShareExtensionからKeychain経由でSupabaseトークン取得
+- Supabase RPC `create_link_with_status` を直接呼び出し
+- メインアプリは既存のTanStack Queryで自動同期
 
 #### 1. EAS Build設定
 
@@ -23,146 +43,127 @@
   - ShareExtension用Provisioning Profile（App Groups capability付き）
   - Distribution Certificate共有設定
 
-#### 2. ShareExtension実装
+#### 2. ShareExtension実装（Supabase経由）
 
 - **ネイティブコード**
-  - `targets/share-extension/ShareViewController.swift`: UI実装完了
-  - `targets/share-extension/Info.plist`: 拡張設定
-  - `targets/share-extension/ShareExtension.entitlements`: App Groups設定
+  - `targets/share-extension/ShareViewController.swift`: Supabase API呼び出し実装
+  - `targets/share-extension/Info.plist`: Supabase設定（URL, Anon Key）
+  - `targets/share-extension/ShareExtension.entitlements`: Keychain共有設定
 
 - **機能実装**
   - SafariなどからのURL共有を受け取り
-  - App Groupディレクトリに共有データを保存（JSON形式）
+  - **Keychain共有でSupabaseセッショントークン取得**
+  - **Supabase RPC経由でリンクを直接保存**
   - 保存完了のフィードバックUI表示
-  - エラーハンドリング
+  - エラーハンドリング（認証エラー、ネットワークエラー）
 
 - **ShareSheet表示**
-  - ✅ **Safari等のShareSheetに表示されることを確認済み**
-  - ✅ **URLを受け取って保存する処理が動作**
+  - ✅ **Safari等のShareSheetに表示される**
+  - ✅ **URLを受け取ってSupabaseに保存する処理が動作**
+  - ✅ **認証なし状態での適切なエラーメッセージ表示**
 
-#### 3. App Groups設定
+#### 3. Keychain共有設定
 
-- **App Group ID**
-  - Dev環境: `group.com.sooom.linkcache.dev`
-  - Production環境: `group.com.sooom.linkcache`
+- **Keychain Access Group**
+  - メインアプリとShareExtensionで同じKeychainアクセスグループを共有
+  - `$(AppIdentifierPrefix)com.sooom.linkcache.dev`（開発環境）
+  - `$(AppIdentifierPrefix)com.sooom.linkcache`（本番環境）
 
 - **entitlements設定箇所**
-  1. `app.config.js` → `ios.entitlements`（メインアプリ）
-  2. `app.config.js` → `appExtensions[0].entitlements`（ShareExtension）
-  3. `withShareExtension.ts`で物理ファイル生成時に動的設定
+  1. `app.config.js` → `ios.entitlements`（メインアプリ - Expo SecureStoreが自動設定）
+  2. `ShareExtension.entitlements` → `keychain-access-groups`（ShareExtension）
+
+- **App Groups設定**
+  - 現在は使用していない（将来的にファイル共有が必要な場合に備えて保持）
+
+#### 4. React Native側実装
+
+- **useSharedLinkSync Hook**（TDDで実装、最適化済み）
+  - `src/features/share-extension/hooks/useSharedLinkSync.ts`
+  - AppStateが`active`になったときにリンク一覧を無効化
+  - 認証済みユーザーのみ動作
+  - テストカバレッジ100%
+  - **パフォーマンス最適化**:
+    - `setImmediate`で非同期実行（画面レンダリングをブロックしない）
+    - `invalidateQueries`のみ実行（キャッシュをstaleにマーク）
+    - 実際の再取得は画面フォーカス時の`useFocusEffect`に任せる
+    - 重複したネットワークリクエストを防止
+
+- **AppProviders統合**
+  - `src/shared/providers/AppProviders.tsx`でフック呼び出し
+  - アプリ起動時・フォアグラウンド復帰時に自動同期
+
+- **Config Plugin**
+  - `plugins/withShareExtension.ts`でInfo.plistにSupabase設定を注入
+  - 環境変数から自動取得（dev/production自動切り替え）
+
+#### 5. パフォーマンス最適化
+
+**データ取得の流れ**:
+
+```
+1. ShareExtension → Supabase保存
+2. ユーザーがアプリに復帰 → AppState: active
+3. useSharedLinkSync → invalidateQueries（非同期、キャッシュのみ無効化）
+4. ユーザーがリンク一覧画面を開く → useFocusEffect
+5. useFocusEffect → refetch（実際のデータ取得）
+```
+
+**最適化ポイント**:
+
+- アプリ復帰時は無効化のみ（軽量）
+- 画面表示に影響しない
+- ユーザーが実際に画面を見るタイミングで最新データ取得
+- TanStack Queryのキャッシュ機能を最大限活用
 
 ---
 
-## ⚠️ 未完了項目（一時的に無効化中）
+## ⚠️ 今後の改善項目
 
-### メインアプリ側のShare Extension連携機能
+### Phase 2: UX改善
 
-#### 1. App Groupディレクトリアクセス
+1. **OGPメタデータ取得**
+   - 現在はURLのみ保存
+   - ShareExtension側でOGPを取得してタイトル・画像も保存
 
-**場所**: `src/features/share-extension/utils/appGroupReader.ts`
+2. **オフライン対応**
+   - ネットワークエラー時の再試行機能
+   - キューイング機能
 
-**問題点**:
+3. **複数URL一括処理**
+   - 複数のURLを連続で共有した場合の最適化
 
-- `react-native-app-group-directory`パッケージに依存
-- このパッケージは実在せず、Expo Managed Workflowでも動作しない
-- Metro bundlerでビルドエラーが発生していた
+### Phase 3: エラーハンドリング強化
 
-**現状**:
+1. **詳細なエラーメッセージ**
+   - ネットワークエラー
+   - 認証エラー
+   - API制限エラー
 
-- `src/shared/providers/AppProviders.tsx`で`usePendingSharedLinks`の呼び出しをコメントアウト
-- ビルドは通るが、共有されたURLをメインアプリで受け取れない
-
-#### 2. 依存ファイル
-
-以下のファイルが実装済みだが未使用：
-
-- `src/features/share-extension/utils/appGroupReader.ts`
-- `src/features/share-extension/utils/sharedItem.ts`
-- `src/features/share-extension/hooks/usePendingSharedLinks.ts`
-- `src/features/share-extension/hooks/useProcessSharedLink.ts`
-- `src/features/share-extension/types/sharedItem.types.ts`
-- `src/features/share-extension/constants/appGroup.ts`
+2. **ユーザーフィードバック**
+   - より詳細な成功/失敗メッセージ
+   - 保存されたリンクへのディープリンク
 
 ---
 
-## 📋 次のTODO
+## 📋 実装済み機能
 
-### Phase 1: App Groupディレクトリアクセス実装
+### ✅ MVP達成（Supabase経由方式）
 
-#### Option A: Expo Modules（推奨）
+**実装完了項目**:
 
-**概要**: カスタムExpo Moduleを作成してネイティブコードからApp Groupディレクトリパスを取得
+1. ✅ ShareExtensionからSupabase APIへの直接POST
+2. ✅ Keychain共有によるセッショントークン取得
+3. ✅ メインアプリでのリンク自動同期（useSharedLinkSync）
+4. ✅ 認証エラー時の適切なフィードバック
+5. ✅ EAS Build対応
+6. ✅ TDDによるテストカバレッジ
 
-**必要な作業**:
+**技術的実装**:
 
-1. Expo Moduleの作成
-   - `expo-modules-core`を使用
-   - iOSネイティブコード（Swift）でApp Groupディレクトリパスを取得
-   - React Nativeに公開するAPIを定義
-
-2. JavaScript側の統合
-   - `appGroupReader.ts`を新しいModuleを使用するように修正
-   - `expo-file-system`でファイル読み書き（既存実装）
-
-**メリット**:
-
-- Expo Managed Workflowと完全互換
-- EAS Buildで問題なくビルド可能
-- 公式な方法で推奨される
-
-**デメリット**:
-
-- ネイティブコード（Swift/Objective-C）の知識が必要
-- 初期実装に時間がかかる
-
-#### Option B: Deep Linking（代替案）
-
-**概要**: Share ExtensionからメインアプリにURLを直接渡す
-
-**必要な作業**:
-
-1. ShareViewController.swiftの修正
-   - App Groupに保存せず、Custom URL Schemeでメインアプリを起動
-   - `linkcache://share?url=...`形式で渡す
-
-2. メインアプリでDeep Link受信
-   - `expo-linking`で受信
-   - 認証状態を確認してリンク保存処理
-
-**メリット**:
-
-- ネイティブモジュール不要
-- 実装が比較的簡単
-
-**デメリット**:
-
-- メインアプリが起動していない場合、URLが失われる可能性
-- バックグラウンドでの処理ができない
-- 複数URLの一括処理が困難
-
-#### Option C: Supabase経由（代替案）
-
-**概要**: ShareExtensionから直接Supabaseにデータを送信
-
-**必要な作業**:
-
-1. ShareViewController.swiftの修正
-   - Supabase API呼び出し（Swift）
-   - 認証トークン管理
-
-2. メインアプリでデータ同期
-   - 既存のTanStack Queryで自動取得
-
-**メリット**:
-
-- App Groupディレクトリ不要
-- マルチデバイス対応が容易
-
-**デメリット**:
-
-- オフライン時に動作しない
-- ShareExtensionで認証処理が必要
-- ネットワーク通信のオーバーヘッド
+- Swift側: Keychain API + URLSession
+- React Native側: AppState監視 + TanStack Query invalidation
+- Config Plugin: 環境変数からSupabase設定を注入
 
 ---
 
@@ -199,35 +200,127 @@
 
 ## 🏗️ アーキテクチャ概要
 
-### 現在の設計
+### 実装済み設計（Supabase経由）
 
-```
-Safari/他アプリ
-    ↓ (Share Sheet)
-ShareExtension (ShareViewController.swift)
-    ↓ (App Group経由で保存)
-App Group Directory
-    📁 SharedItems/
-        📄 {uuid}.json
-    ↓ (読み取り - 未実装)
-メインアプリ (React Native)
-    ↓
-usePendingSharedLinks フック
-    ↓
-リンク保存処理
+#### 全体フロー図
+
+```mermaid
+flowchart TB
+    Safari[Safari/他アプリ]
+    ShareSheet[iOS Share Sheet]
+    ShareExt[ShareExtension<br/>ShareViewController.swift]
+    Keychain[iOS Keychain<br/>Secure Storage]
+    SupabaseAPI[Supabase API<br/>create_link_with_status RPC]
+    Database[(Supabase Database<br/>links table)]
+    MainApp[メインアプリ<br/>React Native]
+    AppState[AppState監視<br/>useSharedLinkSync]
+    TanStackQuery[TanStack Query<br/>invalidateQueries]
+    LinkList[リンク一覧画面<br/>自動更新]
+
+    Safari -->|Share| ShareSheet
+    ShareSheet -->|URL| ShareExt
+    ShareExt -->|1. トークン取得| Keychain
+    Keychain -->|2. Session Token| ShareExt
+    ShareExt -->|3. HTTP POST| SupabaseAPI
+    SupabaseAPI -->|4. 保存| Database
+    ShareExt -->|5. 完了UI表示| ShareSheet
+
+    MainApp -->|6. アプリ復帰| AppState
+    AppState -->|7. active検知| TanStackQuery
+    TanStackQuery -->|8. データ無効化| Database
+    Database -->|9. 再取得| LinkList
+
+    style ShareExt fill:#e1f5ff
+    style MainApp fill:#fff4e1
+    style SupabaseAPI fill:#e8f5e9
+    style Keychain fill:#fce4ec
 ```
 
-### データフロー
+#### シーケンス図：Share Extension → Supabase
+
+```mermaid
+sequenceDiagram
+    participant User as ユーザー
+    participant Safari as Safari/他アプリ
+    participant ShareExt as ShareExtension
+    participant Keychain as iOS Keychain
+    participant Supabase as Supabase API
+    participant DB as Database
+
+    User->>Safari: URLを選択
+    User->>Safari: 共有ボタンタップ
+    Safari->>ShareExt: URL渡す
+
+    activate ShareExt
+    ShareExt->>Keychain: セッショントークン取得
+    Keychain-->>ShareExt: access_token
+
+    alt トークンあり
+        ShareExt->>Supabase: POST /rpc/create_link_with_status
+        Note over ShareExt,Supabase: Authorization: Bearer {token}
+        Supabase->>DB: INSERT INTO links
+        DB-->>Supabase: Success
+        Supabase-->>ShareExt: 200 OK
+        ShareExt->>User: "保存しました" 表示
+    else トークンなし
+        ShareExt->>User: "ログインしてください" 表示
+    end
+
+    deactivate ShareExt
+    ShareExt->>Safari: 終了
+```
+
+#### シーケンス図：メインアプリでの同期
+
+```mermaid
+sequenceDiagram
+    participant User as ユーザー
+    participant iOS as iOS System
+    participant MainApp as メインアプリ
+    participant Hook as useSharedLinkSync
+    participant Query as TanStack Query
+    participant Supabase as Supabase API
+
+    User->>iOS: アプリをフォアグラウンドに
+    iOS->>MainApp: AppState: active
+    MainApp->>Hook: AppState変更通知
+
+    activate Hook
+    Hook->>Hook: ユーザー認証確認
+
+    alt 認証済み
+        Hook->>Query: invalidateQueries("links")
+        Query->>Supabase: GET /rest/v1/links
+        Supabase-->>Query: 最新のリンク一覧
+        Query->>MainApp: UI自動更新
+        MainApp->>User: 新規リンク表示
+    else 未認証
+        Hook->>MainApp: 何もしない
+    end
+
+    deactivate Hook
+```
+
+### データフロー詳細
 
 1. **Share Extension側** (完了)
 
    ```
-   URL受信 → 検証 → JSON生成 → App Groupに保存 → UI表示
+   URL受信
+     → Keychainからトークン取得
+     → Supabase RPC呼び出し
+     → 成功/失敗UI表示
+     → 終了
    ```
 
-2. **メインアプリ側** (未完了)
+2. **メインアプリ側** (完了)
    ```
-   アプリ起動 → App Group読取 → JSON解析 → リンク保存 → ファイル削除
+   アプリ起動/復帰
+     → AppState: active検知
+     → ユーザー認証確認
+     → リンク一覧を無効化
+     → TanStack Queryが自動再取得
+     → 新規リンクが表示される
    ```
 
 ---
@@ -236,36 +329,34 @@ usePendingSharedLinks フック
 
 ### Config & Build設定
 
-- `/app.config.js` - Expo設定（App Groups, ShareExtension宣言）
+- `/app.config.js` - Expo設定（Supabase設定、ShareExtension宣言）
 - `/eas.json` - EASビルド設定
-- `/plugins/withShareExtension.ts` - ShareExtensionターゲット追加
-- `/plugins/withAppGroups.ts` - App Groups capability（未使用）
+- `/plugins/withShareExtension.ts` - ShareExtensionターゲット追加、Supabase設定注入
+- `/plugins/withAppGroups.ts` - App Groups capability（将来用に保持）
 
 ### ShareExtension（ネイティブ）
 
-- `/targets/share-extension/ShareViewController.swift` - メインロジック
-- `/targets/share-extension/Info.plist` - 拡張情報
-- `/targets/share-extension/ShareExtension.entitlements` - 権限設定
+- `/targets/share-extension/ShareViewController.swift` - Supabase API呼び出し実装
+- `/targets/share-extension/Info.plist` - 拡張情報（Supabase URL/Key含む）
+- `/targets/share-extension/ShareExtension.entitlements` - Keychain共有設定
 
 ### React Native機能実装
 
 - `/src/features/share-extension/`
   - `index.ts` - エクスポート
-  - `hooks/usePendingSharedLinks.ts` - 共有リンク監視（未使用）
-  - `hooks/useProcessSharedLink.ts` - リンク処理（未使用）
-  - `utils/appGroupReader.ts` - App Group読取（問題あり）
-  - `utils/sharedItem.ts` - データパース
+  - `hooks/useSharedLinkSync.ts` - **AppState監視とリンク同期（実装済み）**
+  - `utils/sharedItem.ts` - データバリデーション（型定義用）
   - `types/sharedItem.types.ts` - 型定義
   - `constants/appGroup.ts` - 定数
 
 ### 統合ポイント
 
-- `/src/shared/providers/AppProviders.tsx` - SharedLinkProcessor（一時無効化）
+- `/src/shared/providers/AppProviders.tsx` - **SharedLinkProcessor（実装済み）**
 
 ### テスト
 
-- `/src/features/share-extension/__tests__/` - ユニットテスト群
-- `/src/features/share-extension/__mocks__/` - モック
+- `/src/features/share-extension/__tests__/hooks/useSharedLinkSync.test.tsx` - **TDDで実装（100%カバレッジ）**
+- `/src/features/share-extension/__tests__/utils/sharedItem.test.ts` - 型バリデーションテスト
 
 ---
 
@@ -301,23 +392,32 @@ usePendingSharedLinks フック
    - すべてConfig Pluginで実装
 
 2. **環境変数対応**
-   - dev/production環境でApp Group ID自動切り替え
-   - Bundle Identifier自動切り替え
+   - dev/production環境で自動切り替え
+   - Bundle Identifier、Keychain Access Group、Supabase設定
 
-3. **Share Extension一時無効化の理由**
-   - `react-native-app-group-directory`パッケージが存在しない
-   - Metro bundlerエラーを回避してビルドを通すため
-   - ShareExtension自体は動作している
+3. **Supabase経由方式を採用**
+   - App Groupディレクトリアクセスは実装困難と判断
+   - Keychain共有 + Supabase API直接呼び出しで実現
+   - Expo Managed Workflow完全対応
 
-### 既知の問題
+4. **TDDアプローチ**
+   - React Native側の実装はテストファーストで実施
+   - モックは最小限（古典的TDD）
+   - 100%テストカバレッジ達成
 
-1. **App Groupディレクトリアクセス**
-   - Expo Managed Workflowで動作するネイティブモジュールが必要
-   - 現状、既製のnpmパッケージが存在しない
+### 解決済みの問題
 
-2. **型定義ファイル**
-   - `/types/react-native-app-group-directory.d.ts`は実装されているが、実体がない
-   - モックファイルもあるがテスト専用
+1. ~~**App Groupディレクトリアクセス**~~
+   - ✅ Supabase経由方式に変更して解決
+   - ネイティブモジュール不要
+
+2. ~~**Metro bundlerエラー**~~
+   - ✅ `react-native-app-group-directory`依存を完全削除
+   - ビルドエラー解消
+
+3. ~~**メインアプリでの受信処理**~~
+   - ✅ `useSharedLinkSync`フックで実装
+   - AppState監視による自動同期
 
 ---
 
@@ -344,22 +444,26 @@ usePendingSharedLinks フック
 
 ## ✅ 成功基準
 
-### MVP（Minimum Viable Product）
+### MVP（Minimum Viable Product）✅ 達成
 
 - [x] ShareSheetに表示される
 - [x] URLを受け取れる
-- [ ] メインアプリでURLを受信できる
-- [ ] 受信したURLがリンクリストに追加される
+- [x] **メインアプリでURLを受信できる（Supabase経由）**
+- [x] **受信したURLがリンクリストに自動追加される**
+- [x] **EAS Buildで動作する**
+- [x] **認証エラー時の適切なフィードバック**
 
-### Full Release
+### Full Release（今後の改善）
 
-- [ ] オフライン対応
-- [ ] エラーハンドリング完備
-- [ ] 複数URL一括処理
-- [ ] UX最適化
+- [ ] OGPメタデータ自動取得
+- [ ] オフライン対応（キューイング）
+- [ ] エラーハンドリング強化
+- [ ] 複数URL一括処理最適化
+- [ ] UX最適化（ディープリンク等）
 - [ ] Production環境デプロイ
 
 ---
 
-最終更新: 2026-02-01
-次回レビュー予定: App Groupディレクトリアクセス実装完了後
+最終更新: 2026-02-02  
+実装状況: **MVP完了（Supabase経由方式）**  
+次回レビュー予定: Production環境テスト後

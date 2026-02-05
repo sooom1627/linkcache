@@ -16,7 +16,7 @@ module.exports = {
     name: IS_DEV ? "linkcache-dev" : "linkcache",
     slug: "linkcache",
     owner: "sooom",
-    version: "0.1.1",
+    version: "0.1.2",
     orientation: "portrait",
     icon: "./assets/images/icon.png",
     scheme: IS_DEV ? "linkcache-dev" : "linkcache",
@@ -28,11 +28,15 @@ module.exports = {
         : "com.sooom.linkcache",
       supportsTablet: true,
       usesNonExemptEncryption: false,
+      deploymentTarget: "17.0",
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
       },
       entitlements: {
         "com.apple.security.application-groups": [APP_GROUP_ID],
+        "keychain-access-groups": [
+          `$(AppIdentifierPrefix)${IS_DEV ? "com.sooom.linkcache.dev" : "com.sooom.linkcache"}`,
+        ],
       },
     },
     android: {
@@ -76,6 +80,8 @@ module.exports = {
           bundleIdentifier: IS_DEV
             ? "com.sooom.linkcache.dev"
             : "com.sooom.linkcache",
+          supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL || "",
+          supabaseAnonKey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || "",
         },
       ],
     ],
@@ -99,6 +105,9 @@ module.exports = {
                     : "com.sooom.linkcache.ShareExtension",
                   entitlements: {
                     "com.apple.security.application-groups": [APP_GROUP_ID],
+                    "keychain-access-groups": [
+                      `$(AppIdentifierPrefix)${IS_DEV ? "com.sooom.linkcache.dev" : "com.sooom.linkcache"}`,
+                    ],
                   },
                 },
               ],
