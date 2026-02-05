@@ -209,7 +209,9 @@ export function updateEntitlementsConfig(
 }
 
 /**
- * ShareViewController.swift の keychainService を動的に置換する
+ * Swift ソースファイルの keychainService を動的に置換する
+ *
+ * `private let` と `private static let` の両方に対応します。
  *
  * @throws {Error} パターンが見つからない場合
  */
@@ -217,19 +219,22 @@ export function updateKeychainServiceInSwift(
   swiftContent: string,
   bundleIdentifier: string,
 ): string {
-  const keychainServicePattern = /private let keychainService = "[^"]*"/;
-  const keychainServiceReplacement = `private let keychainService = "${bundleIdentifier}"`;
+  const keychainServicePattern =
+    /private (?:static )?let keychainService = "[^"]*"/;
 
   if (!keychainServicePattern.test(swiftContent)) {
     throw new Error(
-      `Failed to find keychainService pattern in ShareViewController.swift`,
+      `Failed to find keychainService pattern in Swift source file`,
     );
   }
 
-  return swiftContent.replace(
-    keychainServicePattern,
-    keychainServiceReplacement,
-  );
+  // 元の宣言スタイル (static or non-static) を保持して置換
+  return swiftContent.replace(keychainServicePattern, (match) => {
+    const isStatic = match.includes("static");
+    return isStatic
+      ? `private static let keychainService = "${bundleIdentifier}"`
+      : `private let keychainService = "${bundleIdentifier}"`;
+  });
 }
 
 // ============================================================
@@ -264,28 +269,46 @@ function copyShareExtensionFiles(
     fs.mkdirSync(targetDir, { recursive: true });
   }
 
-  // ShareViewController.swift をコピー（動的設定を適用）
+  // ShareViewController.swift をコピー
   const viewControllerPath = path.join(sourceDir, "ShareViewController.swift");
   if (!fs.existsSync(viewControllerPath)) {
     throw new Error(
       `ShareViewController.swift not found: ${viewControllerPath}`,
     );
   }
-
-  const viewControllerSource = fs.readFileSync(viewControllerPath, "utf-8");
-  const viewControllerUpdated = updateKeychainServiceInSwift(
-    viewControllerSource,
-    bundleIdentifier,
-  );
-
-  console.log(
-    `[withShareExtension] Updated keychainService to: ${bundleIdentifier}`,
-  );
-
   fs.writeFileSync(
     path.join(targetDir, "ShareViewController.swift"),
-    viewControllerUpdated,
+    fs.readFileSync(viewControllerPath, "utf-8"),
   );
+
+  // 追加の Swift ソースファイルをコピー
+  const additionalSwiftFiles = [
+    "OGPMetadataFetcher.swift",
+    "ShareExtensionServices.swift",
+    "String+HTMLDecoding.swift",
+  ];
+
+  for (const fileName of additionalSwiftFiles) {
+    const sourcePath = path.join(sourceDir, fileName);
+    if (!fs.existsSync(sourcePath)) {
+      console.warn(
+        `[withShareExtension] ${fileName} not found in ${sourceDir}, skipping`,
+      );
+      continue;
+    }
+
+    let content = fs.readFileSync(sourcePath, "utf-8");
+
+    // ShareExtensionServices.swift に keychainService の動的設定を適用
+    if (fileName === "ShareExtensionServices.swift") {
+      content = updateKeychainServiceInSwift(content, bundleIdentifier);
+      console.log(
+        `[withShareExtension] Updated keychainService in ${fileName} to: ${bundleIdentifier}`,
+      );
+    }
+
+    fs.writeFileSync(path.join(targetDir, fileName), content);
+  }
 
   // Info.plist をコピー（Supabase設定を追加）
   const infoPlistPath = path.join(sourceDir, "Info.plist");
@@ -397,12 +420,30 @@ const withShareExtension: ConfigPlugin<WithShareExtensionOptions> = (
     const infoPlistPath = `${extensionName}/Info.plist`;
     const entitlementsPath = `${extensionName}/${extensionName}.entitlements`;
     const viewControllerPath = `${extensionName}/ShareViewController.swift`;
+    const ogpMetadataFetcherPath = `${extensionName}/OGPMetadataFetcher.swift`;
+    const servicesPath = `${extensionName}/ShareExtensionServices.swift`;
+    const stringExtPath = `${extensionName}/String+HTMLDecoding.swift`;
 
     // ファイルを追加
     pbxProject.addFile(infoPlistPath, pbxGroupKey);
     pbxProject.addFile(entitlementsPath, pbxGroupKey);
     pbxProject.addSourceFile(
       viewControllerPath,
+      { target: target.uuid },
+      pbxGroupKey,
+    );
+    pbxProject.addSourceFile(
+      ogpMetadataFetcherPath,
+      { target: target.uuid },
+      pbxGroupKey,
+    );
+    pbxProject.addSourceFile(
+      servicesPath,
+      { target: target.uuid },
+      pbxGroupKey,
+    );
+    pbxProject.addSourceFile(
+      stringExtPath,
       { target: target.uuid },
       pbxGroupKey,
     );

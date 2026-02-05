@@ -1,6 +1,5 @@
 import UIKit
 import UniformTypeIdentifiers
-import Security
 
 /**
  * Share Extension のメインビューコントローラ
@@ -17,41 +16,69 @@ class ShareViewController: UIViewController {
 
     // MARK: - Design System Colors (メインアプリと統一)
 
-    /// slate-900: プライマリダーク
-    private let colorSlate900 = UIColor(red: 15/255, green: 23/255, blue: 42/255, alpha: 1)
-    /// slate-800: セカンダリダーク
-    private let colorSlate800 = UIColor(red: 30/255, green: 41/255, blue: 59/255, alpha: 1)
-    /// slate-700
-    private let colorSlate700 = UIColor(red: 51/255, green: 65/255, blue: 85/255, alpha: 1)
-    /// slate-400: サブテキスト
-    private let colorSlate400 = UIColor(red: 148/255, green: 163/255, blue: 184/255, alpha: 1)
-    /// slate-200: ボーダー
-    private let colorSlate200 = UIColor(red: 226/255, green: 232/255, blue: 240/255, alpha: 1)
-    /// slate-100: 薄い背景
-    private let colorSlate100 = UIColor(red: 241/255, green: 245/255, blue: 249/255, alpha: 1)
-    /// slate-50: ベース背景
-    private let colorSlate50 = UIColor(red: 248/255, green: 250/255, blue: 252/255, alpha: 1)
-    /// emerald-600: 成功
-    private let colorEmerald600 = UIColor(red: 5/255, green: 150/255, blue: 105/255, alpha: 1)
-    /// red-500: エラー
-    private let colorRed500 = UIColor(red: 239/255, green: 68/255, blue: 68/255, alpha: 1)
+    private enum Colors {
+        static let slate900 = UIColor(red: 15/255, green: 23/255, blue: 42/255, alpha: 1)
+        static let slate500 = UIColor(red: 107/255, green: 114/255, blue: 128/255, alpha: 1)
+        static let slate400 = UIColor(red: 148/255, green: 163/255, blue: 184/255, alpha: 1)
+        static let slate50  = UIColor(red: 248/255, green: 250/255, blue: 252/255, alpha: 1)
+        static let emerald600 = UIColor(red: 5/255, green: 150/255, blue: 105/255, alpha: 1)
+        static let red500 = UIColor(red: 239/255, green: 68/255, blue: 68/255, alpha: 1)
+    }
+
+    // MARK: - Layout Constants
+
+    private enum Layout {
+        static let cardWidth: CGFloat = 260
+        static let cardHeight: CGFloat = 160
+        static let cardCornerRadius: CGFloat = 20
+        static let cardShadowRadius: CGFloat = 24
+        static let cardShadowOpacity: Float = 0.15
+        static let cardShadowOffsetY: CGFloat = 8
+        static let cardPadding: CGFloat = 20
+        static let iconContainerSize: CGFloat = 48
+        static let iconContainerCornerRadius: CGFloat = 24
+        static let iconSize: CGFloat = 24
+        static let iconTopPadding: CGFloat = 24
+        static let iconSymbolSize: CGFloat = 20
+        static let messageFontSize: CGFloat = 16
+        static let subMessageFontSize: CGFloat = 13
+        static let messageTopSpacing: CGFloat = 16
+        static let subMessageTopSpacing: CGFloat = 4
+    }
+
+    // MARK: - Animation Constants
+
+    private enum Anim {
+        static let appearDuration: TimeInterval = 0.3
+        static let appearDamping: CGFloat = 0.8
+        static let appearVelocity: CGFloat = 0.5
+        static let disappearDuration: TimeInterval = 0.2
+        static let scaleDown: CGFloat = 0.9
+        static let successPopDuration: TimeInterval = 0.4
+        static let successPopDamping: CGFloat = 0.5
+        static let successPopVelocity: CGFloat = 0.8
+        static let successPopScale: CGFloat = 0.8
+        static let shakeDuration: CFTimeInterval = 0.4
+        static let shakeValues: [NSNumber] = [-8, 8, -6, 6, -4, 4, 0]
+        static let successDismissDelay: TimeInterval = 1.2
+        static let errorDismissDelay: TimeInterval = 2.0
+        static let urlNotFoundDismissDelay: TimeInterval = 1.8
+    }
 
     // MARK: - Localization
 
-    /// 日本語かどうか
     private var isJapanese: Bool {
         let preferredLanguage = Locale.preferredLanguages.first ?? "en"
         return preferredLanguage.hasPrefix("ja")
     }
 
-    /// ローカライズされた文字列を取得
     private func localized(_ key: LocalizedString) -> String {
         return isJapanese ? key.ja : key.en
     }
 
-    /// ローカライズ用文字列定義
     private enum LocalizedString {
         case optimizingURL
+        case loadingLink
         case savingURL
         case saved
         case urlNotFound
@@ -63,6 +90,7 @@ class ShareViewController: UIViewController {
         var ja: String {
             switch self {
             case .optimizingURL: return "URLを最適化中..."
+            case .loadingLink: return "リンクを読み込み中..."
             case .savingURL: return "URLを保存中..."
             case .saved: return "保存しました"
             case .urlNotFound: return "URLが見つかりません"
@@ -76,6 +104,7 @@ class ShareViewController: UIViewController {
         var en: String {
             switch self {
             case .optimizingURL: return "Optimizing URL..."
+            case .loadingLink: return "Loading link..."
             case .savingURL: return "Saving URL..."
             case .saved: return "Saved"
             case .urlNotFound: return "URL not found"
@@ -87,30 +116,8 @@ class ShareViewController: UIViewController {
         }
     }
 
-    // MARK: - Constants
-
-    /// Supabase URL (Info.plistから取得)
-    private var supabaseUrl: String {
-        return Bundle.main.object(forInfoDictionaryKey: "SUPABASE_URL") as? String ?? ""
-    }
-
-    /// Supabase Anon Key (Info.plistから取得)
-    private var supabaseAnonKey: String {
-        return Bundle.main.object(forInfoDictionaryKey: "SUPABASE_ANON_KEY") as? String ?? ""
-    }
-
-    /// Keychain サービス名
-    /// 注意: withShareExtension.tsプラグインがこのプロパティ値を動的に置換します。
-    /// 現在のKeychain検索ではService名を指定しない方式を採用しているため、
-    /// この値は直接使用されていませんが、プラグイン互換性のため保持しています。
-    private let keychainService = "com.sooom.linkcache.dev"
-
-    /// Supabase セッションキー（Expo SecureStoreと同じ）
-    private let supabaseSessionKey = "supabase.session"
-
     // MARK: - UI Elements
 
-    /// ブラー背景
     private lazy var blurView: UIVisualEffectView = {
         let blur = UIBlurEffect(style: .systemUltraThinMaterialDark)
         let view = UIVisualEffectView(effect: blur)
@@ -118,31 +125,28 @@ class ShareViewController: UIViewController {
         return view
     }()
 
-    /// メインコンテナ (カード)
     private lazy var containerView: UIView = {
         let view = UIView()
-        view.backgroundColor = colorSlate50
-        view.layer.cornerRadius = 20
+        view.backgroundColor = Colors.slate50
+        view.layer.cornerRadius = Layout.cardCornerRadius
         view.layer.shadowColor = UIColor.black.cgColor
-        view.layer.shadowOffset = CGSize(width: 0, height: 8)
-        view.layer.shadowRadius = 24
-        view.layer.shadowOpacity = 0.15
+        view.layer.shadowOffset = CGSize(width: 0, height: Layout.cardShadowOffsetY)
+        view.layer.shadowRadius = Layout.cardShadowRadius
+        view.layer.shadowOpacity = Layout.cardShadowOpacity
         view.translatesAutoresizingMaskIntoConstraints = false
         view.alpha = 0
-        view.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
+        view.transform = CGAffineTransform(scaleX: Anim.scaleDown, y: Anim.scaleDown)
         return view
     }()
 
-    /// アイコンコンテナ
     private lazy var iconContainer: UIView = {
         let view = UIView()
-        view.backgroundColor = colorSlate900
-        view.layer.cornerRadius = 24
+        view.backgroundColor = Colors.slate900
+        view.layer.cornerRadius = Layout.iconContainerCornerRadius
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
 
-    /// アイコン (チェックマーク / エクスクラメーション)
     private lazy var iconImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
@@ -151,31 +155,28 @@ class ShareViewController: UIViewController {
         return imageView
     }()
 
-    /// ローディングインジケーター
     private lazy var loadingIndicator: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView(style: .medium)
-        indicator.color = .white
+        indicator.color = Colors.slate500
         indicator.translatesAutoresizingMaskIntoConstraints = false
         indicator.hidesWhenStopped = true
         return indicator
     }()
 
-    /// メッセージラベル
     private lazy var messageLabel: UILabel = {
         let label = UILabel()
-        label.text = ""  // 初期値は空、後で設定
-        label.font = .systemFont(ofSize: 16, weight: .semibold)
-        label.textColor = colorSlate900
+        label.text = ""
+        label.font = .systemFont(ofSize: Layout.messageFontSize, weight: .semibold)
+        label.textColor = Colors.slate900
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
 
-    /// サブメッセージラベル (URL表示用)
     private lazy var subMessageLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 13, weight: .regular)
-        label.textColor = colorSlate400
+        label.font = .systemFont(ofSize: Layout.subMessageFontSize, weight: .regular)
+        label.textColor = Colors.slate400
         label.textAlignment = .center
         label.numberOfLines = 1
         label.lineBreakMode = .byTruncatingMiddle
@@ -195,11 +196,9 @@ class ShareViewController: UIViewController {
     // MARK: - UI Setup
 
     private func setupUI() {
-        // ブラー背景
         view.backgroundColor = .clear
         view.addSubview(blurView)
 
-        // カードコンテナ
         view.addSubview(containerView)
         containerView.addSubview(iconContainer)
         iconContainer.addSubview(iconImageView)
@@ -207,7 +206,6 @@ class ShareViewController: UIViewController {
         containerView.addSubview(messageLabel)
         containerView.addSubview(subMessageLabel)
 
-        // 初期状態: ローディング表示
         loadingIndicator.startAnimating()
         iconImageView.isHidden = true
 
@@ -221,34 +219,34 @@ class ShareViewController: UIViewController {
             // コンテナカード - 中央配置
             containerView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             containerView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            containerView.widthAnchor.constraint(equalToConstant: 260),
-            containerView.heightAnchor.constraint(equalToConstant: 160),
+            containerView.widthAnchor.constraint(equalToConstant: Layout.cardWidth),
+            containerView.heightAnchor.constraint(equalToConstant: Layout.cardHeight),
 
             // アイコンコンテナ - カード上部中央
             iconContainer.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
-            iconContainer.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 24),
-            iconContainer.widthAnchor.constraint(equalToConstant: 48),
-            iconContainer.heightAnchor.constraint(equalToConstant: 48),
+            iconContainer.topAnchor.constraint(equalTo: containerView.topAnchor, constant: Layout.iconTopPadding),
+            iconContainer.widthAnchor.constraint(equalToConstant: Layout.iconContainerSize),
+            iconContainer.heightAnchor.constraint(equalToConstant: Layout.iconContainerSize),
 
             // アイコン - コンテナ内中央
             iconImageView.centerXAnchor.constraint(equalTo: iconContainer.centerXAnchor),
             iconImageView.centerYAnchor.constraint(equalTo: iconContainer.centerYAnchor),
-            iconImageView.widthAnchor.constraint(equalToConstant: 24),
-            iconImageView.heightAnchor.constraint(equalToConstant: 24),
+            iconImageView.widthAnchor.constraint(equalToConstant: Layout.iconSize),
+            iconImageView.heightAnchor.constraint(equalToConstant: Layout.iconSize),
 
             // ローディング - コンテナ内中央
             loadingIndicator.centerXAnchor.constraint(equalTo: iconContainer.centerXAnchor),
             loadingIndicator.centerYAnchor.constraint(equalTo: iconContainer.centerYAnchor),
 
             // メッセージラベル
-            messageLabel.topAnchor.constraint(equalTo: iconContainer.bottomAnchor, constant: 16),
-            messageLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
-            messageLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
+            messageLabel.topAnchor.constraint(equalTo: iconContainer.bottomAnchor, constant: Layout.messageTopSpacing),
+            messageLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: Layout.cardPadding),
+            messageLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -Layout.cardPadding),
 
             // サブメッセージラベル
-            subMessageLabel.topAnchor.constraint(equalTo: messageLabel.bottomAnchor, constant: 4),
-            subMessageLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
-            subMessageLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
+            subMessageLabel.topAnchor.constraint(equalTo: messageLabel.bottomAnchor, constant: Layout.subMessageTopSpacing),
+            subMessageLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: Layout.cardPadding),
+            subMessageLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -Layout.cardPadding),
         ])
 
         // タップで閉じる
@@ -260,10 +258,10 @@ class ShareViewController: UIViewController {
 
     private func animateIn() {
         UIView.animate(
-            withDuration: 0.3,
+            withDuration: Anim.appearDuration,
             delay: 0,
-            usingSpringWithDamping: 0.8,
-            initialSpringVelocity: 0.5,
+            usingSpringWithDamping: Anim.appearDamping,
+            initialSpringVelocity: Anim.appearVelocity,
             options: .curveEaseOut
         ) {
             self.containerView.alpha = 1
@@ -273,12 +271,12 @@ class ShareViewController: UIViewController {
 
     private func animateOut(completion: @escaping () -> Void) {
         UIView.animate(
-            withDuration: 0.2,
+            withDuration: Anim.disappearDuration,
             delay: 0,
             options: .curveEaseIn
         ) {
             self.containerView.alpha = 0
-            self.containerView.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
+            self.containerView.transform = CGAffineTransform(scaleX: Anim.scaleDown, y: Anim.scaleDown)
             self.blurView.alpha = 0
         } completion: { _ in
             completion()
@@ -286,71 +284,76 @@ class ShareViewController: UIViewController {
     }
 
     @objc private func handleTap() {
-        animateOut {
-            self.closeExtension()
+        animateOut { [weak self] in
+            self?.closeExtension()
         }
     }
 
     // MARK: - Content Processing
 
     private func processSharedContent() {
-        // Step 1: URLを最適化中
         updateLoadingState(message: localized(.optimizingURL), url: nil)
 
         extractURL { [weak self] url in
             guard let self = self else { return }
 
             guard let url = url else {
-                DispatchQueue.main.async {
-                    self.showError(
-                        message: self.localized(.urlNotFound),
-                        subMessage: nil
-                    )
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.8) {
-                        self.animateOut { self.closeExtension() }
+                DispatchQueue.main.async { [weak self] in
+                    guard let self = self else { return }
+                    self.showError(message: self.localized(.urlNotFound), subMessage: nil)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + Anim.urlNotFoundDismissDelay) { [weak self] in
+                        self?.animateOut { self?.closeExtension() }
                     }
                 }
                 return
             }
 
-            // Step 2: URLを保存中 (URLも表示)
-            DispatchQueue.main.async {
-                self.updateLoadingState(
-                    message: self.localized(.savingURL),
-                    url: url
-                )
+            // Step 2: リンクを読み込み中 (OGPメタデータ取得)
+            DispatchQueue.main.async { [weak self] in
+                self?.updateLoadingState(message: self?.localized(.loadingLink) ?? "", url: url)
             }
 
-            // Keychain からトークン取得
-            guard let token = self.getSupabaseToken() else {
-                DispatchQueue.main.async {
+            // Keychain からトークン取得（認証エラーは早めに検出）
+            guard let token = KeychainService.getSupabaseToken() else {
+                DispatchQueue.main.async { [weak self] in
+                    guard let self = self else { return }
                     self.showError(
                         message: self.localized(.pleaseLogin),
                         subMessage: self.localized(.loginRequired)
                     )
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                        self.animateOut { self.closeExtension() }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + Anim.errorDismissDelay) { [weak self] in
+                        self?.animateOut { self?.closeExtension() }
                     }
                 }
                 return
             }
 
-            // Supabase に保存
-            self.saveToSupabase(url: url, token: token) { success in
-                DispatchQueue.main.async {
-                    if success {
-                        self.showSuccess(url: url)
-                        // 成功時は自動で閉じる
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
-                            self.animateOut { self.closeExtension() }
-                        }
-                    } else {
-                        self.showError(
-                            message: self.localized(.saveFailed),
-                            subMessage: self.localized(.tryFromApp)
-                        )
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                            self.animateOut { self.closeExtension() }
+            // Step 3: OGPメタデータを取得
+            OGPMetadataFetcher.fetch(url: url) { [weak self] metadata in
+                guard let self = self else { return }
+
+                // Step 4: URLを保存中
+                DispatchQueue.main.async { [weak self] in
+                    self?.updateLoadingState(message: self?.localized(.savingURL) ?? "", url: url)
+                }
+
+                // Step 5: Supabase に保存（メタデータあり/なし両対応）
+                SupabaseAPIClient.saveLink(url: url, token: token, metadata: metadata) { [weak self] success in
+                    DispatchQueue.main.async { [weak self] in
+                        guard let self = self else { return }
+                        if success {
+                            self.showSuccess(url: url)
+                            DispatchQueue.main.asyncAfter(deadline: .now() + Anim.successDismissDelay) { [weak self] in
+                                self?.animateOut { self?.closeExtension() }
+                            }
+                        } else {
+                            self.showError(
+                                message: self.localized(.saveFailed),
+                                subMessage: self.localized(.tryFromApp)
+                            )
+                            DispatchQueue.main.asyncAfter(deadline: .now() + Anim.errorDismissDelay) { [weak self] in
+                                self?.animateOut { self?.closeExtension() }
+                            }
                         }
                     }
                 }
@@ -358,7 +361,8 @@ class ShareViewController: UIViewController {
         }
     }
 
-    /// ローディング状態を更新
+    // MARK: - UI State Updates
+
     private func updateLoadingState(message: String, url: String?) {
         messageLabel.text = message
         if let url = url {
@@ -366,13 +370,11 @@ class ShareViewController: UIViewController {
         }
     }
 
-    /// URLを表示用にフォーマット
     private func formatURLForDisplay(_ url: String) -> String {
         guard let urlObj = URL(string: url),
               let host = urlObj.host else {
             return url
         }
-        // ホスト名のみ表示 (www.を除去)
         return host.replacingOccurrences(of: "www.", with: "")
     }
 
@@ -380,24 +382,21 @@ class ShareViewController: UIViewController {
         loadingIndicator.stopAnimating()
         iconImageView.isHidden = false
 
-        // チェックマークアイコン (SF Symbols)
-        let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .semibold)
+        let config = UIImage.SymbolConfiguration(pointSize: Layout.iconSymbolSize, weight: .semibold)
         iconImageView.image = UIImage(systemName: "checkmark", withConfiguration: config)
-
-        // 成功カラー
-        iconContainer.backgroundColor = colorEmerald600
+        iconContainer.backgroundColor = Colors.emerald600
 
         messageLabel.text = localized(.saved)
-        messageLabel.textColor = colorSlate900
+        messageLabel.textColor = Colors.slate900
         subMessageLabel.text = formatURLForDisplay(url)
 
         // 成功アニメーション (アイコンがポップ)
-        iconContainer.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
+        iconContainer.transform = CGAffineTransform(scaleX: Anim.successPopScale, y: Anim.successPopScale)
         UIView.animate(
-            withDuration: 0.4,
+            withDuration: Anim.successPopDuration,
             delay: 0,
-            usingSpringWithDamping: 0.5,
-            initialSpringVelocity: 0.8,
+            usingSpringWithDamping: Anim.successPopDamping,
+            initialSpringVelocity: Anim.successPopVelocity,
             options: .curveEaseOut
         ) {
             self.iconContainer.transform = .identity
@@ -408,22 +407,19 @@ class ShareViewController: UIViewController {
         loadingIndicator.stopAnimating()
         iconImageView.isHidden = false
 
-        // エクスクラメーションアイコン (SF Symbols)
-        let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .semibold)
+        let config = UIImage.SymbolConfiguration(pointSize: Layout.iconSymbolSize, weight: .semibold)
         iconImageView.image = UIImage(systemName: "exclamationmark", withConfiguration: config)
-
-        // エラーカラー
-        iconContainer.backgroundColor = colorRed500
+        iconContainer.backgroundColor = Colors.red500
 
         messageLabel.text = message
-        messageLabel.textColor = colorSlate900
+        messageLabel.textColor = Colors.slate900
         subMessageLabel.text = subMessage ?? ""
 
         // エラーアニメーション (シェイク)
         let animation = CAKeyframeAnimation(keyPath: "transform.translation.x")
         animation.timingFunction = CAMediaTimingFunction(name: .linear)
-        animation.duration = 0.4
-        animation.values = [-8, 8, -6, 6, -4, 4, 0]
+        animation.duration = Anim.shakeDuration
+        animation.values = Anim.shakeValues
         iconContainer.layer.add(animation, forKey: "shake")
     }
 
@@ -459,12 +455,8 @@ class ShareViewController: UIViewController {
 
                 // プレーンテキストとして URL が渡される場合もある
                 if attachment.hasItemConformingToTypeIdentifier(UTType.plainText.identifier) {
-                    attachment.loadItem(forTypeIdentifier: UTType.plainText.identifier, options: [:]) { [weak self] (data, error) in
-                        guard let self = self else {
-                            completion(nil)
-                            return
-                        }
-                        if let text = data as? String, self.isValidURL(text) {
+                    attachment.loadItem(forTypeIdentifier: UTType.plainText.identifier, options: [:]) { (data, error) in
+                        if let text = data as? String, Self.isValidURL(text) {
                             completion(text)
                         } else {
                             completion(nil)
@@ -478,153 +470,8 @@ class ShareViewController: UIViewController {
         completion(nil)
     }
 
-    private func isValidURL(_ string: String) -> Bool {
+    private static func isValidURL(_ string: String) -> Bool {
         guard let url = URL(string: string) else { return false }
         return url.scheme == "http" || url.scheme == "https"
-    }
-
-    // MARK: - Keychain Access
-    
-    /**
-     * Keychain から Supabase セッショントークンを取得
-     *
-     * Expo SecureStore と同じ Keychain Access Group を使用して、
-     * メインアプリで保存された認証トークンを読み取ります。
-     *
-     * 注意: Service名を指定せず、Account名のみで検索することで、
-     * Expo SecureStoreが使用するService名に関係なく検索できます。
-     */
-    private func getSupabaseToken() -> String? {
-        // Keychainクエリを作成
-        // Service名を指定しないことで、Expo SecureStoreが使用するService名に関係なく検索可能
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            // kSecAttrServiceは指定しない（Account名のみで検索）
-            kSecAttrAccount as String: supabaseSessionKey,
-            kSecReturnData as String: true,
-            kSecMatchLimit as String: kSecMatchLimitOne
-        ]
-        
-        // デバッグ: 検索パラメータを出力
-        print("[ShareExtension] Attempting to retrieve token from Keychain")
-        print("[ShareExtension] Account: \(supabaseSessionKey)")
-        print("[ShareExtension] Service: (not specified - searching by account only)")
-        
-        var result: AnyObject?
-        let status = SecItemCopyMatching(query as CFDictionary, &result)
-        
-        // デバッグ: Keychainアクセスの結果を出力
-        print("[ShareExtension] Keychain access status: \(status)")
-        if status != errSecSuccess {
-            print("[ShareExtension] Keychain error code: \(status)")
-            if status == errSecItemNotFound {
-                print("[ShareExtension] Token not found in Keychain (errSecItemNotFound)")
-            } else if status == errSecAuthFailed {
-                print("[ShareExtension] Keychain access denied (errSecAuthFailed)")
-            } else {
-                print("[ShareExtension] Keychain access failed with error: \(status)")
-            }
-        }
-        
-        guard status == errSecSuccess,
-              let data = result as? Data,
-              let jsonString = String(data: data, encoding: .utf8) else {
-            print("[ShareExtension] Failed to retrieve Supabase token from Keychain")
-            return nil
-        }
-        
-        // デバッグ: 取得したデータのサイズを出力
-        print("[ShareExtension] Retrieved data from Keychain: \(data.count) bytes")
-        
-        // JSON をパースして access_token を取得
-        do {
-            if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-               let accessToken = json["access_token"] as? String {
-                print("[ShareExtension] Successfully retrieved Supabase token")
-                print("[ShareExtension] Token length: \(accessToken.count) characters")
-                return accessToken
-            } else {
-                print("[ShareExtension] Failed to parse access_token from JSON")
-                if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
-                    print("[ShareExtension] JSON keys: \(json.keys)")
-                }
-            }
-        } catch {
-            print("[ShareExtension] Failed to parse Supabase session: \(error)")
-        }
-        
-        return nil
-    }
-    
-    // MARK: - Supabase API
-    
-    /**
-     * Supabase API 経由でリンクを保存
-     *
-     * create_link_with_status RPC を呼び出してリンクを作成します。
-     */
-    private func saveToSupabase(url: String, token: String, completion: @escaping (Bool) -> Void) {
-        // エンドポイント URL を作成
-        let endpoint = "\(supabaseUrl)/rest/v1/rpc/create_link_with_status"
-        
-        guard let endpointURL = URL(string: endpoint) else {
-            print("[ShareExtension] Invalid Supabase URL")
-            completion(false)
-            return
-        }
-        
-        // リクエストボディを作成
-        let body: [String: Any] = [
-            "p_url": url,
-            "p_title": NSNull(),
-            "p_description": NSNull(),
-            "p_image_url": NSNull(),
-            "p_favicon_url": NSNull(),
-            "p_site_name": NSNull()
-        ]
-        
-        guard let jsonData = try? JSONSerialization.data(withJSONObject: body) else {
-            print("[ShareExtension] Failed to serialize request body")
-            completion(false)
-            return
-        }
-        
-        // HTTP リクエストを作成
-        var request = URLRequest(url: endpointURL)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("application/json", forHTTPHeaderField: "Accept")
-        request.setValue(supabaseAnonKey, forHTTPHeaderField: "apikey")
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        request.httpBody = jsonData
-        
-        // リクエストを送信
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                print("[ShareExtension] Network error: \(error)")
-                completion(false)
-                return
-            }
-            
-            guard let httpResponse = response as? HTTPURLResponse else {
-                print("[ShareExtension] Invalid response")
-                completion(false)
-                return
-            }
-            
-            if httpResponse.statusCode == 200 || httpResponse.statusCode == 201 {
-                print("[ShareExtension] Successfully saved link to Supabase")
-                completion(true)
-            } else {
-                if let data = data, let responseBody = String(data: data, encoding: .utf8) {
-                    print("[ShareExtension] Failed to save link. Status: \(httpResponse.statusCode), Body: \(responseBody)")
-                } else {
-                    print("[ShareExtension] Failed to save link. Status: \(httpResponse.statusCode)")
-                }
-                completion(false)
-            }
-        }
-        
-        task.resume()
     }
 }
