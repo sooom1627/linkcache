@@ -221,13 +221,18 @@ function copyShareExtensionFiles(
   let infoPlistUpdated = infoPlistSource;
 
   if (supabaseUrl && supabaseAnonKey) {
+    // 重要: トップレベルの</dict>の前に追加する必要がある
+    // replace("</dict>", ...) は最初の</dict>を置換するため、
+    // NSExtensionActivationRule内に誤配置されてしまう。
+    // "</dict>\n</plist>" を対象にすることでトップレベルを正確に特定する。
     infoPlistUpdated = infoPlistSource.replace(
-      "</dict>",
+      "</dict>\n</plist>",
       `    <key>SUPABASE_URL</key>
     <string>${supabaseUrl}</string>
     <key>SUPABASE_ANON_KEY</key>
     <string>${supabaseAnonKey}</string>
-</dict>`,
+</dict>
+</plist>`,
     );
   } else {
     console.warn(
