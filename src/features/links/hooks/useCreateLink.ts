@@ -6,7 +6,7 @@ import {
 } from "../api/createLink.api";
 import { linkQueryKeys } from "../constants/queryKeys";
 import type { OgpMetadata } from "../utils/metadata";
-import { fetchOgpMetadata } from "../utils/metadata";
+import { fetchOgpMetadata, truncateDescription } from "../utils/metadata";
 import { normalizeUrl } from "../utils/normalizeUrl";
 
 /**
@@ -60,7 +60,7 @@ export function useCreateLink(): UseCreateLinkReturn {
       return createLinkWithStatus({
         url: normalizedUrl,
         title: metadata?.title ?? null,
-        description: metadata?.description ?? null,
+        description: truncateDescription(metadata?.description ?? null),
         image_url: metadata?.image_url ?? null,
         favicon_url: metadata?.favicon_url ?? null,
         site_name: metadata?.site_name ?? null,

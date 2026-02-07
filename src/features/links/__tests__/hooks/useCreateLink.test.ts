@@ -14,6 +14,12 @@ jest.mock("../../api/createLink.api", () => ({
 // メタデータ取得のモック
 jest.mock("../../utils/metadata", () => ({
   fetchOgpMetadata: jest.fn(),
+  truncateDescription: (description: string | null): string | null => {
+    if (!description) return null;
+    const maxDescriptionLength = 300;
+    if (description.length <= maxDescriptionLength) return description;
+    return description.slice(0, maxDescriptionLength);
+  },
 }));
 
 describe("useCreateLink", () => {
@@ -222,5 +228,43 @@ describe("useCreateLink", () => {
     });
 
     invalidateQueriesSpy.mockRestore();
+  });
+
+  it("truncates description to 300 characters when creating link", async () => {
+    const longDescription = "b".repeat(500);
+    const mockMetadata = {
+      title: "Example Title",
+      description: longDescription,
+      image_url: null,
+      favicon_url: null,
+      site_name: "Example Site",
+    };
+    const mockResponse = {
+      link_id: "test-uuid",
+      url: "https://example.com",
+      status: "new",
+    };
+
+    (fetchOgpMetadata as jest.Mock).mockResolvedValueOnce(mockMetadata);
+    (createLinkWithStatus as jest.Mock).mockResolvedValueOnce(mockResponse);
+
+    const { result } = renderHook(() => useCreateLink(), { wrapper });
+
+    act(() => {
+      result.current.createLink("https://example.com");
+    });
+
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true);
+    });
+
+    expect(createLinkWithStatus).toHaveBeenCalledWith({
+      url: "https://example.com",
+      title: "Example Title",
+      description: "b".repeat(300), // 300文字に切り詰められている
+      image_url: null,
+      favicon_url: null,
+      site_name: "Example Site",
+    });
   });
 });
