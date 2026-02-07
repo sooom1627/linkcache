@@ -537,8 +537,21 @@ const withShareExtension: ConfigPlugin<WithShareExtensionOptions> = (
       if (fs.existsSync(podfilePath)) {
         let podfileContent = fs.readFileSync(podfilePath, "utf-8");
 
+        // Idempotency marker for ShareExtension post_install hooks
+        const beginMarker = "# BEGIN ShareExtension-EXTRA";
+        const endMarker = "# END ShareExtension-EXTRA";
+
+        // Check if the marker already exists - skip insertion if present
+        if (podfileContent.includes(beginMarker)) {
+          console.log(
+            "[withShareExtension] ShareExtension post_install hooks already present in Podfile, skipping",
+          );
+          return config;
+        }
+
         // post_installフックにShareExtension用の設定を追加
         const postInstallAddition = `
+    ${beginMarker}
     # ShareExtension: 全Podsターゲットで明示的モジュールを無効化
     installer.pods_project.targets.each do |target|
       target.build_configurations.each do |build_config|
@@ -569,7 +582,8 @@ const withShareExtension: ConfigPlugin<WithShareExtensionOptions> = (
         end
       end
       main_project.save
-    end`;
+    end
+    ${endMarker}`;
 
         // post_installブロックの末尾（endの前）にコードを挿入
         // react_native_post_install呼び出しの後に追加
