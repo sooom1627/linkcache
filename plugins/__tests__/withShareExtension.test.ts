@@ -58,11 +58,17 @@ const ENTITLEMENTS_TEMPLATE_DEV = `<?xml version="1.0" encoding="UTF-8"?>
 </dict>
 </plist>`;
 
-/** ShareViewController.swift の keychainService 部分を含む抜粋 */
+/** ShareViewController.swift の keychainService 部分を含む抜粋 (旧構造: non-static) */
 const SWIFT_TEMPLATE = `class ShareViewController: UIViewController {
     private let colorSlate900 = UIColor(red: 15/255, green: 23/255, blue: 42/255, alpha: 1)
     private let keychainService = "com.sooom.linkcache.dev"
     private let supabaseSessionKey = "supabase.session"
+}`;
+
+/** ShareExtensionServices.swift の keychainService 部分を含む抜粋 (新構造: static) */
+const SWIFT_SERVICES_TEMPLATE = `enum KeychainService {
+    private static let supabaseSessionKey = "supabase.session"
+    private static let keychainService = "com.sooom.linkcache.dev"
 }`;
 
 // ============================================================
@@ -288,5 +294,45 @@ describe("updateKeychainServiceInSwift", () => {
     expect(() =>
       updateKeychainServiceInSwift(invalidSwift, "com.sooom.linkcache"),
     ).toThrow("Failed to find keychainService pattern");
+  });
+
+  describe("static let 形式 (ShareExtensionServices.swift)", () => {
+    it("private static let keychainService が正しく置換される", () => {
+      const result = updateKeychainServiceInSwift(
+        SWIFT_SERVICES_TEMPLATE,
+        "com.sooom.linkcache",
+      );
+
+      expect(result).toContain(
+        'private static let keychainService = "com.sooom.linkcache"',
+      );
+      expect(result).not.toContain(
+        'private static let keychainService = "com.sooom.linkcache.dev"',
+      );
+    });
+
+    it("static キーワードが保持される", () => {
+      const result = updateKeychainServiceInSwift(
+        SWIFT_SERVICES_TEMPLATE,
+        "com.sooom.linkcache.dev",
+      );
+
+      // "private static let" が維持されていること
+      expect(result).toContain("private static let keychainService");
+      // "private let" (non-static) に変わっていないこと
+      expect(result).not.toMatch(
+        /private let keychainService = "com\.sooom\.linkcache\.dev"/,
+      );
+    });
+
+    it("keychainService以外のコードが変更されない", () => {
+      const result = updateKeychainServiceInSwift(
+        SWIFT_SERVICES_TEMPLATE,
+        "com.sooom.linkcache",
+      );
+
+      expect(result).toContain("enum KeychainService");
+      expect(result).toContain('supabaseSessionKey = "supabase.session"');
+    });
   });
 });
