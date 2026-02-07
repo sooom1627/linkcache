@@ -40,7 +40,8 @@ export interface UserLink {
   link_id: string;
   url: string;
   title: string | null;
-  description: string | null;
+  /** 説明文（get_user_links RPCではegress削減のため返されない） */
+  description?: string | null;
   image_url: string | null;
   favicon_url: string | null;
   site_name: string | null;
@@ -97,7 +98,7 @@ export const userLinkSchema = z.object({
   link_id: z.string().uuid(),
   url: z.string(),
   title: z.string().nullable(),
-  description: z.string().nullable(),
+  description: z.string().nullable().optional(),
   image_url: z.string().nullable(),
   favicon_url: z.string().nullable(),
   site_name: z.string().nullable(),
