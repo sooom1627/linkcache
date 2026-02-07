@@ -6,7 +6,7 @@ import {
 } from "../api/createLink.api";
 import { linkQueryKeys } from "../constants/queryKeys";
 import type { OgpMetadata } from "../utils/metadata";
-import { fetchOgpMetadata, truncateDescription } from "../utils/metadata";
+import { fetchOgpMetadata } from "../utils/metadata";
 import { normalizeUrl } from "../utils/normalizeUrl";
 
 /**
@@ -57,10 +57,11 @@ export function useCreateLink(): UseCreateLinkReturn {
       });
 
       // APIを呼び出してリンクを作成
+      // descriptionの切り詰めはmetadata層の責務（fetchOgpMetadata内で既に適用済み）
       return createLinkWithStatus({
         url: normalizedUrl,
         title: metadata?.title ?? null,
-        description: truncateDescription(metadata?.description ?? null),
+        description: metadata?.description ?? null,
         image_url: metadata?.image_url ?? null,
         favicon_url: metadata?.favicon_url ?? null,
         site_name: metadata?.site_name ?? null,
