@@ -4,6 +4,7 @@ import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { AuthProvider } from "@/src/features/auth";
+import { useSharedLinkSync } from "@/src/features/share-extension";
 
 import { ModalProvider } from "./ModalProvider";
 
@@ -44,6 +45,10 @@ const queryClient = new QueryClient({
  * 3. BottomSheetModalProvider - モーダルUIの基盤（QueryClient/Authに依存する可能性があるため内側）
  * 4. ModalProvider - グローバルモーダル管理（上記すべてに依存）
  *
+ * Share Extension 統合:
+ * - SharedLinkProcessor コンポーネントで共有リンクを処理
+ * - アプリ起動時・フォアグラウンド復帰時に App Group から読み取り
+ *
  * 将来的な拡張候補:
  * - テーマプロバイダー（Theme）
  * - 国際化プロバイダー（i18n）
@@ -59,13 +64,26 @@ const queryClient = new QueryClient({
  * </UIProviders>
  * ```
  */
+/**
+ * 共有リンク処理コンポーネント
+ *
+ * Share Extension から共有された URL を処理します。
+ * AuthProvider の内側で動作し、認証済みの場合のみ処理を行います。
+ */
+function SharedLinkProcessor({ children }: PropsWithChildren) {
+  useSharedLinkSync();
+  return <>{children}</>;
+}
+
 export function AppProviders({ children }: PropsWithChildren) {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <BottomSheetModalProvider>
-          <ModalProvider>{children}</ModalProvider>
-        </BottomSheetModalProvider>
+        <SharedLinkProcessor>
+          <BottomSheetModalProvider>
+            <ModalProvider>{children}</ModalProvider>
+          </BottomSheetModalProvider>
+        </SharedLinkProcessor>
       </AuthProvider>
     </QueryClientProvider>
   );

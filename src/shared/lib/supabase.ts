@@ -46,6 +46,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     storage: ExpoSecureStoreAdapter,
+    storageKey: "supabase.session", // Share Extensionと同じキー名を指定
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: false,

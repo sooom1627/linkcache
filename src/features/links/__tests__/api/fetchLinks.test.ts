@@ -30,7 +30,6 @@ describe("fetchUserLinks", () => {
               link_id: "550e8400-e29b-41d4-a716-446655440002",
               url: "https://example.com",
               title: "Example",
-              description: "Example description",
               image_url: null,
               favicon_url: null,
               site_name: "Example Site",
