@@ -225,11 +225,25 @@ enum OGPMetadataFetcher {
         var metadata = OGPMetadata()
 
         func extractMetaContent(property: String) -> String? {
+            // Note: Split patterns by content quote type to correctly handle apostrophes/quotes in content
+            // e.g., content="It's a test" should capture "It's a test", not just "It"
             let patterns = [
-                "<meta[^>]+property\\s*=\\s*[\"']\(property)[\"'][^>]+content\\s*=\\s*[\"']([^\"']*)[\"']",
-                "<meta[^>]+content\\s*=\\s*[\"']([^\"']*)[\"'][^>]+property\\s*=\\s*[\"']\(property)[\"']",
-                "<meta[^>]+name\\s*=\\s*[\"']\(property)[\"'][^>]+content\\s*=\\s*[\"']([^\"']*)[\"']",
-                "<meta[^>]+content\\s*=\\s*[\"']([^\"']*)[\"'][^>]+name\\s*=\\s*[\"']\(property)[\"']"
+                // property with any quote, content with double quotes
+                "<meta[^>]+property\\s*=\\s*[\"']\(property)[\"'][^>]+content\\s*=\\s*\"([^\"]*)\"",
+                // property with any quote, content with single quotes
+                "<meta[^>]+property\\s*=\\s*[\"']\(property)[\"'][^>]+content\\s*=\\s*'([^']*)'",
+                // content first (double quotes), then property
+                "<meta[^>]+content\\s*=\\s*\"([^\"]*)\"[^>]+property\\s*=\\s*[\"']\(property)[\"']",
+                // content first (single quotes), then property
+                "<meta[^>]+content\\s*=\\s*'([^']*)'[^>]+property\\s*=\\s*[\"']\(property)[\"']",
+                // name with any quote, content with double quotes
+                "<meta[^>]+name\\s*=\\s*[\"']\(property)[\"'][^>]+content\\s*=\\s*\"([^\"]*)\"",
+                // name with any quote, content with single quotes
+                "<meta[^>]+name\\s*=\\s*[\"']\(property)[\"'][^>]+content\\s*=\\s*'([^']*)'",
+                // content first (double quotes), then name
+                "<meta[^>]+content\\s*=\\s*\"([^\"]*)\"[^>]+name\\s*=\\s*[\"']\(property)[\"']",
+                // content first (single quotes), then name
+                "<meta[^>]+content\\s*=\\s*'([^']*)'[^>]+name\\s*=\\s*[\"']\(property)[\"']"
             ]
 
             for pattern in patterns {

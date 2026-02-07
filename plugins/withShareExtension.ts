@@ -28,6 +28,16 @@ interface BuildSettings {
 }
 
 /**
+ * Expo iOS設定の拡張型（deploymentTargetを含む）
+ * 注: Expoの標準型には含まれていないが、app.config.tsで設定可能
+ */
+interface IosConfigWithDeploymentTarget {
+  deploymentTarget?: string;
+  buildNumber?: string;
+  [key: string]: unknown;
+}
+
+/**
  * React Nativeのビルドスクリプト参照を削除し、標準コンパイラを設定する
  *
  * ShareExtensionは純粋なSwiftコードなので、React Nativeのビルドツールは不要です。
@@ -150,14 +160,25 @@ function configureBuildSettings(
  * 重要: replace("</dict>", ...) は最初の</dict>を置換するため、
  * ネストされた辞書（NSExtensionActivationRule等）内に誤配置される。
  * "</dict>\n</plist>" を対象にすることでトップレベルを正確に特定する。
+ *
+ * @throws {Error} パターンが見つからない場合
  */
 export function injectSupabaseConfigIntoPlist(
   plistContent: string,
   supabaseUrl: string,
   supabaseAnonKey: string,
 ): string {
+  const pattern = "</dict>\n</plist>";
+
+  if (!plistContent.includes(pattern)) {
+    throw new Error(
+      `injectSupabaseConfigIntoPlist: Failed to find expected pattern "${pattern}" in Info.plist. ` +
+        `Supabase keys were not injected. Check the plist file formatting (line endings, whitespace).`,
+    );
+  }
+
   return plistContent.replace(
-    "</dict>\n</plist>",
+    pattern,
     `    <key>SUPABASE_URL</key>
     <string>${supabaseUrl}</string>
     <key>SUPABASE_ANON_KEY</key>
@@ -452,7 +473,9 @@ const withShareExtension: ConfigPlugin<WithShareExtensionOptions> = (
     const configurations = pbxProject.pbxXCBuildConfigurationSection();
     const currentProjectVersion = config.ios?.buildNumber || "1";
     const marketingVersion = config.version || "1.0.0";
-    const deploymentTarget = (config.ios as any)?.deploymentTarget || "17.0";
+    const deploymentTarget =
+      (config.ios as IosConfigWithDeploymentTarget | undefined)
+        ?.deploymentTarget ?? "17.0";
 
     // ShareExtensionターゲットのビルド設定を検索して修正
     // すべての設定（Debug/Release）に対して適用

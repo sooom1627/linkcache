@@ -75,14 +75,20 @@ enum KeychainService {
             }
 
             // トークンの有効期限をチェック
-            if let expiresAt = json["expires_at"] as? TimeInterval {
-                let expirationDate = Date(timeIntervalSince1970: expiresAt)
-                if expirationDate <= Date() {
-                    #if DEBUG
-                    print("[ShareExtension] Token expired at: \(expirationDate)")
-                    #endif
-                    return nil
-                }
+            // expires_at が存在しない場合は、セッションデータが不完全と見なしトークンを無効として扱う
+            guard let expiresAt = json["expires_at"] as? TimeInterval else {
+                #if DEBUG
+                print("[ShareExtension] expires_at not found in session - treating token as invalid")
+                #endif
+                return nil
+            }
+
+            let expirationDate = Date(timeIntervalSince1970: expiresAt)
+            if expirationDate <= Date() {
+                #if DEBUG
+                print("[ShareExtension] Token expired at: \(expirationDate)")
+                #endif
+                return nil
             }
 
             #if DEBUG
@@ -126,6 +132,14 @@ enum SupabaseAPIClient {
     ///   - metadata: OGPメタデータ（オプション）
     ///   - completion: 完了コールバック (Bool: 成功/失敗)
     static func saveLink(url: String, token: String, metadata: OGPMetadata?, completion: @escaping (Bool) -> Void) {
+        guard !supabaseUrl.isEmpty, !supabaseAnonKey.isEmpty else {
+            #if DEBUG
+            print("[ShareExtension] Supabase configuration missing in Info.plist")
+            #endif
+            completion(false)
+            return
+        }
+
         let endpoint = "\(supabaseUrl)/rest/v1/rpc/create_link_with_status"
 
         guard let endpointURL = URL(string: endpoint) else {
