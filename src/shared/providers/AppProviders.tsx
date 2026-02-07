@@ -10,16 +10,30 @@ import { ModalProvider } from "./ModalProvider";
 
 /**
  * React Query設定
+ *
+ * キャッシュ戦略:
+ * - staleTime: データが「古い」とみなされるまでの時間（30分）
+ *   → Supabase Egress削減のため延長
+ * - gcTime: 未使用のキャッシュがメモリから削除されるまでの時間（60分）
+ * - refetchOnWindowFocus: モバイルでは不要（バッテリー節約）
+ * - refetchOnReconnect: ネットワーク復帰時に自動再フェッチ
+ * - refetchOnMount: true - stale状態のデータのみ再フェッチ
+ *   → invalidateQueries後の自動更新を有効化
+ *
+ * データ更新フロー:
+ * 1. mutation成功時にinvalidateQueries()でキャッシュをstale化
+ * 2. 画面遷移時、staleなクエリのみ自動refetch
+ * 3. staleTime内のデータはキャッシュから即座に返却（API呼び出しなし）
  */
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000,
-      gcTime: 10 * 60 * 1000,
+      staleTime: 30 * 60 * 1000, // 30分: Egress削減のため延長
+      gcTime: 60 * 60 * 1000, // 60分: キャッシュ保持時間（staleTimeより長く）
       retry: 1,
       refetchOnWindowFocus: false,
       refetchOnReconnect: true,
-      refetchOnMount: true,
+      refetchOnMount: true, // invalidateQueries後の自動refetchを有効化（stale時のみrefetch）
       throwOnError: false,
     },
     mutations: {

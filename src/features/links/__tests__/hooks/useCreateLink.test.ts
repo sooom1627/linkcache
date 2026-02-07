@@ -12,9 +12,13 @@ jest.mock("../../api/createLink.api", () => ({
 }));
 
 // メタデータ取得のモック
-jest.mock("../../utils/metadata", () => ({
-  fetchOgpMetadata: jest.fn(),
-}));
+jest.mock("../../utils/metadata", () => {
+  const actual = jest.requireActual("../../utils/metadata");
+  return {
+    ...actual,
+    fetchOgpMetadata: jest.fn(),
+  };
+});
 
 describe("useCreateLink", () => {
   beforeEach(() => {
@@ -222,5 +226,46 @@ describe("useCreateLink", () => {
     });
 
     invalidateQueriesSpy.mockRestore();
+  });
+
+  it("uses description from metadata as-is (truncation is handled by metadata layer)", async () => {
+    // metadata層で既に切り詰められたdescriptionを返すことを想定
+    const truncatedDescription = "b".repeat(300);
+    const mockMetadata = {
+      title: "Example Title",
+      description: truncatedDescription, // 既に切り詰められている
+      image_url: null,
+      favicon_url: null,
+      site_name: "Example Site",
+    };
+    const mockResponse = {
+      link_id: "test-uuid",
+      url: "https://example.com",
+      status: "new",
+    };
+
+    (fetchOgpMetadata as jest.Mock).mockResolvedValueOnce(mockMetadata);
+    (createLinkWithStatus as jest.Mock).mockResolvedValueOnce(mockResponse);
+
+    const { result } = renderHook(() => useCreateLink(), { wrapper });
+
+    act(() => {
+      result.current.createLink("https://example.com");
+    });
+
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true);
+    });
+
+    // useCreateLinkはmetadataから返されたdescriptionをそのまま使用する
+    // truncationはmetadata層の責務
+    expect(createLinkWithStatus).toHaveBeenCalledWith({
+      url: "https://example.com",
+      title: "Example Title",
+      description: truncatedDescription, // metadataから返された値をそのまま使用
+      image_url: null,
+      favicon_url: null,
+      site_name: "Example Site",
+    });
   });
 });
