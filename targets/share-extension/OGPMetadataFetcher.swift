@@ -17,6 +17,7 @@ enum OGPMetadataFetcher {
     private static let documentExtensions = [".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx"]
     private static let mediaExtensions = [".mp4", ".mp3", ".wav", ".avi", ".mov", ".webm", ".m4a", ".flac"]
     private static let videoExtensions = [".mp4", ".avi", ".mov", ".webm"]
+    private static let allExtensions = documentExtensions + mediaExtensions
 
     // MARK: - Regex Cache
 
@@ -24,7 +25,7 @@ enum OGPMetadataFetcher {
     private static let regexCacheLock = NSLock()
 
     /// キャッシュされた正規表現を取得
-    static func getCachedRegex(pattern: String) -> NSRegularExpression? {
+    private static func getCachedRegex(pattern: String) -> NSRegularExpression? {
         regexCacheLock.lock()
         defer { regexCacheLock.unlock() }
 
@@ -53,7 +54,6 @@ enum OGPMetadataFetcher {
 
         // Check if URL is a document/media file (skip OGP fetch)
         let lowercasePath = requestURL.path.lowercased()
-        let allExtensions = documentExtensions + mediaExtensions
 
         if allExtensions.contains(where: { lowercasePath.hasSuffix($0) }) {
             completion(createDocumentMetadata(url: requestURL, lowercasePath: lowercasePath))
@@ -135,7 +135,7 @@ enum OGPMetadataFetcher {
     // MARK: - Fallback Metadata
 
     /// URLから基本的なフォールバックメタデータを生成
-    static func createFallbackMetadata(url: URL) -> OGPMetadata {
+    private static func createFallbackMetadata(url: URL) -> OGPMetadata {
         var metadata = OGPMetadata()
         metadata.siteName = url.host?.replacingOccurrences(of: "www.", with: "")
         metadata.faviconUrl = "\(url.scheme ?? "https")://\(url.host ?? "")/favicon.ico"
@@ -187,35 +187,24 @@ enum OGPMetadataFetcher {
     }
 
     /// 相対URLを絶対URLに変換する
+    /// URL(string:relativeTo:) を使用して ../  や ./ を含むパスも正しく解決
     private static func resolveURL(_ urlString: String, baseURL: URL) -> String? {
+        // 絶対URLの場合はそのまま返す
         if urlString.hasPrefix("http://") || urlString.hasPrefix("https://") {
             return urlString
         }
 
+        // プロトコル相対URL (//) の場合
         if urlString.hasPrefix("//") {
             return "\(baseURL.scheme ?? "https"):\(urlString)"
         }
 
-        if urlString.hasPrefix("/") {
-            guard let scheme = baseURL.scheme, let host = baseURL.host else { return nil }
-            let port = baseURL.port.map { ":\($0)" } ?? ""
-            return "\(scheme)://\(host)\(port)\(urlString)"
+        // Foundation の URL 解決ロジックに委譲（../ や ./ を正しく解決）
+        if let resolvedURL = URL(string: urlString, relativeTo: baseURL) {
+            return resolvedURL.absoluteString
         }
 
-        guard var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: false) else {
-            return nil
-        }
-
-        var path = baseURL.path
-        if !path.hasSuffix("/") {
-            path = (path as NSString).deletingLastPathComponent
-        }
-        if !path.hasSuffix("/") {
-            path += "/"
-        }
-
-        components.path = path + urlString
-        return components.url?.absoluteString
+        return nil
     }
 
     // MARK: - OGP Parsing
