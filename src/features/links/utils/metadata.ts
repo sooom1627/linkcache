@@ -1,5 +1,7 @@
 import { getLinkPreview } from "link-preview-js";
 
+import { maxDescriptionLength } from "../constants/descriptionLimit";
+
 import { getCachedOgpMetadata, setCachedOgpMetadata } from "./ogpCache";
 
 /**
@@ -31,6 +33,18 @@ interface LinkPreviewResponse {
  * サポートするメディアタイプ
  */
 const SUPPORTED_MEDIA_TYPES = ["website", "article", "application"];
+
+/**
+ * descriptionを300文字に切り詰める
+ *
+ * @param description - 切り詰めるdescription
+ * @returns 切り詰められたdescription（300文字以下）、nullの場合はnull
+ */
+export function truncateDescription(description: string | null): string | null {
+  if (!description) return null;
+  if (description.length <= maxDescriptionLength) return description;
+  return description.slice(0, maxDescriptionLength);
+}
 
 /**
  * URLからファイル名を抽出する（PDF等のフォールバック用）
@@ -184,7 +198,7 @@ async function fetchOgpViaClient(url: string): Promise<OgpMetadata | null> {
 
       return {
         title: filename || siteName || "Untitled",
-        description,
+        description: truncateDescription(description),
         image_url: null,
         site_name: siteName,
         favicon_url: siteName ? `https://${siteName}/favicon.ico` : null,
@@ -208,7 +222,7 @@ async function fetchOgpViaClient(url: string): Promise<OgpMetadata | null> {
     if (isPdfUrl(url, data.contentType)) {
       return {
         title: extractFilenameFromUrl(url) || extractSiteNameFromUrl(url),
-        description: "PDF Document",
+        description: truncateDescription("PDF Document"),
         image_url: null,
         site_name: extractSiteNameFromUrl(url),
         favicon_url: data.favicons?.[0] ?? extractFaviconUrlFromUrl(url),
@@ -220,7 +234,7 @@ async function fetchOgpViaClient(url: string): Promise<OgpMetadata | null> {
       // video/audio等の場合はURLから基本情報を抽出
       return {
         title: extractFilenameFromUrl(url) || extractSiteNameFromUrl(url),
-        description: getFileTypeDescription(url),
+        description: truncateDescription(getFileTypeDescription(url)),
         image_url: null,
         site_name: extractSiteNameFromUrl(url),
         favicon_url: data.favicons?.[0] ?? extractFaviconUrlFromUrl(url),
@@ -229,7 +243,7 @@ async function fetchOgpViaClient(url: string): Promise<OgpMetadata | null> {
 
     return {
       title: data.title ?? null,
-      description: data.description ?? null,
+      description: truncateDescription(data.description ?? null),
       image_url: data.images?.[0] ?? null,
       site_name: data.siteName ?? null,
       favicon_url: data.favicons?.[0] ?? null,

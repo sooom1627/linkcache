@@ -144,3 +144,67 @@ describe("fetchOgpMetadata - Basic OGP fetching", () => {
     expect(result?.site_name).toBe("note（ノート）");
   });
 });
+
+describe("fetchOgpMetadata - Description length limit", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.mocked(AsyncStorage.getItem).mockResolvedValue(null);
+    jest.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
+  it("truncates description to 300 characters when it exceeds limit", async () => {
+    const longDescription = "a".repeat(500);
+    jest.mocked(getLinkPreview).mockResolvedValueOnce({
+      url: "https://example.com",
+      title: "Example Title",
+      description: longDescription,
+      images: [],
+      favicons: [],
+      siteName: "Example Site",
+      mediaType: "website",
+    } as unknown as Awaited<ReturnType<typeof getLinkPreview>>);
+
+    const result = await fetchOgpMetadata("https://example.com");
+
+    expect(result?.description).toBe("a".repeat(300));
+    expect(result?.description?.length).toBe(300);
+  });
+
+  it("keeps description unchanged when it is 300 characters or less", async () => {
+    const shortDescription = "a".repeat(300);
+    jest.mocked(getLinkPreview).mockResolvedValueOnce({
+      url: "https://example.com",
+      title: "Example Title",
+      description: shortDescription,
+      images: [],
+      favicons: [],
+      siteName: "Example Site",
+      mediaType: "website",
+    } as unknown as Awaited<ReturnType<typeof getLinkPreview>>);
+
+    const result = await fetchOgpMetadata("https://example.com");
+
+    expect(result?.description).toBe(shortDescription);
+    expect(result?.description?.length).toBe(300);
+  });
+
+  it("handles null description correctly", async () => {
+    jest.mocked(getLinkPreview).mockResolvedValueOnce({
+      url: "https://example.com",
+      title: "Example Title",
+      description: null,
+      images: [],
+      favicons: [],
+      siteName: "Example Site",
+      mediaType: "website",
+    } as unknown as Awaited<ReturnType<typeof getLinkPreview>>);
+
+    const result = await fetchOgpMetadata("https://example.com");
+
+    expect(result?.description).toBeNull();
+  });
+});

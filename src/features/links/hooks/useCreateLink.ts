@@ -57,6 +57,7 @@ export function useCreateLink(): UseCreateLinkReturn {
       });
 
       // APIを呼び出してリンクを作成
+      // descriptionの切り詰めはmetadata層の責務（fetchOgpMetadata内で既に適用済み）
       return createLinkWithStatus({
         url: normalizedUrl,
         title: metadata?.title ?? null,
