@@ -13,7 +13,9 @@ jest.mock("../../api/createLink.api", () => ({
 
 // メタデータ取得のモック
 jest.mock("../../utils/metadata", () => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const actual = jest.requireActual("../../utils/metadata");
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return {
     ...actual,
     fetchOgpMetadata: jest.fn(),

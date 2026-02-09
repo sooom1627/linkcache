@@ -74,6 +74,10 @@ export function useUpdateLinkReadStatus(): UseUpdateLinkReadStatusReturn {
       queryClient.invalidateQueries({
         queryKey: linkQueryKeys.detail(linkId),
       });
+      // リンク件数のキャッシュも無効化
+      queryClient.invalidateQueries({
+        queryKey: linkQueryKeys.count(),
+      });
     },
   });
 

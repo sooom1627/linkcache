@@ -8,6 +8,8 @@ export type { UseDeleteLinkReturn } from "./hooks/useDeleteLink";
 export { useLinkPaste } from "./hooks/useLinkPaste";
 export { useLinks } from "./hooks/useLinks";
 export type { UseLinksReturn } from "./hooks/useLinks";
+export { useLinkCount } from "./hooks/useLinkCount";
+export type { UseLinkCountReturn } from "./hooks/useLinkCount";
 export { useOgpMetadata } from "./hooks/useOgpMetadata";
 export type { UseOgpMetadataOptions } from "./hooks/useOgpMetadata";
 export { useUpdateLinkReadStatus } from "./hooks/useUpdateLinkReadStatus";

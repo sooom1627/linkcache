@@ -47,12 +47,14 @@ export function useSharedLinkSync(): void {
           //
           // パフォーマンス最適化:
           // - invalidateQueries はキャッシュを stale にマークするだけ
-          // - 実際の再取得は useFocusEffect (LinkListTabs) が担当
+          // - refetchType: 'none' により即時refetchを防止
+          // - 実際の再取得は次回画面マウント時（stale状態なので）に自動refetch
           // - これにより重複したネットワークリクエストを防止
           // - アプリ復帰直後の画面レンダリングに影響しない
           setImmediate(() => {
             queryClient.invalidateQueries({
               queryKey: ["links"],
+              refetchType: "none", // stale化のみ、即時refetchなし
             });
           });
         }

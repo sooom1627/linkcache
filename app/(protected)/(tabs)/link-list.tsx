@@ -1,11 +1,12 @@
 import { useTranslation } from "react-i18next";
 
-import { LinkListScreen, useLinks } from "@/src/features/links";
+import { LinkListScreen, useLinkCount } from "@/src/features/links";
 import { ScreenContainer } from "@/src/shared/components/layout/ScreenContainer";
 
 export default function LinkList() {
   const { t } = useTranslation();
-  const { totalCount } = useLinks();
+  const { data: totalCountData } = useLinkCount();
+  const totalCount = totalCountData?.count ?? 0;
 
   return (
     <ScreenContainer

@@ -57,6 +57,10 @@ export function useDeleteLink(): UseDeleteLinkReturn {
       queryClient.invalidateQueries({
         queryKey: linkQueryKeys.details(),
       });
+      // リンク件数のキャッシュも無効化
+      queryClient.invalidateQueries({
+        queryKey: linkQueryKeys.count(),
+      });
     },
   });
 

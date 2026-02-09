@@ -1,4 +1,7 @@
-import type { LinkFilterParams } from "../types/linkList.types";
+import type {
+  GetLinkCountParams,
+  LinkFilterParams,
+} from "../types/linkList.types";
 
 /**
  * リンク関連のReact Queryキャッシュキー
@@ -66,4 +69,18 @@ export const linkQueryKeys = {
    * @param url - 正規化されたURL
    */
   ogpMetadata: (url: string) => [...linkQueryKeys.ogp(), url] as const,
+
+  /**
+   * リンク件数の基底キー
+   */
+  counts: () => [...linkQueryKeys.all, "count"] as const,
+
+  /**
+   * リンク件数のクエリキー（フィルタパラメータ対応）
+   * @param params - フィルタパラメータ（status, isRead）
+   */
+  count: (params?: GetLinkCountParams) =>
+    params
+      ? ([...linkQueryKeys.counts(), params] as const)
+      : ([...linkQueryKeys.counts()] as const),
 } as const;

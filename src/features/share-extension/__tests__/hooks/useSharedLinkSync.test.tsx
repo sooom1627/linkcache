@@ -139,6 +139,7 @@ describe("useSharedLinkSync", () => {
       () => {
         expect(queryClient.invalidateQueries).toHaveBeenCalledWith({
           queryKey: ["links"],
+          refetchType: "none", // stale化のみ、即時refetchなし
         });
       },
       { timeout: 1000 },

@@ -73,6 +73,10 @@ export function useCreateLink(): UseCreateLinkReturn {
       queryClient.invalidateQueries({
         queryKey: linkQueryKeys.lists(),
       });
+      // リンク件数のキャッシュも無効化
+      queryClient.invalidateQueries({
+        queryKey: linkQueryKeys.count(),
+      });
     },
   });
 

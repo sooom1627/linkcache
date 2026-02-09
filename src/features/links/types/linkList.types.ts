@@ -87,6 +87,24 @@ export interface GetUserLinksResponse {
 }
 
 /**
+ * get_user_links_count RPC のパラメータ
+ */
+export interface GetLinkCountParams {
+  /** ステータスフィルタ (undefinedで全件) */
+  status?: TriageStatus;
+  /** 既読状態フィルタ (true=既読, false=未読, undefinedで全件) */
+  isRead?: boolean;
+}
+
+/**
+ * get_user_links_count RPC のレスポンス
+ */
+export interface GetLinkCountResponse {
+  /** 総件数 */
+  count: number;
+}
+
+/**
  * UserLink の Zod スキーマ
  */
 export const userLinkSchema = z.object({
@@ -112,4 +130,11 @@ export const getUserLinksResponseSchema = z.object({
   data: z.array(userLinkSchema),
   hasMore: z.boolean(),
   totalCount: z.number(),
+});
+
+/**
+ * GetLinkCountResponse の Zod スキーマ
+ */
+export const getLinkCountResponseSchema = z.object({
+  count: z.number().int().nonnegative(),
 });
