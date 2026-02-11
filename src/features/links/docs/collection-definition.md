@@ -24,34 +24,37 @@
 
 #### テーブル構造
 
-| カラム名 | データ型 | NULL許可 | デフォルト値 | 説明 |
-|---------|---------|---------|-------------|------|
-| `id` | `uuid` | NO | `gen_random_uuid()` | 主キー（自動生成） |
-| `user_id` | `uuid` | NO | - | ユーザーID（外部キー: `users.id`） |
-| `name` | `text` | NO | - | コレクション名（必須） |
-| `description` | `text` | YES | - | 説明文（オプション） |
-| `created_at` | `timestamptz` | YES | `now()` | 作成日時（自動設定） |
-| `updated_at` | `timestamptz` | YES | `now()` | 更新日時（自動設定） |
+| カラム名      | データ型      | NULL許可 | デフォルト値        | 説明                               |
+| ------------- | ------------- | -------- | ------------------- | ---------------------------------- |
+| `id`          | `uuid`        | NO       | `gen_random_uuid()` | 主キー（自動生成）                 |
+| `user_id`     | `uuid`        | NO       | -                   | ユーザーID（外部キー: `users.id`） |
+| `name`        | `text`        | NO       | -                   | コレクション名（必須）             |
+| `description` | `text`        | YES      | -                   | 説明文（オプション）               |
+| `created_at`  | `timestamptz` | YES      | `now()`             | 作成日時（自動設定）               |
+| `updated_at`  | `timestamptz` | YES      | `now()`             | 更新日時（自動設定）               |
 
 #### 主キー
+
 - **制約名**: `collections_pkey`
 - **カラム**: `id`
 - **インデックス**: `btree (id)`
 
 #### 外部キー制約
 
-| 制約名 | カラム | 参照先テーブル | 参照先カラム |
-|--------|--------|---------------|--------------|
-| `collections_user_id_fkey` | `user_id` | `public.users` | `id` |
+| 制約名                     | カラム    | 参照先テーブル | 参照先カラム |
+| -------------------------- | --------- | -------------- | ------------ |
+| `collections_user_id_fkey` | `user_id` | `public.users` | `id`         |
 
 **注意**: `collections.user_id`は`public.users.id`を参照します。`public.users.id`は`auth.users.id`への外部キーを持ちます。
 
 #### チェック制約
+
 - `id IS NOT NULL`
 - `user_id IS NOT NULL`
 - `name IS NOT NULL`
 
 #### データ件数
+
 - **現在のレコード数**: 0件
 
 ---
@@ -62,12 +65,13 @@
 
 #### テーブル構造
 
-| カラム名 | データ型 | NULL許可 | デフォルト値 | 説明 |
-|---------|---------|---------|-------------|------|
-| `collection_id` | `uuid` | NO | - | コレクションID（外部キー: `collections.id`） |
-| `link_id` | `uuid` | NO | - | リンクID（外部キー: `links.id`） |
+| カラム名        | データ型 | NULL許可 | デフォルト値 | 説明                                         |
+| --------------- | -------- | -------- | ------------ | -------------------------------------------- |
+| `collection_id` | `uuid`   | NO       | -            | コレクションID（外部キー: `collections.id`） |
+| `link_id`       | `uuid`   | NO       | -            | リンクID（外部キー: `links.id`）             |
 
 #### 複合主キー
+
 - **制約名**: `collection_links_pkey`
 - **カラム**: `(collection_id, link_id)`
 - **インデックス**: `btree (collection_id, link_id)`
@@ -75,16 +79,18 @@
 
 #### 外部キー制約
 
-| 制約名 | カラム | 参照先テーブル | 参照先カラム |
-|--------|--------|---------------|--------------|
-| `collection_links_collection_id_fkey` | `collection_id` | `collections` | `id` |
-| `collection_links_link_id_fkey` | `link_id` | `links` | `id` |
+| 制約名                                | カラム          | 参照先テーブル | 参照先カラム |
+| ------------------------------------- | --------------- | -------------- | ------------ |
+| `collection_links_collection_id_fkey` | `collection_id` | `collections`  | `id`         |
+| `collection_links_link_id_fkey`       | `link_id`       | `links`        | `id`         |
 
 #### チェック制約
+
 - `collection_id IS NOT NULL`
 - `link_id IS NOT NULL`
 
 #### データ件数
+
 - **現在のレコード数**: 0件
 
 ---
@@ -149,6 +155,7 @@
 ```
 
 **リレーションシップ**:
+
 - `auth.users` (1) → `public.users` (1) - 1対1の関係
 - `public.users` (1) → `collections` (N) - 1ユーザーが複数のコレクションを持つ
 - `collections` (1) → `collection_links` (N) - 1コレクションに複数のリンクを追加可能
@@ -176,22 +183,22 @@ export type CollectionLink = Tables<"collection_links">;
 
 ```typescript
 type Collection = {
-  id: string;                    // UUID
-  user_id: string;               // UUID (users.idへの外部キー)
-  name: string;                  // 必須
-  description: string | null;     // オプション
-  created_at: string | null;     // ISO8601形式のタイムスタンプ
-  updated_at: string | null;     // ISO8601形式のタイムスタンプ
-}
+  id: string; // UUID
+  user_id: string; // UUID (users.idへの外部キー)
+  name: string; // 必須
+  description: string | null; // オプション
+  created_at: string | null; // ISO8601形式のタイムスタンプ
+  updated_at: string | null; // ISO8601形式のタイムスタンプ
+};
 ```
 
 #### `CollectionLink`型
 
 ```typescript
 type CollectionLink = {
-  collection_id: string;         // UUID (collections.idへの外部キー)
-  link_id: string;               // UUID (links.idへの外部キー)
-}
+  collection_id: string; // UUID (collections.idへの外部キー)
+  link_id: string; // UUID (links.idへの外部キー)
+};
 ```
 
 ### エクスポート
@@ -206,9 +213,9 @@ export * from "./links.types";
 **使用例**:
 
 ```typescript
-import type { Collection, CollectionLink } from '@features/links/types';
 // または
-import type { Collection, CollectionLink } from '@features/links';
+import type { Collection, CollectionLink } from "@features/links";
+import type { Collection, CollectionLink } from "@features/links/types";
 ```
 
 ---
@@ -231,6 +238,7 @@ import type { Collection, CollectionLink } from '@features/links';
 - **説明**: 認証されたユーザーは自分のコレクションのみ操作可能
 
 **SQL**:
+
 ```sql
 -- SELECT/UPDATE/DELETE用
 (( SELECT auth.uid() AS uid) = user_id)
@@ -249,6 +257,7 @@ import type { Collection, CollectionLink } from '@features/links';
 - **説明**: 認証されたユーザーは自分のコレクションに紐づくリンクのみ操作可能
 
 **SQL**:
+
 ```sql
 -- SELECT/UPDATE/DELETE用
 (EXISTS (
@@ -281,14 +290,14 @@ import type { Collection, CollectionLink } from '@features/links';
 
 #### `collections`テーブル
 
-| インデックス名 | タイプ | カラム | 説明 |
-|--------------|--------|--------|------|
-| `collections_pkey` | UNIQUE | `id` | 主キーインデックス |
+| インデックス名     | タイプ | カラム | 説明               |
+| ------------------ | ------ | ------ | ------------------ |
+| `collections_pkey` | UNIQUE | `id`   | 主キーインデックス |
 
 #### `collection_links`テーブル
 
-| インデックス名 | タイプ | カラム | 説明 |
-|--------------|--------|--------|------|
+| インデックス名          | タイプ | カラム                     | 説明                   |
+| ----------------------- | ------ | -------------------------- | ---------------------- |
 | `collection_links_pkey` | UNIQUE | `(collection_id, link_id)` | 複合主キーインデックス |
 
 ### パフォーマンス考慮事項
@@ -298,11 +307,12 @@ import type { Collection, CollectionLink } from '@features/links';
 実装時に以下のインデックス追加を検討：
 
 1. **`collection_links`テーブル**
+
    ```sql
    -- link_idでの検索を高速化（コレクションに含まれるリンクを検索）
-   CREATE INDEX idx_collection_links_link_id 
+   CREATE INDEX idx_collection_links_link_id
      ON collection_links(link_id);
-   
+
    -- collection_idでの検索を高速化（コレクション内のリンク一覧取得）
    -- 注意: 複合主キーの最初のカラムなので、既にインデックス効果あり
    ```
@@ -310,7 +320,7 @@ import type { Collection, CollectionLink } from '@features/links';
 2. **`collections`テーブル**
    ```sql
    -- user_idでの検索を高速化（ユーザーのコレクション一覧取得）
-   CREATE INDEX idx_collections_user_id 
+   CREATE INDEX idx_collections_user_id
      ON collections(user_id);
    ```
 
@@ -336,17 +346,19 @@ import type { Collection, CollectionLink } from '@features/links';
 ### NOT NULL制約
 
 #### `collections`テーブル
+
 - `id` - 必須
 - `user_id` - 必須
 - `name` - 必須
 
 #### `collection_links`テーブル
+
 - `collection_id` - 必須
 - `link_id` - 必須
 
 ### 外部キー制約による整合性保証
 
-1. **参照整合性**: 
+1. **参照整合性**:
    - `collections.user_id` → `users.id`（ユーザーが存在しないとコレクション作成不可）
    - `collection_links.collection_id` → `collections.id`（コレクションが存在しないとリンク追加不可）
    - `collection_links.link_id` → `links.id`（リンクが存在しないと追加不可）
@@ -434,39 +446,39 @@ import type { Collection, CollectionLink } from '@features/links';
 export async function createCollection(params: {
   name: string;
   description?: string;
-}): Promise<Collection>
+}): Promise<Collection>;
 
 // コレクション一覧取得
-export async function fetchCollections(): Promise<Collection[]>
+export async function fetchCollections(): Promise<Collection[]>;
 
 // コレクション詳細取得
-export async function getCollection(id: string): Promise<Collection>
+export async function getCollection(id: string): Promise<Collection>;
 
 // コレクション更新
 export async function updateCollection(
   id: string,
-  params: { name?: string; description?: string }
-): Promise<Collection>
+  params: { name?: string; description?: string },
+): Promise<Collection>;
 
 // コレクション削除
-export async function deleteCollection(id: string): Promise<void>
+export async function deleteCollection(id: string): Promise<void>;
 
 // リンクをコレクションに追加
 export async function addLinkToCollection(
   collectionId: string,
-  linkId: string
-): Promise<CollectionLink>
+  linkId: string,
+): Promise<CollectionLink>;
 
 // リンクをコレクションから削除
 export async function removeLinkFromCollection(
   collectionId: string,
-  linkId: string
-): Promise<void>
+  linkId: string,
+): Promise<void>;
 
 // コレクション内のリンク一覧取得
 export async function getCollectionLinks(
-  collectionId: string
-): Promise<UserLink[]>
+  collectionId: string,
+): Promise<UserLink[]>;
 ```
 
 #### 1.2 型定義の拡張
@@ -502,28 +514,46 @@ export const createCollectionSchema = z.object({
 
 ```typescript
 // src/features/links/hooks/useCollections.ts
-export function useCollections(): UseQueryResult<Collection[], Error>
+export function useCollections(): UseQueryResult<Collection[], Error>;
 
 // src/features/links/hooks/useCollection.ts
-export function useCollection(id: string): UseQueryResult<Collection, Error>
+export function useCollection(id: string): UseQueryResult<Collection, Error>;
 
 // src/features/links/hooks/useCreateCollection.ts
-export function useCreateCollection(): UseMutationResult<Collection, Error, CreateCollectionParams>
+export function useCreateCollection(): UseMutationResult<
+  Collection,
+  Error,
+  CreateCollectionParams
+>;
 
 // src/features/links/hooks/useUpdateCollection.ts
-export function useUpdateCollection(): UseMutationResult<Collection, Error, { id: string; params: UpdateCollectionParams }>
+export function useUpdateCollection(): UseMutationResult<
+  Collection,
+  Error,
+  { id: string; params: UpdateCollectionParams }
+>;
 
 // src/features/links/hooks/useDeleteCollection.ts
-export function useDeleteCollection(): UseMutationResult<void, Error, string>
+export function useDeleteCollection(): UseMutationResult<void, Error, string>;
 
 // src/features/links/hooks/useCollectionLinks.ts
-export function useCollectionLinks(collectionId: string): UseQueryResult<UserLink[], Error>
+export function useCollectionLinks(
+  collectionId: string,
+): UseQueryResult<UserLink[], Error>;
 
 // src/features/links/hooks/useAddLinkToCollection.ts
-export function useAddLinkToCollection(): UseMutationResult<CollectionLink, Error, { collectionId: string; linkId: string }>
+export function useAddLinkToCollection(): UseMutationResult<
+  CollectionLink,
+  Error,
+  { collectionId: string; linkId: string }
+>;
 
 // src/features/links/hooks/useRemoveLinkFromCollection.ts
-export function useRemoveLinkFromCollection(): UseMutationResult<void, Error, { collectionId: string; linkId: string }>
+export function useRemoveLinkFromCollection(): UseMutationResult<
+  void,
+  Error,
+  { collectionId: string; linkId: string }
+>;
 ```
 
 #### 2.2 クエリキーの追加
@@ -534,14 +564,14 @@ export function useRemoveLinkFromCollection(): UseMutationResult<void, Error, { 
 // src/features/links/constants/queryKeys.ts に追加
 
 export const collectionQueryKeys = {
-  all: ['collections'] as const,
-  lists: () => [...collectionQueryKeys.all, 'list'] as const,
-  list: (filters?: CollectionFilters) => 
+  all: ["collections"] as const,
+  lists: () => [...collectionQueryKeys.all, "list"] as const,
+  list: (filters?: CollectionFilters) =>
     [...collectionQueryKeys.lists(), filters] as const,
-  details: () => [...collectionQueryKeys.all, 'detail'] as const,
+  details: () => [...collectionQueryKeys.all, "detail"] as const,
   detail: (id: string) => [...collectionQueryKeys.details(), id] as const,
-  links: (collectionId: string) => 
-    [...collectionQueryKeys.detail(collectionId), 'links'] as const,
+  links: (collectionId: string) =>
+    [...collectionQueryKeys.detail(collectionId), "links"] as const,
 };
 ```
 
