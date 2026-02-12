@@ -87,7 +87,7 @@ export function SwipeCard({ link }: SwipeCardProps) {
           ) : (
             <Globe size={14} color={colors.iconMuted} strokeWidth={1.5} />
           )}
-          <Text className="text-sm text-slate-500">
+          <Text className="text-sm text-textMuted">
             {domain || link.site_name || ""}
           </Text>
         </View>

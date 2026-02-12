@@ -43,6 +43,102 @@ function RenderCard(props: CardProps<UserLink>) {
   );
 }
 
+interface SwipeActionButtonsProps {
+  currentCard: UserLink | undefined;
+  onSwipe: (item: UserLink, direction: SwipeDirection) => void;
+  onUndo: () => void;
+  canUndo: boolean;
+}
+
+function SwipeActionButtons({
+  currentCard,
+  onSwipe,
+  onUndo,
+  canUndo,
+}: SwipeActionButtonsProps) {
+  const { t } = useTranslation();
+  const isDisabled = !currentCard;
+
+  return (
+    <View className="z-10 mt-[-80px] flex w-full flex-col items-center justify-start gap-2">
+      <View className="flex w-full flex-row items-center justify-center gap-8">
+        <TouchableOpacity
+          disabled={isDisabled}
+          className="flex-col items-center justify-center gap-2 p-2"
+          onPress={() => {
+            if (!currentCard) return;
+            onSwipe(currentCard, "left");
+          }}
+        >
+          <View
+            className={`rounded-full p-4 ${
+              isDisabled ? "bg-surfaceMuted" : "bg-surfaceMutedActive"
+            }`}
+          >
+            <ArrowLeft
+              size={20}
+              color={isDisabled ? colors.iconMuted : colors.icon}
+            />
+          </View>
+          <Text
+            className={`flex-1 text-center font-medium ${
+              isDisabled ? "text-slate-400" : "text-slate-700"
+            }`}
+          >
+            {t("links.card.action_modal.status.stock")}
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          disabled={isDisabled}
+          className="flex-col items-center justify-center gap-2 p-2"
+          onPress={() => {
+            if (!currentCard) return;
+            onSwipe(currentCard, "right");
+          }}
+        >
+          <View
+            className={`rounded-full p-4 ${
+              isDisabled ? "bg-surfaceMuted" : "bg-surfaceMutedActive"
+            }`}
+          >
+            <ArrowRight
+              size={20}
+              color={isDisabled ? colors.iconMuted : colors.icon}
+            />
+          </View>
+          <Text
+            className={`text-center font-medium ${
+              isDisabled ? "text-slate-400" : "text-slate-700"
+            }`}
+          >
+            {t("links.card.action_modal.status.read_soon")}
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      <TouchableOpacity
+        onPress={onUndo}
+        disabled={!canUndo}
+        className={`flex-row items-center justify-center gap-2 rounded-full px-4 py-2 ${
+          canUndo
+            ? "bg-surfaceMutedActive active:bg-surfaceMutedActivePressed"
+            : "bg-surfaceMuted opacity-50"
+        }`}
+      >
+        <RotateCcw size={18} color={canUndo ? colors.icon : colors.iconMuted} />
+        <Text
+          className={`text-base font-medium ${
+            canUndo ? "text-slate-700" : "text-slate-400"
+          }`}
+        >
+          {t("links.swipeTriage.undo")}
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
 /**
  * Swipe Triage画面コンポーネント
  */
@@ -86,7 +182,7 @@ export function SwipeTriageScreen() {
   if (isLoading) {
     return (
       <View className="flex-1 items-center justify-center">
-        <Text className="text-slate-500">Loading...</Text>
+        <Text className="text-slate-500">{t("links.swipeTriage.loading")}</Text>
       </View>
     );
   }
@@ -122,9 +218,11 @@ export function SwipeTriageScreen() {
 
         <View className="flex-1 items-center justify-center">
           <Text className="text-2xl font-bold text-slate-800">
-            🎉 No pending links!
+            {t("links.swipeTriage.noPendingLinks")}
           </Text>
-          <Text className="mt-2 text-slate-500">All caught up!</Text>
+          <Text className="mt-2 text-slate-500">
+            {t("links.swipeTriage.allCaughtUp")}
+          </Text>
         </View>
       </View>
     );
@@ -145,19 +243,19 @@ export function SwipeTriageScreen() {
 
         <View className="flex-1 items-center justify-center">
           <Text className="text-2xl font-bold text-slate-800">
-            🎉 All done!
+            {t("links.swipeTriage.allDone")}
           </Text>
           <Text className="mt-2 text-slate-500">
-            You've triaged all your links!
+            {t("links.swipeTriage.triagedAll")}
           </Text>
           {/* Restart Button */}
           <TouchableOpacity
             onPress={restart}
-            className="mt-4 flex-row items-center justify-center gap-2 rounded-full bg-slate-200 px-4 py-2 active:bg-slate-300"
+            className="mt-4 flex-row items-center justify-center gap-2 rounded-full bg-surfaceMutedActive px-4 py-2 active:bg-surfaceMutedActivePressed"
           >
             <RefreshCw size={18} color={colors.icon} />
             <Text className="text-base font-medium text-slate-700">
-              Start Again
+              {t("links.swipeTriage.startAgain")}
             </Text>
           </TouchableOpacity>
         </View>
@@ -177,8 +275,8 @@ export function SwipeTriageScreen() {
         />
         {/* Remaining Count */}
         <Text className="mt-2 text-sm text-slate-500">
-          {remainingCount} remaining
-          {isFetchingNextPage ? " (loading more...)" : ""}
+          {remainingCount} {t("links.swipeTriage.remaining")}
+          {isFetchingNextPage ? ` ${t("links.swipeTriage.loadingMore")}` : ""}
         </Text>
       </View>
 
@@ -200,95 +298,12 @@ export function SwipeTriageScreen() {
         />
       </View>
 
-      {/* handle buttons */}
-      <View className="z-10 mt-[-80px] flex w-full flex-col items-center justify-start gap-2">
-        <View className="flex w-full flex-row items-center justify-center gap-8">
-          {(() => {
-            const currentCard = cards[swipes.length];
-            const isDisabled = !currentCard;
-            return (
-              <>
-                <TouchableOpacity
-                  disabled={isDisabled}
-                  className="flex-col items-center justify-center gap-2 p-2"
-                  onPress={() => {
-                    if (!currentCard) return;
-                    handleSwipe(currentCard, "left");
-                  }}
-                >
-                  <View
-                    className={`rounded-full p-4 ${
-                      isDisabled ? "bg-surfaceMuted" : "bg-slate-200"
-                    }`}
-                  >
-                    <ArrowLeft
-                      size={20}
-                      color={isDisabled ? colors.iconMuted : colors.icon}
-                    />
-                  </View>
-                  <Text
-                    className={`flex-1 text-center font-medium ${
-                      isDisabled ? "text-slate-400" : "text-slate-700"
-                    }`}
-                  >
-                    {t("links.card.action_modal.status.stock")}
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  disabled={isDisabled}
-                  className="flex-col items-center justify-center gap-2 p-2"
-                  onPress={() => {
-                    if (!currentCard) return;
-                    handleSwipe(currentCard, "right");
-                  }}
-                >
-                  <View
-                    className={`rounded-full p-4 ${
-                      isDisabled ? "bg-surfaceMuted" : "bg-slate-200"
-                    }`}
-                  >
-                    <ArrowRight
-                      size={20}
-                      color={isDisabled ? colors.iconMuted : colors.icon}
-                    />
-                  </View>
-                  <Text
-                    className={`text-center font-medium ${
-                      isDisabled ? "text-slate-400" : "text-slate-700"
-                    }`}
-                  >
-                    {t("links.card.action_modal.status.read_soon")}
-                  </Text>
-                </TouchableOpacity>
-              </>
-            );
-          })()}
-        </View>
-
-        {/* Undo Button */}
-        <TouchableOpacity
-          onPress={undo}
-          disabled={!canUndo}
-          className={`flex-row items-center justify-center gap-2 rounded-full px-4 py-2 ${
-            canUndo
-              ? "bg-slate-200 active:bg-slate-300"
-              : "bg-surfaceMuted opacity-50"
-          }`}
-        >
-          <RotateCcw
-            size={18}
-            color={canUndo ? colors.icon : colors.iconMuted}
-          />
-          <Text
-            className={`text-base font-medium ${
-              canUndo ? "text-slate-700" : "text-slate-400"
-            }`}
-          >
-            Undo
-          </Text>
-        </TouchableOpacity>
-      </View>
+      <SwipeActionButtons
+        currentCard={cards[swipes.length]}
+        onSwipe={handleSwipe}
+        onUndo={undo}
+        canUndo={canUndo}
+      />
     </View>
   );
 }

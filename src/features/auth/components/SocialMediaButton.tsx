@@ -17,9 +17,9 @@ const providerConfig = {
     iconFamily: "AntDesign" as const,
     label: "Continue with Google",
     bgColor: "bg-white",
-    textColor: "text-slate-800",
+    textColor: "text-main",
     iconColor: colors.main,
-    borderColor: "border border-slate-200",
+    borderColor: "border border-border",
   },
   apple: {
     icon: "apple" as const,

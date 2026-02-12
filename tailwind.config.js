@@ -13,8 +13,12 @@ module.exports = {
         accentMuted: "#f97316", // orange-500
         surface: "#ffffff",
         surfaceMuted: "#f1f5f9", // slate-100
+        surfaceMutedActive: "#e2e8f0", // slate-200（secondary ボタン enabled）
+        surfaceMutedActivePressed: "#cbd5e1", // slate-300（secondary ボタン pressed）
+        border: "#e2e8f0", // slate-200（ボーダー・区切り）
         danger: "#ef4444",
         dangerDisabled: "#fca5a5", // red-300
+        textMuted: "#64748b", // slate-500（補足・ドメイン等）
       },
     },
   },

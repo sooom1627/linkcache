@@ -100,7 +100,7 @@ export const LinkListFilterModal = forwardRef<
                   className={`rounded-full px-4 py-2.5 ${
                     isSelected
                       ? "bg-mainDark"
-                      : "bg-surfaceMuted active:bg-slate-200"
+                      : "bg-surfaceMuted active:bg-surfaceMutedActive"
                   }`}
                 >
                   <Text
@@ -134,7 +134,7 @@ export const LinkListFilterModal = forwardRef<
                   className={`rounded-full px-4 py-2.5 ${
                     isSelected
                       ? "bg-mainDark"
-                      : "bg-surfaceMuted active:bg-slate-200"
+                      : "bg-surfaceMuted active:bg-surfaceMutedActive"
                   }`}
                 >
                   <Text

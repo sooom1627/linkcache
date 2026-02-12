@@ -197,6 +197,17 @@
         "go_to_triage": "Start Triage"
       }
     },
+    "swipeTriage": {
+      "loading": "Loading...",
+      "noPendingLinks": "🎉 No pending links!",
+      "allCaughtUp": "All caught up!",
+      "allDone": "🎉 All done!",
+      "triagedAll": "You've triaged all your links!",
+      "startAgain": "Start Again",
+      "remaining": "remaining",
+      "loadingMore": "(loading more...)",
+      "undo": "Undo"
+    },
     "detail": {
       "title": "Link Details",
       "open_link": "Open Link",

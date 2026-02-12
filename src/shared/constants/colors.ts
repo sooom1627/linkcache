@@ -44,13 +44,15 @@
  * - browserControls / browserToolbar
  */
 
-// Tailwind参照: slate-800=#1e293b, orange-700=#c2410c
+// Tailwind参照: slate-800=#1e293b, orange-600=#ea580c, orange-500=#f97316
 const palette = {
   // === 1. 背景・サーフェス ===
   screen: "#f8fafc", // slate-50
   surface: "#ffffff",
   surfaceSecondary: "#f8fafc", // slate-50
   surfaceMuted: "#f1f5f9", // slate-100
+  surfaceMutedActive: "#e2e8f0", // slate-200（secondary ボタン enabled）
+  surfaceMutedActivePressed: "#cbd5e1", // slate-300（secondary ボタン pressed）
   emptyState: "#f1f5f9", // slate-100
 
   // === 2. メイン（Slate-800） ===
@@ -112,9 +114,12 @@ export const colorClassNames = {
   main: "bg-slate-800",
   mainHover: "bg-slate-700",
   mainDark: "bg-slate-900",
-  accent: "bg-orange-700",
+  accent: "bg-orange-600",
+  accentMuted: "bg-orange-500",
   surface: "bg-white",
   surfaceMuted: "bg-slate-100",
+  surfaceMutedActive: "bg-slate-200",
+  surfaceMutedActivePressed: "bg-slate-300",
   textPrimary: "text-slate-900",
   textSecondary: "text-slate-600",
   textMuted: "text-slate-500",

@@ -32,7 +32,7 @@ export function LinkListFilterMenu({ isDisabled }: { isDisabled: boolean }) {
         className={`flex-row items-center gap-2 rounded-full px-3 py-1.5 ${
           hasActiveFilters
             ? "bg-mainHover active:bg-main"
-            : "bg-surfaceMuted active:bg-slate-200"
+            : "bg-surfaceMuted active:bg-surfaceMutedActive"
         }`}
         accessibilityRole="button"
         accessibilityLabel={`Open filter menu${hasActiveFilters ? `, ${activeFilterCount} filter${activeFilterCount > 1 ? "s" : ""} active` : ""}`}

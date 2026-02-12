@@ -147,7 +147,7 @@ export function LinkDetailActionButtonGroup({
         {/* メニューを開くボタン */}
         <TouchableOpacity
           onPress={onMoreOptions}
-          className="size-16 flex-row items-center justify-center rounded-full bg-slate-200"
+          className="size-16 flex-row items-center justify-center rounded-full bg-surfaceMuted"
           accessibilityRole="button"
           accessibilityLabel={t("links.detail.more_options")}
         >
