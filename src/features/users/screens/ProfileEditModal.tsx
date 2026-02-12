@@ -7,6 +7,7 @@ import { AtSign, UserRound } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 
 import { FormButton, FormInput } from "@/src/shared/components/forms";
+import { colors } from "@/src/shared/constants/colors";
 import { ScrollableBottomSheetModal } from "@/src/shared/components/modals";
 import ModalHeader from "@/src/shared/components/modals/ModalHeader";
 
@@ -169,7 +170,7 @@ export const ProfileEditModal = forwardRef<
             error={errors.user_id}
             helperText={userIdHelper?.text}
             helperTextColor={userIdHelper?.color}
-            leftIcon={<AtSign size={16} color="#6B7280" />}
+            leftIcon={<AtSign size={16} color={colors.icon} />}
             returnKeyType="next"
             onSubmitEditing={() => usernameInputRef.current?.focus()}
             blurOnSubmit={false}
@@ -186,7 +187,7 @@ export const ProfileEditModal = forwardRef<
             autoCapitalize="none"
             autoCorrect={false}
             error={errors.username}
-            leftIcon={<UserRound size={16} color="#6B7280" />}
+            leftIcon={<UserRound size={16} color={colors.icon} />}
             returnKeyType="done"
             onSubmitEditing={handleUpdateProfile}
           />

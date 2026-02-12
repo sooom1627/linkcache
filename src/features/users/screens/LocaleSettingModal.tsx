@@ -50,7 +50,7 @@ export const LocaleSettingModal = forwardRef<
               {" - " + t("users.setting_modal.locale_setting.timezone_info")}
             </Text>
           </Text>
-          <View className="w-full flex-col items-start justify-start gap-1 rounded-lg bg-slate-100 p-4">
+          <View className="w-full flex-col items-start justify-start gap-1 rounded-lg bg-surfaceMuted p-4">
             <Text className="text-xl font-bold text-slate-700">
               {formattedTime}
             </Text>

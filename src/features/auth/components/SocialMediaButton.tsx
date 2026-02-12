@@ -27,7 +27,7 @@ const providerConfig = {
     label: "Continue with Apple",
     bgColor: "bg-main",
     textColor: "text-white",
-    iconColor: "white",
+    iconColor: colors.textOnDark,
     borderColor: "",
   },
 };

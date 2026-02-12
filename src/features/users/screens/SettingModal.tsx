@@ -81,8 +81,6 @@ export const SettingModal = forwardRef<BottomSheetModal, SettingModalProps>(
           {/* Logout Button */}
           <View className="w-full">
             <LogoutButton
-              disabledColor="bg-red-400"
-              enabledColor="bg-red-500"
               onLogoutSuccess={onCloseAll}
             />
           </View>

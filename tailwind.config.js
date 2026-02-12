@@ -13,6 +13,8 @@ module.exports = {
         accentMuted: "#f97316", // orange-500
         surface: "#ffffff",
         surfaceMuted: "#f1f5f9", // slate-100
+        danger: "#ef4444",
+        dangerDisabled: "#fca5a5", // red-300
       },
     },
   },
