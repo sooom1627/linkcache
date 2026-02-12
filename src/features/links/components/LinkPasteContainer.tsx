@@ -12,6 +12,8 @@ import {
 import { useTranslation } from "react-i18next";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 
+import { colors } from "@/src/shared/constants/colors";
+
 import type { LinkPasteStatus, LinkPreview } from "../types/linkPaste.types";
 
 interface LinkPasteContainerProps {
@@ -45,7 +47,7 @@ function EmptyStateView({ onPaste }: { onPaste: () => void }) {
       >
         {/* アイコン */}
         <View className="rounded-full bg-white p-4 shadow-sm">
-          <ClipboardPaste size={28} color="#6B7280" strokeWidth={1.5} />
+          <ClipboardPaste size={28} color={colors.icon} strokeWidth={1.5} />
         </View>
 
         {/* テキスト */}
@@ -75,7 +77,7 @@ function LoadingStateView() {
       className="items-center justify-center py-16"
     >
       <View className="items-center gap-4">
-        <ActivityIndicator size="small" color="#6B7280" />
+        <ActivityIndicator size="small" color={colors.icon} />
         <Text className="text-sm text-slate-400">
           {t("links.paste.loading")}
         </Text>
@@ -116,7 +118,7 @@ function PreviewStateView({
           />
         ) : (
           <View className="h-32 items-center justify-center bg-slate-50">
-            <Link2 size={32} color="#cbd5e1" strokeWidth={1.5} />
+            <Link2 size={32} color={colors.iconPlaceholder} strokeWidth={1.5} />
           </View>
         )}
 
@@ -140,7 +142,7 @@ function PreviewStateView({
                   contentFit="contain"
                 />
               ) : (
-                <Globe size={14} color="#94a3b8" strokeWidth={1.5} />
+                <Globe size={14} color={colors.iconMuted} strokeWidth={1.5} />
               )}
               <Text className="text-sm text-slate-400">{preview.domain}</Text>
             </View>
@@ -153,8 +155,8 @@ function PreviewStateView({
               accessibilityLabel={t("links.paste.change_link")}
               activeOpacity={0.6}
             >
-              <RotateCcw size={12} color="#3b82f6" strokeWidth={2} />
-              <Text className="text-sm font-medium text-blue-500">
+              <RotateCcw size={12} color={colors.accent} strokeWidth={2} />
+              <Text className="text-sm font-medium text-accent">
                 {t("links.paste.change_link")}
               </Text>
             </TouchableOpacity>
@@ -163,7 +165,7 @@ function PreviewStateView({
           {/* OGPなし警告 */}
           {!hasOgp && (
             <View className="flex-row items-center gap-2 rounded-xl bg-amber-50 p-3">
-              <AlertCircle size={14} color="#f59e0b" strokeWidth={1.5} />
+              <AlertCircle size={14} color={colors.warning} strokeWidth={1.5} />
               <Text className="flex-1 text-xs text-amber-600">
                 {t("links.paste.no_ogp_warning")}
               </Text>
@@ -197,7 +199,7 @@ function InvalidStateView({
       <View className="w-full items-center gap-5 rounded-2xl border border-red-100 bg-red-50/50 px-6 py-8">
         {/* アイコン */}
         <View className="rounded-full bg-white p-3">
-          <AlertCircle size={24} color="#ef4444" strokeWidth={1.5} />
+          <AlertCircle size={24} color={colors.error} strokeWidth={1.5} />
         </View>
 
         {/* エラーメッセージ */}

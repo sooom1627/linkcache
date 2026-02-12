@@ -3,6 +3,7 @@ import { Text, TouchableOpacity, View } from "react-native";
 import { Filter, Inbox, Plus } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 
+import { colors } from "@/src/shared/constants/colors";
 import { useModal } from "@/src/shared/providers/ModalContext";
 
 interface LinkListEmptyProps {
@@ -29,7 +30,7 @@ export function LinkListEmpty({
     return (
       <View className="mt-12 items-center px-8">
         <View className="mb-6 rounded-full bg-slate-50 p-6">
-          <Filter size={48} color="#94a3b8" strokeWidth={1} />
+          <Filter size={48} color={colors.iconMuted} strokeWidth={1} />
         </View>
         <Text className="mb-2 text-center text-lg font-semibold text-slate-800">
           {t("links.list.filter_empty_title")}
@@ -41,7 +42,7 @@ export function LinkListEmpty({
         {onResetFilters && (
           <TouchableOpacity
             onPress={onResetFilters}
-            className="flex-row items-center gap-2 rounded-full bg-slate-900 px-6 py-3 shadow-sm active:bg-slate-700"
+            className="flex-row items-center gap-2 rounded-full bg-mainDark px-6 py-3 shadow-sm active:bg-mainHover"
             accessibilityRole="button"
             accessibilityLabel={t("links.filter.reset")}
           >
@@ -58,7 +59,7 @@ export function LinkListEmpty({
   return (
     <View className="mt-12 items-center px-8">
       <View className="mb-6 rounded-full bg-slate-50 p-6">
-        <Inbox size={48} color="#94a3b8" strokeWidth={1} />
+        <Inbox size={48} color={colors.iconMuted} strokeWidth={1} />
       </View>
       <Text className="mb-2 text-center text-lg font-semibold text-slate-800">
         {t("links.list.empty_title")}
@@ -69,11 +70,11 @@ export function LinkListEmpty({
 
       <TouchableOpacity
         onPress={() => openModal("linkCreate")}
-        className="flex-row items-center gap-2 rounded-full bg-slate-900 px-6 py-3 shadow-sm active:bg-slate-700"
+        className="flex-row items-center gap-2 rounded-full bg-mainDark px-6 py-3 shadow-sm active:bg-mainHover"
         accessibilityRole="button"
         accessibilityLabel={t("links.create.add_button")}
       >
-        <Plus size={20} color="white" strokeWidth={2.5} />
+        <Plus size={20} color={colors.accent} strokeWidth={2.5} />
         <Text className="font-semibold text-white">
           {t("links.create.add_button")}
         </Text>

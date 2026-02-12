@@ -1,5 +1,7 @@
 import { ActivityIndicator, View } from "react-native";
 
+import { colors } from "@/src/shared/constants/colors";
+
 interface LinkListLoadingFooterProps {
   isLoading: boolean;
 }
@@ -18,7 +20,7 @@ export function LinkListLoadingFooter({
 
   return (
     <View className="items-center justify-center py-6">
-      <ActivityIndicator size="small" color="#6B7280" />
+      <ActivityIndicator size="small" color={colors.icon} />
     </View>
   );
 }

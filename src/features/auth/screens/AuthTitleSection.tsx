@@ -20,7 +20,7 @@ export function AuthTitleSection({
       <Text className="text-2xl font-bold text-slate-800">{title}</Text>
       <Text className="text-slate-700">
         {subtitle}{" "}
-        <Link href={link} className="text-blue-500 underline">
+        <Link href={link} className="text-accent underline">
           {linkText}
         </Link>
       </Text>

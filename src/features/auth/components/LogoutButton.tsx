@@ -41,8 +41,8 @@ export default function LogoutButton({
         title={isPending ? "Logging out..." : "Logout"}
         onPress={handleLogout}
         disabled={isPending}
-        disabledColor={disabledColor}
-        enabledColor={enabledColor}
+        disabledColor={disabledColor ?? "bg-dangerDisabled"}
+        enabledColor={enabledColor ?? "bg-danger"}
       />
     </View>
   );

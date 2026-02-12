@@ -8,6 +8,7 @@ import { ArrowRight, Layers2 } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 
 import { ErrorStateView } from "@/src/shared/components/ErrorStateView";
+import { colors } from "@/src/shared/constants/colors";
 
 import type { useLinks } from "../hooks/useLinks";
 import type { TabType } from "../types/linkList.types";
@@ -39,7 +40,7 @@ export const LinkListTabContent = memo(function LinkListTabContent({
   if (isLoading) {
     return (
       <View className="flex-1 items-center justify-center py-8">
-        <ActivityIndicator size="large" color="#6B7280" />
+        <ActivityIndicator size="large" color={colors.icon} />
       </View>
     );
   }
@@ -60,7 +61,7 @@ export const LinkListTabContent = memo(function LinkListTabContent({
       return (
         <View className="mt-12 items-center px-8">
           <View className="mb-6 rounded-full bg-slate-50 p-6">
-            <Layers2 size={48} color="#3b82f6" strokeWidth={1} />
+            <Layers2 size={48} color={colors.accent} strokeWidth={1} />
           </View>
           <Text className="mb-2 text-center text-lg font-semibold text-slate-900">
             {t("links.dashboard.empty_read_soon.title")}
@@ -71,12 +72,12 @@ export const LinkListTabContent = memo(function LinkListTabContent({
 
           <Pressable
             onPress={() => router.push("/swipes")}
-            className="flex-row items-center gap-2 rounded-full bg-slate-900 px-6 py-3 shadow-sm active:bg-slate-700"
+            className="flex-row items-center gap-2 rounded-full bg-mainDark px-6 py-3 shadow-sm active:bg-mainHover"
           >
             <Text className="font-semibold text-white">
               {t("links.dashboard.empty_read_soon.go_to_triage")}
             </Text>
-            <ArrowRight size={20} color="white" strokeWidth={1.5} />
+            <ArrowRight size={20} color={colors.accent} strokeWidth={1.5} />
           </Pressable>
         </View>
       );
@@ -110,7 +111,7 @@ export const LinkListTabContent = memo(function LinkListTabContent({
             <Text className="text-center text-sm text-slate-500">
               {t("links.dashboard.view_all")}
             </Text>
-            <ArrowRight size={14} color="#6B7280" strokeWidth={1.5} />
+            <ArrowRight size={14} color={colors.icon} strokeWidth={1.5} />
           </View>
         </Link>
       </View>

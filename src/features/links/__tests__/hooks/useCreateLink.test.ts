@@ -3,6 +3,7 @@ import { act, renderHook, waitFor } from "@testing-library/react-native";
 import { createLinkWithStatus } from "../../api/createLink.api";
 import { linkQueryKeys } from "../../constants/queryKeys";
 import { useCreateLink } from "../../hooks/useCreateLink";
+import type * as MetadataModule from "../../utils/metadata";
 import { fetchOgpMetadata } from "../../utils/metadata";
 import { clearQueryCache, testQueryClient, wrapper } from "../test-utils";
 
@@ -13,7 +14,9 @@ jest.mock("../../api/createLink.api", () => ({
 
 // メタデータ取得のモック
 jest.mock("../../utils/metadata", () => {
-  const actual = jest.requireActual("../../utils/metadata");
+  const actual = jest.requireActual(
+    "../../utils/metadata",
+  ) as typeof MetadataModule;
   return {
     ...actual,
     fetchOgpMetadata: jest.fn(),

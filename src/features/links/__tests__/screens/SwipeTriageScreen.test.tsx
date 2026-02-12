@@ -64,7 +64,7 @@ describe("SwipeTriageScreen", () => {
 
     render(<SwipeTriageScreen />, { wrapper });
 
-    expect(screen.getByText("Loading...")).toBeTruthy();
+    expect(screen.getByText("links.swipeTriage.loading")).toBeTruthy();
   });
 
   it("カードがある場合にSwipeableCardStackを表示する", async () => {
@@ -103,7 +103,7 @@ describe("SwipeTriageScreen", () => {
     render(<SwipeTriageScreen />, { wrapper });
 
     await waitFor(() => {
-      expect(screen.getByText(/No pending links/i)).toBeTruthy();
+      expect(screen.getByText("links.swipeTriage.noPendingLinks")).toBeTruthy();
     });
   });
 
@@ -117,7 +117,7 @@ describe("SwipeTriageScreen", () => {
     render(<SwipeTriageScreen />, { wrapper });
 
     await waitFor(() => {
-      expect(screen.getByText("Undo")).toBeTruthy();
+      expect(screen.getByText("links.swipeTriage.undo")).toBeTruthy();
     });
   });
 

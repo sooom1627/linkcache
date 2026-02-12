@@ -6,6 +6,7 @@ import { Eye, EyeClosed, Lock, Mail } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 
 import { FormButton, FormInput } from "@/src/shared/components/forms";
+import { colors } from "@/src/shared/constants/colors";
 
 import {
   createAuthFormSectionSchema,
@@ -84,7 +85,7 @@ export function FormSection({
           value={formData.email}
           onChangeText={(value) => handleFieldChange("email", value)}
           error={errors.email}
-          leftIcon={<Mail size={16} color="#6B7280" />}
+          leftIcon={<Mail size={16} color={colors.icon} />}
           returnKeyType="next"
           onSubmitEditing={() => passwordInputRef.current?.focus()}
           blurOnSubmit={false}
@@ -99,7 +100,7 @@ export function FormSection({
           value={formData.password}
           onChangeText={(value) => handleFieldChange("password", value)}
           error={errors.password}
-          leftIcon={<Lock size={16} color="#6B7280" />}
+          leftIcon={<Lock size={16} color={colors.icon} />}
           returnKeyType="done"
           onSubmitEditing={handleSubmit}
           rightIcon={
@@ -111,9 +112,9 @@ export function FormSection({
                 }
               >
                 {showPassword ? (
-                  <EyeClosed size={20} color="#6B7280" />
+                  <EyeClosed size={20} color={colors.icon} />
                 ) : (
-                  <Eye size={20} color="#6B7280" />
+                  <Eye size={20} color={colors.icon} />
                 )}
               </TouchableOpacity>
             ) : undefined

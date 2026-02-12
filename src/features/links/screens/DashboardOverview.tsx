@@ -2,10 +2,10 @@ import { Pressable, Text, View } from "react-native";
 
 import { useRouter } from "expo-router";
 
-import { ArrowRight, BookOpen, Layers, Plus } from "lucide-react-native";
+import { ArrowRight, BookOpen, Layers } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 
-import { useModal } from "@/src/shared/providers/ModalContext";
+import { colors } from "@/src/shared/constants/colors";
 
 interface DashboardOverviewProps {
   inboxCount: number;
@@ -27,7 +27,6 @@ export function DashboardOverview({
   allLinksCount,
 }: DashboardOverviewProps) {
   const router = useRouter();
-  const { openModal } = useModal();
   const { t } = useTranslation();
 
   return (
@@ -37,14 +36,14 @@ export function DashboardOverview({
         {/* Left Column: Inbox (Main Action) */}
         {inboxCount > 0 ? (
           <Pressable
-            className="flex-1 justify-between rounded-xl bg-slate-900 p-5 active:scale-[0.98] active:opacity-95"
+            className="flex-1 justify-between rounded-xl bg-mainDark p-5 active:scale-[0.98] active:opacity-95"
             onPress={() => router.push("/swipes")}
             accessibilityRole="button"
             accessibilityLabel={`${inboxCount} ${t("links.dashboard.unsorted_links")}, ${t("links.dashboard.start_triage")}`}
           >
             <View>
-              <View className="mb-4 self-start rounded-md bg-slate-800 p-2">
-                <Layers size={20} color="#e2e8f0" />
+              <View className="mb-4 self-start rounded-md bg-main p-2">
+                <Layers size={20} color="white" />
               </View>
               <Text className="text-4xl font-bold tracking-tight text-white">
                 {inboxCount}
@@ -65,7 +64,7 @@ export function DashboardOverview({
           <View className="flex-1 justify-between rounded-md border border-slate-200 bg-white p-5">
             <View>
               <View className="mb-4 self-start rounded-xl bg-emerald-50 p-2">
-                <BookOpen size={20} color="#10b981" />
+                <BookOpen size={20} color={colors.success} />
               </View>
               <Text className="text-xl font-bold text-slate-900">
                 {t("links.dashboard.all_caught_up")}
@@ -100,29 +99,6 @@ export function DashboardOverview({
           </View>
         </View>
       </View>
-
-      {/* Add link button */}
-      <Pressable
-        className="w-full flex-row items-center justify-between gap-2 rounded-lg border border-slate-200 bg-white p-4 active:bg-slate-50"
-        onPress={() => openModal("linkCreate")}
-        accessibilityRole="button"
-        accessibilityLabel={t("links.dashboard.add_new_link")}
-        accessibilityHint={t("links.dashboard.add_new_link_hint")}
-      >
-        <View className="flex-row items-center gap-2">
-          <View className="flex size-6 items-center justify-center rounded bg-slate-100">
-            <Plus size={10} color="#0f172a" strokeWidth={2.5} />
-          </View>
-          <View className="gap-0.5">
-            <Text className="text-sm font-bold text-slate-900">
-              {t("links.dashboard.add_new_link")}
-            </Text>
-            <Text className="text-xs text-slate-500">
-              {t("links.dashboard.add_new_link_hint")}
-            </Text>
-          </View>
-        </View>
-      </Pressable>
     </View>
   );
 }

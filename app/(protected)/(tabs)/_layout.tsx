@@ -1,17 +1,25 @@
-import { useMemo, useRef } from "react";
+import { useCallback, useMemo, useRef } from "react";
 
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
 
 import { usePathname } from "expo-router";
 import { TabList, Tabs, TabSlot, TabTrigger } from "expo-router/ui";
 
-import { ChartNoAxesCombined, House, Layers2, List } from "lucide-react-native";
+import {
+  ChartNoAxesCombined,
+  House,
+  Layers2,
+  List,
+  PlusCircle,
+} from "lucide-react-native";
+import { useTranslation } from "react-i18next";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 
+import { useModal } from "@/src/shared/providers";
 import type { TabItem, TabPath } from "@/src/shared/types/Tabs.types";
 
 const tabs: TabItem[] = [
@@ -22,7 +30,7 @@ const tabs: TabItem[] = [
 ];
 
 const tabBarStyle = {
-  width: 260,
+  width: 280,
   justifyContent: "space-between" as const,
   shadowColor: "#000",
   shadowOffset: { width: 0, height: 2 },
@@ -32,9 +40,15 @@ const tabBarStyle = {
 };
 
 export default function TabsLayout() {
+  const { t } = useTranslation();
   const pathname = usePathname();
   const insets = useSafeAreaInsets();
   const lastActiveTabRef = useRef<TabPath>("/");
+  const { openModal } = useModal();
+
+  const handleAddPress = useCallback(() => {
+    openModal("linkCreate");
+  }, [openModal]);
 
   // タブ内のpathnameのみを取得（/link などの外部ルートを除外）
   // 外部ルートの場合は最後にアクティブだったタブのpathnameを保持
@@ -65,10 +79,42 @@ export default function TabsLayout() {
         </Animated.View>
         <TabList asChild={true}>
           <View
-            className="absolute z-50 flex-row items-center self-center rounded-full bg-white/90 p-2"
+            className="absolute z-50 flex-row items-center justify-between self-center rounded-full bg-white/90 p-2"
             style={dynamicTabBarStyle}
           >
-            {tabs.map((tab) => {
+            {tabs.slice(0, 2).map((tab) => {
+              const isActive = pathname === tab.href;
+              const Icon = tab.icon;
+
+              return (
+                <TabTrigger
+                  key={tab.name}
+                  name={tab.name}
+                  href={tab.href}
+                  accessibilityLabel={tab.name}
+                >
+                  <View
+                    className={`items-center justify-center rounded-full p-4 ${isActive ? "bg-slate-100" : ""}`}
+                  >
+                    <Icon
+                      color={isActive ? "#000000" : "#9ca3af"}
+                      size={20}
+                      strokeWidth={isActive ? 2 : 1.5}
+                    />
+                  </View>
+                </TabTrigger>
+              );
+            })}
+            <Pressable
+              onPress={handleAddPress}
+              accessibilityRole="button"
+              accessibilityLabel={t("links.create.add_button")}
+            >
+              <View className="items-center justify-center rounded-full p-4">
+                <PlusCircle size={20} color="#9ca3af" strokeWidth={1.5} />
+              </View>
+            </Pressable>
+            {tabs.slice(2, 4).map((tab) => {
               const isActive = pathname === tab.href;
               const Icon = tab.icon;
 
