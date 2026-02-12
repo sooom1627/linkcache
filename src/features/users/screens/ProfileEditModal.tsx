@@ -7,9 +7,9 @@ import { AtSign, UserRound } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 
 import { FormButton, FormInput } from "@/src/shared/components/forms";
-import { colors } from "@/src/shared/constants/colors";
 import { ScrollableBottomSheetModal } from "@/src/shared/components/modals";
 import ModalHeader from "@/src/shared/components/modals/ModalHeader";
+import { colors } from "@/src/shared/constants/colors";
 
 import { useCheckUserId, useProfile } from "../hooks";
 import { useProfileForm } from "../hooks/useProfileForm";

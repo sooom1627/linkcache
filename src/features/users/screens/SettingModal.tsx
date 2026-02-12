@@ -80,9 +80,7 @@ export const SettingModal = forwardRef<BottomSheetModal, SettingModalProps>(
 
           {/* Logout Button */}
           <View className="w-full">
-            <LogoutButton
-              onLogoutSuccess={onCloseAll}
-            />
+            <LogoutButton onLogoutSuccess={onCloseAll} />
           </View>
         </View>
       </ScrollableBottomSheetModal>
