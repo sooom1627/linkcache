@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 
 import type { ToggleMenuItem } from "@/src/shared/components/ToggleMenu";
 import { ToggleMenu } from "@/src/shared/components/ToggleMenu";
+import { colors } from "@/src/shared/constants/colors";
 
 import { useUpdateLinkReadStatus } from "../hooks/useUpdateLinkReadStatus";
 
@@ -79,9 +80,9 @@ export function LinkDetailActionButtonGroup({
       {
         id: "change-status",
         icon: isRead ? (
-          <X size={20} color="#64748B" strokeWidth={2.5} />
+          <X size={20} color={colors.icon} strokeWidth={2.5} />
         ) : (
-          <Check size={20} color="#64748B" strokeWidth={2.5} />
+          <Check size={20} color={colors.icon} strokeWidth={2.5} />
         ),
         label: isRead
           ? t("links.detail.mark_as_unread")
@@ -92,18 +93,18 @@ export function LinkDetailActionButtonGroup({
       },
       {
         id: "share",
-        icon: <Share size={20} color="#64748B" strokeWidth={2.5} />,
+        icon: <Share size={20} color={colors.icon} strokeWidth={2.5} />,
         label: t("links.detail.share"),
         onPress: handleShare,
         disabled: !isMoreMenuOpen,
       },
       {
         id: "delete",
-        icon: <Trash2 size={20} color="#EF4444" strokeWidth={2.5} />,
+        icon: <Trash2 size={20} color={colors.error} strokeWidth={2.5} />,
         label: t("links.detail.delete_link"),
         onPress: handleDelete,
         disabled: !isMoreMenuOpen || isDeleting,
-        color: "#EF4444",
+        color: colors.error,
         loading: isDeleting,
         className: "min-w-[200px]",
       },
@@ -124,11 +125,11 @@ export function LinkDetailActionButtonGroup({
     <View className="absolute bottom-12 z-50 flex-row items-end gap-2 px-2">
       <TouchableOpacity
         onPress={onOpenLink}
-        className="h-16 flex-grow flex-row items-center justify-center gap-2 rounded-full bg-slate-800 px-6 py-4"
+        className="h-16 flex-grow flex-row items-center justify-center gap-2 rounded-full bg-main px-6 py-4"
         accessibilityRole="button"
         accessibilityLabel={t("links.detail.open_link")}
       >
-        <ExternalLink size={20} color="#ffffff" strokeWidth={2.5} />
+        <ExternalLink size={20} color={colors.textOnDark} strokeWidth={2.5} />
         <Text className="text-base font-semibold text-white">
           {t("links.detail.open_link")}
         </Text>
@@ -150,7 +151,7 @@ export function LinkDetailActionButtonGroup({
           accessibilityRole="button"
           accessibilityLabel={t("links.detail.more_options")}
         >
-          <Ellipsis size={20} color="#64748B" strokeWidth={2.5} />
+          <Ellipsis size={20} color={colors.icon} strokeWidth={2.5} />
         </TouchableOpacity>
       </View>
     </View>

@@ -18,7 +18,7 @@ export default function FormButton({
   title,
   disabled = false,
   disabledColor = "bg-slate-400",
-  enabledColor = "bg-slate-800",
+  enabledColor = "bg-main",
   ...rest
 }: FormButtonProps) {
   return (

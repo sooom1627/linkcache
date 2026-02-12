@@ -26,12 +26,12 @@ export function LinkListTabHeader({
         accessibilityState={{ selected: activeTab === "read_soon" }}
         accessibilityLabel={t("links.dashboard.tabs.read_soon")}
         className={`border-b-2 pb-2 ${
-          activeTab === "read_soon" ? "border-slate-900" : "border-transparent"
+          activeTab === "read_soon" ? "border-main" : "border-transparent"
         }`}
       >
         <Text
           className={`text-base font-bold ${
-            activeTab === "read_soon" ? "text-slate-900" : "text-slate-400"
+            activeTab === "read_soon" ? "text-main" : "text-slate-400"
           }`}
         >
           {t("links.dashboard.tabs.read_soon")}
@@ -44,12 +44,12 @@ export function LinkListTabHeader({
         accessibilityState={{ selected: activeTab === "latest" }}
         accessibilityLabel={t("links.dashboard.tabs.latest")}
         className={`border-b-2 pb-2 ${
-          activeTab === "latest" ? "border-slate-900" : "border-transparent"
+          activeTab === "latest" ? "border-main" : "border-transparent"
         }`}
       >
         <Text
           className={`text-base font-bold ${
-            activeTab === "latest" ? "text-slate-900" : "text-slate-400"
+            activeTab === "latest" ? "text-main" : "text-slate-400"
           }`}
         >
           {t("links.dashboard.tabs.latest")}

@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 
 import { BaseBottomSheetModal } from "@/src/shared/components/modals";
 import ModalHeader from "@/src/shared/components/modals/ModalHeader";
+import { colors } from "@/src/shared/constants/colors";
 
 import { extractDomain } from "../hooks/useLinkPaste";
 import { useUpdateLinkReadStatus } from "../hooks/useUpdateLinkReadStatus";
@@ -98,7 +99,11 @@ export const LinkReadStatusModal = forwardRef<
             />
           ) : (
             <View className="h-32 items-center justify-center bg-slate-50">
-              <Link2 size={32} color="#cbd5e1" strokeWidth={1.5} />
+              <Link2
+                size={32}
+                color={colors.iconPlaceholder}
+                strokeWidth={1.5}
+              />
             </View>
           )}
 
@@ -121,7 +126,7 @@ export const LinkReadStatusModal = forwardRef<
                   contentFit="contain"
                 />
               ) : (
-                <Globe size={14} color="#94a3b8" strokeWidth={1.5} />
+                <Globe size={14} color={colors.iconMuted} strokeWidth={1.5} />
               )}
               <Text className="text-sm text-slate-400">
                 {link.site_name || domain}
@@ -143,13 +148,13 @@ export const LinkReadStatusModal = forwardRef<
               className={`w-full flex-row items-center justify-center gap-1.5 rounded-lg p-3 ${
                 !isRead || isPending
                   ? "bg-slate-200"
-                  : "bg-slate-900 active:bg-slate-800"
+                  : "bg-mainDark active:bg-mainHover"
               }`}
               activeOpacity={!isRead || isPending ? 1 : 0.7}
             >
               <Circle
                 size={18}
-                color={!isRead ? "#94a3b8" : "#FFFFFF"}
+                color={!isRead ? colors.iconMuted : colors.textOnDark}
                 strokeWidth={2}
               />
               <Text
@@ -174,13 +179,13 @@ export const LinkReadStatusModal = forwardRef<
               className={`w-full flex-row items-center justify-center gap-1.5 rounded-lg p-3 ${
                 isRead || isPending
                   ? "bg-slate-200"
-                  : "bg-slate-900 active:bg-slate-800"
+                  : "bg-mainDark active:bg-mainHover"
               }`}
               activeOpacity={isRead || isPending ? 1 : 0.7}
             >
               <CheckCircle2
                 size={18}
-                color={isRead ? "#94a3b8" : "#FFFFFF"}
+                color={isRead ? colors.iconMuted : colors.textOnDark}
                 strokeWidth={2}
               />
               <Text

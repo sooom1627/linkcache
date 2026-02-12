@@ -2,6 +2,8 @@ import { Text, TouchableOpacity, View } from "react-native";
 
 import { AntDesign, FontAwesome } from "@expo/vector-icons";
 
+import { colors } from "@/src/shared/constants/colors";
+
 export type Provider = "google" | "apple";
 
 export interface SocialMediaButtonProps {
@@ -15,15 +17,15 @@ const providerConfig = {
     iconFamily: "AntDesign" as const,
     label: "Continue with Google",
     bgColor: "bg-white",
-    textColor: "text-gray-800",
-    iconColor: "#1f2937",
-    borderColor: "border border-gray-300",
+    textColor: "text-slate-800",
+    iconColor: colors.main,
+    borderColor: "border border-slate-200",
   },
   apple: {
     icon: "apple" as const,
     iconFamily: "FontAwesome" as const,
     label: "Continue with Apple",
-    bgColor: "bg-slate-800",
+    bgColor: "bg-main",
     textColor: "text-white",
     iconColor: "white",
     borderColor: "",

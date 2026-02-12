@@ -45,11 +45,11 @@ export default function SignIn() {
   const insets = useSafeAreaInsets();
 
   return (
-    <SafeAreaView edges={["top"]} className="flex-1 bg-slate-100">
+    <SafeAreaView edges={["top"]} className="flex-1 bg-surfaceMuted">
       <ScrollView
         keyboardDismissMode="on-drag"
         keyboardShouldPersistTaps="handled"
-        className="flex-1 bg-slate-100"
+        className="flex-1 bg-surfaceMuted"
         contentContainerClassName="flex-1"
       >
         <View className="flex flex-1 flex-col items-start justify-end">
@@ -62,7 +62,7 @@ export default function SignIn() {
           />
           <View
             style={{ paddingBottom: insets.bottom + 8 }}
-            className="flex w-full flex-col items-start justify-start rounded-t-[32px] bg-white px-6 pt-10"
+            className="flex w-full flex-col items-start justify-start rounded-t-[32px] bg-surface px-6 pt-10"
           >
             {/* SignIn Form */}
             <FormSection

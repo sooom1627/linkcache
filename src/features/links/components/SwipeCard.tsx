@@ -4,6 +4,8 @@ import { Image } from "expo-image";
 
 import { Globe, Link2 } from "lucide-react-native";
 
+import { colors } from "@/src/shared/constants/colors";
+
 import type { UserLink } from "../types/linkList.types";
 
 const CARD_WIDTH = Dimensions.get("window").width - 40;
@@ -43,8 +45,8 @@ export function SwipeCard({ link }: SwipeCardProps) {
         borderRadius: 16,
         borderWidth: 1,
         minHeight: 270,
-        borderColor: "#e2e8f0",
-        backgroundColor: "#ffffff",
+        borderColor: colors.border,
+        backgroundColor: colors.surface,
         justifyContent: "flex-start",
         alignItems: "center",
       }}
@@ -59,8 +61,8 @@ export function SwipeCard({ link }: SwipeCardProps) {
           transition={200}
         />
       ) : (
-        <View className="h-[170px] w-full items-center justify-center bg-slate-50">
-          <Link2 size={32} color="#cbd5e1" strokeWidth={1.5} />
+        <View className="h-[170px] w-full items-center justify-center bg-surfaceMuted">
+          <Link2 size={32} color={colors.iconPlaceholder} strokeWidth={1.5} />
         </View>
       )}
 
@@ -68,7 +70,7 @@ export function SwipeCard({ link }: SwipeCardProps) {
       <View className="flex w-full flex-col items-start justify-center gap-2 px-3 py-4">
         {/* タイトル */}
         <Text
-          className="line-clamp-2 w-full text-left text-base font-medium text-slate-800"
+          className="line-clamp-2 w-full text-left text-base font-medium text-main"
           numberOfLines={2}
         >
           {link.title || "No title"}
@@ -83,9 +85,9 @@ export function SwipeCard({ link }: SwipeCardProps) {
               contentFit="contain"
             />
           ) : (
-            <Globe size={14} color="#94a3b8" strokeWidth={1.5} />
+            <Globe size={14} color={colors.iconMuted} strokeWidth={1.5} />
           )}
-          <Text className="text-sm text-slate-400">
+          <Text className="text-sm text-slate-500">
             {domain || link.site_name || ""}
           </Text>
         </View>

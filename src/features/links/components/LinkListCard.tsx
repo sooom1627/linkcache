@@ -9,6 +9,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Circle, ExternalLink, Globe } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 
+import { colors } from "@/src/shared/constants/colors";
 import { useBottomSheetModal } from "@/src/shared/hooks/useBottomSheetModal";
 
 import { extractDomain } from "../hooks/useLinkPaste";
@@ -36,7 +37,7 @@ function ThumbnailFallback() {
       className="items-center justify-center rounded-lg bg-slate-50 bg-gradient-to-br"
       style={{ width: OG_IMAGE_WIDTH, height: OG_IMAGE_HEIGHT }}
     >
-      <Ionicons name="link-outline" size={24} color="#CBD5E1" />
+      <Ionicons name="link-outline" size={24} color={colors.iconPlaceholder} />
     </View>
   );
 }
@@ -143,7 +144,7 @@ export function LinkListCard({ link }: LinkListCardProps) {
                 className="rounded-full bg-slate-200"
                 style={{ width: 10, height: 10 }}
               >
-                <Globe size={10} color="#94a3b8" strokeWidth={1.5} />
+                <Globe size={10} color={colors.iconMuted} strokeWidth={1.5} />
               </View>
             )}
             {/* サイト名 */}
@@ -179,7 +180,7 @@ export function LinkListCard({ link }: LinkListCardProps) {
           accessibilityLabel={t("links.card.open_link_label")}
           accessibilityHint={t("links.card.open_link_hint")}
         >
-          <ExternalLink size={16} color="#94a3b8" strokeWidth={2.5} />
+          <ExternalLink size={16} color={colors.iconMuted} strokeWidth={2.5} />
         </TouchableOpacity>
       </Pressable>
 

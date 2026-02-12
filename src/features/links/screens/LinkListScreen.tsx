@@ -8,6 +8,7 @@ import { FlashList } from "@shopify/flash-list";
 import { useTranslation } from "react-i18next";
 
 import { ErrorStateView } from "@/src/shared/components/ErrorStateView";
+import { colors } from "@/src/shared/constants/colors";
 
 import { LinkListCard } from "../components/LinkListCard";
 import { LinkListEmpty } from "../components/LinkListEmpty";
@@ -155,7 +156,7 @@ function LinkListScreenContent() {
   if (isLoading) {
     return (
       <View className="flex-1 items-center justify-center">
-        <ActivityIndicator size="large" color="#6B7280" />
+        <ActivityIndicator size="large" color={colors.icon} />
       </View>
     );
   }
@@ -198,7 +199,7 @@ function LinkListScreenContent() {
           <RefreshControl
             refreshing={isRefreshing}
             onRefresh={refetch}
-            tintColor="#6B7280"
+            tintColor={colors.icon}
           />
         }
       />

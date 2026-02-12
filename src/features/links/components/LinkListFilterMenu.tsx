@@ -4,6 +4,7 @@ import { Pressable, Text, View } from "react-native";
 
 import { SlidersHorizontal } from "lucide-react-native";
 
+import { colors } from "@/src/shared/constants/colors";
 import { useBottomSheetModal } from "@/src/shared/hooks/useBottomSheetModal";
 
 import { useLinkListFilterContext } from "../contexts/LinkListFilterContext";
@@ -30,8 +31,8 @@ export function LinkListFilterMenu({ isDisabled }: { isDisabled: boolean }) {
         onPress={handlePress}
         className={`flex-row items-center gap-2 rounded-full px-3 py-1.5 ${
           hasActiveFilters
-            ? "bg-slate-700 active:bg-slate-800"
-            : "bg-slate-100 active:bg-slate-200"
+            ? "bg-mainHover active:bg-main"
+            : "bg-surfaceMuted active:bg-slate-200"
         }`}
         accessibilityRole="button"
         accessibilityLabel={`Open filter menu${hasActiveFilters ? `, ${activeFilterCount} filter${activeFilterCount > 1 ? "s" : ""} active` : ""}`}
@@ -43,7 +44,11 @@ export function LinkListFilterMenu({ isDisabled }: { isDisabled: boolean }) {
         <SlidersHorizontal
           size={14}
           color={
-            isDisabled ? "#94A3B8" : hasActiveFilters ? "#FFFFFF" : "#475569"
+            isDisabled
+              ? colors.iconMuted
+              : hasActiveFilters
+                ? colors.textOnDark
+                : colors.textSecondary
           }
           strokeWidth={2.5}
         />

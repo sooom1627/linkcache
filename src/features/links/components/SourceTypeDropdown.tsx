@@ -10,6 +10,8 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
+import { colors } from "@/src/shared/constants/colors";
+
 import type { TriageStatus } from "../types/linkList.types";
 
 /** SourceTypeDropdownで使用可能なステータス（TriageStatusと同義） */
@@ -83,7 +85,7 @@ export function SourceTypeDropdown({
           {t(`links.card.action_modal.status.${value}`)}
         </Text>
         <Animated.View style={chevronAnimatedStyle}>
-          <ChevronDown size={16} color="#64748B" />
+          <ChevronDown size={16} color={colors.icon} />
         </Animated.View>
       </Pressable>
 

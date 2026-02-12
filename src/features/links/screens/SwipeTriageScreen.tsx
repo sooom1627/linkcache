@@ -16,6 +16,7 @@ import {
 } from "react-native-swipeable-card-stack";
 
 import { ErrorStateView } from "@/src/shared/components/ErrorStateView";
+import { colors } from "@/src/shared/constants/colors";
 
 import { SourceTypeDropdown } from "../components/SourceTypeDropdown";
 import { SwipeCard } from "../components/SwipeCard";
@@ -85,7 +86,7 @@ export function SwipeTriageScreen() {
   if (isLoading) {
     return (
       <View className="flex-1 items-center justify-center">
-        <Text className="text-gray-600">Loading...</Text>
+        <Text className="text-slate-500">Loading...</Text>
       </View>
     );
   }
@@ -120,10 +121,10 @@ export function SwipeTriageScreen() {
         </View>
 
         <View className="flex-1 items-center justify-center">
-          <Text className="text-2xl font-bold text-gray-800">
+          <Text className="text-2xl font-bold text-slate-800">
             🎉 No pending links!
           </Text>
-          <Text className="mt-2 text-gray-600">All caught up!</Text>
+          <Text className="mt-2 text-slate-500">All caught up!</Text>
         </View>
       </View>
     );
@@ -143,8 +144,10 @@ export function SwipeTriageScreen() {
         </View>
 
         <View className="flex-1 items-center justify-center">
-          <Text className="text-2xl font-bold text-gray-800">🎉 All done!</Text>
-          <Text className="mt-2 text-gray-600">
+          <Text className="text-2xl font-bold text-slate-800">
+            🎉 All done!
+          </Text>
+          <Text className="mt-2 text-slate-500">
             You've triaged all your links!
           </Text>
           {/* Restart Button */}
@@ -152,7 +155,7 @@ export function SwipeTriageScreen() {
             onPress={restart}
             className="mt-4 flex-row items-center justify-center gap-2 rounded-full bg-slate-200 px-4 py-2 active:bg-slate-300"
           >
-            <RefreshCw size={18} color="#4B5563" />
+            <RefreshCw size={18} color={colors.icon} />
             <Text className="text-base font-medium text-slate-700">
               Start Again
             </Text>
@@ -173,7 +176,7 @@ export function SwipeTriageScreen() {
           allowedTypes={["new", "read_soon", "stock"]}
         />
         {/* Remaining Count */}
-        <Text className="mt-2 text-sm text-gray-500">
+        <Text className="mt-2 text-sm text-slate-500">
           {remainingCount} remaining
           {isFetchingNextPage ? " (loading more...)" : ""}
         </Text>
@@ -215,12 +218,12 @@ export function SwipeTriageScreen() {
                 >
                   <View
                     className={`rounded-full p-4 ${
-                      isDisabled ? "bg-slate-100" : "bg-slate-200"
+                      isDisabled ? "bg-surfaceMuted" : "bg-slate-200"
                     }`}
                   >
                     <ArrowLeft
                       size={20}
-                      color={isDisabled ? "#9CA3AF" : "#4B5563"}
+                      color={isDisabled ? colors.iconMuted : colors.icon}
                     />
                   </View>
                   <Text
@@ -242,12 +245,12 @@ export function SwipeTriageScreen() {
                 >
                   <View
                     className={`rounded-full p-4 ${
-                      isDisabled ? "bg-slate-100" : "bg-slate-200"
+                      isDisabled ? "bg-surfaceMuted" : "bg-slate-200"
                     }`}
                   >
                     <ArrowRight
                       size={20}
-                      color={isDisabled ? "#9CA3AF" : "#4B5563"}
+                      color={isDisabled ? colors.iconMuted : colors.icon}
                     />
                   </View>
                   <Text
@@ -270,10 +273,13 @@ export function SwipeTriageScreen() {
           className={`flex-row items-center justify-center gap-2 rounded-full px-4 py-2 ${
             canUndo
               ? "bg-slate-200 active:bg-slate-300"
-              : "bg-slate-100 opacity-50"
+              : "bg-surfaceMuted opacity-50"
           }`}
         >
-          <RotateCcw size={18} color={canUndo ? "#4B5563" : "#9CA3AF"} />
+          <RotateCcw
+            size={18}
+            color={canUndo ? colors.icon : colors.iconMuted}
+          />
           <Text
             className={`text-base font-medium ${
               canUndo ? "text-slate-700" : "text-slate-400"
