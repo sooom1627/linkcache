@@ -127,7 +127,7 @@
       "clear_button": "Clear",
       "change_link": "Change",
       "error_clipboard_empty": "Clipboard is empty",
-      "error_invalid_url": "Invalid URL",
+      "error_invalid_url": "Could not detect a valid URL. Copy the URL in your browser or other app, then try again.",
       "error_clipboard_read_failed": "Failed to read clipboard"
     },
     "filter": {

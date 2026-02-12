@@ -2,10 +2,8 @@ import { Pressable, Text, View } from "react-native";
 
 import { useRouter } from "expo-router";
 
-import { ArrowRight, BookOpen, Layers, Plus } from "lucide-react-native";
+import { ArrowRight, BookOpen, Layers } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
-
-import { useModal } from "@/src/shared/providers/ModalContext";
 
 interface DashboardOverviewProps {
   inboxCount: number;
@@ -27,7 +25,6 @@ export function DashboardOverview({
   allLinksCount,
 }: DashboardOverviewProps) {
   const router = useRouter();
-  const { openModal } = useModal();
   const { t } = useTranslation();
 
   return (
@@ -100,29 +97,6 @@ export function DashboardOverview({
           </View>
         </View>
       </View>
-
-      {/* Add link button */}
-      <Pressable
-        className="w-full flex-row items-center justify-between gap-2 rounded-lg border border-slate-200 bg-white p-4 active:bg-slate-50"
-        onPress={() => openModal("linkCreate")}
-        accessibilityRole="button"
-        accessibilityLabel={t("links.dashboard.add_new_link")}
-        accessibilityHint={t("links.dashboard.add_new_link_hint")}
-      >
-        <View className="flex-row items-center gap-2">
-          <View className="flex size-6 items-center justify-center rounded bg-slate-100">
-            <Plus size={10} color="#0f172a" strokeWidth={2.5} />
-          </View>
-          <View className="gap-0.5">
-            <Text className="text-sm font-bold text-slate-900">
-              {t("links.dashboard.add_new_link")}
-            </Text>
-            <Text className="text-xs text-slate-500">
-              {t("links.dashboard.add_new_link_hint")}
-            </Text>
-          </View>
-        </View>
-      </Pressable>
     </View>
   );
 }

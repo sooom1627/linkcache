@@ -127,7 +127,7 @@
       "clear_button": "クリア",
       "change_link": "変更",
       "error_clipboard_empty": "クリップボードが空です",
-      "error_invalid_url": "有効なURLではありません",
+      "error_invalid_url": "正しいURLを検出できませんでした。ブラウザや他のアプリでコピーして、再度試してください。",
       "error_clipboard_read_failed": "クリップボードの読み取りに失敗しました"
     },
     "filter": {
