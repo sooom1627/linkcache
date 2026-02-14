@@ -1,6 +1,8 @@
-import { colors } from "@/src/shared/constants/colors";
 import Stack from "expo-router/stack";
+
 import { ArrowLeft } from "lucide-react-native";
+
+import { colors } from "@/src/shared/constants/colors";
 
 export default function LinksLayout() {
   return (
@@ -17,11 +19,12 @@ export default function LinksLayout() {
         animation: "slide_from_right",
       }}
     >
-      <Stack.Screen name="index" 
-        options={{ 
-          title: "Links", 
-          headerLeft: () => <ArrowLeft size={24} color={colors.main} 
-        />}} 
+      <Stack.Screen
+        name="index"
+        options={{
+          title: "Links",
+          headerLeft: () => <ArrowLeft size={24} color={colors.main} />,
+        }}
       />
     </Stack>
   );
