@@ -22,7 +22,7 @@ export default function Home() {
       />
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
-        contentContainerStyle={{ paddingHorizontal: 16, gap: 16, flexGrow: 1 }}
+        contentContainerStyle={{ paddingHorizontal: 16, gap: 16 }}
       >
         <View style={{ paddingTop: 8 }}>
           <DashboardOverview

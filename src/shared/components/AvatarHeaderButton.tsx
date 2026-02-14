@@ -15,7 +15,7 @@ export function AvatarHeaderButton() {
       avatarUrl={profile?.avatar_url}
       updatedAt={profile?.updated_at}
       onPress={() => openModal("setting")}
-      size="small"
+      size="medium"
       accessibilityLabel="Open settings"
     />
   );
