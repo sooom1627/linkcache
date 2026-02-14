@@ -1,9 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
 
-import { Circle, ExternalLink, Globe } from "lucide-react-native";
+import { Circle, ExternalLink, Globe, Link2 } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 
 import { colors } from "@/src/shared/constants/colors";
@@ -33,10 +32,15 @@ const OG_IMAGE_WIDTH = Math.round(OG_IMAGE_HEIGHT * 1.91);
 function ThumbnailFallback() {
   return (
     <View
-      className="bg-surfaceMuted flex items-center justify-center rounded-lg"
-      style={{ width: OG_IMAGE_WIDTH, height: OG_IMAGE_HEIGHT }}
+      className="bg-surfaceMuted rounded-lg"
+      style={{
+        width: OG_IMAGE_WIDTH,
+        height: OG_IMAGE_HEIGHT,
+        alignItems: "center",
+        justifyContent: "center",
+      }}
     >
-      <Ionicons name="link-outline" size={24} color={colors.iconPlaceholder} />
+      <Link2 size={24} color={colors.iconPlaceholder} />
     </View>
   );
 }

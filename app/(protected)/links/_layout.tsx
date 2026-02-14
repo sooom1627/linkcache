@@ -1,8 +1,10 @@
+import { router } from "expo-router";
 import Stack from "expo-router/stack";
 
 import { ArrowLeft } from "lucide-react-native";
 
 import { colors } from "@/src/shared/constants/colors";
+import { TouchableOpacity } from "@/src/tw";
 
 export default function LinksLayout() {
   return (
@@ -23,7 +25,11 @@ export default function LinksLayout() {
         name="index"
         options={{
           title: "Links",
-          headerLeft: () => <ArrowLeft size={24} color={colors.main} />,
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => router.back()}>
+              <ArrowLeft size={24} color={colors.main} />
+            </TouchableOpacity>
+          ),
         }}
       />
     </Stack>

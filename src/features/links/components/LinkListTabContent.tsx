@@ -2,14 +2,14 @@ import { memo } from "react";
 
 import { ActivityIndicator } from "react-native";
 
-import { useRouter } from "expo-router";
+import { Link, useRouter } from "expo-router";
 
 import { ArrowRight, Layers2 } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 
 import { ErrorStateView } from "@/src/shared/components/ErrorStateView";
 import { colors } from "@/src/shared/constants/colors";
-import { Link, Pressable, Text, View } from "@/src/tw";
+import { Pressable, Text, View } from "@/src/tw";
 
 import type { useLinks } from "../hooks/useLinks";
 import type { TabType } from "../types/linkList.types";
@@ -103,13 +103,10 @@ export const LinkListTabContent = memo(function LinkListTabContent({
           <LinkListCard link={item} />
         </View>
       ))}
-      <View className="flex-row items-center justify-center py-4">
-        <Link
-          href={viewAllHref}
-          className="rounded-full border border-slate-200 px-4 py-2"
-        >
-          <View className="flex-row items-center justify-center gap-2 ">
-            <Text className="text-center text-sm text-slate-500">
+      <View className="items-center py-4">
+        <Link href={viewAllHref}>
+          <View className="flex-row items-center justify-center gap-2 rounded-full border border-slate-200 px-4 py-2">
+            <Text className="text-textSecondary text-sm leading-none">
               {t("links.dashboard.view_all")}
             </Text>
             <ArrowRight size={14} color={colors.icon} strokeWidth={1.5} />
