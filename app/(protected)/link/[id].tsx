@@ -37,6 +37,9 @@ export default function LinkDetail() {
       <Stack.Screen
         options={{
           title: t("links.detail.title", { defaultValue: "Details" }),
+          headerTransparent: true,
+          headerShadowVisible: false,
+          headerBackButtonDisplayMode: "minimal",
         }}
       />
       <ScrollView

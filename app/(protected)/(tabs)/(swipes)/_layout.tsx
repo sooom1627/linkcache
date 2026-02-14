@@ -12,7 +12,7 @@ export default function SwipesStack() {
         headerShadowVisible: false,
         headerLargeTitleShadowVisible: false,
         headerLargeStyle: { backgroundColor: "transparent" },
-        headerLargeTitle: true,
+        headerLargeTitle: false,
         headerBlurEffect: "none",
         headerBackButtonDisplayMode: "minimal",
       }}

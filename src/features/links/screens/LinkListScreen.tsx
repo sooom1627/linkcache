@@ -126,10 +126,6 @@ function LinkListScreenContent() {
     [],
   );
 
-  const renderTopMarginComponent = useCallback(() => {
-    return <View className="h-16" />;
-  }, []);
-
   // キー抽出
   const keyExtractor = useCallback((item: UserLink) => item.status_id, []);
 
@@ -189,8 +185,7 @@ function LinkListScreenContent() {
         data={links}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
-        contentContainerStyle={{ marginTop: 8, paddingBottom: 128 }}
-        ListHeaderComponent={renderTopMarginComponent}
+        contentContainerStyle={{ paddingBottom: 128, paddingHorizontal: 8 }}
         showsVerticalScrollIndicator={false}
         onEndReached={handleEndReached}
         onEndReachedThreshold={0.5}
