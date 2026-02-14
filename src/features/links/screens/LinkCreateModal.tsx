@@ -1,6 +1,6 @@
 import { forwardRef, useCallback, useEffect, useRef } from "react";
 
-import { Alert, View } from "react-native";
+import { Alert } from "react-native";
 
 import type { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useTranslation } from "react-i18next";
@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import { FormButton } from "@/src/shared/components/forms";
 import { ScrollableBottomSheetModal } from "@/src/shared/components/modals";
 import ModalHeader from "@/src/shared/components/modals/ModalHeader";
+import { View } from "@/src/tw";
 
 import LinkPasteContainer from "../components/LinkPasteContainer";
 import { useCreateLink } from "../hooks/useCreateLink";

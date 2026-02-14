@@ -1,6 +1,6 @@
 import { forwardRef, useCallback, useEffect, useMemo, useRef } from "react";
 
-import { Alert, View, type TextInput } from "react-native";
+import { Alert, type TextInput } from "react-native";
 
 import type { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { AtSign, UserRound } from "lucide-react-native";
@@ -10,6 +10,7 @@ import { FormButton, FormInput } from "@/src/shared/components/forms";
 import { ScrollableBottomSheetModal } from "@/src/shared/components/modals";
 import ModalHeader from "@/src/shared/components/modals/ModalHeader";
 import { colors } from "@/src/shared/constants/colors";
+import { View } from "@/src/tw";
 
 import { useCheckUserId, useProfile } from "../hooks";
 import { useProfileForm } from "../hooks/useProfileForm";

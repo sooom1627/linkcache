@@ -1,8 +1,7 @@
 import { useCallback, useState } from "react";
 
-import { ActivityIndicator, Alert, ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, Alert } from "react-native";
 
-import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 
 import { Calendar, Circle, Clock, Globe } from "lucide-react-native";
@@ -11,6 +10,8 @@ import { useTranslation } from "react-i18next";
 import { ErrorStateView } from "@/src/shared/components/ErrorStateView";
 import { useBottomSheetModal } from "@/src/shared/hooks/useBottomSheetModal";
 import { formatDateTime } from "@/src/shared/utils/timezone";
+import { ScrollView, Text, View } from "@/src/tw";
+import { Image } from "@/src/tw/image";
 
 import { LinkDetailActionButtonGroup } from "../components/LinkDetailActionButtonGroup";
 import { LinkReadStatusModal } from "../components/LinkReadStatusModal";
@@ -208,7 +209,10 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
 
             {/* 説明文 */}
             {link.description && (
-              <Text className="mb-6 line-clamp-3 text-base leading-relaxed text-slate-600">
+              <Text
+                className="mb-6 text-base leading-relaxed text-slate-600"
+                numberOfLines={3}
+              >
                 {link.description}
               </Text>
             )}

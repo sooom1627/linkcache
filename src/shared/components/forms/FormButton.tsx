@@ -1,8 +1,6 @@
-import {
-  Text,
-  TouchableOpacity,
-  type TouchableOpacityProps,
-} from "react-native";
+import type { TouchableOpacityProps } from "react-native";
+
+import { Text, TouchableOpacity } from "@/src/tw";
 
 interface FormButtonProps
   extends Omit<TouchableOpacityProps, "className" | "style"> {

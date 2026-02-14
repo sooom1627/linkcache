@@ -1,13 +1,10 @@
-import { Alert, ScrollView, View } from "react-native";
+import { Alert } from "react-native";
 
 import { useRouter } from "expo-router";
 
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useSignUp } from "@/src/features/auth/hooks/useSignUp";
 import { AuthTitleSection } from "@/src/features/auth/screens/AuthTitleSection";
@@ -16,6 +13,7 @@ import { SocialOauthSection } from "@/src/features/auth/screens/SocialOauthSecti
 import type { AuthFormSection } from "@/src/features/auth/types/authFormSectionSchema.types";
 import { userQueryKeys } from "@/src/features/users/constants/queryKeys";
 import { Divider } from "@/src/shared/components/layout/Divider";
+import { SafeAreaView, ScrollView, View } from "@/src/tw";
 
 export default function CreateAccount() {
   const router = useRouter();
@@ -58,12 +56,17 @@ export default function CreateAccount() {
   const insets = useSafeAreaInsets();
 
   return (
-    <SafeAreaView edges={["top"]} className="flex-1 bg-surfaceMuted">
+    <SafeAreaView
+      edges={["top"]}
+      className="flex-1 bg-slate-50"
+      style={{ flex: 1 }}
+    >
       <ScrollView
         keyboardDismissMode="on-drag"
         keyboardShouldPersistTaps="handled"
-        className="flex-1 bg-surfaceMuted"
+        className="flex-1 bg-slate-50"
         contentContainerClassName="flex-1"
+        style={{ flex: 1 }}
       >
         <View className="flex flex-1 flex-col items-start justify-end">
           {/* Create Account Title */}
@@ -75,7 +78,7 @@ export default function CreateAccount() {
           />
           <View
             style={{ paddingBottom: insets.bottom + 8 }}
-            className="flex w-full flex-col items-start justify-start rounded-t-[32px] bg-surface px-6 pt-10"
+            className="bg-surface flex w-full flex-col items-start justify-start rounded-t-[32px] px-6 pt-10"
           >
             {/* Create Account Form */}
             <FormSection

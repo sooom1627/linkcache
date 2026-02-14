@@ -1,8 +1,7 @@
-import { Text, TouchableOpacity, View } from "react-native";
-
 import { AntDesign, FontAwesome } from "@expo/vector-icons";
 
 import { colors } from "@/src/shared/constants/colors";
+import { Text, TouchableOpacity, View } from "@/src/tw";
 
 export type Provider = "google" | "apple";
 

@@ -1,6 +1,6 @@
-import { Text, View } from "react-native";
+import { type Href } from "expo-router";
 
-import { Link, type Href } from "expo-router";
+import { Link, Text, View } from "@/src/tw";
 
 interface AuthTitleSectionProps {
   title: string;

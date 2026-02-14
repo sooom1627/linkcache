@@ -21,7 +21,6 @@ module.exports = {
     icon: "./assets/images/new-icon.png",
     scheme: IS_DEV ? "linkcache-dev" : "linkcache",
     userInterfaceStyle: "automatic",
-    newArchEnabled: true,
     ios: {
       bundleIdentifier: IS_DEV
         ? "com.sooom.linkcache.dev"
@@ -40,13 +39,13 @@ module.exports = {
       },
     },
     android: {
+      package: IS_DEV ? "com.sooom.linkcache.dev" : "com.sooom.linkcache",
       adaptiveIcon: {
         backgroundColor: "#E6F4FE",
         foregroundImage: "./assets/images/android-icon-foreground.png",
         backgroundImage: "./assets/images/android-icon-background.png",
         monochromeImage: "./assets/images/android-icon-monochrome.png",
       },
-      edgeToEdgeEnabled: true,
       predictiveBackGestureEnabled: false,
     },
     web: {
@@ -54,6 +53,7 @@ module.exports = {
       favicon: "./assets/images/favicon.png",
     },
     plugins: [
+      "expo-image",
       "expo-router",
       "expo-secure-store",
       "expo-localization",

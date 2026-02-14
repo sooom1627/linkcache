@@ -1,7 +1,5 @@
 import { forwardRef } from "react";
 
-import { Text, View } from "react-native";
-
 import type { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useTranslation } from "react-i18next";
 
@@ -12,6 +10,7 @@ import {
   useFormattedTime,
 } from "@/src/shared/hooks/useDateTime";
 import { getDeviceTimezone } from "@/src/shared/utils/timezone";
+import { Text, View } from "@/src/tw";
 
 import LanguageSettings from "../components/setting/LanguageSettings";
 
@@ -50,7 +49,7 @@ export const LocaleSettingModal = forwardRef<
               {" - " + t("users.setting_modal.locale_setting.timezone_info")}
             </Text>
           </Text>
-          <View className="w-full flex-col items-start justify-start gap-1 rounded-lg bg-surfaceMuted p-4">
+          <View className="bg-surface-muted w-full flex-col items-start justify-start gap-1 rounded-lg p-4">
             <Text className="text-xl font-bold text-slate-700">
               {formattedTime}
             </Text>

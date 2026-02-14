@@ -1,3 +1,37 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css";
+
+/* Custom theme colors (migrated from tailwind.config.js) */
+@layer theme {
+  @theme {
+    --color-main: #1e293b;
+    --color-main-hover: #334155;
+    --color-main-dark: #0f172a;
+    --color-accent: #ea580c;
+    --color-accent-muted: #f97316;
+    --color-surface: #ffffff;
+    --color-surface-muted: #f1f5f9;
+    --color-surface-muted-active: #e2e8f0;
+    --color-surface-muted-active-pressed: #cbd5e1;
+    --color-border: #e2e8f0;
+    --color-danger: #ef4444;
+    --color-danger-disabled: #fca5a5;
+    --color-text-muted: #64748b;
+  }
+}
+
+/* Platform-specific font families */
+@media android {
+  :root {
+    --font-mono: monospace;
+    --font-sans: normal;
+  }
+}
+
+@media ios {
+  :root {
+    --font-mono: ui-monospace;
+    --font-sans: system-ui;
+  }
+}

@@ -1,23 +1,20 @@
 import type { ReactNode } from "react";
 import { useEffect } from "react";
 
-import {
-  ActivityIndicator,
-  Pressable,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ActivityIndicator } from "react-native";
 import type { StyleProp, ViewStyle } from "react-native";
 
 import { BlurView } from "expo-blur";
 
 import type { AnimatedStyle } from "react-native-reanimated";
-import Animated, {
+import {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
+
+import { Pressable, Text, TouchableOpacity, View } from "@/src/tw";
+import { Animated } from "@/src/tw/animated";
 
 export interface ToggleMenuItem {
   /** 安定キー */
@@ -136,7 +133,13 @@ export function ToggleMenu({
         <BlurView
           tint={blurTint}
           intensity={blurIntensity}
-          className="overflow-hidden rounded-3xl border border-slate-200 bg-slate-100"
+          style={{
+            overflow: "hidden",
+            borderRadius: 24,
+            borderWidth: 1,
+            borderColor: "#e2e8f0",
+            backgroundColor: "#f1f5f9",
+          }}
         >
           {items.map((item, index) => (
             <View key={item.id}>

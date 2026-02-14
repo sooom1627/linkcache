@@ -1,7 +1,5 @@
 import { forwardRef, useCallback, useEffect, useState } from "react";
 
-import { Text, TouchableOpacity, View } from "react-native";
-
 import { Image } from "expo-image";
 
 import type { BottomSheetModal } from "@gorhom/bottom-sheet";
@@ -11,6 +9,7 @@ import { useTranslation } from "react-i18next";
 import { BaseBottomSheetModal } from "@/src/shared/components/modals";
 import ModalHeader from "@/src/shared/components/modals/ModalHeader";
 import { colors } from "@/src/shared/constants/colors";
+import { Text, TouchableOpacity, View } from "@/src/tw";
 
 import { extractDomain } from "../hooks/useLinkPaste";
 import { useUpdateLinkReadStatus } from "../hooks/useUpdateLinkReadStatus";
@@ -148,7 +147,7 @@ export const LinkReadStatusModal = forwardRef<
               className={`w-full flex-row items-center justify-center gap-1.5 rounded-lg p-3 ${
                 !isRead || isPending
                   ? "bg-slate-200"
-                  : "bg-mainDark active:bg-mainHover"
+                  : "bg-main-dark active:bg-main-hover"
               }`}
               activeOpacity={!isRead || isPending ? 1 : 0.7}
             >
@@ -179,7 +178,7 @@ export const LinkReadStatusModal = forwardRef<
               className={`w-full flex-row items-center justify-center gap-1.5 rounded-lg p-3 ${
                 isRead || isPending
                   ? "bg-slate-200"
-                  : "bg-mainDark active:bg-mainHover"
+                  : "bg-main-dark active:bg-main-hover"
               }`}
               activeOpacity={isRead || isPending ? 1 : 0.7}
             >

@@ -1,21 +1,16 @@
-import { Stack } from "expo-router";
-
-import { SafeAreaView } from "react-native-safe-area-context";
+import Stack from "expo-router/stack";
 
 export default function LinkLayout() {
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={["top", "right", "left"]}>
-      <Stack
-        screenOptions={{
-          animation: "slide_from_right",
-          presentation: "card",
-        }}
-      >
-        <Stack.Screen
-          name="[id]"
-          options={{ headerShown: false, animation: "slide_from_right" }}
-        />
-      </Stack>
-    </SafeAreaView>
+    <Stack
+      screenOptions={{
+        headerTransparent: true,
+        headerShadowVisible: false,
+        headerBackButtonDisplayMode: "minimal",
+        animation: "slide_from_right",
+      }}
+    >
+      <Stack.Screen name="[id]" options={{ title: "Details" }} />
+    </Stack>
   );
 }

@@ -1,10 +1,12 @@
 import { useMemo } from "react";
 
-import { Pressable, StyleSheet, View } from "react-native";
+import { StyleSheet } from "react-native";
 
 import { Image } from "expo-image";
 
 import { UserRound } from "lucide-react-native";
+
+import { Pressable, View } from "@/src/tw";
 
 interface AvatarProps {
   avatarUrl?: string | null;
@@ -45,7 +47,7 @@ export function Avatar({
     <Pressable
       onPress={onPress}
       style={[styles.container]}
-      className="rounded-full border-2 border-slate-200 bg-slate-200"
+      className=" bg-surfaceMuted rounded-full"
       hitSlop={10}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}

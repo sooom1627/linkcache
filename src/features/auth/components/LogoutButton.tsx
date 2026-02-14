@@ -1,8 +1,9 @@
-import { Alert, View } from "react-native";
+import { Alert } from "react-native";
 
 import { useRouter } from "expo-router";
 
 import { FormButton } from "@/src/shared/components/forms";
+import { View } from "@/src/tw";
 
 import { useSignOut } from "../hooks";
 
@@ -41,7 +42,7 @@ export default function LogoutButton({
         title={isPending ? "Logging out..." : "Logout"}
         onPress={handleLogout}
         disabled={isPending}
-        disabledColor={disabledColor ?? "bg-dangerDisabled"}
+        disabledColor={disabledColor ?? "bg-danger-disabled"}
         enabledColor={enabledColor ?? "bg-danger"}
       />
     </View>

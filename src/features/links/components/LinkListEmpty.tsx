@@ -1,10 +1,9 @@
-import { Text, TouchableOpacity, View } from "react-native";
-
 import { Filter, Inbox, Plus } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 
 import { colors } from "@/src/shared/constants/colors";
 import { useModal } from "@/src/shared/providers/ModalContext";
+import { Text, TouchableOpacity, View } from "@/src/tw";
 
 interface LinkListEmptyProps {
   /** フィルターが適用されているかどうか */
@@ -42,7 +41,7 @@ export function LinkListEmpty({
         {onResetFilters && (
           <TouchableOpacity
             onPress={onResetFilters}
-            className="flex-row items-center gap-2 rounded-full bg-mainDark px-6 py-3 shadow-sm active:bg-mainHover"
+            className="bg-main-dark active:bg-main-hover flex-row items-center gap-2 rounded-full px-6 py-3 shadow-sm"
             accessibilityRole="button"
             accessibilityLabel={t("links.filter.reset")}
           >
@@ -70,7 +69,7 @@ export function LinkListEmpty({
 
       <TouchableOpacity
         onPress={() => openModal("linkCreate")}
-        className="flex-row items-center gap-2 rounded-full bg-mainDark px-6 py-3 shadow-sm active:bg-mainHover"
+        className="bg-main-dark active:bg-main-hover flex-row items-center gap-2 rounded-full px-6 py-3 shadow-sm"
         accessibilityRole="button"
         accessibilityLabel={t("links.create.add_button")}
       >

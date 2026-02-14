@@ -1,11 +1,10 @@
-import { Pressable, Text, View } from "react-native";
-
 import { useRouter } from "expo-router";
 
 import { ArrowRight, BookOpen, Layers } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 
 import { colors } from "@/src/shared/constants/colors";
+import { Pressable, Text, View } from "@/src/tw";
 
 interface DashboardOverviewProps {
   inboxCount: number;
@@ -36,13 +35,13 @@ export function DashboardOverview({
         {/* Left Column: Inbox (Main Action) */}
         {inboxCount > 0 ? (
           <Pressable
-            className="flex-1 justify-between rounded-xl bg-mainDark p-5 active:scale-[0.98] active:opacity-95"
-            onPress={() => router.push("/swipes")}
+            className="bg-main-dark flex-1 justify-between rounded-xl p-5 active:scale-[0.98] active:opacity-95"
+            onPress={() => router.push("/(protected)/(tabs)/(swipes)")}
             accessibilityRole="button"
             accessibilityLabel={`${inboxCount} ${t("links.dashboard.unsorted_links")}, ${t("links.dashboard.start_triage")}`}
           >
             <View>
-              <View className="mb-4 self-start rounded-md bg-main p-2">
+              <View className="bg-main mb-4 self-start rounded-md p-2">
                 <Layers size={20} color="white" />
               </View>
               <Text className="text-4xl font-bold tracking-tight text-white">

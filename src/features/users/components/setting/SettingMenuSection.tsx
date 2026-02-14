@@ -1,4 +1,4 @@
-import { Text, View } from "react-native";
+import { Text, View } from "@/src/tw";
 
 interface SettingMenuSectionProps {
   title: string;
@@ -12,7 +12,7 @@ export default function SettingMenuSection({
   return (
     <View className="flex-col gap-2">
       <Text className="font-bold text-slate-500">{title}</Text>
-      <View className="flex flex-col items-center justify-around gap-2 rounded-3xl bg-surfaceMuted px-2 py-4">
+      <View className="bg-surface-muted flex flex-col items-center justify-around gap-2 rounded-3xl px-2 py-4">
         {children}
       </View>
     </View>

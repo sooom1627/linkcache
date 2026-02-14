@@ -1,14 +1,15 @@
 ---
-description: 
-globs: 
+description:
+globs:
 alwaysApply: true
 ---
 
-  You are an expert developer proficient in TypeScript, React and Expo (React Native), Tailwind css(Native wind), Supabase, Zod, i18next ( expo-localization), TanStack React Query, pnpm(not npm).
+You are an expert developer proficient in TypeScript, React and Expo (React Native), Tailwind css(Native wind), Supabase, Zod, i18next ( expo-localization), TanStack React Query, pnpm(not npm).
 
- # Development Guidelines (TypeScript / Expo / Supabase)
+# Development Guidelines (TypeScript / Expo / Supabase)
 
 ## Core Principles
+
 1. **Simplicity over Sophistication**: Choose practical, straightforward solutions over architecturally "elegant" but complex ones.
 2. **Integration over Fragmentation**: Prefer unified implementations over multiple small pieces that require complex integration.
 3. **Current Requirements over Future Flexibility (YAGNI)**: Build for today's needs. Avoid speculative features or over-abstraction.
@@ -18,9 +19,10 @@ alwaysApply: true
 ---
 
 ## Technical Stack
-- **Framework**: Expo (Managed Workflow)
+
+- **Framework**: Expo 55 (Managed Workflow)
 - **Language**: TypeScript (Strict Mode)
-- **Styling**: NativeWind v3 (Tailwind CSS)
+- **Styling**: NativeWind v5 (Tailwind CSS)
 - **State Management**:
   - **Local**: `useState`
   - **Server**: `TanStack React Query`
@@ -34,6 +36,7 @@ alwaysApply: true
 ---
 
 ## Code Style & Structure
+
 - **Functional Programming**: Use functional and declarative patterns; strictly avoid classes.
 - **File Organization**: Organize by **Feature**. Group related components, hooks, and logic into feature-based directories (e.g., `features/auth`, `features/payments`).
 - **Naming Conventions**:
@@ -47,6 +50,7 @@ alwaysApply: true
 ---
 
 ## State Management Architecture
+
 - **Local State**: Use `useState` for UI-specific state contained within a single component.
 - **Server State**: Use `TanStack React Query` for all data fetching, caching, and server synchronization. Avoid duplicating server data in local/global state.
 - **Global State**: Use **React Context** combined with `useReducer` for application-wide state (e.g., user sessions, global settings). Separate contexts by domain to minimize unnecessary re-renders.
@@ -54,6 +58,7 @@ alwaysApply: true
 ---
 
 ## Error Handling & Validation
+
 - **Runtime Validation**: Use **Zod** for validating all external data (API responses, Form inputs, Deep links).
 - **Proactive Handling**:
   - Handle errors at the beginning of functions (Guard Clauses).
@@ -67,6 +72,7 @@ alwaysApply: true
 ---
 
 ## Testing Strategy: Classical TDD
+
 - **TDD Workflow**: Write a failing test first, implement the minimum code to pass, and then refactor.
 - **Classical Style**:
   - Favor **Sociable Tests**: Test units in integration with their real dependencies whenever possible.
@@ -77,6 +83,7 @@ alwaysApply: true
 ---
 
 ## UI & Styling (NativeWind v3)
+
 - **Styling**: Use **NativeWind v3** for component styling via `className`.
 - **Layout**: Use Flexbox and Expo's `useWindowDimensions` for responsive designs.
 - **Safe Area**: Use `SafeAreaProvider` and `useSafeAreaInsets` from `react-native-safe-area-context` for precise layout control (notches, home indicators).
@@ -86,8 +93,9 @@ alwaysApply: true
 ---
 
 ## Backend & Security (Supabase)
+
 - **Authentication**: Utilize Supabase Auth for user management and session handling.
-- **Database**: 
+- **Database**:
   - Link all relations to a `profiles` table rather than directly to `auth.users.id`.
   - Strictly enforce **Row Level Security (RLS)** policies on every table.
 - **Storage**: Use Supabase Storage for file management.
@@ -96,6 +104,7 @@ alwaysApply: true
 ---
 
 ## Git Commit Messages
+
 - **Format**: `prefix: message`
 - **Prefixes**:
   - `feat`: A new feature
@@ -106,4 +115,3 @@ alwaysApply: true
   - `perf`: Code change that improves performance
   - `test`: Adding or correcting tests
   - `chore`: Changes to build process, libraries, or auxiliary tools
-      

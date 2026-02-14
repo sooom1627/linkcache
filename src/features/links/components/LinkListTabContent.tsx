@@ -1,14 +1,15 @@
 import { memo } from "react";
 
-import { ActivityIndicator, Pressable, Text, View } from "react-native";
+import { ActivityIndicator } from "react-native";
 
-import { Link, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 
 import { ArrowRight, Layers2 } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 
 import { ErrorStateView } from "@/src/shared/components/ErrorStateView";
 import { colors } from "@/src/shared/constants/colors";
+import { Link, Pressable, Text, View } from "@/src/tw";
 
 import type { useLinks } from "../hooks/useLinks";
 import type { TabType } from "../types/linkList.types";
@@ -71,8 +72,8 @@ export const LinkListTabContent = memo(function LinkListTabContent({
           </Text>
 
           <Pressable
-            onPress={() => router.push("/swipes")}
-            className="flex-row items-center gap-2 rounded-full bg-mainDark px-6 py-3 shadow-sm active:bg-mainHover"
+            onPress={() => router.push("/(protected)/(tabs)/(swipes)")}
+            className="bg-main-dark active:bg-main-hover flex-row items-center gap-2 rounded-full px-6 py-3 shadow-sm"
           >
             <Text className="font-semibold text-white">
               {t("links.dashboard.empty_read_soon.go_to_triage")}

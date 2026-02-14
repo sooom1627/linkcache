@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { Alert, View } from "react-native";
+import { Alert } from "react-native";
 
 import { useTranslation } from "react-i18next";
 
 import FormButton from "@/src/shared/components/forms/FormButton";
 import FormInput from "@/src/shared/components/forms/FormInput";
+import { View } from "@/src/tw";
 
 import { useCreateLink } from "../hooks/useCreateLink";
 import { LinkCreateSchema, type LinkCreateErrors } from "../types/linkSchema";

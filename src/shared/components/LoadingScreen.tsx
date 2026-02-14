@@ -1,4 +1,6 @@
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator } from "react-native";
+
+import { View } from "@/src/tw";
 
 /**
  * ローディングスクリーン
@@ -24,7 +26,10 @@ import { ActivityIndicator, View } from "react-native";
  */
 export function LoadingScreen() {
   return (
-    <View className="flex-1 items-center justify-center bg-white">
+    <View
+      className="flex-1 items-center justify-center bg-slate-50"
+      style={{ flex: 1 }}
+    >
       <ActivityIndicator size="large" color="#6B7280" />
     </View>
   );

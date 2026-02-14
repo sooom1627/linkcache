@@ -1,7 +1,7 @@
-import { Text, TouchableOpacity, View } from "react-native";
-
 import { AlertCircle, RefreshCw } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
+
+import { Text, TouchableOpacity, View } from "@/src/tw";
 
 type ErrorStateViewProps = {
   message: string;

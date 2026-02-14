@@ -1,8 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { Pressable, Text, TouchableOpacity, View } from "react-native";
-
-import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -11,6 +8,8 @@ import { useTranslation } from "react-i18next";
 
 import { colors } from "@/src/shared/constants/colors";
 import { useBottomSheetModal } from "@/src/shared/hooks/useBottomSheetModal";
+import { Pressable, Text, TouchableOpacity, View } from "@/src/tw";
+import { Image } from "@/src/tw/image";
 
 import { extractDomain } from "../hooks/useLinkPaste";
 import { useOpenLink } from "../hooks/useOpenLink";
@@ -34,7 +33,7 @@ const OG_IMAGE_WIDTH = Math.round(OG_IMAGE_HEIGHT * 1.91);
 function ThumbnailFallback() {
   return (
     <View
-      className="items-center justify-center rounded-lg bg-slate-50 bg-gradient-to-br"
+      className="bg-surfaceMuted flex items-center justify-center rounded-lg"
       style={{ width: OG_IMAGE_WIDTH, height: OG_IMAGE_HEIGHT }}
     >
       <Ionicons name="link-outline" size={24} color={colors.iconPlaceholder} />

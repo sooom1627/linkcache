@@ -1,12 +1,11 @@
 import { forwardRef, useCallback } from "react";
 
-import { Pressable, Text, View } from "react-native";
-
 import type { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useTranslation } from "react-i18next";
 
 import { BaseBottomSheetModal } from "@/src/shared/components/modals";
 import ModalHeader from "@/src/shared/components/modals/ModalHeader";
+import { Pressable, Text, View } from "@/src/tw";
 
 import { useLinkListFilterContext } from "../contexts/LinkListFilterContext";
 import type {
@@ -99,8 +98,8 @@ export const LinkListFilterModal = forwardRef<
                   accessibilityState={{ selected: isSelected }}
                   className={`rounded-full px-4 py-2.5 ${
                     isSelected
-                      ? "bg-mainDark"
-                      : "bg-surfaceMuted active:bg-surfaceMutedActive"
+                      ? "bg-main-dark"
+                      : "bg-surface-muted active:bg-surface-muted-active"
                   }`}
                 >
                   <Text
@@ -133,8 +132,8 @@ export const LinkListFilterModal = forwardRef<
                   accessibilityState={{ selected: isSelected }}
                   className={`rounded-full px-4 py-2.5 ${
                     isSelected
-                      ? "bg-mainDark"
-                      : "bg-surfaceMuted active:bg-surfaceMutedActive"
+                      ? "bg-main-dark"
+                      : "bg-surface-muted active:bg-surface-muted-active"
                   }`}
                 >
                   <Text

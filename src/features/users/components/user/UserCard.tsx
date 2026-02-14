@@ -3,13 +3,12 @@ import {
   ActivityIndicator,
   Alert,
   Platform,
-  Text,
-  TouchableOpacity,
-  View,
 } from "react-native";
 
 import { ChevronRight, Plus } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
+
+import { Text, TouchableOpacity, View } from "@/src/tw";
 
 import {
   useImagePicker,

@@ -1,13 +1,12 @@
 import { forwardRef, useCallback, useMemo } from "react";
 
-import { View } from "react-native";
-
 import type { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useTranslation } from "react-i18next";
 
 import { ScrollableBottomSheetModal } from "@/src/shared/components/modals";
 import ModalHeader from "@/src/shared/components/modals/ModalHeader";
 import { useModal } from "@/src/shared/providers/ModalContext";
+import { View } from "@/src/tw";
 
 import LogoutButton from "../../auth/components/LogoutButton";
 import SettingItem from "../components/setting/SettingItem";

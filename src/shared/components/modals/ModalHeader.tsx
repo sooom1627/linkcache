@@ -1,6 +1,6 @@
-import { Pressable, Text, View } from "react-native";
-
 import { X } from "lucide-react-native";
+
+import { Pressable, Text, View } from "@/src/tw";
 
 export interface ModalHeaderProps {
   title: string;

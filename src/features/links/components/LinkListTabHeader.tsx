@@ -1,6 +1,6 @@
-import { Pressable, Text, View } from "react-native";
-
 import { useTranslation } from "react-i18next";
+
+import { Pressable, Text, View } from "@/src/tw";
 
 import type { TabType } from "../types/linkList.types";
 

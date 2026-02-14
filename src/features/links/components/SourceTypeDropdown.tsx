@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 
-import { Pressable, Text, View } from "react-native";
-
 import { ChevronDown } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import Animated, {
@@ -11,6 +9,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { colors } from "@/src/shared/constants/colors";
+import { Pressable, Text, View } from "@/src/tw";
 
 import type { TriageStatus } from "../types/linkList.types";
 

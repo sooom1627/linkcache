@@ -1,4 +1,4 @@
-import { Text, View } from "react-native";
+import { Text, View } from "@/src/tw";
 
 import SocialMediaButton from "../components/SocialMediaButton";
 

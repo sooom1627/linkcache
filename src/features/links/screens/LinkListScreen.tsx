@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from "react";
 
-import { ActivityIndicator, RefreshControl, View } from "react-native";
+import { ActivityIndicator, RefreshControl } from "react-native";
 
 import { useLocalSearchParams } from "expo-router";
 
@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 
 import { ErrorStateView } from "@/src/shared/components/ErrorStateView";
 import { colors } from "@/src/shared/constants/colors";
+import { View } from "@/src/tw";
 
 import { LinkListCard } from "../components/LinkListCard";
 import { LinkListEmpty } from "../components/LinkListEmpty";
@@ -188,7 +189,7 @@ function LinkListScreenContent() {
         data={links}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
-        contentContainerClassName="mt-2 pb-32"
+        contentContainerStyle={{ marginTop: 8, paddingBottom: 128 }}
         ListHeaderComponent={renderTopMarginComponent}
         showsVerticalScrollIndicator={false}
         onEndReached={handleEndReached}

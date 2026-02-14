@@ -1,7 +1,5 @@
 import { useCallback, useMemo } from "react";
 
-import { Text, TouchableOpacity, View } from "react-native";
-
 import {
   Check,
   Ellipsis,
@@ -15,6 +13,7 @@ import { useTranslation } from "react-i18next";
 import type { ToggleMenuItem } from "@/src/shared/components/ToggleMenu";
 import { ToggleMenu } from "@/src/shared/components/ToggleMenu";
 import { colors } from "@/src/shared/constants/colors";
+import { Text, TouchableOpacity, View } from "@/src/tw";
 
 import { useUpdateLinkReadStatus } from "../hooks/useUpdateLinkReadStatus";
 
@@ -125,7 +124,7 @@ export function LinkDetailActionButtonGroup({
     <View className="absolute bottom-12 z-50 flex-row items-end gap-2 px-2">
       <TouchableOpacity
         onPress={onOpenLink}
-        className="h-16 flex-grow flex-row items-center justify-center gap-2 rounded-full bg-main px-6 py-4"
+        className="bg-main h-16 grow flex-row items-center justify-center gap-2 rounded-full px-6 py-4"
         accessibilityRole="button"
         accessibilityLabel={t("links.detail.open_link")}
       >
@@ -147,7 +146,7 @@ export function LinkDetailActionButtonGroup({
         {/* メニューを開くボタン */}
         <TouchableOpacity
           onPress={onMoreOptions}
-          className="size-16 flex-row items-center justify-center rounded-full bg-surfaceMuted"
+          className="bg-surface-muted size-16 flex-row items-center justify-center rounded-full"
           accessibilityRole="button"
           accessibilityLabel={t("links.detail.more_options")}
         >

@@ -1,8 +1,10 @@
 import { useState } from "react";
 
-import { Alert, Text, TouchableOpacity, View } from "react-native";
+import { Alert } from "react-native";
 
 import { useTranslation } from "react-i18next";
+
+import { Text, TouchableOpacity, View } from "@/src/tw";
 
 import {
   isReadyLanguageSetting,
@@ -48,7 +50,7 @@ export default function LanguageSettings() {
             key={language.code}
             onPress={() => handleSelectLanguage(language)}
             disabled={!language.isReady}
-            className={`min-w-[40%] flex-1 flex-col flex-wrap items-center justify-start gap-2 rounded-lg border bg-surfaceMuted
+            className={`bg-surface-muted min-w-[40%] flex-1 flex-col flex-wrap items-center justify-start gap-2 rounded-lg border
             p-4 ${selectedLanguage === language.code ? "border-accent" : "border-slate-200"} ${!language.isReady ? "opacity-50" : ""}`}
           >
             <Text className="w-full text-left font-bold text-slate-700">

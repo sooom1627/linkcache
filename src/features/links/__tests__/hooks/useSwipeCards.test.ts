@@ -48,9 +48,9 @@ describe("useSwipeCards", () => {
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
+        expect(result.current.cards).toHaveLength(3);
       });
 
-      expect(result.current.cards).toHaveLength(3);
       expect(result.current.cards[0]).toEqual(mockLink1);
       expect(result.current.error).toBeNull();
     });

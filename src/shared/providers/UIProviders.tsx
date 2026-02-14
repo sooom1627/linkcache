@@ -1,14 +1,14 @@
 import { useEffect, useState, type PropsWithChildren } from "react";
 
-import { KeyboardAvoidingView, Platform } from "react-native";
+import { Platform } from "react-native";
 
 import { I18nextProvider } from "react-i18next";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { LoadingScreen } from "@/src/shared/components/LoadingScreen";
 import i18n from "@/src/shared/utils/i18n";
 import { initLanguageFromStorage } from "@/src/shared/utils/langSetting";
+import { GestureHandlerRootView, KeyboardAvoidingView } from "@/src/tw";
 
 /**
  * UI層プロバイダー
@@ -58,12 +58,13 @@ export function UIProviders({ children }: PropsWithChildren) {
   }
 
   return (
-    <GestureHandlerRootView className="flex-1">
+    <GestureHandlerRootView className="flex-1 bg-slate-50" style={{ flex: 1 }}>
       <I18nextProvider i18n={i18n}>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : undefined}
           keyboardVerticalOffset={Platform.OS === "ios" ? 8 : 0}
           className="flex-1"
+          style={{ flex: 1 }}
         >
           <SafeAreaProvider>{children}</SafeAreaProvider>
         </KeyboardAvoidingView>

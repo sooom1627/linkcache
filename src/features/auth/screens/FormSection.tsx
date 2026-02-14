@@ -1,12 +1,13 @@
 import { useRef, useState } from "react";
 
-import { TouchableOpacity, View, type TextInput } from "react-native";
+import { type TextInput } from "react-native";
 
 import { Eye, EyeClosed, Lock, Mail } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 
 import { FormButton, FormInput } from "@/src/shared/components/forms";
 import { colors } from "@/src/shared/constants/colors";
+import { TouchableOpacity, View } from "@/src/tw";
 
 import {
   createAuthFormSectionSchema,

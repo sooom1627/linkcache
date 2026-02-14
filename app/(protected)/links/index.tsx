@@ -1,15 +1,11 @@
+import { View } from "react-native";
+
 import { LinkListScreen } from "@/src/features/links";
-import { ScreenContainer } from "@/src/shared/components/layout/ScreenContainer";
 
 export default function Links() {
   return (
-    <ScreenContainer
-      scrollable={false}
-      noPaddingBottom={true}
-      centerContent={false}
-      topComponent={false}
-    >
+    <View style={{ flex: 1 }}>
       <LinkListScreen />
-    </ScreenContainer>
+    </View>
   );
 }

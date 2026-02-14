@@ -1,6 +1,7 @@
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator } from "react-native";
 
 import { colors } from "@/src/shared/constants/colors";
+import { View } from "@/src/tw";
 
 interface LinkListLoadingFooterProps {
   isLoading: boolean;

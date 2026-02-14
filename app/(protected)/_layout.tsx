@@ -1,13 +1,12 @@
 import { useEffect } from "react";
 
-import { ActivityIndicator, Text, TouchableOpacity } from "react-native";
+import { ActivityIndicator } from "react-native";
 
 import { Stack, useRouter } from "expo-router";
 
-import { SafeAreaView } from "react-native-safe-area-context";
-
 import { useAuth } from "@/src/features/auth";
 import { useProfile } from "@/src/features/users";
+import { SafeAreaView, Text, TouchableOpacity } from "@/src/tw";
 
 /**
  * 保護されたルートのレイアウト
@@ -39,7 +38,10 @@ export default function ProtectedLayout() {
 
   if (session && error) {
     return (
-      <SafeAreaView className="relative flex-1 items-center justify-center bg-white">
+      <SafeAreaView
+        className="relative flex-1 items-center justify-center bg-slate-50"
+        style={{ flex: 1 }}
+      >
         <Text>Failed to load profile</Text>
         <TouchableOpacity
           className="mt-4 rounded-lg bg-slate-700 px-6 py-3"
@@ -58,7 +60,11 @@ export default function ProtectedLayout() {
   }
 
   return (
-    <Stack>
+    <Stack
+      screenOptions={{
+        contentStyle: { backgroundColor: "#f8fafc" /* slate-50 */, flex: 1 },
+      }}
+    >
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen
         name="link"

@@ -1,7 +1,5 @@
 import { useState } from "react";
 
-import { Text, TouchableOpacity, View } from "react-native";
-
 import {
   ArrowLeft,
   ArrowRight,
@@ -17,6 +15,7 @@ import {
 
 import { ErrorStateView } from "@/src/shared/components/ErrorStateView";
 import { colors } from "@/src/shared/constants/colors";
+import { Text, TouchableOpacity, View } from "@/src/tw";
 
 import { SourceTypeDropdown } from "../components/SourceTypeDropdown";
 import { SwipeCard } from "../components/SwipeCard";
@@ -72,7 +71,7 @@ function SwipeActionButtons({
         >
           <View
             className={`rounded-full p-4 ${
-              isDisabled ? "bg-surfaceMuted" : "bg-surfaceMutedActive"
+              isDisabled ? "bg-surface-muted" : "bg-surface-muted-active"
             }`}
           >
             <ArrowLeft
@@ -99,7 +98,7 @@ function SwipeActionButtons({
         >
           <View
             className={`rounded-full p-4 ${
-              isDisabled ? "bg-surfaceMuted" : "bg-surfaceMutedActive"
+              isDisabled ? "bg-surface-muted" : "bg-surface-muted-active"
             }`}
           >
             <ArrowRight
@@ -122,8 +121,8 @@ function SwipeActionButtons({
         disabled={!canUndo}
         className={`flex-row items-center justify-center gap-2 rounded-full px-4 py-2 ${
           canUndo
-            ? "bg-surfaceMutedActive active:bg-surfaceMutedActivePressed"
-            : "bg-surfaceMuted opacity-50"
+            ? "bg-surface-muted-active active:bg-surface-muted-active-pressed"
+            : "bg-surface-muted opacity-50"
         }`}
       >
         <RotateCcw size={18} color={canUndo ? colors.icon : colors.iconMuted} />
@@ -251,7 +250,7 @@ export function SwipeTriageScreen() {
           {/* Restart Button */}
           <TouchableOpacity
             onPress={restart}
-            className="mt-4 flex-row items-center justify-center gap-2 rounded-full bg-surfaceMutedActive px-4 py-2 active:bg-surfaceMutedActivePressed"
+            className="bg-surface-muted-active active:bg-surface-muted-active-pressed mt-4 flex-row items-center justify-center gap-2 rounded-full px-4 py-2"
           >
             <RefreshCw size={18} color={colors.icon} />
             <Text className="text-base font-medium text-slate-700">

@@ -1,6 +1,11 @@
 import { forwardRef, type ReactNode } from "react";
 
-import { Text, TextInput, View, type TextInputProps } from "react-native";
+import {
+  type TextInput as RNTextInput,
+  type TextInputProps,
+} from "react-native";
+
+import { Text, TextInput, View } from "@/src/tw";
 
 interface FormInputProps extends Omit<TextInputProps, "className" | "style"> {
   label: string;
@@ -17,7 +22,7 @@ interface FormInputProps extends Omit<TextInputProps, "className" | "style"> {
  * アイコンを左右に配置可能
  * Label要素を常に表示することで、エラー表示時の画面ガタつきを防止
  */
-const FormInput = forwardRef<TextInput, FormInputProps>(
+const FormInput = forwardRef<RNTextInput, FormInputProps>(
   (
     {
       label,
@@ -60,6 +65,7 @@ const FormInput = forwardRef<TextInput, FormInputProps>(
 
           {/* Text Input */}
           <TextInput
+            // @ts-expect-error: CSS wrapper passes ref through to underlying RNTextInput
             ref={ref}
             autoCapitalize={autoCapitalize}
             returnKeyType={returnKeyType}

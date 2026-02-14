@@ -1,8 +1,8 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 
-import { View } from "react-native";
-
 import PagerView from "react-native-pager-view";
+
+import { View } from "@/src/tw";
 
 import { LinkListTabContent } from "../components/LinkListTabContent";
 import { LinkListTabHeader } from "../components/LinkListTabHeader";

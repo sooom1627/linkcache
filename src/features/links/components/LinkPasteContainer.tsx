@@ -1,4 +1,4 @@
-import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator } from "react-native";
 
 import { Image } from "expo-image";
 
@@ -10,9 +10,11 @@ import {
   RotateCcw,
 } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
-import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
+import { FadeIn, FadeOut } from "react-native-reanimated";
 
 import { colors } from "@/src/shared/constants/colors";
+import { Text, TouchableOpacity, View } from "@/src/tw";
+import { Animated } from "@/src/tw/animated";
 
 import type { LinkPasteStatus, LinkPreview } from "../types/linkPaste.types";
 
@@ -156,7 +158,7 @@ function PreviewStateView({
               activeOpacity={0.6}
             >
               <RotateCcw size={12} color={colors.accent} strokeWidth={2} />
-              <Text className="text-sm font-medium text-accent">
+              <Text className="text-accent text-sm font-medium">
                 {t("links.paste.change_link")}
               </Text>
             </TouchableOpacity>
