@@ -6,6 +6,7 @@ import { I18nextProvider } from "react-i18next";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { LoadingScreen } from "@/src/shared/components/LoadingScreen";
+import { colors } from "@/src/shared/constants/colors";
 import i18n from "@/src/shared/utils/i18n";
 import { initLanguageFromStorage } from "@/src/shared/utils/langSetting";
 import { GestureHandlerRootView, KeyboardAvoidingView } from "@/src/tw";
@@ -58,7 +59,7 @@ export function UIProviders({ children }: PropsWithChildren) {
   }
 
   return (
-    <GestureHandlerRootView className="flex-1 bg-slate-50" style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: colors.screen }}>
       <I18nextProvider i18n={i18n}>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : undefined}

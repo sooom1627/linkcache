@@ -45,13 +45,13 @@ export default function SignIn() {
   return (
     <SafeAreaView
       edges={["top"]}
-      className="flex-1 bg-slate-50"
+      className="bg-background flex-1"
       style={{ flex: 1 }}
     >
       <ScrollView
         keyboardDismissMode="on-drag"
         keyboardShouldPersistTaps="handled"
-        className="flex-1 bg-slate-50"
+        className="bg-background flex-1"
         contentContainerClassName="flex-1"
         style={{ flex: 1 }}
       >

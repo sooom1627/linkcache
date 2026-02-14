@@ -6,6 +6,7 @@ import { Stack, useRouter } from "expo-router";
 
 import { useAuth } from "@/src/features/auth";
 import { useProfile } from "@/src/features/users";
+import { colors } from "@/src/shared/constants/colors";
 import { SafeAreaView, Text, TouchableOpacity } from "@/src/tw";
 
 /**
@@ -39,7 +40,7 @@ export default function ProtectedLayout() {
   if (session && error) {
     return (
       <SafeAreaView
-        className="relative flex-1 items-center justify-center bg-slate-50"
+        className="bg-background relative flex-1 items-center justify-center"
         style={{ flex: 1 }}
       >
         <Text>Failed to load profile</Text>
@@ -62,7 +63,7 @@ export default function ProtectedLayout() {
   return (
     <Stack
       screenOptions={{
-        contentStyle: { backgroundColor: "#f8fafc" /* slate-50 */, flex: 1 },
+        contentStyle: { backgroundColor: colors.screen, flex: 1 },
       }}
     >
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />

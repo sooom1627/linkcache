@@ -8,7 +8,7 @@ export default function TabsLayout() {
   const { t } = useTranslation();
 
   return (
-    <NativeTabs tintColor={colors.main}>
+    <NativeTabs tintColor={colors.main} backgroundColor={colors.surface}>
       <NativeTabs.Trigger name="(home)">
         <NativeTabs.Trigger.Icon
           sf={{ default: "house", selected: "house.fill" }}

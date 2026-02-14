@@ -27,7 +27,7 @@ import { View } from "@/src/tw";
 export function LoadingScreen() {
   return (
     <View
-      className="flex-1 items-center justify-center bg-slate-50"
+      className="bg-background flex-1 items-center justify-center"
       style={{ flex: 1 }}
     >
       <ActivityIndicator size="large" color="#6B7280" />

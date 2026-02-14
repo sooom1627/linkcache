@@ -117,7 +117,7 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
   // ローディング状態
   if (isLoading) {
     return (
-      <View className="flex-1 items-center justify-center bg-slate-50">
+      <View className="bg-background flex-1 items-center justify-center">
         <ActivityIndicator size="large" color="#6B7280" />
         <Text className="mt-4 text-base text-slate-500">
           {t("links.detail.loading")}
@@ -162,7 +162,7 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
 
   return (
     <>
-      <View className="relative flex-1 bg-slate-50">
+      <View className="bg-background relative flex-1">
         <ScrollView
           className="flex-1 pt-20"
           showsVerticalScrollIndicator={false}

@@ -1,10 +1,15 @@
 import { Stack } from "expo-router";
+import * as SystemUI from "expo-system-ui";
 
 import { useAuth } from "@/src/features/auth";
 import { LoadingScreen } from "@/src/shared/components/LoadingScreen";
+import { colors } from "@/src/shared/constants/colors";
 import { AppProviders, UIProviders } from "@/src/shared/providers";
 
 import "../assets/styles/global.css";
+
+// ルートビュー（React ツリー外のネイティブ層）の背景色を設定
+SystemUI.setBackgroundColorAsync(colors.screen);
 
 /**
  * ルートレイアウト
@@ -25,7 +30,7 @@ function RootNavigator() {
   return (
     <Stack
       screenOptions={{
-        contentStyle: { backgroundColor: "#f8fafc" /* slate-50 */, flex: 1 },
+        contentStyle: { backgroundColor: colors.screen, flex: 1 },
         animation: "fade",
         headerShown: false,
       }}

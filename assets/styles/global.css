@@ -5,6 +5,8 @@
 /* Custom theme colors (migrated from tailwind.config.js) */
 @layer theme {
   @theme {
+    /* アプリ全体の背景色（slate-50） */
+    --color-background: #f8fafc;
     --color-main: #1e293b;
     --color-main-hover: #334155;
     --color-main-dark: #0f172a;

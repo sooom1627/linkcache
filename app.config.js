@@ -11,6 +11,8 @@ const APP_GROUP_ID = IS_DEV
   ? "group.com.sooom.linkcache.dev"
   : "group.com.sooom.linkcache";
 
+const SLATE_50 = "#f8fafc";
+
 module.exports = {
   expo: {
     name: IS_DEV ? "linkcache-dev" : "linkcache",
@@ -18,10 +20,14 @@ module.exports = {
     owner: "sooom",
     version: "0.1.4",
     orientation: "portrait",
+    /** ルートビュー背景色（React ツリー外のネイティブ層）。expo-system-ui 必須 */
+    backgroundColor: SLATE_50,
     icon: "./assets/images/new-icon.png",
     scheme: IS_DEV ? "linkcache-dev" : "linkcache",
     userInterfaceStyle: "automatic",
     ios: {
+      /** iOS ルートビュー背景色（expo-system-ui 必須） */
+      backgroundColor: SLATE_50,
       bundleIdentifier: IS_DEV
         ? "com.sooom.linkcache.dev"
         : "com.sooom.linkcache",
@@ -53,6 +59,7 @@ module.exports = {
       favicon: "./assets/images/favicon.png",
     },
     plugins: [
+      "expo-system-ui",
       "expo-image",
       "expo-router",
       "expo-secure-store",
