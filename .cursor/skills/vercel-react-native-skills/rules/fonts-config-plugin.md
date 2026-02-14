@@ -13,23 +13,24 @@ Use the `expo-font` config plugin to embed fonts at build time instead of
 **Incorrect (async font loading):**
 
 ```tsx
-import { useFonts } from 'expo-font'
-import { Text, View } from 'react-native'
+import { Text, View } from "react-native";
+
+import { useFonts } from "expo-font";
 
 function App() {
   const [fontsLoaded] = useFonts({
-    'Geist-Bold': require('./assets/fonts/Geist-Bold.otf'),
-  })
+    "Geist-Bold": require("./assets/fonts/Geist-Bold.otf"),
+  });
 
   if (!fontsLoaded) {
-    return null
+    return null;
   }
 
   return (
     <View>
-      <Text style={{ fontFamily: 'Geist-Bold' }}>Hello</Text>
+      <Text style={{ fontFamily: "Geist-Bold" }}>Hello</Text>
     </View>
-  )
+  );
 }
 ```
 
@@ -52,15 +53,15 @@ function App() {
 ```
 
 ```tsx
-import { Text, View } from 'react-native'
+import { Text, View } from "react-native";
 
 function App() {
   // No loading state needed—font is already available
   return (
     <View>
-      <Text style={{ fontFamily: 'Geist-Bold' }}>Hello</Text>
+      <Text style={{ fontFamily: "Geist-Bold" }}>Hello</Text>
     </View>
-  )
+  );
 }
 ```
 
