@@ -8,10 +8,16 @@ const mockSelect = jest.fn();
 const mockSingle = jest.fn();
 const mockGetUser = jest.fn();
 
+type GetUserResponse = {
+  data: { user: { id: string } | null };
+  error: null;
+};
+
 jest.mock("@/src/shared/lib/supabase", () => ({
   supabase: {
     auth: {
-      getUser: () => mockGetUser(),
+      getUser: (): Promise<GetUserResponse> =>
+        mockGetUser() as Promise<GetUserResponse>,
     },
     from: jest.fn(() => ({
       insert: mockInsert.mockReturnValue({
@@ -40,7 +46,6 @@ describe("createCollection", () => {
       id: MOCK_COLLECTION_ID,
       user_id: MOCK_USER_ID,
       name: "My Collection",
-      description: null,
       emoji: "📚",
       created_at: "2026-02-15T00:00:00Z",
       updated_at: "2026-02-15T00:00:00Z",
@@ -65,7 +70,6 @@ describe("createCollection", () => {
     expect(mockInsert).toHaveBeenCalledWith({
       user_id: MOCK_USER_ID,
       name: "My Collection",
-      description: null,
       emoji: "📚",
     });
     expect(result).toEqual(mockCollection);
@@ -79,7 +83,6 @@ describe("createCollection", () => {
       id: MOCK_COLLECTION_ID,
       user_id: MOCK_USER_ID,
       name: "Test",
-      description: "Description",
       emoji: null,
       created_at: "2026-02-15T00:00:00Z",
       updated_at: "2026-02-15T00:00:00Z",
@@ -93,16 +96,12 @@ describe("createCollection", () => {
       }),
     });
 
-    const result = await createCollection({
-      name: "Test",
-      description: "Description",
-    });
+    const result = await createCollection({ name: "Test" });
 
     expect(result).toEqual(mockCollection);
     expect(mockInsert).toHaveBeenCalledWith({
       user_id: MOCK_USER_ID,
       name: "Test",
-      description: "Description",
       emoji: null,
     });
   });

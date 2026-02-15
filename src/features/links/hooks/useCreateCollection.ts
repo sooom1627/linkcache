@@ -8,11 +8,7 @@ import type { CreateCollectionResponse } from "../types/collections.types";
  * コレクション作成フックの戻り値
  */
 export interface UseCreateCollectionReturn {
-  createCollection: (params: {
-    name: string;
-    description?: string | null;
-    emoji?: string | null;
-  }) => void;
+  createCollection: (params: { name: string; emoji?: string | null }) => void;
   isPending: boolean;
   isError: boolean;
   isSuccess: boolean;

@@ -25,7 +25,7 @@
 - **UI**: 実装済み（CollectionListScreen, CollectionDetailScreen, CollectionCreateModal, CollectionEditModal, CollectionChip 等）
 - **DB**: `collections`, `collection_links` テーブル定義済み、RLS 有効
 - **型**: `Collection`, `CollectionLink` 基本型（links.types.ts）
-- **API / Hooks**: 未実装（モックデータ使用中）
+- **API / Hooks**: 機能1（コレクション作成）実装済み。その他は未実装（モックデータ使用中）
 
 ### ブランチ戦略
 
@@ -49,7 +49,7 @@
 
 ## 機能別実装計画
 
-### 機能1: コレクション作成
+### 機能1: コレクション作成 ✅ 実装済み
 
 **利用箇所**: CollectionCreateModal, LinkDetailScreen（「+ 新規コレクション」）
 
@@ -58,6 +58,18 @@
 | api      | `createCollection.api.ts` | `supabase.from("collections").insert()`                                |
 | hooks    | `useCreateCollection.ts`  | useMutation                                                            |
 | UI接続   | CollectionCreateModal     | handleSubmit で mutate、onSuccess で invalidate lists + モーダル閉じる |
+
+**実装詳細**:
+
+- Zod バリデーション（createCollectionSchema）: 名前 100 文字超過時に Alert 表示
+- モーダル閉じ方（右上 close / 外タップ / パンダウン）いずれでもフォームリセット（onDismiss）
+
+**手動テスト**:
+
+- モーダル表示（CollectionListScreen, LinksOverViewScreen, LinkDetailScreen）
+- 名前入力で送信ボタン有効化、送信でモーダル閉じる
+- 100 文字超過で送信 → Alert「名前は100文字以内で入力してください」
+- 外タップ・パンダウンで閉じた場合もフォームがクリアされること
 
 ---
 

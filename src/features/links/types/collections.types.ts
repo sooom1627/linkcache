@@ -13,7 +13,6 @@ export type CreateCollectionResponse = Collection & { emoji?: string | null };
  */
 export const createCollectionSchema = z.object({
   name: z.string().min(1).max(100),
-  description: z.string().max(500).optional().nullable(),
   emoji: z.string().max(10).optional().nullable(),
 });
 

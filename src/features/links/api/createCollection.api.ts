@@ -10,7 +10,7 @@ import type {
  *
  * 認証済みユーザーのコレクションを collections テーブルに追加します。
  *
- * @param params - コレクション作成パラメータ（name, description, emoji）
+ * @param params - コレクション作成パラメータ（name, emoji）
  * @returns 作成されたコレクション
  * @throws 未認証時、Supabase エラー時
  */
@@ -29,15 +29,19 @@ export async function createCollection(
   const insertPayload = {
     user_id: user.id,
     name: params.name,
-    description: params.description ?? null,
     emoji: params.emoji ?? null,
   };
 
-  const { data, error } = await supabase
+  const result = await supabase
     .from("collections")
     .insert(insertPayload as Record<string, unknown>)
     .select()
     .single();
+
+  const { data, error } = result as {
+    data: CreateCollectionResponse | null;
+    error: Error | null;
+  };
 
   if (error) {
     throw error;
