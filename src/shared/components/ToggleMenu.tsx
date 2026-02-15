@@ -85,7 +85,7 @@ export function ToggleMenu({
   width = 200,
   expandOrigin = "bottom-right",
   blurTint = "systemMaterial",
-  blurIntensity = 20,
+  blurIntensity = 50,
 }: ToggleMenuProps) {
   const { closedY, closedX } = EXPAND_ORIGIN_TRANSLATE[expandOrigin];
 
