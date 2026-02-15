@@ -1,5 +1,13 @@
 import { z } from "zod";
 
+import type { Collection } from "./links.types";
+
+/**
+ * コレクション作成APIのレスポンス型（emoji を含む）
+ * supabase.types の collections に emoji が未定義の場合の拡張
+ */
+export type CreateCollectionResponse = Collection & { emoji?: string | null };
+
 /**
  * コレクション作成のバリデーションスキーマ
  */
