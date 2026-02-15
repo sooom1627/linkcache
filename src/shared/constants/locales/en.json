@@ -1,51 +1,52 @@
 {
-  "welcome_message": "Welcome to the app!",
   "auth_messages": {
     "sign_in_messages": {
-      "title": "Hi, Welcome Back! 👋",
-      "subtitle": "New here?",
+      "title": "Hey, you're back! 👋",
+      "subtitle": "First time here?",
       "link": "/create-account",
       "linkText": "Create an account",
       "buttonTitle": "Sign In",
-      "failed_message_title": "Sign In Failed",
-      "failed_message_description": "Invalid email or password. Please try again."
+      "failed_message_title": "Oops, couldn't sign you in",
+      "failed_message_description": "That email or password didn't match. Give it another shot!"
     },
     "create_account_messages": {
-      "title": "Welcome to Cache! 🎉",
-      "subtitle": "Already have an account?",
+      "title": "Welcome aboard! 🎉",
+      "subtitle": "Been here before?",
       "link": "/sign-in",
       "linkText": "Sign In",
       "buttonTitle": "Create Account",
-      "failed_message_title": "Create Account Failed",
-      "failed_message_description": "Account creation failed. Please try again.",
-      "failed_message_already_registered": "This email address is already registered. Please use a different email address."
+      "failed_message_title": "Hmm, that didn't work",
+      "failed_message_default": "Something went wrong creating your account. Let's try again!",
+      "failed_message_already_registered": "Looks like this email is already taken. Try a different one!"
     },
     "auth_form_messages": {
       "email_placeholder": "Email",
       "password_placeholder": "Password",
       "error_messages": {
-        "email_required": "Email is required",
-        "email_invalid": "Invalid email address",
-        "password_required": "Password is required",
-        "password_min_length": "Password must be at least 8 characters",
-        "password_max_length": "Password is too long"
+        "email_required": "We'll need your email",
+        "email_invalid": "That doesn't look like an email",
+        "password_required": "Don't forget your password",
+        "password_min_length": "At least 8 characters, please",
+        "password_max_length": "Whoa, that's a really long password!"
       }
     }
   },
   "users": {
     "user_card": {
-      "permission_required": "Permission Required",
-      "please_allow_access_to_photo_library": "Please allow access to your photo library.",
-      "please_allow_access_to_camera": "Please allow access to your camera.",
+      "permission_required": "Permission Needed",
+      "please_allow_access_to_photo_library": "We need access to your photo library to set your avatar.",
+      "please_allow_access_to_camera": "We need camera access to take your photo.",
       "edit_profile": "Edit Profile",
       "cancel": "Cancel",
       "take_photo": "Take Photo",
-      "choose_from_library": "Choose from Library"
+      "choose_from_library": "Choose from Library",
+      "upload_avatar": "Change Avatar",
+      "choose_a_photo_source": "How would you like to pick a photo?"
     },
     "setting_modal": {
       "title": "Settings",
       "account_title": "Your Account",
-      "information_title": "App Information",
+      "information_title": "About This App",
       "menu_items": {
         "password": "Password",
         "timezone_language": "Timezone & Language",
@@ -60,82 +61,81 @@
         "user_id_placeholder": "User ID (4-32 characters)",
         "username": "Username",
         "username_placeholder": "Username (4-32 characters)",
-        "no_changes": "No changes",
-        "update_profile": "Update Profile",
+        "no_changes": "Nothing to update",
+        "update_profile": "Save Changes",
         "form_validation_messages": {
           "checking_availability": "Checking availability...",
-          "error_checking_availability": "Error checking availability",
+          "error_checking_availability": "Couldn't check availability",
           "available": "✓ Available",
           "already_taken": "✗ Already taken"
         },
         "error_messages": {
           "user_id_required": "User ID is required",
-          "user_id_invalid": "Invalid User ID",
+          "user_id_invalid": "That User ID won't work",
           "username_required": "Username is required",
-          "username_invalid": "Invalid Username",
-          "user_id_min_length": "User ID must be at least 4 characters",
-          "user_id_max_length": "User ID must be at most 32 characters",
-          "username_min_length": "Username must be at least 4 characters",
-          "username_max_length": "Username must be at most 32 characters",
+          "username_invalid": "That Username won't work",
+          "user_id_min_length": "User ID needs at least 4 characters",
+          "user_id_max_length": "User ID can't exceed 32 characters",
+          "username_min_length": "Username needs at least 4 characters",
+          "username_max_length": "Username can't exceed 32 characters",
           "user_id_regex": "Letters, numbers, and underscores only"
         },
         "callback_messages": {
-          "success_title": "Update Complete",
-          "success_message": "Profile updated successfully",
-          "error_title": "Update Failed",
-          "error_message": "Failed to update profile. Please try again."
+          "success_title": "Looking good!",
+          "success_message": "Your profile has been updated",
+          "error_title": "Couldn't save changes",
+          "error_message": "Something went wrong. Give it another try!"
         }
       },
       "locale_setting": {
         "title": "Timezone & Language",
         "timezone": "Timezone",
-        "timezone_info": "The timezone is according to the device settings",
+        "timezone_info": "Timezone follows your device settings",
         "language": "Language",
-        "error_title": "Error",
-        "error_message": "Failed to change language. Please try again."
+        "error_title": "Oops",
+        "error_message": "Couldn't switch languages. Please try again."
       }
     }
   },
   "links": {
     "headerTitle": "Links Overview",
-    "subtitle": "Organize your links",
+    "subtitle": "Your links, all in one place",
     "create": {
       "title": "Add Link",
       "add_button": "Add Link",
-      "url_placeholder": "Enter URL",
+      "url_placeholder": "Paste a URL here",
       "submit_button": "Save Link",
       "saving": "Saving...",
       "error_messages": {
-        "url_required": "URL is required",
-        "url_invalid": "Please enter a valid URL"
+        "url_required": "A URL would be nice!",
+        "url_invalid": "Hmm, that doesn't look like a valid URL"
       },
       "callback_messages": {
-        "success_title": "Link Saved",
-        "success_message": "Link has been added to your inbox",
-        "error_title": "Save Failed",
-        "error_message": "Failed to save link. Please try again."
+        "success_title": "Saved!",
+        "success_message": "Your link is safe and sound in the inbox",
+        "error_title": "Couldn't save that",
+        "error_message": "Something went wrong. Let's try again!"
       }
     },
     "paste": {
-      "empty_description": "Paste a link from your clipboard",
+      "empty_description": "Paste a link from your clipboard to get started",
       "paste_button": "Paste from Clipboard",
-      "loading": "Loading link...",
-      "url_label": "URL",
+      "loading": "Fetching link info...",
       "no_title": "No title",
-      "no_ogp_warning": "Preview information unavailable, but you can still save this link",
+      "no_ogp_warning": "No preview available, but you can still save this link",
       "invalid_url_title": "Invalid URL",
-      "invalid_url_description": "Please paste a valid URL",
+      "invalid_url_description": "That doesn't look like a valid URL",
       "try_again": "Try Again",
       "clear_button": "Clear",
       "change_link": "Change",
-      "error_clipboard_empty": "Clipboard is empty",
-      "error_invalid_url": "Could not detect a valid URL. Copy the URL in your browser or other app, then try again.",
-      "error_clipboard_read_failed": "Failed to read clipboard"
+      "error_clipboard_empty": "Clipboard is empty — copy a URL first!",
+      "error_invalid_url": "Couldn't find a valid URL. Copy one from your browser or another app and try again!",
+      "error_clipboard_read_failed": "Couldn't read the clipboard"
     },
     "filter": {
       "title": "Filter",
-      "status": "What do you want to see?",
-      "read_status": "You've already read?",
+      "status": "What are you looking for?",
+      "read_status": "Read status",
       "reset": "Clear Filters",
       "options": {
         "all": "All",
@@ -148,27 +148,21 @@
       }
     },
     "list": {
-      "empty_title": "No links yet",
-      "empty_description": "Start saving links to see them here",
-      "filter_empty_title": "No matching links",
-      "filter_empty_description": "Try adjusting your filters to see more links"
-    },
-    "header": {
-      "title": "Link List",
-      "subtitle": "You have {{count}} saved links"
+      "empty_title": "Nothing here yet",
+      "empty_description": "Save your first link and it'll show up right here!",
+      "filter_empty_title": "No matches",
+      "filter_empty_description": "Try tweaking your filters to find what you're looking for"
     },
     "card": {
       "open_link_label": "Open link",
-      "open_link_hint": "Opens the link in browser",
+      "open_link_hint": "Opens in your browser",
       "action_modal": {
-        "title": "Have you read this link?",
-        "status_section": "Status",
-        "read_status_section": "Read Status",
+        "title": "Did you finish reading this?",
         "mark_as_read": "Mark as Read",
-        "mark_as_unread": "Return to Unread",
+        "mark_as_unread": "Back to Unread",
         "mode_label": "Mode:",
         "current_mode": "Current mode: {{status}}",
-        "tap_to_change": "Tap to change mode",
+        "tap_to_change": "Tap to switch mode",
         "status": {
           "new": "New",
           "read_soon": "Read Soon",
@@ -179,46 +173,44 @@
       }
     },
     "dashboard": {
-      "add_new_link": "Add New Link",
-      "add_new_link_hint": "Copy the URL in your browser or other app, then tap this button",
       "unsorted_links": "Unsorted Links",
-      "start_triage": "Start Triage",
-      "all_caught_up": "All caught up",
-      "no_pending_links": "No pending links",
-      "read_week": "Read (Week)",
+      "start_triage": "Let's sort them!",
+      "all_caught_up": "All caught up!",
+      "no_pending_links": "Nothing to sort — you're on top of it!",
+      "read_week": "Read this week",
       "all_links": "All Links",
       "tabs": {
         "read_soon": "Read Soon",
         "latest": "Latest Added"
       },
       "view_all": "View All",
-      "error_load_failed": "Failed to load links",
+      "error_load_failed": "Couldn't load your links",
       "empty_read_soon": {
-        "title": "You've read everything! 🎉",
-        "description": "Let's Triage new links!",
-        "go_to_triage": "Start Triage"
+        "title": "All caught up! 🎉",
+        "description": "Time to sort some fresh links!",
+        "go_to_triage": "Start Sorting"
       }
     },
     "swipeTriage": {
       "loading": "Loading...",
-      "noPendingLinks": "🎉 No pending links!",
-      "allCaughtUp": "All caught up!",
-      "allDone": "🎉 All done!",
-      "triagedAll": "You've triaged all your links!",
-      "startAgain": "Start Again",
+      "noPendingLinks": "🎉 Nothing to sort!",
+      "allCaughtUp": "You're all caught up!",
+      "allDone": "🎉 Nailed it!",
+      "triagedAll": "Every link has a home now!",
+      "startAgain": "Go Again",
       "remaining": "remaining",
-      "loadingMore": "(loading more...)",
+      "loadingMore": "(fetching more...)",
       "undo": "Undo"
     },
     "overview": {
       "status": "Status",
       "view_all": "View All",
       "view_all_links": "View all links",
-      "forgotten_links": "Forgotten Links",
+      "forgotten_links": "Buried Treasure",
       "added_days_ago": "Added {{daysAgo}} days ago",
-      "un_collectioned": "Uncollected",
+      "un_collectioned": "Uncategorized",
       "un_collectioned_description": "Links not in any collection",
-      "un_collectioned_todo": "Links not in any collection will appear here.",
+      "un_collectioned_todo": "Uncategorized links will show up here",
       "new_collection": "New Collection",
       "collections_section": "Collections",
       "view_all_collections": "View all collections"
@@ -227,21 +219,20 @@
       "title": "Collections",
       "my_collections": "My Collections",
       "empty_title": "No collections yet",
-      "empty_description": "Create a new collection to organize your links"
+      "empty_description": "Create your first collection and start organizing!"
     },
     "collection_detail": {
-      "empty_title": "No links in this collection",
-      "empty_description": "Add links to this collection from the link detail screen",
+      "empty_title": "This collection is empty",
+      "empty_description": "Add links from the detail screen to fill it up!",
       "items_count": "items",
       "not_found": "Collection not found",
       "header_edit": "Edit",
       "header_delete": "Delete",
       "header_more_options": "More options",
-      "edit_coming_soon": "Edit feature coming soon.",
       "delete_confirm": {
         "title": "Delete Collection",
-        "message": "Are you sure you want to delete this collection? Links in it will not be deleted.",
-        "cancel": "Cancel",
+        "message": "Delete this collection? Don't worry, your links won't disappear.",
+        "cancel": "Keep it",
         "confirm": "Delete"
       }
     },
@@ -250,7 +241,6 @@
       "name_label": "Name",
       "name_placeholder": "e.g. Work, Design, Tech",
       "emoji_label": "Emoji (optional)",
-      "emoji_placeholder": "e.g. 📚",
       "submit": "Create Collection"
     },
     "collection_edit": {
@@ -258,40 +248,40 @@
       "name_label": "Name",
       "name_placeholder": "e.g. Work, Design, Tech",
       "emoji_label": "Emoji (optional)",
-      "emoji_placeholder": "e.g. 📚",
       "submit": "Save"
     },
     "detail": {
-      "title": "Link Details",
       "open_link": "Open Link",
-      "change_status": "Change Status",
       "delete_link": "Delete",
       "mark_as_read": "Mark as Read",
-      "mark_as_unread": "Mark as Unread",
+      "mark_as_unread": "Back to Unread",
       "share": "Share",
       "more_options": "More Options",
-      "created_at": "Created At",
-      "triaged_at": "Triaged At",
-      "read_at": "Read At",
+      "created_at": "Saved on",
+      "triaged_at": "Sorted on",
+      "read_at": "Read on",
       "status_label": "Status",
       "collections_label": "Collections",
-      "collections_tap_hint": "Tap to add or remove from collection",
+      "collections_tap_hint": "Tap to add or remove",
       "create_new_collection": "Create new collection",
-      "no_description": "No description available",
       "loading": "Loading...",
-      "error": "An error occurred",
+      "error": "Something went wrong",
       "not_read_yet": "Not read yet",
       "delete_confirm": {
         "title": "Delete Link",
-        "message": "Are you sure you want to delete this link?",
-        "description": "This action cannot be undone.",
-        "cancel": "Cancel",
+        "message": "Are you sure? This can't be undone.",
+        "cancel": "Keep it",
         "confirm": "Delete"
+      },
+      "delete_error": {
+        "title": "Couldn't delete",
+        "message": "Something went wrong. Please try again."
       }
     }
   },
   "common": {
     "back": "Back",
+    "ok": "OK",
     "retry": "Try Again",
     "error_title": "Something went wrong"
   }

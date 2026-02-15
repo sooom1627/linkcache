@@ -128,15 +128,11 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
                 const errorMessage =
                   error instanceof Error
                     ? error.message
-                    : t("links.detail.delete_error.message", {
-                        defaultValue: "リンクの削除に失敗しました",
-                      });
+                    : t("links.detail.delete_error.message");
                 Alert.alert(
-                  t("links.detail.delete_error.title", {
-                    defaultValue: "削除エラー",
-                  }),
+                  t("links.detail.delete_error.title"),
                   errorMessage,
-                  [{ text: t("common.ok", { defaultValue: "OK" }) }],
+                  [{ text: t("common.ok") }],
                 );
               }
             })();
