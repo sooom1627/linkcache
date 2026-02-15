@@ -1,4 +1,5 @@
 import { DashboardOverview, LinkListTabs } from "@/src/features/links/screens";
+import { CollectionsLane } from "@/src/features/links/screens/CollectionsLane";
 import { useProfile } from "@/src/features/users";
 import { ScreenContainer } from "@/src/shared/components/layout/ScreenContainer";
 import { formatDate } from "@/src/shared/utils/timezone";
@@ -24,6 +25,7 @@ export default function Home() {
         readCount={MOCK_READ_COUNT}
         allLinksCount={MOCK_ALL_LINKS_COUNT}
       />
+      <CollectionsLane />
       <LinkListTabs />
     </ScreenContainer>
   );

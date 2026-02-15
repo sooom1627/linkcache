@@ -1,7 +1,12 @@
 # Collection定義と利用状況の詳細整理
 
-> **最終更新**: 2026年2月10日  
+> **最終更新**: 2026年2月15日  
 > **確認方法**: Supabase MCP経由で実際のDB構造を確認
+>
+> **関連**:
+>
+> - [Supabase Collections DB 設定（MCP検証済み）](./collections-supabase-db-configuration.md) - 現在のDB状態の簡易リファレンス
+> - [Collections UI 不足洗い出し](./collections-ui-gap-analysis.md) - 画面・コンポーネントの実装状況（API 含まず）
 
 ## 📋 目次
 
@@ -30,6 +35,7 @@
 | `user_id`     | `uuid`        | NO       | -                   | ユーザーID（外部キー: `users.id`） |
 | `name`        | `text`        | NO       | -                   | コレクション名（必須）             |
 | `description` | `text`        | YES      | -                   | 説明文（オプション）               |
+| `emoji`       | `text`        | YES      | -                   | 表示用絵文字（オプション、例: 📚） |
 | `created_at`  | `timestamptz` | YES      | `now()`             | 作成日時（自動設定）               |
 | `updated_at`  | `timestamptz` | YES      | `now()`             | 更新日時（自動設定）               |
 
@@ -126,6 +132,7 @@
 │ - user_id (FK)  │
 │ - name          │
 │ - description   │
+│ - emoji         │
 │ - created_at    │
 │ - updated_at    │
 └────────┬────────┘
@@ -187,6 +194,7 @@ type Collection = {
   user_id: string; // UUID (users.idへの外部キー)
   name: string; // 必須
   description: string | null; // オプション
+  emoji: string | null; // オプション（表示用絵文字、例: 📚）
   created_at: string | null; // ISO8601形式のタイムスタンプ
   updated_at: string | null; // ISO8601形式のタイムスタンプ
 };
@@ -416,15 +424,16 @@ import type { Collection, CollectionLink } from "@features/links/types";
    - ❌ `useRemoveLinkFromCollection.ts` - リンク削除フック
 
 4. **UIコンポーネント** (`src/features/links/components/`)
-   - ❌ `CollectionList.tsx` - コレクション一覧表示
-   - ❌ `CollectionCard.tsx` - コレクションカード
-   - ❌ `CollectionForm.tsx` - コレクション作成・編集フォーム
+   - ✅ `CollectionCard.tsx` - コレクションカード（href/onPress、Link 対応）
+   - ✅ `CollectionChip.tsx` - コレクションチップ
+   - ✅ `CollectionCreateModal.tsx` - コレクション作成フォーム
+   - ✅ `CollectionEditModal.tsx` - コレクション編集フォーム（CollectionDetailScreen の Edit 押下で表示）
    - ❌ `CollectionLinkList.tsx` - コレクション内リンク一覧
    - ❌ `AddToCollectionModal.tsx` - リンクをコレクションに追加するモーダル
 
 5. **画面** (`src/features/links/screens/`)
-   - ❌ `CollectionListScreen.tsx` - コレクション管理画面
-   - ❌ `CollectionDetailScreen.tsx` - コレクション詳細画面
+   - ✅ `CollectionListScreen.tsx` - コレクション一覧画面（UI のみ、モックデータ）
+   - ⚠️ `CollectionDetailScreen` - プレースホルダーのみ（`app/(protected)/collections/[id].tsx`）
 
 6. **クエリキー** (`src/features/links/constants/queryKeys.ts`)
    - ❌ collection関連のクエリキー定義
@@ -446,6 +455,7 @@ import type { Collection, CollectionLink } from "@features/links/types";
 export async function createCollection(params: {
   name: string;
   description?: string;
+  emoji?: string;
 }): Promise<Collection>;
 
 // コレクション一覧取得
@@ -457,7 +467,7 @@ export async function getCollection(id: string): Promise<Collection>;
 // コレクション更新
 export async function updateCollection(
   id: string,
-  params: { name?: string; description?: string },
+  params: { name?: string; description?: string; emoji?: string },
 ): Promise<Collection>;
 
 // コレクション削除
@@ -492,11 +502,13 @@ export async function getCollectionLinks(
 export interface CreateCollectionParams {
   name: string;
   description?: string;
+  emoji?: string;
 }
 
 export interface UpdateCollectionParams {
   name?: string;
   description?: string;
+  emoji?: string;
 }
 
 // Zodスキーマ

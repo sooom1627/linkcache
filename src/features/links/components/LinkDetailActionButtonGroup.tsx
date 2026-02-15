@@ -141,7 +141,8 @@ export function LinkDetailActionButtonGroup({
           isOpen={isMoreMenuOpen}
           onClose={handleCloseMenu}
           position="bottom-20 right-0"
-          width={200}
+          width={230}
+          expandOrigin="bottom-right"
         />
 
         {/* メニューを開くボタン */}

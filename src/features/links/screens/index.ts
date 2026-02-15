@@ -1,3 +1,6 @@
+export { CollectionCreateModal } from "./CollectionCreateModal";
+export { CollectionEditModal } from "./CollectionEditModal";
+export { CollectionDetailScreen } from "./CollectionDetailScreen";
 export { DashboardOverview } from "./DashboardOverview";
 export { LinkCreateModal } from "./LinkCreateModal";
 export { LinkDetailScreen } from "./LinkDetailScreen";

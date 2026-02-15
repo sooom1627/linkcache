@@ -12,6 +12,7 @@ import { ErrorStateView } from "@/src/shared/components/ErrorStateView";
 import { useBottomSheetModal } from "@/src/shared/hooks/useBottomSheetModal";
 import { formatDateTime } from "@/src/shared/utils/timezone";
 
+import { CollectionChip } from "../components/CollectionChip";
 import { LinkDetailActionButtonGroup } from "../components/LinkDetailActionButtonGroup";
 import { LinkReadStatusModal } from "../components/LinkReadStatusModal";
 import { useDeleteLink } from "../hooks/useDeleteLink";
@@ -20,6 +21,17 @@ import { extractDomain } from "../hooks/useLinkPaste";
 import { useOpenLink } from "../hooks/useOpenLink";
 import { shareLink } from "../utils/share";
 import { getStatusStyle } from "../utils/statusStyles";
+
+import { CollectionCreateModal } from "./CollectionCreateModal";
+
+/** モック: 全コレクション（API未実装のため） */
+const MOCK_COLLECTIONS = [
+  { id: "1", emoji: "📚", title: "Read Soon" },
+  { id: "2", emoji: "🔬", title: "Tech" },
+  { id: "3", emoji: "🎨", title: "Design" },
+  { id: "4", emoji: "💼", title: "Work" },
+  { id: "5", emoji: "💡", title: "Ideas" },
+] as const;
 
 interface LinkDetailScreenProps {
   linkId: string;
@@ -42,8 +54,30 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
     present: presentStatusModal,
     dismiss: dismissStatusModal,
   } = useBottomSheetModal();
+  const {
+    ref: collectionCreateModalRef,
+    present: presentCollectionCreateModal,
+    dismiss: dismissCollectionCreateModal,
+  } = useBottomSheetModal();
 
   const isDone = link?.status === "done";
+
+  /** このリンクが属するコレクションID（タップでトグル、API未実装のためローカル状態） */
+  const [linkedCollectionIds, setLinkedCollectionIds] = useState<Set<string>>(
+    () => new Set(["1", "2"]),
+  );
+
+  const handleToggleCollection = useCallback((collectionId: string) => {
+    setLinkedCollectionIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(collectionId)) {
+        next.delete(collectionId);
+      } else {
+        next.add(collectionId);
+      }
+      return next;
+    });
+  }, []);
 
   const handleBack = useCallback(() => {
     router.back();
@@ -161,7 +195,7 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
 
   return (
     <>
-      <View className="relative flex-1 bg-slate-50">
+      <View className="relative h-full bg-slate-50 pb-32">
         <ScrollView
           className="flex-1 pt-20"
           showsVerticalScrollIndicator={false}
@@ -202,23 +236,22 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
             </View>
 
             {/* タイトル */}
-            <Text className="mb-4 text-2xl font-bold leading-tight text-slate-900">
+            <Text className="mb-4 line-clamp-2 text-2xl font-bold leading-tight text-slate-900">
               {link.title || link.url}
             </Text>
 
             {/* 説明文 */}
             {link.description && (
-              <Text className="mb-6 line-clamp-3 text-base leading-relaxed text-slate-600">
+              <Text className="mb-6 line-clamp-2 text-base leading-relaxed text-slate-600">
                 {link.description}
               </Text>
             )}
 
             {/* ステータス情報 */}
+            <Text className="mb-2 text-sm font-semibold uppercase tracking-wide text-mainDark">
+              {t("links.detail.status_label")}
+            </Text>
             <View className="mb-6 rounded-2xl bg-white p-4">
-              <Text className="mb-3 text-sm font-semibold text-slate-700">
-                {t("links.detail.status_label")}
-              </Text>
-
               {/* 現在のステータス */}
               <View className="mb-3 flex-row items-center gap-2">
                 {isDone ? (
@@ -267,6 +300,28 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
                 </View>
               </View>
             </View>
+
+            {/* Collections: 全コレクションを表示、紐づいているものはactive、タップでトグル */}
+            <Text className="mb-2 text-sm font-semibold uppercase tracking-wide text-mainDark">
+              {t("links.detail.collections_label")}
+            </Text>
+            <View className="mb-6 flex-row flex-wrap gap-2">
+              {MOCK_COLLECTIONS.map((col) => (
+                <CollectionChip
+                  key={col.id}
+                  emoji={col.emoji}
+                  title={col.title}
+                  selected={linkedCollectionIds.has(col.id)}
+                  onPress={() => handleToggleCollection(col.id)}
+                  accessibilityHint={t("links.detail.collections_tap_hint")}
+                />
+              ))}
+              <CollectionChip
+                variant="add"
+                title={t("links.detail.create_new_collection")}
+                onPress={presentCollectionCreateModal}
+              />
+            </View>
           </View>
         </ScrollView>
 
@@ -288,6 +343,12 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
         ref={statusModalRef}
         link={link}
         onClose={dismissStatusModal}
+      />
+
+      {/* コレクション作成モーダル（Add チップから） */}
+      <CollectionCreateModal
+        ref={collectionCreateModalRef}
+        onClose={dismissCollectionCreateModal}
       />
     </>
   );

@@ -97,6 +97,8 @@
     }
   },
   "links": {
+    "headerTitle": "Links Overview",
+    "subtitle": "Organize your links",
     "create": {
       "title": "Add Link",
       "add_button": "Add Link",
@@ -208,6 +210,57 @@
       "loadingMore": "(loading more...)",
       "undo": "Undo"
     },
+    "overview": {
+      "status": "Status",
+      "view_all": "View All",
+      "view_all_links": "View all links",
+      "forgotten_links": "Forgotten Links",
+      "added_days_ago": "Added {{daysAgo}} days ago",
+      "un_collectioned": "Uncollected",
+      "un_collectioned_description": "Links not in any collection",
+      "un_collectioned_todo": "Links not in any collection will appear here.",
+      "new_collection": "New Collection",
+      "collections_section": "Collections",
+      "view_all_collections": "View all collections"
+    },
+    "collection_list": {
+      "title": "Collections",
+      "my_collections": "My Collections",
+      "empty_title": "No collections yet",
+      "empty_description": "Create a new collection to organize your links"
+    },
+    "collection_detail": {
+      "empty_title": "No links in this collection",
+      "empty_description": "Add links to this collection from the link detail screen",
+      "items_count": "items",
+      "not_found": "Collection not found",
+      "header_edit": "Edit",
+      "header_delete": "Delete",
+      "header_more_options": "More options",
+      "edit_coming_soon": "Edit feature coming soon.",
+      "delete_confirm": {
+        "title": "Delete Collection",
+        "message": "Are you sure you want to delete this collection? Links in it will not be deleted.",
+        "cancel": "Cancel",
+        "confirm": "Delete"
+      }
+    },
+    "collection_create": {
+      "title": "New Collection",
+      "name_label": "Name",
+      "name_placeholder": "e.g. Work, Design, Tech",
+      "emoji_label": "Emoji (optional)",
+      "emoji_placeholder": "e.g. 📚",
+      "submit": "Create Collection"
+    },
+    "collection_edit": {
+      "title": "Edit Collection",
+      "name_label": "Name",
+      "name_placeholder": "e.g. Work, Design, Tech",
+      "emoji_label": "Emoji (optional)",
+      "emoji_placeholder": "e.g. 📚",
+      "submit": "Save"
+    },
     "detail": {
       "title": "Link Details",
       "open_link": "Open Link",
@@ -221,6 +274,9 @@
       "triaged_at": "Triaged At",
       "read_at": "Read At",
       "status_label": "Status",
+      "collections_label": "Collections",
+      "collections_tap_hint": "Tap to add or remove from collection",
+      "create_new_collection": "Create new collection",
       "no_description": "No description available",
       "loading": "Loading...",
       "error": "An error occurred",

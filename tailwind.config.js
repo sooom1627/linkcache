@@ -9,8 +9,8 @@ module.exports = {
         main: "#1e293b",
         mainHover: "#334155",
         mainDark: "#0f172a",
-        accent: "#ea580c", // orange-600
-        accentMuted: "#f97316", // orange-500
+        accent: "#1d4ed8", // blue-700
+        accentMuted: "#2563eb", // blue-600
         surface: "#ffffff",
         surfaceMuted: "#f1f5f9", // slate-100
         surfaceMutedActive: "#e2e8f0", // slate-200（secondary ボタン enabled）

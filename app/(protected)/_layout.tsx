@@ -76,6 +76,14 @@ export default function ProtectedLayout() {
           presentation: "card",
         }}
       />
+      <Stack.Screen
+        name="collections"
+        options={{
+          headerShown: false,
+          animation: "slide_from_right",
+          presentation: "card",
+        }}
+      />
     </Stack>
   );
 }

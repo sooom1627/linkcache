@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { useEffect } from "react";
 
+import type { StyleProp, ViewStyle } from "react-native";
 import {
   ActivityIndicator,
   Pressable,
@@ -8,7 +9,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import type { StyleProp, ViewStyle } from "react-native";
 
 import { BlurView } from "expo-blur";
 
@@ -38,6 +38,9 @@ export interface ToggleMenuItem {
   className?: string;
 }
 
+/** メニュー展開アニメーションの起点方向 */
+export type ToggleMenuExpandOrigin = "top-right" | "bottom-right";
+
 export interface ToggleMenuProps {
   /** メニュー項目の配列 */
   items: ToggleMenuItem[];
@@ -51,9 +54,11 @@ export interface ToggleMenuProps {
   position?: string;
   /** メニューの幅（デフォルト: 200） */
   width?: number;
+  /** 展開アニメーションの起点方向（デフォルト: "bottom-right"） */
+  expandOrigin?: ToggleMenuExpandOrigin;
   /** BlurViewのtint（デフォルト: "systemMaterial"） */
   blurTint?: "light" | "dark" | "default" | "systemMaterial";
-  /** BlurViewのintensity（デフォルト: 20） */
+  /** BlurViewのintensity（デフォルト: 50） */
   blurIntensity?: number;
 }
 
@@ -63,6 +68,14 @@ export interface ToggleMenuProps {
  * アイコン、アクション、アニメーションスタイル、位置指定を受け取れる汎用メニューコンポーネント。
  * このコンポーネントはメニュー本体のみを表示します。メニューを開くボタンは呼び出し元のコンポーネントで実装してください。
  */
+const EXPAND_ORIGIN_TRANSLATE: Record<
+  ToggleMenuExpandOrigin,
+  { closedY: number; closedX: number }
+> = {
+  "top-right": { closedY: -20, closedX: 20 },
+  "bottom-right": { closedY: 20, closedX: 20 },
+};
+
 export function ToggleMenu({
   items,
   isOpen,
@@ -70,14 +83,17 @@ export function ToggleMenu({
   animationStyle: externalAnimationStyle,
   position = "bottom-20 right-0",
   width = 200,
+  expandOrigin = "bottom-right",
   blurTint = "systemMaterial",
-  blurIntensity = 20,
+  blurIntensity = 50,
 }: ToggleMenuProps) {
+  const { closedY, closedX } = EXPAND_ORIGIN_TRANSLATE[expandOrigin];
+
   // アニメーション用のSharedValue（外部スタイルが指定されない場合のみ使用）
   const menuOpacity = useSharedValue(0);
   const menuScale = useSharedValue(0.8);
-  const menuTranslateY = useSharedValue(20);
-  const menuTranslateX = useSharedValue(20);
+  const menuTranslateY = useSharedValue(closedY);
+  const menuTranslateX = useSharedValue(closedX);
 
   // 内部アニメーションスタイル（外部スタイルが指定されない場合）
   const internalAnimationStyle = useAnimatedStyle(() => ({
@@ -101,8 +117,8 @@ export function ToggleMenu({
         menuTranslateY.value = withTiming(0, { duration: 150 });
         menuTranslateX.value = withTiming(0, { duration: 150 });
       } else {
-        menuTranslateY.value = withTiming(20, { duration: 150 });
-        menuTranslateX.value = withTiming(20, { duration: 150 });
+        menuTranslateY.value = withTiming(closedY, { duration: 150 });
+        menuTranslateX.value = withTiming(closedX, { duration: 150 });
         menuScale.value = withTiming(0.8, { duration: 150 });
         menuOpacity.value = withTiming(0, { duration: 150 });
       }
@@ -110,6 +126,8 @@ export function ToggleMenu({
   }, [
     isOpen,
     externalAnimationStyle,
+    closedY,
+    closedX,
     menuOpacity,
     menuScale,
     menuTranslateY,

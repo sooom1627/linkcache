@@ -1,6 +1,6 @@
-import { forwardRef, useCallback, useEffect, useRef } from "react";
+import { forwardRef, useCallback, useEffect, useRef, useState } from "react";
 
-import { Alert, View } from "react-native";
+import { Alert, Text, View } from "react-native";
 
 import type { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useTranslation } from "react-i18next";
@@ -9,9 +9,18 @@ import { FormButton } from "@/src/shared/components/forms";
 import { ScrollableBottomSheetModal } from "@/src/shared/components/modals";
 import ModalHeader from "@/src/shared/components/modals/ModalHeader";
 
+import { CollectionChip } from "../components/CollectionChip";
 import LinkPasteContainer from "../components/LinkPasteContainer";
 import { useCreateLink } from "../hooks/useCreateLink";
 import { useLinkPaste } from "../hooks/useLinkPaste";
+
+/** 仮データ: コレクション選択UI用（UIレイヤーのみ） */
+const MOCK_COLLECTIONS = [
+  { id: "1", emoji: "📚", title: "Read Soon" },
+  { id: "2", emoji: "🔬", title: "Tech" },
+  { id: "3", emoji: "🎨", title: "Design" },
+  { id: "4", emoji: "💡", title: "Ideas" },
+] as const;
 
 interface LinkCreateModalProps {
   onClose?: () => void;
@@ -51,6 +60,23 @@ export const LinkCreateModal = forwardRef<
 
   const hasAutoPastedRef = useRef(false);
 
+  // コレクション選択（仮UI: 選択状態のみ保持、保存時は未使用）
+  const [selectedCollectionIds, setSelectedCollectionIds] = useState<
+    Set<string>
+  >(() => new Set());
+
+  const toggleCollection = useCallback((id: string) => {
+    setSelectedCollectionIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }, []);
+
   // モーダルが開いた時に自動的にクリップボードから貼り付け
   const handleModalChange = useCallback(
     (index: number) => {
@@ -73,6 +99,7 @@ export const LinkCreateModal = forwardRef<
   const handleClose = useCallback(() => {
     reset();
     resetCreate();
+    setSelectedCollectionIds(new Set());
     hasAutoPastedRef.current = false; // リセット時にフラグもリセット
     onClose?.();
   }, [onClose, reset, resetCreate]);
@@ -110,7 +137,7 @@ export const LinkCreateModal = forwardRef<
   return (
     <ScrollableBottomSheetModal
       ref={ref}
-      snapPoints={["50%", "70%"]}
+      snapPoints={["90%", "100%"]}
       index={0}
       enablePanDownToClose={false}
       stackBehavior="switch"
@@ -130,19 +157,39 @@ export const LinkCreateModal = forwardRef<
           />
         </View>
 
-        {/* 保存ボタン（preview/noOgp状態でのみ表示） */}
+        {/* 保存メニュー */}
         {(status === "preview" || status === "noOgp") && (
-          <View className="mt-6">
-            <FormButton
-              title={
-                isPending
-                  ? t("links.create.saving")
-                  : t("links.create.submit_button")
-              }
-              onPress={handleSave}
-              disabled={isSubmitDisabled}
-            />
-          </View>
+          <>
+            {/* collections selector（仮UI: 選択のみ、保存時は未使用） */}
+            <View className="mt-6">
+              <Text className="text-sm font-semibold uppercase tracking-wide text-mainDark">
+                Select Collections
+              </Text>
+              <View className="mt-3 flex-row flex-wrap gap-2">
+                {MOCK_COLLECTIONS.map((col) => (
+                  <CollectionChip
+                    key={col.id}
+                    emoji={col.emoji}
+                    title={col.title}
+                    selected={selectedCollectionIds.has(col.id)}
+                    onPress={() => toggleCollection(col.id)}
+                  />
+                ))}
+              </View>
+            </View>
+            {/* 保存ボタン */}
+            <View className="mt-6">
+              <FormButton
+                title={
+                  isPending
+                    ? t("links.create.saving")
+                    : t("links.create.submit_button")
+                }
+                onPress={handleSave}
+                disabled={isSubmitDisabled}
+              />
+            </View>
+          </>
         )}
       </View>
     </ScrollableBottomSheetModal>

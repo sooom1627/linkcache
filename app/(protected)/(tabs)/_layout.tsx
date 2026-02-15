@@ -23,10 +23,10 @@ import { useModal } from "@/src/shared/providers";
 import type { TabItem, TabPath } from "@/src/shared/types/Tabs.types";
 
 const tabs: TabItem[] = [
-  { name: "home", href: "/", icon: House },
-  { name: "swipes", href: "/swipes", icon: Layers2 },
-  { name: "link-list", href: "/link-list", icon: List },
-  { name: "dashboard", href: "/dashboard", icon: ChartNoAxesCombined },
+  { name: "(home)", href: "/", icon: House },
+  { name: "(swipes)", href: "/swipes", icon: Layers2 },
+  { name: "(list)", href: "/link-list", icon: List },
+  { name: "(dashboard)", href: "/dashboard", icon: ChartNoAxesCombined },
 ];
 
 const tabBarStyle = {
@@ -93,14 +93,16 @@ export default function TabsLayout() {
                   href={tab.href}
                   accessibilityLabel={tab.name}
                 >
-                  <View
-                    className={`items-center justify-center rounded-full p-4 ${isActive ? "bg-slate-100" : ""}`}
-                  >
-                    <Icon
-                      color={isActive ? "#000000" : "#9ca3af"}
-                      size={20}
-                      strokeWidth={isActive ? 2 : 1.5}
-                    />
+                  <View className="flex-col items-center justify-center">
+                    <View
+                      className={`flex-col items-center justify-center rounded-full p-4 ${isActive ? "bg-slate-100" : ""}`}
+                    >
+                      <Icon
+                        color={isActive ? "#000000" : "#9ca3af"}
+                        size={20}
+                        strokeWidth={isActive ? 2 : 1.5}
+                      />
+                    </View>
                   </View>
                 </TabTrigger>
               );
@@ -110,8 +112,10 @@ export default function TabsLayout() {
               accessibilityRole="button"
               accessibilityLabel={t("links.create.add_button")}
             >
-              <View className="items-center justify-center rounded-full p-4">
-                <PlusCircle size={20} color="#9ca3af" strokeWidth={1.5} />
+              <View className="flex-col items-center justify-center">
+                <View className="items-center justify-center rounded-full p-4">
+                  <PlusCircle size={20} color="#9ca3af" strokeWidth={1.5} />
+                </View>
               </View>
             </Pressable>
             {tabs.slice(2, 4).map((tab) => {
@@ -125,14 +129,16 @@ export default function TabsLayout() {
                   href={tab.href}
                   accessibilityLabel={tab.name}
                 >
-                  <View
-                    className={`items-center justify-center rounded-full p-4 ${isActive ? "bg-slate-100" : ""}`}
-                  >
-                    <Icon
-                      color={isActive ? "#000000" : "#9ca3af"}
-                      size={20}
-                      strokeWidth={isActive ? 2 : 1.5}
-                    />
+                  <View className="flex-col items-center justify-center">
+                    <View
+                      className={`items-center justify-center rounded-full p-4 ${isActive ? "bg-slate-100" : ""}`}
+                    >
+                      <Icon
+                        color={isActive ? "#000000" : "#9ca3af"}
+                        size={20}
+                        strokeWidth={isActive ? 2 : 1.5}
+                      />
+                    </View>
                   </View>
                 </TabTrigger>
               );
