@@ -208,6 +208,21 @@
       "loadingMore": "(loading more...)",
       "undo": "Undo"
     },
+    "overview": {
+      "un_collectioned": "Un Collectioned",
+      "new_collection": "New Collection",
+      "collections_section": "Collections",
+      "view_all_collections": "View all collections",
+      "view_all": "View All"
+    },
+    "collection_create": {
+      "title": "New Collection",
+      "name_label": "Name",
+      "name_placeholder": "e.g. Work, Design, Tech",
+      "emoji_label": "Emoji (optional)",
+      "emoji_placeholder": "e.g. 📚",
+      "submit": "Create Collection"
+    },
     "detail": {
       "title": "Link Details",
       "open_link": "Open Link",
@@ -221,6 +236,9 @@
       "triaged_at": "Triaged At",
       "read_at": "Read At",
       "status_label": "Status",
+      "collections_label": "Collections",
+      "collections_tap_hint": "Tap to add or remove from collection",
+      "create_new_collection": "Create new collection",
       "no_description": "No description available",
       "loading": "Loading...",
       "error": "An error occurred",

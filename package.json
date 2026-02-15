@@ -66,6 +66,7 @@
     "react-native-swipeable-card-stack": "^2.0.0",
     "react-native-web": "~0.21.2",
     "react-native-worklets": "0.5.1",
+    "rn-emoji-keyboard": "^1.7.0",
     "zod": "^4.3.4"
   },
   "devDependencies": {

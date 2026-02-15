@@ -1,3 +1,4 @@
+export { CollectionCreateModal } from "./CollectionCreateModal";
 export { DashboardOverview } from "./DashboardOverview";
 export { LinkCreateModal } from "./LinkCreateModal";
 export { LinkDetailScreen } from "./LinkDetailScreen";

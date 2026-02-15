@@ -11,6 +11,8 @@ export interface CollectionChipProps {
   variant?: "default" | "add";
   /** タップ時のコールバック。選択トグル or 遷移など呼び出し側で制御 */
   onPress?: () => void;
+  /** アクセシビリティ用ヒント（タップ時の動作説明など） */
+  accessibilityHint?: string;
 }
 
 /**
@@ -27,6 +29,7 @@ export function CollectionChip({
   selected = false,
   variant = "default",
   onPress,
+  accessibilityHint,
 }: CollectionChipProps) {
   const isAdd = variant === "add";
 
@@ -51,7 +54,8 @@ export function CollectionChip({
       className={containerClassName}
       accessibilityRole="button"
       accessibilityState={selected ? { selected: true } : undefined}
-      accessibilityLabel={isAdd ? "Add to collection" : `Collection: ${title}`}
+      accessibilityLabel={isAdd ? title : `Collection: ${title}`}
+      accessibilityHint={accessibilityHint}
     >
       {!isAdd && emoji && (
         <Text className="text-sm" selectable={false}>

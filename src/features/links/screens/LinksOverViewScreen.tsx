@@ -3,9 +3,12 @@ import { Pressable, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 
 import { ChevronRight, Clock, Link2, Plus } from "lucide-react-native";
+import { useTranslation } from "react-i18next";
 
 import { CollectionCard } from "@/src/features/links/components/CollectionCard";
+import { CollectionCreateModal } from "@/src/features/links/screens/CollectionCreateModal";
 import { colors } from "@/src/shared/constants/colors";
+import { useBottomSheetModal } from "@/src/shared/hooks/useBottomSheetModal";
 
 /** hex を rgba に変換（opacity: 0-1） */
 function hexToRgba(hex: string, alpha: number): string {
@@ -48,7 +51,7 @@ const STATUS_ITEMS = [
   },
 ] as const;
 
-/** モック: コレクション（最大5件表示、6件目は New Collection カード） */
+/** モック: コレクション（5件。Un Collectioned は別で固定表示） */
 const MOCK_COLLECTIONS = [
   { emoji: "💼", title: "Work", itemsCount: 24 },
   { emoji: "🎨", title: "Design", itemsCount: 56 },
@@ -56,6 +59,9 @@ const MOCK_COLLECTIONS = [
   { emoji: "💻", title: "Tech", itemsCount: 31 },
   { emoji: "📚", title: "Learning", itemsCount: 18 },
 ];
+
+/** モック: Un Collectioned のリンク数 */
+const MOCK_UN_COLLECTIONED_COUNT = 8;
 
 /** モック: 要対応リンク */
 const MOCK_NEED_ATTENTION = [
@@ -74,7 +80,13 @@ const THUMBNAIL_WIDTH = Math.round(THUMBNAIL_SIZE * 1.91);
  * モックデータのみ。既存コンポーネントは使用せずインライン実装。
  */
 export function LinksOverViewScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
+  const {
+    ref: collectionCreateModalRef,
+    present: presentCollectionCreateModal,
+    dismiss: dismissCollectionCreateModal,
+  } = useBottomSheetModal();
 
   const handleStatusPress = (statusParam: string) => {
     const params = statusParam === "all" ? {} : { status: statusParam };
@@ -142,65 +154,105 @@ export function LinksOverViewScreen() {
         </View>
       </View>
 
-      {/* 2. コレクションセクション（仮: 3件 + New Collection、2行） */}
+      {/* 2. コレクションセクション（Un Collectioned 固定 + 5件、New Collection は細い1列ライン） */}
       <View className="gap-2">
         <View className="flex-row items-center justify-between py-0.5">
           <Text className="text-sm font-semibold uppercase tracking-wider text-slate-500">
-            Collections
+            {t("links.overview.collections_section")}
           </Text>
           <Pressable
             onPress={() => {}}
             className="-mr-1 flex-row items-center gap-0.5 py-1.5 pl-2 pr-1 active:opacity-70"
             accessibilityRole="link"
-            accessibilityLabel="View all collections"
+            accessibilityLabel={t("links.overview.view_all_collections")}
           >
             <Text
               className="text-sm font-medium"
               style={{ color: colors.accent }}
             >
-              View All
+              {t("links.overview.view_all")}
             </Text>
             <ChevronRight size={14} color={colors.accent} strokeWidth={2.5} />
           </Pressable>
         </View>
         <View className="gap-2">
-          {[0, 1].map((rowIndex) => (
-            <View key={rowIndex} className="flex-row gap-2">
-              <View className="min-h-28 min-w-0 flex-1">
-                <CollectionCard
-                  emoji={MOCK_COLLECTIONS[rowIndex * 2].emoji}
-                  title={MOCK_COLLECTIONS[rowIndex * 2].title}
-                  itemsCount={MOCK_COLLECTIONS[rowIndex * 2].itemsCount}
-                  onPress={() => {}}
-                />
-              </View>
-              <View className="min-h-28 min-w-0 flex-1">
-                {rowIndex === 0 ? (
-                  <CollectionCard
-                    emoji={MOCK_COLLECTIONS[1].emoji}
-                    title={MOCK_COLLECTIONS[1].title}
-                    itemsCount={MOCK_COLLECTIONS[1].itemsCount}
-                    onPress={() => {}}
-                  />
-                ) : (
-                  <Pressable
-                    onPress={() => {}}
-                    className="min-h-28 items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50/50 active:bg-slate-100"
-                    style={CARD_STYLE}
-                    accessibilityRole="button"
-                    accessibilityLabel="Add new collection"
-                  >
-                    <Plus size={24} color={colors.iconMuted} strokeWidth={2} />
-                    <Text className="mt-2 text-sm font-medium text-slate-600">
-                      New Collection
-                    </Text>
-                  </Pressable>
-                )}
-              </View>
+          {/* 1行目: Un Collectioned（固定）+ Work */}
+          <View className="flex-row gap-2">
+            <View className="min-h-28 min-w-0 flex-1">
+              <CollectionCard
+                emoji="📂"
+                title={t("links.overview.un_collectioned")}
+                itemsCount={MOCK_UN_COLLECTIONED_COUNT}
+                onPress={() => {}}
+              />
             </View>
-          ))}
+            <View className="min-h-28 min-w-0 flex-1">
+              <CollectionCard
+                emoji={MOCK_COLLECTIONS[0].emoji}
+                title={MOCK_COLLECTIONS[0].title}
+                itemsCount={MOCK_COLLECTIONS[0].itemsCount}
+                onPress={() => {}}
+              />
+            </View>
+          </View>
+          {/* 2行目: Design + Recipes */}
+          <View className="flex-row gap-2">
+            <View className="min-h-28 min-w-0 flex-1">
+              <CollectionCard
+                emoji={MOCK_COLLECTIONS[1].emoji}
+                title={MOCK_COLLECTIONS[1].title}
+                itemsCount={MOCK_COLLECTIONS[1].itemsCount}
+                onPress={() => {}}
+              />
+            </View>
+            <View className="min-h-28 min-w-0 flex-1">
+              <CollectionCard
+                emoji={MOCK_COLLECTIONS[2].emoji}
+                title={MOCK_COLLECTIONS[2].title}
+                itemsCount={MOCK_COLLECTIONS[2].itemsCount}
+                onPress={() => {}}
+              />
+            </View>
+          </View>
+          {/* 3行目: Tech + Learning */}
+          <View className="flex-row gap-2">
+            <View className="min-h-28 min-w-0 flex-1">
+              <CollectionCard
+                emoji={MOCK_COLLECTIONS[3].emoji}
+                title={MOCK_COLLECTIONS[3].title}
+                itemsCount={MOCK_COLLECTIONS[3].itemsCount}
+                onPress={() => {}}
+              />
+            </View>
+            <View className="min-h-28 min-w-0 flex-1">
+              <CollectionCard
+                emoji={MOCK_COLLECTIONS[4].emoji}
+                title={MOCK_COLLECTIONS[4].title}
+                itemsCount={MOCK_COLLECTIONS[4].itemsCount}
+                onPress={() => {}}
+              />
+            </View>
+          </View>
+          {/* New Collection: 細い1列ライン */}
+          <Pressable
+            onPress={presentCollectionCreateModal}
+            className="flex-row items-center justify-center gap-2 rounded-xl border border-dashed border-slate-300 bg-slate-50/50 py-3 active:bg-slate-100"
+            style={CARD_STYLE}
+            accessibilityRole="button"
+            accessibilityLabel={t("links.overview.new_collection")}
+          >
+            <Plus size={20} color={colors.iconMuted} strokeWidth={2} />
+            <Text className="text-sm font-medium text-slate-600">
+              {t("links.overview.new_collection")}
+            </Text>
+          </Pressable>
         </View>
       </View>
+
+      <CollectionCreateModal
+        ref={collectionCreateModalRef}
+        onClose={dismissCollectionCreateModal}
+      />
 
       {/* 3. 要対応セクション */}
       <View className="gap-2">
@@ -214,13 +266,13 @@ export function LinksOverViewScreen() {
               onPress={() => {
                 /* TODO: リンク詳細へ遷移 */
               }}
-              className="flex-row items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-none active:bg-slate-50"
+              className="flex-row items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-none active:bg-slate-50"
               style={CARD_STYLE}
               accessibilityRole="button"
               accessibilityLabel={`${link.title}, added ${link.daysAgo} days ago, view detail`}
             >
               <View
-                className="items-center justify-center overflow-hidden rounded-full bg-slate-50"
+                className="items-center justify-center overflow-hidden rounded-lg bg-slate-50"
                 style={{ width: THUMBNAIL_WIDTH, height: THUMBNAIL_SIZE }}
               >
                 <Link2

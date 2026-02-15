@@ -22,6 +22,17 @@ import { useOpenLink } from "../hooks/useOpenLink";
 import { shareLink } from "../utils/share";
 import { getStatusStyle } from "../utils/statusStyles";
 
+import { CollectionCreateModal } from "./CollectionCreateModal";
+
+/** モック: 全コレクション（API未実装のため） */
+const MOCK_COLLECTIONS = [
+  { id: "1", emoji: "📚", title: "Read Soon" },
+  { id: "2", emoji: "🔬", title: "Tech" },
+  { id: "3", emoji: "🎨", title: "Design" },
+  { id: "4", emoji: "💼", title: "Work" },
+  { id: "5", emoji: "💡", title: "Ideas" },
+] as const;
+
 interface LinkDetailScreenProps {
   linkId: string;
 }
@@ -43,8 +54,30 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
     present: presentStatusModal,
     dismiss: dismissStatusModal,
   } = useBottomSheetModal();
+  const {
+    ref: collectionCreateModalRef,
+    present: presentCollectionCreateModal,
+    dismiss: dismissCollectionCreateModal,
+  } = useBottomSheetModal();
 
   const isDone = link?.status === "done";
+
+  /** このリンクが属するコレクションID（タップでトグル、API未実装のためローカル状態） */
+  const [linkedCollectionIds, setLinkedCollectionIds] = useState<Set<string>>(
+    () => new Set(["1", "2"]),
+  );
+
+  const handleToggleCollection = useCallback((collectionId: string) => {
+    setLinkedCollectionIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(collectionId)) {
+        next.delete(collectionId);
+      } else {
+        next.add(collectionId);
+      }
+      return next;
+    });
+  }, []);
 
   const handleBack = useCallback(() => {
     router.back();
@@ -268,31 +301,25 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
               </View>
             </View>
 
-            {/* collections */}
+            {/* Collections: 全コレクションを表示、紐づいているものはactive、タップでトグル */}
             <Text className="mb-2 text-sm font-semibold uppercase tracking-wide text-mainDark">
-              Collections
+              {t("links.detail.collections_label")}
             </Text>
             <View className="mb-6 flex-row flex-wrap gap-2">
-              {[
-                { emoji: "📚", title: "Read Soon" },
-                { emoji: "🔬", title: "Tech" },
-                { emoji: "🎨", title: "Design" },
-              ].map((col) => (
+              {MOCK_COLLECTIONS.map((col) => (
                 <CollectionChip
-                  key={col.title}
+                  key={col.id}
                   emoji={col.emoji}
                   title={col.title}
-                  onPress={() => {
-                    /* TODO: コレクション詳細へ遷移 */
-                  }}
+                  selected={linkedCollectionIds.has(col.id)}
+                  onPress={() => handleToggleCollection(col.id)}
+                  accessibilityHint={t("links.detail.collections_tap_hint")}
                 />
               ))}
               <CollectionChip
                 variant="add"
-                title="Add to collection"
-                onPress={() => {
-                  /* TODO: コレクション追加モーダル */
-                }}
+                title={t("links.detail.create_new_collection")}
+                onPress={presentCollectionCreateModal}
               />
             </View>
           </View>
@@ -316,6 +343,12 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
         ref={statusModalRef}
         link={link}
         onClose={dismissStatusModal}
+      />
+
+      {/* コレクション作成モーダル（Add チップから） */}
+      <CollectionCreateModal
+        ref={collectionCreateModalRef}
+        onClose={dismissCollectionCreateModal}
       />
     </>
   );
