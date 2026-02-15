@@ -184,7 +184,7 @@ useCreateLink を拡張するか、LinkCreateModal 内で useCreateLink と useA
 
 ## 実装順序と依存関係
 
-```
+```text
 共通基盤 ✅
     ↓
 機能1: コレクション作成

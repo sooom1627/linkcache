@@ -1,24 +1,6 @@
 import { z } from "zod";
 
 /**
- * コレクション作成APIのパラメータ
- */
-export interface CreateCollectionParams {
-  name: string;
-  description?: string | null;
-  emoji?: string | null;
-}
-
-/**
- * コレクション更新APIのパラメータ
- */
-export interface UpdateCollectionParams {
-  name?: string;
-  description?: string | null;
-  emoji?: string | null;
-}
-
-/**
  * コレクション作成のバリデーションスキーマ
  */
 export const createCollectionSchema = z.object({
@@ -28,7 +10,17 @@ export const createCollectionSchema = z.object({
 });
 
 /**
+ * コレクション作成APIのパラメータ
+ */
+export type CreateCollectionParams = z.infer<typeof createCollectionSchema>;
+
+/**
  * コレクション更新のバリデーションスキーマ
  * createCollectionSchema の全フィールドをオプションにしたもの
  */
 export const updateCollectionSchema = createCollectionSchema.partial();
+
+/**
+ * コレクション更新APIのパラメータ
+ */
+export type UpdateCollectionParams = z.infer<typeof updateCollectionSchema>;
