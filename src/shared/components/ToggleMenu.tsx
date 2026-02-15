@@ -58,7 +58,7 @@ export interface ToggleMenuProps {
   expandOrigin?: ToggleMenuExpandOrigin;
   /** BlurViewのtint（デフォルト: "systemMaterial"） */
   blurTint?: "light" | "dark" | "default" | "systemMaterial";
-  /** BlurViewのintensity（デフォルト: 20） */
+  /** BlurViewのintensity（デフォルト: 50） */
   blurIntensity?: number;
 }
 

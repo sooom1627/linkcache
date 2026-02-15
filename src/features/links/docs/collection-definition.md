@@ -132,6 +132,7 @@
 │ - user_id (FK)  │
 │ - name          │
 │ - description   │
+│ - emoji         │
 │ - created_at    │
 │ - updated_at    │
 └────────┬────────┘
@@ -454,6 +455,7 @@ import type { Collection, CollectionLink } from "@features/links/types";
 export async function createCollection(params: {
   name: string;
   description?: string;
+  emoji?: string;
 }): Promise<Collection>;
 
 // コレクション一覧取得
@@ -465,7 +467,7 @@ export async function getCollection(id: string): Promise<Collection>;
 // コレクション更新
 export async function updateCollection(
   id: string,
-  params: { name?: string; description?: string },
+  params: { name?: string; description?: string; emoji?: string },
 ): Promise<Collection>;
 
 // コレクション削除
@@ -500,11 +502,13 @@ export async function getCollectionLinks(
 export interface CreateCollectionParams {
   name: string;
   description?: string;
+  emoji?: string;
 }
 
 export interface UpdateCollectionParams {
   name?: string;
   description?: string;
+  emoji?: string;
 }
 
 // Zodスキーマ
