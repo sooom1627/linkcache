@@ -224,7 +224,7 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
             <Text className="mb-2 text-sm font-semibold uppercase tracking-wide text-mainDark">
               {t("links.detail.status_label")}
             </Text>
-            <View className="mb-6 rounded-2xl border border-border bg-white p-4">
+            <View className="mb-6 rounded-2xl bg-white p-4">
               {/* 現在のステータス */}
               <View className="mb-3 flex-row items-center gap-2">
                 {isDone ? (
@@ -286,7 +286,7 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
               ].map((col) => (
                 <Pressable
                   key={col.title}
-                  className="flex-row items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 active:scale-[0.98] active:opacity-90"
+                  className="flex-row items-center gap-3 rounded-xl  bg-white p-3 active:scale-[0.98] active:opacity-90"
                   accessibilityRole="button"
                   accessibilityLabel={`Collection: ${col.title}`}
                 >
