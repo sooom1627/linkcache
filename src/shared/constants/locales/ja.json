@@ -1,51 +1,52 @@
 {
-  "welcome_message": "ようこそ、アプリへ！",
   "auth_messages": {
     "sign_in_messages": {
-      "title": "おかえりなさい！👋",
-      "subtitle": "新規登録はこちら",
+      "title": "おかえり！👋",
+      "subtitle": "はじめての方はこちら",
       "link": "/create-account",
       "linkText": "新規登録",
       "buttonTitle": "ログイン",
-      "failed_message_title": "ログインに失敗しました",
-      "failed_message_description": "メールアドレスまたはパスワードが間違っています。再度お試しください。"
+      "failed_message_title": "ログインできませんでした",
+      "failed_message_description": "メールアドレスかパスワードが違うみたいです。もう一度試してみてください！"
     },
     "create_account_messages": {
-      "title": "ようこそ、Cacheへ! 🎉",
-      "subtitle": "既にアカウントをお持ちですか？",
+      "title": "ようこそ、Cacheへ！🎉",
+      "subtitle": "すでにアカウントをお持ちの方はこちら",
       "link": "/sign-in",
       "linkText": "ログイン",
       "buttonTitle": "新規登録",
-      "failed_message_title": "新規登録に失敗しました",
-      "failed_message_default": "新規登録に失敗しました。再度お試しください。",
-      "failed_message_already_registered": "メールアドレスがすでに登録されています。別のメールアドレスを使用してください。"
+      "failed_message_title": "うまくいきませんでした",
+      "failed_message_default": "アカウントの作成に失敗しました。もう一度やってみましょう！",
+      "failed_message_already_registered": "このメールアドレスはすでに使われているようです。別のアドレスで試してみてください！"
     },
     "auth_form_messages": {
       "email_placeholder": "メールアドレス",
       "password_placeholder": "パスワード",
       "error_messages": {
-        "email_required": "メールアドレスは必須です",
-        "email_invalid": "有効なメールアドレスを入力してください",
-        "password_required": "パスワードは必須です",
-        "password_min_length": "パスワードは8文字以上である必要があります",
-        "password_max_length": "パスワードが長すぎます"
+        "email_required": "メールアドレスを入力してください",
+        "email_invalid": "メールアドレスの形式が正しくないようです",
+        "password_required": "パスワードを入力してください",
+        "password_min_length": "8文字以上で設定してください",
+        "password_max_length": "パスワードが長すぎます！"
       }
     }
   },
   "users": {
     "user_card": {
-      "permission_required": "権限が必要です",
-      "please_allow_access_to_photo_library": "写真ライブラリへのアクセスを許可してください。",
-      "please_allow_access_to_camera": "カメラへのアクセスを許可してください。",
+      "permission_required": "許可が必要です",
+      "please_allow_access_to_photo_library": "アバター設定のため、写真ライブラリへのアクセスを許可してください。",
+      "please_allow_access_to_camera": "写真を撮るために、カメラへのアクセスを許可してください。",
       "edit_profile": "プロフィールを編集",
       "cancel": "キャンセル",
       "take_photo": "写真を撮る",
-      "choose_from_library": "ライブラリから選択"
+      "choose_from_library": "ライブラリから選ぶ",
+      "upload_avatar": "アバターを変更",
+      "choose_a_photo_source": "写真をどこから選びますか？"
     },
     "setting_modal": {
       "title": "設定",
       "account_title": "アカウント",
-      "information_title": "アプリ情報",
+      "information_title": "このアプリについて",
       "menu_items": {
         "password": "パスワード",
         "timezone_language": "タイムゾーン & 言語",
@@ -57,121 +58,114 @@
       "profile_edit": {
         "title": "プロフィールを編集",
         "user_id": "ユーザーID",
-        "user_id_placeholder": "ユーザーID (4-32文字)",
+        "user_id_placeholder": "ユーザーID（4〜32文字）",
         "username": "ユーザー名",
-        "username_placeholder": "ユーザー名 (4-32文字)",
-        "no_changes": "変更がありません",
-        "update_profile": "プロフィールを更新",
+        "username_placeholder": "ユーザー名（4〜32文字）",
+        "no_changes": "変更はありません",
+        "update_profile": "変更を保存",
         "form_validation_messages": {
-          "checking_availability": "利用可能かどうかを確認中...",
-          "error_checking_availability": "利用可能かどうかの確認に失敗しました",
-          "available": "✓ 利用可能",
-          "already_taken": "✗ 既に使用されています"
+          "checking_availability": "使えるか確認中...",
+          "error_checking_availability": "確認できませんでした",
+          "available": "✓ 使えます",
+          "already_taken": "✗ すでに使われています"
         },
         "error_messages": {
-          "user_id_required": "ユーザーIDは必須です",
-          "user_id_invalid": "有効なユーザーIDを入力してください",
-          "username_required": "ユーザー名は必須です",
-          "username_invalid": "有効なユーザー名を入力してください",
-          "user_id_min_length": "ユーザーIDは4文字以上である必要があります",
-          "user_id_max_length": "ユーザーIDは32文字以内である必要があります",
-          "username_min_length": "ユーザー名は4文字以上である必要があります",
-          "username_max_length": "ユーザー名は32文字以内である必要があります",
-          "user_id_regex": "ユーザーIDは英数字とアンダースコアのみ使用できます"
+          "user_id_required": "ユーザーIDを入力してください",
+          "user_id_invalid": "このユーザーIDは使えません",
+          "username_required": "ユーザー名を入力してください",
+          "username_invalid": "このユーザー名は使えません",
+          "user_id_min_length": "ユーザーIDは4文字以上にしてください",
+          "user_id_max_length": "ユーザーIDは32文字以内にしてください",
+          "username_min_length": "ユーザー名は4文字以上にしてください",
+          "username_max_length": "ユーザー名は32文字以内にしてください",
+          "user_id_regex": "使えるのは英数字とアンダースコアだけです"
         },
         "callback_messages": {
-          "success_title": "更新完了",
+          "success_title": "いい感じ！",
           "success_message": "プロフィールを更新しました",
-          "error_title": "更新失敗",
-          "error_message": "プロフィールを更新できませんでした。再度お試しください。"
+          "error_title": "保存できませんでした",
+          "error_message": "うまくいきませんでした。もう一度やってみてください！"
         }
       },
       "locale_setting": {
         "title": "タイムゾーン & 言語",
         "timezone": "タイムゾーン",
-        "timezone_info": "タイムゾーンはデバイスの設定に従います",
+        "timezone_info": "お使いのデバイスの設定に合わせています",
         "language": "言語",
-        "error_title": "エラー",
-        "error_message": "言語を変更できませんでした。再度お試しください。"
+        "error_title": "おっと",
+        "error_message": "言語を切り替えられませんでした。もう一度お試しください。"
       }
     }
   },
   "links": {
     "headerTitle": "リンク概要",
-    "subtitle": "リンクを整理しましょう",
+    "subtitle": "あなたのリンク、ここにまとめて",
     "create": {
       "title": "リンクを追加",
       "add_button": "リンクを追加",
-      "url_placeholder": "URLを入力",
+      "url_placeholder": "URLを貼り付けてね",
       "submit_button": "リンクを保存",
       "saving": "保存中...",
       "error_messages": {
-        "url_required": "URLは必須です",
-        "url_invalid": "有効なURLを入力してください"
+        "url_required": "URLを入力してください！",
+        "url_invalid": "うーん、正しいURLではないみたいです"
       },
       "callback_messages": {
-        "success_title": "リンクを保存しました",
-        "success_message": "リンクがインボックスに追加されました",
-        "error_title": "保存に失敗しました",
-        "error_message": "リンクを保存できませんでした。再度お試しください。"
+        "success_title": "保存しました！",
+        "success_message": "リンクをインボックスに追加しました",
+        "error_title": "保存できませんでした",
+        "error_message": "うまくいきませんでした。もう一度やってみましょう！"
       }
     },
     "paste": {
-      "empty_description": "クリップボードからリンクを貼り付けてください",
+      "empty_description": "クリップボードからリンクを貼り付けてスタート！",
       "paste_button": "クリップボードから貼り付け",
-      "loading": "リンクを読み込み中...",
-      "url_label": "URL",
+      "loading": "リンク情報を取得中...",
       "no_title": "タイトルなし",
-      "no_ogp_warning": "プレビュー情報を取得できませんでしたが、リンクは保存できます",
+      "no_ogp_warning": "プレビューは取得できませんでしたが、保存はできます",
       "invalid_url_title": "無効なURL",
-      "invalid_url_description": "有効なURLを貼り付けてください",
+      "invalid_url_description": "正しいURLではないみたいです",
       "try_again": "やり直す",
       "clear_button": "クリア",
       "change_link": "変更",
-      "error_clipboard_empty": "クリップボードが空です",
-      "error_invalid_url": "正しいURLを検出できませんでした。ブラウザや他のアプリでコピーして、再度試してください。",
-      "error_clipboard_read_failed": "クリップボードの読み取りに失敗しました"
+      "error_clipboard_empty": "クリップボードが空です — まずURLをコピーしてね！",
+      "error_invalid_url": "URLが見つかりませんでした。ブラウザや他のアプリでコピーしてから、もう一度試してみてください！",
+      "error_clipboard_read_failed": "クリップボードを読み取れませんでした"
     },
     "filter": {
       "title": "フィルター",
-      "status": "何を見たいですか？",
-      "read_status": "既に読んだリンクを見たい？",
+      "status": "何をお探しですか？",
+      "read_status": "既読状態",
       "reset": "フィルターをクリア",
       "options": {
         "all": "すべて",
-        "new": "新しいリンク",
-        "read_soon": "すぐ読むリンク",
-        "stock": "ストックリンク",
-        "done": "完了リンク",
-        "unread": "未読のリンク",
-        "read": "既読のリンク"
+        "new": "新着",
+        "read_soon": "あとで読む",
+        "stock": "ストック",
+        "done": "完了",
+        "unread": "まだ読んでない",
+        "read": "読んだ"
       }
     },
     "list": {
-      "empty_title": "リンクがまだありません",
-      "empty_description": "リンクを保存してここに表示しましょう",
+      "empty_title": "まだリンクがありません",
+      "empty_description": "最初のリンクを保存すると、ここに表示されます！",
       "filter_empty_title": "該当するリンクがありません",
-      "filter_empty_description": "フィルターを調整して、他のリンクを表示してみましょう"
-    },
-    "header": {
-      "title": "Link List",
-      "subtitle": "保存件数：{{count}}件"
+      "filter_empty_description": "フィルターを調整して、探しているものを見つけましょう"
     },
     "card": {
       "open_link_label": "リンクを開く",
-      "open_link_hint": "ブラウザでリンクを開きます",
+      "open_link_hint": "ブラウザで開きます",
       "action_modal": {
-        "title": "このリンクを読みましたか？",
-        "status_section": "ステータス",
-        "read_status_section": "既読状態",
+        "title": "このリンク、読みましたか？",
         "mark_as_read": "既読にする",
         "mark_as_unread": "未読に戻す",
         "mode_label": "モード:",
         "current_mode": "現在のモード: {{status}}",
-        "tap_to_change": "タップしてモードを変更",
+        "tap_to_change": "タップしてモードを切り替え",
         "status": {
-          "new": "新規",
-          "read_soon": "すぐ読む",
+          "new": "新着",
+          "read_soon": "あとで読む",
           "stock": "ストック",
           "done": "完了",
           "read": "既読"
@@ -179,120 +173,116 @@
       }
     },
     "dashboard": {
-      "add_new_link": "リンクを追加",
-      "add_new_link_hint": "ブラウザや他のアプリでコピーして、リンク追加ボタンを押下",
-      "unsorted_links": "未整理リンク",
-      "start_triage": "整理を開始",
-      "all_caught_up": "すべて整理済み",
-      "no_pending_links": "保留中のリンクはありません",
-      "read_week": "週間読了",
-      "all_links": "全リンク",
+      "unsorted_links": "未整理のリンク",
+      "start_triage": "整理しよう！",
+      "all_caught_up": "全部片付いた！",
+      "no_pending_links": "整理するリンクはありません — お見事！",
+      "read_week": "今週の読了",
+      "all_links": "すべてのリンク",
       "tabs": {
-        "read_soon": "Read Soon",
-        "latest": "Latest Added"
+        "read_soon": "あとで読む",
+        "latest": "最近追加"
       },
       "view_all": "すべて表示",
-      "error_load_failed": "リンクの読み込みに失敗しました",
+      "error_load_failed": "リンクを読み込めませんでした",
       "empty_read_soon": {
-        "title": "全て読んでいます！🎉",
-        "description": "新しくTriageしましょう！",
-        "go_to_triage": "整理を開始"
+        "title": "全部読みました！🎉",
+        "description": "新しいリンクを整理しましょう！",
+        "go_to_triage": "整理をはじめる"
       }
     },
     "swipeTriage": {
       "loading": "読み込み中...",
-      "noPendingLinks": "🎉 保留中のリンクはありません！",
-      "allCaughtUp": "すべて整理済み！",
-      "allDone": "🎉 完了！",
-      "triagedAll": "すべてのリンクを整理しました！",
+      "noPendingLinks": "🎉 整理するものはありません！",
+      "allCaughtUp": "全部片付きました！",
+      "allDone": "🎉 お見事！",
+      "triagedAll": "すべてのリンクの整理が完了しました！",
       "startAgain": "もう一度",
       "remaining": "件残り",
-      "loadingMore": "（追加読み込み中...）",
+      "loadingMore": "（もっと読み込み中...）",
       "undo": "元に戻す"
     },
     "overview": {
       "status": "ステータス",
       "view_all": "すべて表示",
-      "view_all_links": "すべてのリンクを表示",
-      "forgotten_links": "忘れられたリンク",
+      "view_all_links": "すべてのリンクを見る",
+      "forgotten_links": "埋もれたお宝",
       "added_days_ago": "{{daysAgo}}日前に追加",
-      "un_collectioned": "コレクションなし",
-      "un_collectioned_description": "コレクション未所属リンク",
-      "un_collectioned_todo": "TODO: Phase 3 で実装予定",
-      "new_collection": "新規コレクション",
+      "un_collectioned": "未分類",
+      "un_collectioned_description": "どのコレクションにも入っていないリンク",
+      "un_collectioned_todo": "未分類のリンクがここに表示されます",
+      "new_collection": "新しいコレクション",
       "collections_section": "コレクション",
-      "view_all_collections": "すべて表示"
+      "view_all_collections": "すべてのコレクションを見る"
     },
     "collection_list": {
       "title": "コレクション",
       "my_collections": "マイコレクション",
-      "empty_title": "コレクションがまだありません",
-      "empty_description": "新規コレクションを作成して、リンクを整理しましょう"
+      "empty_title": "コレクションはまだありません",
+      "empty_description": "最初のコレクションを作って、リンクを整理しましょう！"
     },
     "collection_detail": {
-      "empty_title": "このコレクションにはリンクがありません",
-      "empty_description": "リンク詳細画面からコレクションに追加できます",
+      "empty_title": "このコレクションはまだ空です",
+      "empty_description": "リンク詳細画面から追加できます！",
       "items_count": "件",
       "not_found": "コレクションが見つかりません",
       "header_edit": "編集",
       "header_delete": "削除",
-      "header_more_options": "その他のオプション",
-      "edit_coming_soon": "編集機能は近日公開予定です。",
+      "header_more_options": "その他",
       "delete_confirm": {
         "title": "コレクションを削除",
-        "message": "このコレクションを削除してもよろしいですか？リンクは削除されません。",
-        "cancel": "キャンセル",
-        "confirm": "削除"
+        "message": "このコレクションを削除しますか？リンク自体は残るのでご安心を。",
+        "cancel": "やめておく",
+        "confirm": "削除する"
       }
     },
     "collection_create": {
-      "title": "新規コレクション",
+      "title": "新しいコレクション",
       "name_label": "名前",
       "name_placeholder": "例: 仕事, デザイン, テック",
-      "emoji_label": "絵文字（任意）",
-      "emoji_placeholder": "例: 📚",
+      "emoji_label": "絵文字（お好みで）",
       "submit": "コレクションを作成"
     },
     "collection_edit": {
       "title": "コレクションを編集",
       "name_label": "名前",
       "name_placeholder": "例: 仕事, デザイン, テック",
-      "emoji_label": "絵文字（任意）",
-      "emoji_placeholder": "例: 📚",
+      "emoji_label": "絵文字（お好みで）",
       "submit": "保存"
     },
     "detail": {
-      "title": "リンク詳細",
       "open_link": "リンクを開く",
-      "change_status": "ステータスを変更",
       "delete_link": "削除",
       "mark_as_read": "既読にする",
       "mark_as_unread": "未読に戻す",
       "share": "共有",
-      "more_options": "その他のオプション",
-      "created_at": "作成日時",
-      "triaged_at": "トリアージ日時",
-      "read_at": "既読日時",
+      "more_options": "その他",
+      "created_at": "保存日",
+      "triaged_at": "整理日",
+      "read_at": "既読日",
       "status_label": "ステータス",
       "collections_label": "コレクション",
       "collections_tap_hint": "タップで追加・解除",
-      "create_new_collection": "新規コレクションを作成",
-      "no_description": "説明文はありません",
+      "create_new_collection": "新しいコレクションを作成",
       "loading": "読み込み中...",
       "error": "エラーが発生しました",
-      "not_read_yet": "未読",
+      "not_read_yet": "まだ読んでいません",
       "delete_confirm": {
         "title": "リンクを削除",
-        "message": "このリンクを削除してもよろしいですか？",
-        "description": "この操作は取り消せません。",
-        "cancel": "キャンセル",
+        "message": "本当に削除しますか？この操作は取り消せません。",
+        "cancel": "やめておく",
         "confirm": "削除する"
+      },
+      "delete_error": {
+        "title": "削除できませんでした",
+        "message": "うまくいきませんでした。もう一度お試しください。"
       }
     }
   },
   "common": {
     "back": "戻る",
-    "retry": "再試行",
-    "error_title": "エラーが発生しました"
+    "ok": "OK",
+    "retry": "もう一度",
+    "error_title": "問題が発生しました"
   }
 }
