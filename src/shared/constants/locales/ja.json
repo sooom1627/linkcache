@@ -97,6 +97,8 @@
     }
   },
   "links": {
+    "headerTitle": "リンク概要",
+    "subtitle": "リンクを整理しましょう",
     "create": {
       "title": "リンクを追加",
       "add_button": "リンクを追加",

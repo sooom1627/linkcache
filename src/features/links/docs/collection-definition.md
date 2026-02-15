@@ -3,7 +3,10 @@
 > **最終更新**: 2026年2月10日  
 > **確認方法**: Supabase MCP経由で実際のDB構造を確認
 >
-> **関連**: [Supabase Collections DB 設定（MCP検証済み）](./collections-supabase-db-configuration.md) - 現在のDB状態の簡易リファレンス
+> **関連**:
+>
+> - [Supabase Collections DB 設定（MCP検証済み）](./collections-supabase-db-configuration.md) - 現在のDB状態の簡易リファレンス
+> - [Collections UI 不足洗い出し](./collections-ui-gap-analysis.md) - 画面・コンポーネントの実装状況（API 含まず）
 
 ## 📋 目次
 
@@ -32,6 +35,7 @@
 | `user_id`     | `uuid`        | NO       | -                   | ユーザーID（外部キー: `users.id`） |
 | `name`        | `text`        | NO       | -                   | コレクション名（必須）             |
 | `description` | `text`        | YES      | -                   | 説明文（オプション）               |
+| `emoji`       | `text`        | YES      | -                   | 表示用絵文字（オプション、例: 📚） |
 | `created_at`  | `timestamptz` | YES      | `now()`             | 作成日時（自動設定）               |
 | `updated_at`  | `timestamptz` | YES      | `now()`             | 更新日時（自動設定）               |
 
@@ -189,6 +193,7 @@ type Collection = {
   user_id: string; // UUID (users.idへの外部キー)
   name: string; // 必須
   description: string | null; // オプション
+  emoji: string | null; // オプション（表示用絵文字、例: 📚）
   created_at: string | null; // ISO8601形式のタイムスタンプ
   updated_at: string | null; // ISO8601形式のタイムスタンプ
 };

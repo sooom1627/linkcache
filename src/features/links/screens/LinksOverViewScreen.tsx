@@ -257,7 +257,7 @@ export function LinksOverViewScreen() {
       {/* 3. 要対応セクション */}
       <View className="gap-2">
         <Text className="text-sm font-semibold uppercase tracking-wider text-slate-500">
-          Forgoten Links
+          Forgotten Links
         </Text>
         <View className="gap-1.5">
           {MOCK_NEED_ATTENTION.map((link, index) => (

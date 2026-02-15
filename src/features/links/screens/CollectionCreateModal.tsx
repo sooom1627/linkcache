@@ -74,7 +74,7 @@ export const CollectionCreateModal = forwardRef<
               {/* Emoji: アバター風（タップでピッカー） */}
               <Pressable
                 onPress={() => setIsEmojiPickerOpen(true)}
-                className={`size-16 items-center justify-center overflow-hidden rounded-full active:scale-[0.97] ${
+                className={`size-12 items-center justify-center overflow-hidden rounded-full active:scale-[0.97] ${
                   emoji
                     ? "bg-slate-100"
                     : "border-2 border-dashed border-slate-300 bg-slate-50"
@@ -100,7 +100,7 @@ export const CollectionCreateModal = forwardRef<
                   placeholderTextColor={colors.iconMuted}
                   maxLength={100}
                   autoCapitalize="words"
-                  className="py-2 text-lg font-medium text-slate-900"
+                  className="h-12 py-2 text-lg font-medium text-slate-900"
                   accessibilityLabel={t("links.collection_create.name_label")}
                 />
               </View>

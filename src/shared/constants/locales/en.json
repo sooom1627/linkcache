@@ -97,6 +97,8 @@
     }
   },
   "links": {
+    "headerTitle": "Links Overview",
+    "subtitle": "Organize your links",
     "create": {
       "title": "Add Link",
       "add_button": "Add Link",
