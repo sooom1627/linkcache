@@ -2,7 +2,10 @@
 
 > **最終更新**: 2026年2月15日  
 > **スコープ**: 画面・コンポーネント・ナビゲーションのみ（API・フックは含まない）  
-> **関連**: [Collection定義と利用状況の詳細整理](./collection-definition.md)
+> **関連**:
+>
+> - [Collection定義と利用状況の詳細整理](./collection-definition.md)
+> - [UIレイヤー リファクタリング案](./ui-refactoring-plan.md)（モック実装後の共通化・ベストプラクティス準拠）
 
 ## 変更履歴
 

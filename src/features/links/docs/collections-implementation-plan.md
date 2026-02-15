@@ -3,8 +3,10 @@
 > **最終更新**: 2026年2月15日  
 > **前提**: UIレイヤーは実装済み。本ドキュメントは API・hooks・types の統合実装を**機能単位**で整理する。  
 > **関連**:
+>
 > - [Collection定義と利用状況の詳細整理](./collection-definition.md)
 > - [Collections UI 不足洗い出し](./collections-ui-gap-analysis.md)
+> - [UIレイヤー リファクタリング案](./ui-refactoring-plan.md)
 
 ## 📋 目次
 
@@ -108,11 +110,11 @@ CREATE INDEX IF NOT EXISTS idx_collection_links_link_id ON collection_links(link
 
 **利用箇所**: CollectionCreateModal, LinkDetailScreen（「+ 新規コレクション」）
 
-| レイヤー | 内容 |
-| -------- | ---- |
-| **types** | `CreateCollectionParams`, `createCollectionSchema`（共通基盤） |
-| **api** | `createCollection.api.ts` - `supabase.from("collections").insert()` |
-| **hooks** | `useCreateCollection.ts` - `useMutation` |
+| レイヤー   | 内容                                                                                                          |
+| ---------- | ------------------------------------------------------------------------------------------------------------- |
+| **types**  | `CreateCollectionParams`, `createCollectionSchema`（共通基盤）                                                |
+| **api**    | `createCollection.api.ts` - `supabase.from("collections").insert()`                                           |
+| **hooks**  | `useCreateCollection.ts` - `useMutation`                                                                      |
 | **UI接続** | CollectionCreateModal の `handleSubmit` で `createCollection.mutate({ name, description, emoji })` を呼び出し |
 
 **API関数**:
@@ -120,8 +122,8 @@ CREATE INDEX IF NOT EXISTS idx_collection_links_link_id ON collection_links(link
 ```typescript
 // api/createCollection.api.ts
 export async function createCollection(
-  params: CreateCollectionParams
-): Promise<Collection>
+  params: CreateCollectionParams,
+): Promise<Collection>;
 ```
 
 **フック**:
@@ -132,7 +134,7 @@ export function useCreateCollection(): UseMutationResult<
   Collection,
   Error,
   CreateCollectionParams
->
+>;
 ```
 
 **onSuccess**: `queryClient.invalidateQueries({ queryKey: collectionQueryKeys.lists() })`、モーダルを閉じる
@@ -143,25 +145,25 @@ export function useCreateCollection(): UseMutationResult<
 
 **利用箇所**: CollectionListScreen, LinksOverViewScreen, CollectionsLane, LinkDetailScreen, LinkCreateModal
 
-| レイヤー | 内容 |
-| -------- | ---- |
-| **types** | 既存 `Collection` で十分。必要なら `CollectionWithCount` 等を拡張 |
-| **api** | `fetchCollections.api.ts` - `supabase.from("collections").select()` |
-| **hooks** | `useCollections.ts` - `useQuery` + `collectionQueryKeys.lists()` |
+| レイヤー   | 内容                                                                                                        |
+| ---------- | ----------------------------------------------------------------------------------------------------------- |
+| **types**  | 既存 `Collection` で十分。必要なら `CollectionWithCount` 等を拡張                                           |
+| **api**    | `fetchCollections.api.ts` - `supabase.from("collections").select()`                                         |
+| **hooks**  | `useCollections.ts` - `useQuery` + `collectionQueryKeys.lists()`                                            |
 | **UI接続** | CollectionListScreen, CollectionsLane, LinkDetailScreen の MOCK_COLLECTIONS → `useCollections()` に差し替え |
 
 **API関数**:
 
 ```typescript
 // api/fetchCollections.api.ts
-export async function fetchCollections(): Promise<Collection[]>
+export async function fetchCollections(): Promise<Collection[]>;
 ```
 
 **フック**:
 
 ```typescript
 // hooks/useCollections.ts
-export function useCollections(): UseQueryResult<Collection[], Error>
+export function useCollections(): UseQueryResult<Collection[], Error>;
 ```
 
 **キャッシュ無効化**: `createCollection`, `updateCollection`, `deleteCollection` 成功時に `collectionQueryKeys.lists()` を invalidate
@@ -172,11 +174,11 @@ export function useCollections(): UseQueryResult<Collection[], Error>
 
 **利用箇所**: CollectionEditModal（CollectionDetailScreen の Edit メニューから表示）
 
-| レイヤー | 内容 |
-| -------- | ---- |
-| **types** | `UpdateCollectionParams`, `updateCollectionSchema`（共通基盤） |
-| **api** | `updateCollection.api.ts` - `supabase.from("collections").update().eq()` |
-| **hooks** | `useUpdateCollection.ts` - `useMutation` |
+| レイヤー   | 内容                                                                                                        |
+| ---------- | ----------------------------------------------------------------------------------------------------------- |
+| **types**  | `UpdateCollectionParams`, `updateCollectionSchema`（共通基盤）                                              |
+| **api**    | `updateCollection.api.ts` - `supabase.from("collections").update().eq()`                                    |
+| **hooks**  | `useUpdateCollection.ts` - `useMutation`                                                                    |
 | **UI接続** | CollectionEditModal の `handleSubmit` で `updateCollection.mutate({ id: collectionId, params })` を呼び出し |
 
 **API関数**:
@@ -185,8 +187,8 @@ export function useCollections(): UseQueryResult<Collection[], Error>
 // api/updateCollection.api.ts
 export async function updateCollection(
   id: string,
-  params: UpdateCollectionParams
-): Promise<Collection>
+  params: UpdateCollectionParams,
+): Promise<Collection>;
 ```
 
 **フック**:
@@ -197,7 +199,7 @@ export function useUpdateCollection(): UseMutationResult<
   Collection,
   Error,
   { id: string; params: UpdateCollectionParams }
->
+>;
 ```
 
 **onSuccess**: `collectionQueryKeys.lists()` と `collectionQueryKeys.detail(id)` を invalidate、モーダルを閉じる
@@ -208,25 +210,25 @@ export function useUpdateCollection(): UseMutationResult<
 
 **利用箇所**: CollectionDetailScreen（Delete メニュー）、`app/(protected)/collections/[id].tsx`
 
-| レイヤー | 内容 |
-| -------- | ---- |
-| **types** | 追加不要 |
-| **api** | `deleteCollection.api.ts` - `supabase.from("collections").delete().eq()` |
-| **hooks** | `useDeleteCollection.ts` - `useMutation` |
+| レイヤー   | 内容                                                                                                                          |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| **types**  | 追加不要                                                                                                                      |
+| **api**    | `deleteCollection.api.ts` - `supabase.from("collections").delete().eq()`                                                      |
+| **hooks**  | `useDeleteCollection.ts` - `useMutation`                                                                                      |
 | **UI接続** | `collections/[id].tsx` の `handleDelete` 確認後、`deleteCollection.mutate(collectionId)` を呼び出し、成功時に `router.back()` |
 
 **API関数**:
 
 ```typescript
 // api/deleteCollection.api.ts
-export async function deleteCollection(id: string): Promise<void>
+export async function deleteCollection(id: string): Promise<void>;
 ```
 
 **フック**:
 
 ```typescript
 // hooks/useDeleteCollection.ts
-export function useDeleteCollection(): UseMutationResult<void, Error, string>
+export function useDeleteCollection(): UseMutationResult<void, Error, string>;
 ```
 
 **注意**: `collection_links` の CASCADE 削除が DB に設定されていない場合、先に `collection_links` を削除するか、DB に `ON DELETE CASCADE` を追加する必要あり。collection-definition.md の「削除時の動作」を確認。
@@ -237,25 +239,27 @@ export function useDeleteCollection(): UseMutationResult<void, Error, string>
 
 **利用箇所**: CollectionDetailScreen（ヘッダー表示用の name, emoji, itemsCount）
 
-| レイヤー | 内容 |
-| -------- | ---- |
-| **types** | 既存 `Collection` で十分。itemsCount が必要なら API で count を返すか、別クエリで取得 |
-| **api** | `getCollection.api.ts` - `supabase.from("collections").select().eq().single()` |
-| **hooks** | `useCollection.ts` - `useQuery` + `collectionQueryKeys.detail(id)` |
+| レイヤー   | 内容                                                                                                 |
+| ---------- | ---------------------------------------------------------------------------------------------------- |
+| **types**  | 既存 `Collection` で十分。itemsCount が必要なら API で count を返すか、別クエリで取得                |
+| **api**    | `getCollection.api.ts` - `supabase.from("collections").select().eq().single()`                       |
+| **hooks**  | `useCollection.ts` - `useQuery` + `collectionQueryKeys.detail(id)`                                   |
 | **UI接続** | CollectionDetailScreen の `mockCollections[collectionId]` → `useCollection(collectionId)` に差し替え |
 
 **API関数**:
 
 ```typescript
 // api/getCollection.api.ts
-export async function getCollection(id: string): Promise<Collection>
+export async function getCollection(id: string): Promise<Collection>;
 ```
 
 **フック**:
 
 ```typescript
 // hooks/useCollection.ts
-export function useCollection(id: string | undefined): UseQueryResult<Collection | null, Error>
+export function useCollection(
+  id: string | undefined,
+): UseQueryResult<Collection | null, Error>;
 ```
 
 **enabled**: `id != null && id !== ""`
@@ -266,11 +270,11 @@ export function useCollection(id: string | undefined): UseQueryResult<Collection
 
 **利用箇所**: CollectionDetailScreen（FlashList の data）
 
-| レイヤー | 内容 |
-| -------- | ---- |
-| **types** | 既存 `UserLink`（linkList.types）で十分。`collection_links` と `links` + `link_status` を JOIN して取得 |
-| **api** | `fetchCollectionLinks.api.ts` - `collection_links` と `links`, `link_status` を JOIN |
-| **hooks** | `useCollectionLinks.ts` - `useQuery` + `collectionQueryKeys.links(collectionId)` |
+| レイヤー   | 内容                                                                                                            |
+| ---------- | --------------------------------------------------------------------------------------------------------------- |
+| **types**  | 既存 `UserLink`（linkList.types）で十分。`collection_links` と `links` + `link_status` を JOIN して取得         |
+| **api**    | `fetchCollectionLinks.api.ts` - `collection_links` と `links`, `link_status` を JOIN                            |
+| **hooks**  | `useCollectionLinks.ts` - `useQuery` + `collectionQueryKeys.links(collectionId)`                                |
 | **UI接続** | CollectionDetailScreen の `MOCK_COLLECTION_LINKS[collectionId]` → `useCollectionLinks(collectionId)` に差し替え |
 
 **API関数**:
@@ -278,8 +282,8 @@ export function useCollection(id: string | undefined): UseQueryResult<Collection
 ```typescript
 // api/fetchCollectionLinks.api.ts
 export async function fetchCollectionLinks(
-  collectionId: string
-): Promise<UserLink[]>
+  collectionId: string,
+): Promise<UserLink[]>;
 ```
 
 **クエリ例**（Supabase）:
@@ -288,11 +292,13 @@ export async function fetchCollectionLinks(
 // collection_links 経由で links + link_status を取得
 const { data, error } = await supabase
   .from("collection_links")
-  .select(`
+  .select(
+    `
     link_id,
     links!inner(...),
     link_status!inner(...)
-  `)
+  `,
+  )
   .eq("collection_id", collectionId);
 // UserLink 形式に変換するヘルパーが必要
 ```
@@ -305,11 +311,11 @@ const { data, error } = await supabase
 
 **利用箇所**: LinkDetailScreen（CollectionChip タップで追加）, LinkCreateModal（保存時のコレクション選択）, Swipe UI（将来）
 
-| レイヤー | 内容 |
-| -------- | ---- |
-| **types** | `{ collectionId: string; linkId: string }` または個別引数 |
-| **api** | `addLinkToCollection.api.ts` - `supabase.from("collection_links").insert()` |
-| **hooks** | `useAddLinkToCollection.ts` - `useMutation` |
+| レイヤー   | 内容                                                                                      |
+| ---------- | ----------------------------------------------------------------------------------------- |
+| **types**  | `{ collectionId: string; linkId: string }` または個別引数                                 |
+| **api**    | `addLinkToCollection.api.ts` - `supabase.from("collection_links").insert()`               |
+| **hooks**  | `useAddLinkToCollection.ts` - `useMutation`                                               |
 | **UI接続** | LinkDetailScreen の `handleToggleCollection` で追加時、LinkCreateModal の保存時に呼び出し |
 
 **API関数**:
@@ -318,8 +324,8 @@ const { data, error } = await supabase
 // api/addLinkToCollection.api.ts
 export async function addLinkToCollection(
   collectionId: string,
-  linkId: string
-): Promise<CollectionLink>
+  linkId: string,
+): Promise<CollectionLink>;
 ```
 
 **フック**:
@@ -330,7 +336,7 @@ export function useAddLinkToCollection(): UseMutationResult<
   CollectionLink,
   Error,
   { collectionId: string; linkId: string }
->
+>;
 ```
 
 **onSuccess**: `collectionQueryKeys.links(collectionId)` と `linkQueryKeys.detail(linkId)` を invalidate。重複追加時はユニーク制約エラー → ユーザーに適切なフィードバック。
@@ -341,12 +347,12 @@ export function useAddLinkToCollection(): UseMutationResult<
 
 **利用箇所**: LinkDetailScreen（CollectionChip タップで解除）
 
-| レイヤー | 内容 |
-| -------- | ---- |
-| **types** | 追加不要 |
-| **api** | `removeLinkFromCollection.api.ts` - `supabase.from("collection_links").delete().eq().eq()` |
-| **hooks** | `useRemoveLinkFromCollection.ts` - `useMutation` |
-| **UI接続** | LinkDetailScreen の `handleToggleCollection` で削除時 |
+| レイヤー   | 内容                                                                                       |
+| ---------- | ------------------------------------------------------------------------------------------ |
+| **types**  | 追加不要                                                                                   |
+| **api**    | `removeLinkFromCollection.api.ts` - `supabase.from("collection_links").delete().eq().eq()` |
+| **hooks**  | `useRemoveLinkFromCollection.ts` - `useMutation`                                           |
+| **UI接続** | LinkDetailScreen の `handleToggleCollection` で削除時                                      |
 
 **API関数**:
 
@@ -354,8 +360,8 @@ export function useAddLinkToCollection(): UseMutationResult<
 // api/removeLinkFromCollection.api.ts
 export async function removeLinkFromCollection(
   collectionId: string,
-  linkId: string
-): Promise<void>
+  linkId: string,
+): Promise<void>;
 ```
 
 **フック**:
@@ -366,7 +372,7 @@ export function useRemoveLinkFromCollection(): UseMutationResult<
   void,
   Error,
   { collectionId: string; linkId: string }
->
+>;
 ```
 
 **onSuccess**: `collectionQueryKeys.links(collectionId)` と `linkQueryKeys.detail(linkId)` を invalidate
@@ -390,12 +396,12 @@ export function useRemoveLinkFromCollection(): UseMutationResult<
 
 **利用箇所**: LinkDetailScreen（このリンクが属するコレクションを表示・トグル）
 
-| レイヤー | 内容 |
-| -------- | ---- |
-| **types** | `Collection` の配列、または `{ collection: Collection; isLinked: boolean }[]` |
-| **api** | `fetchCollectionsForLink.api.ts` - `collection_links` と `collections` を JOIN、または `useCollections` + クライアント側フィルタ |
-| **hooks** | `useCollectionsForLink.ts` - `useCollections` と `useCollectionLinksByLink` を組み合わせるか、専用 API |
-| **UI接続** | LinkDetailScreen の `linkedCollectionIds` をサーバーデータに差し替え |
+| レイヤー   | 内容                                                                                                                             |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| **types**  | `Collection` の配列、または `{ collection: Collection; isLinked: boolean }[]`                                                    |
+| **api**    | `fetchCollectionsForLink.api.ts` - `collection_links` と `collections` を JOIN、または `useCollections` + クライアント側フィルタ |
+| **hooks**  | `useCollectionsForLink.ts` - `useCollections` と `useCollectionLinksByLink` を組み合わせるか、専用 API                           |
+| **UI接続** | LinkDetailScreen の `linkedCollectionIds` をサーバーデータに差し替え                                                             |
 
 **方針**: シンプルに `useCollections()` で全コレクションを取得し、`useCollectionLinksByLink(linkId)` でこのリンクが属するコレクションID一覧を取得。クライアントでマージして表示。または、`fetchCollectionsForLink(linkId)` で「全コレクション + 各コレクションにこのリンクが含まれるか」を返す API を用意。
 
@@ -465,14 +471,14 @@ export function useRemoveLinkFromCollection(): UseMutationResult<
 
 ## クイックリファレンス
 
-| 機能 | API | Hook | 主なUI |
-| ---- | --- | ---- | ------ |
-| 作成 | `createCollection` | `useCreateCollection` | CollectionCreateModal |
-| 一覧取得 | `fetchCollections` | `useCollections` | CollectionListScreen, CollectionsLane |
-| 編集 | `updateCollection` | `useUpdateCollection` | CollectionEditModal |
-| 削除 | `deleteCollection` | `useDeleteCollection` | collections/[id].tsx |
-| 詳細取得 | `getCollection` | `useCollection` | CollectionDetailScreen |
-| コレクション内リンク | `fetchCollectionLinks` | `useCollectionLinks` | CollectionDetailScreen |
-| リンク追加 | `addLinkToCollection` | `useAddLinkToCollection` | LinkDetailScreen, LinkCreateModal |
-| リンク削除 | `removeLinkFromCollection` | `useRemoveLinkFromCollection` | LinkDetailScreen |
-| リンク別コレクション | （useCollections + 専用取得） | `useCollectionsForLink` | LinkDetailScreen |
+| 機能                 | API                           | Hook                          | 主なUI                                |
+| -------------------- | ----------------------------- | ----------------------------- | ------------------------------------- |
+| 作成                 | `createCollection`            | `useCreateCollection`         | CollectionCreateModal                 |
+| 一覧取得             | `fetchCollections`            | `useCollections`              | CollectionListScreen, CollectionsLane |
+| 編集                 | `updateCollection`            | `useUpdateCollection`         | CollectionEditModal                   |
+| 削除                 | `deleteCollection`            | `useDeleteCollection`         | collections/[id].tsx                  |
+| 詳細取得             | `getCollection`               | `useCollection`               | CollectionDetailScreen                |
+| コレクション内リンク | `fetchCollectionLinks`        | `useCollectionLinks`          | CollectionDetailScreen                |
+| リンク追加           | `addLinkToCollection`         | `useAddLinkToCollection`      | LinkDetailScreen, LinkCreateModal     |
+| リンク削除           | `removeLinkFromCollection`    | `useRemoveLinkFromCollection` | LinkDetailScreen                      |
+| リンク別コレクション | （useCollections + 専用取得） | `useCollectionsForLink`       | LinkDetailScreen                      |
