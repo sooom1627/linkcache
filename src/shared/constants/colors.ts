@@ -85,10 +85,10 @@ const palette = {
   warning: "#f59e0b", // amber-500
   info: "#64748b", // slate-500（ブルーは使用しない）
 
-  // === 8. ステータス（triage） ===
-  statusNew: "#38bdf8", // sky-400
-  statusReadSoon: "#34d399", // emerald-400
-  statusStock: "#fbbf24", // amber-400
+  // === 8. ステータス（triage）落ち着いたトーン ===
+  statusNew: "#0284c7", // sky-600
+  statusReadSoon: "#059669", // emerald-600
+  statusStock: "#d97706", // amber-600
   statusDone: "#64748b", // slate-500（ニュートラルな完了表現）
   statusDefault: "#cbd5e1", // slate-300
 

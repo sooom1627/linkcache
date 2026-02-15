@@ -82,7 +82,7 @@ export function LinksOverViewScreen() {
   };
 
   return (
-    <View className="h-fit gap-4 pb-24">
+    <View className="h-fit gap-6 pb-36">
       {/* 1. Status（View All + 4件を2カラム） */}
       <View className="gap-2">
         <View className="flex-row items-center justify-between py-0.5">
@@ -121,7 +121,7 @@ export function LinksOverViewScreen() {
                       style={[
                         CARD_STYLE,
                         {
-                          backgroundColor: hexToRgba(item.color, 0.06),
+                          backgroundColor: hexToRgba(item.color, 0.04),
                           borderLeftWidth: 3,
                           borderLeftColor: item.color,
                         },
