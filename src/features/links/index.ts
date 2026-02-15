@@ -50,4 +50,4 @@ export { fetchUserLinks } from "./api/fetchLinks.api";
 export { updateLinkReadStatus } from "./api/updateLinkReadStatus.api";
 
 // Constants
-export { linkQueryKeys } from "./constants/queryKeys";
+export { collectionQueryKeys, linkQueryKeys } from "./constants/queryKeys";

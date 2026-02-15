@@ -90,7 +90,7 @@
 
 ### 3.1 実装済みルート
 
-```
+```text
 app/(protected)/
 ├── collections/
 │   ├── _layout.tsx

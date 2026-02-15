@@ -207,7 +207,7 @@ interface EmptyStateViewProps {
 
 ## 5. 実施順序と優先度
 
-```
+```text
 Phase 1.1: CollectionIdentityForm 抽出
     ↓
 Phase 1.2: EmptyStateView 共通化
@@ -225,7 +225,7 @@ Phase 2.2: カードスタイル定数集約（任意）
 
 ### 6.1 共通化の判断フロー
 
-```
+```text
 1. このUIは3箇所以上で使われるか？ → No: 共通化見送り
 2. 同一責務で明確に同じ構造か？ → Yes: 共通化検討
 3. 分割後に統合コンポーネントが必要になるか？ → Yes: 分割見送り
