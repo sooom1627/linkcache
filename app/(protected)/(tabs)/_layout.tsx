@@ -79,7 +79,7 @@ export default function TabsLayout() {
         </Animated.View>
         <TabList asChild={true}>
           <View
-            className="absolute z-50 flex-row items-center justify-between self-center rounded-full bg-white/90 p-2 py-1"
+            className="absolute z-50 flex-row items-center justify-between self-center rounded-full bg-white/90 p-2"
             style={dynamicTabBarStyle}
           >
             {tabs.slice(0, 2).map((tab) => {
@@ -99,7 +99,7 @@ export default function TabsLayout() {
                     >
                       <Icon
                         color={isActive ? "#000000" : "#9ca3af"}
-                        size={16}
+                        size={20}
                         strokeWidth={isActive ? 2 : 1.5}
                       />
                     </View>
@@ -135,7 +135,7 @@ export default function TabsLayout() {
                     >
                       <Icon
                         color={isActive ? "#000000" : "#9ca3af"}
-                        size={16}
+                        size={20}
                         strokeWidth={isActive ? 2 : 1.5}
                       />
                     </View>

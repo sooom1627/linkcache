@@ -13,6 +13,8 @@ export interface HeaderProps {
   title: string;
   subtitle: string;
   topComponent?: boolean;
+  /** 戻るボタン押下時のコールバック。topComponent=false 時に使用 */
+  onBackPress?: () => void;
 }
 const HEADER_HEIGHT = 64;
 
@@ -20,6 +22,7 @@ export default function Header({
   title = "Hello, User",
   subtitle = "Welcome to Cache",
   topComponent = true,
+  onBackPress,
 }: HeaderProps) {
   const { openModal } = useModal();
   const { data: profile } = useProfile();
@@ -49,14 +52,13 @@ export default function Header({
             />
             <View>
               <Text className="text-base text-slate-500">{subtitle}</Text>
-
               <Text className="text-xl font-bold text-slate-700">{title}</Text>
             </View>
           </View>
         ) : (
           <View className="flex-row items-center justify-start gap-4 px-4 py-2">
             <TouchableOpacity
-              onPress={() => router.back()}
+              onPress={onBackPress ?? (() => router.back())}
               className="rounded-full bg-slate-200 p-4"
               hitSlop={10}
               activeOpacity={0.8}

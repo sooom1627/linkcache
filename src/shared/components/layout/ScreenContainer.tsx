@@ -17,6 +17,7 @@ interface ScreenContainerProps {
   noPaddingBottom?: boolean;
   headerTitle?: string;
   topComponent?: boolean;
+  onBackPress?: () => void;
 }
 
 export function ScreenContainer({
@@ -27,6 +28,7 @@ export function ScreenContainer({
   centerContent = true,
   noPaddingBottom = false,
   topComponent = true,
+  onBackPress,
 }: ScreenContainerProps) {
   const paddingBottom = noPaddingBottom ? "" : "pb-28";
   const contentClassName = centerContent
@@ -40,6 +42,7 @@ export function ScreenContainer({
           title={headerTitle}
           subtitle={subtitle}
           topComponent={topComponent}
+          onBackPress={onBackPress}
         />
         <Animated.ScrollView
           className="flex-1 bg-slate-50"
@@ -61,6 +64,7 @@ export function ScreenContainer({
         title={headerTitle}
         subtitle={subtitle}
         topComponent={topComponent}
+        onBackPress={onBackPress}
       />
       <View className="flex-1 bg-slate-50">
         <View className={contentClassName}>{children}</View>

@@ -32,14 +32,14 @@ export function CollectionChip({
 
   const containerClassName = [
     "flex-row items-center gap-1.5 rounded-full border px-3 py-2 active:scale-[0.98]",
-    selected ? "border-accent bg-accent" : "border-border bg-surfaceMuted",
+    selected ? "border-accent bg-accent" : "border-border bg-white",
     isAdd && "border-dashed",
   ]
     .filter(Boolean)
     .join(" ");
 
   const textClassName = [
-    "text-xs font-semibold",
+    "text-sm font-semibold",
     selected ? "text-white" : isAdd ? "text-textMuted" : "text-mainDark",
   ]
     .filter(Boolean)

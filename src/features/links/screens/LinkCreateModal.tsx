@@ -157,37 +157,39 @@ export const LinkCreateModal = forwardRef<
           />
         </View>
 
-        {/* collections selector（仮UI: 選択のみ、保存時は未使用） */}
-        <View className="mt-6">
-          <Text className="text-sm font-semibold uppercase tracking-wide text-mainDark">
-            Select Collections
-          </Text>
-          <View className="mt-3 flex-row flex-wrap gap-2">
-            {MOCK_COLLECTIONS.map((col) => (
-              <CollectionChip
-                key={col.id}
-                emoji={col.emoji}
-                title={col.title}
-                selected={selectedCollectionIds.has(col.id)}
-                onPress={() => toggleCollection(col.id)}
-              />
-            ))}
-          </View>
-        </View>
-
-        {/* 保存ボタン（preview/noOgp状態でのみ表示） */}
+        {/* 保存メニュー */}
         {(status === "preview" || status === "noOgp") && (
-          <View className="mt-6">
-            <FormButton
-              title={
-                isPending
-                  ? t("links.create.saving")
-                  : t("links.create.submit_button")
-              }
-              onPress={handleSave}
-              disabled={isSubmitDisabled}
-            />
-          </View>
+          <>
+            {/* collections selector（仮UI: 選択のみ、保存時は未使用） */}
+            <View className="mt-6">
+              <Text className="text-sm font-semibold uppercase tracking-wide text-mainDark">
+                Select Collections
+              </Text>
+              <View className="mt-3 flex-row flex-wrap gap-2">
+                {MOCK_COLLECTIONS.map((col) => (
+                  <CollectionChip
+                    key={col.id}
+                    emoji={col.emoji}
+                    title={col.title}
+                    selected={selectedCollectionIds.has(col.id)}
+                    onPress={() => toggleCollection(col.id)}
+                  />
+                ))}
+              </View>
+            </View>
+            {/* 保存ボタン */}
+            <View className="mt-6">
+              <FormButton
+                title={
+                  isPending
+                    ? t("links.create.saving")
+                    : t("links.create.submit_button")
+                }
+                onPress={handleSave}
+                disabled={isSubmitDisabled}
+              />
+            </View>
+          </>
         )}
       </View>
     </ScrollableBottomSheetModal>

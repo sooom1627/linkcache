@@ -1,21 +1,16 @@
-import { useTranslation } from "react-i18next";
-
-import { LinkListScreen, useLinks } from "@/src/features/links";
+import { LinksOverViewScreen } from "@/src/features/links/screens/LinksOverViewScreen";
 import { ScreenContainer } from "@/src/shared/components/layout/ScreenContainer";
 
 export default function LinkList() {
-  const { t } = useTranslation();
-  const { totalCount } = useLinks();
-
   return (
     <ScreenContainer
-      scrollable={false}
+      scrollable={true}
       centerContent={false}
       noPaddingBottom
-      headerTitle={t("links.header.title")}
-      subtitle={t("links.header.subtitle", { count: totalCount })}
+      headerTitle={"Links Overview"}
+      subtitle={"Organize your links"}
     >
-      <LinkListScreen />
+      <LinksOverViewScreen />
     </ScreenContainer>
   );
 }
