@@ -10,7 +10,9 @@ import {
   CollectionDetailScreen,
   mockCollections,
 } from "@/src/features/links/screens/CollectionDetailScreen";
+import { CollectionEditModal } from "@/src/features/links/screens/CollectionEditModal";
 import { ScreenContainer } from "@/src/shared/components/layout/ScreenContainer";
+import { useBottomSheetModal } from "@/src/shared/hooks/useBottomSheetModal";
 
 /**
  * コレクション詳細ルート
@@ -21,15 +23,15 @@ export default function CollectionDetailRoute() {
   const params = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { t } = useTranslation();
+  const {
+    ref: editModalRef,
+    present: presentEditModal,
+    dismiss: dismissEditModal,
+  } = useBottomSheetModal();
 
   const handleEdit = useCallback(() => {
-    // TODO: CollectionEditModal 実装後にモーダルを表示
-    Alert.alert(
-      t("links.collection_detail.header_edit"),
-      t("links.collection_detail.edit_coming_soon"),
-      [{ text: "OK" }],
-    );
-  }, [t]);
+    presentEditModal();
+  }, [presentEditModal]);
 
   const handleDelete = useCallback(() => {
     Alert.alert(
@@ -99,6 +101,15 @@ export default function CollectionDetailRoute() {
         onEdit={handleEdit}
         onDelete={handleDelete}
       />
+      {collection ? (
+        <CollectionEditModal
+          ref={editModalRef}
+          collectionId={collection.id}
+          initialName={collection.title}
+          initialEmoji={collection.emoji}
+          onClose={dismissEditModal}
+        />
+      ) : null}
     </ScreenContainer>
   );
 }

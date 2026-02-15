@@ -425,7 +425,8 @@ import type { Collection, CollectionLink } from "@features/links/types";
 4. **UIコンポーネント** (`src/features/links/components/`)
    - ✅ `CollectionCard.tsx` - コレクションカード（href/onPress、Link 対応）
    - ✅ `CollectionChip.tsx` - コレクションチップ
-   - ❌ `CollectionForm.tsx` - コレクション作成・編集フォーム（CollectionCreateModal は作成用に存在）
+   - ✅ `CollectionCreateModal.tsx` - コレクション作成フォーム
+   - ✅ `CollectionEditModal.tsx` - コレクション編集フォーム（CollectionDetailScreen の Edit 押下で表示）
    - ❌ `CollectionLinkList.tsx` - コレクション内リンク一覧
    - ❌ `AddToCollectionModal.tsx` - リンクをコレクションに追加するモーダル
 

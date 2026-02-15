@@ -1,16 +1,15 @@
 import { ScrollView, Text, View } from "react-native";
 
+import { useRouter } from "expo-router";
+
 import { CollectionChip } from "../components/CollectionChip";
 
-/** 仮データ: 絵文字 + タイトル */
-const MOCK_COLLECTIONS = [
-  { emoji: "📚", title: "Read Soon" },
-  { emoji: "🔬", title: "Tech" },
-  { emoji: "🎨", title: "Design" },
-  { emoji: "💡", title: "Ideas" },
-] as const;
+import { mockCollections } from "./CollectionDetailScreen";
 
 export function CollectionsLane() {
+  const router = useRouter();
+  const collections = Object.values(mockCollections);
+
   return (
     <View>
       <Text className="mb-2 text-sm font-semibold uppercase tracking-wider text-textMuted">
@@ -21,14 +20,12 @@ export function CollectionsLane() {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ gap: 8, paddingRight: 16 }}
       >
-        {MOCK_COLLECTIONS.map((col) => (
+        {collections.map((col) => (
           <CollectionChip
-            key={col.title}
+            key={col.id}
             emoji={col.emoji}
             title={col.title}
-            onPress={() => {
-              /* TODO: コレクション詳細へ遷移 */
-            }}
+            onPress={() => router.push(`/collections/${col.id}`)}
           />
         ))}
       </ScrollView>

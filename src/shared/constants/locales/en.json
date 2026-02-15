@@ -247,6 +247,14 @@
       "emoji_placeholder": "e.g. 📚",
       "submit": "Create Collection"
     },
+    "collection_edit": {
+      "title": "Edit Collection",
+      "name_label": "Name",
+      "name_placeholder": "e.g. Work, Design, Tech",
+      "emoji_label": "Emoji (optional)",
+      "emoji_placeholder": "e.g. 📚",
+      "submit": "Save"
+    },
     "detail": {
       "title": "Link Details",
       "open_link": "Open Link",

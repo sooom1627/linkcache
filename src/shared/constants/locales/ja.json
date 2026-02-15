@@ -247,6 +247,14 @@
       "emoji_placeholder": "例: 📚",
       "submit": "コレクションを作成"
     },
+    "collection_edit": {
+      "title": "コレクションを編集",
+      "name_label": "名前",
+      "name_placeholder": "例: 仕事, デザイン, テック",
+      "emoji_label": "絵文字（任意）",
+      "emoji_placeholder": "例: 📚",
+      "submit": "保存"
+    },
     "detail": {
       "title": "リンク詳細",
       "open_link": "リンクを開く",
