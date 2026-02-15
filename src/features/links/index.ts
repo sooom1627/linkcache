@@ -23,6 +23,7 @@ export { LinkListLoadingFooter } from "./components/LinkListLoadingFooter";
 export { default as LinkPasteContainer } from "./components/LinkPasteContainer";
 
 // Screens
+export { CollectionListScreen } from "./screens/CollectionListScreen";
 export { LinkCreateModal } from "./screens/LinkCreateModal";
 export { LinkListScreen } from "./screens/LinkListScreen";
 

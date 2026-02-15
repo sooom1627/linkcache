@@ -1,6 +1,6 @@
 # Collection定義と利用状況の詳細整理
 
-> **最終更新**: 2026年2月10日  
+> **最終更新**: 2026年2月15日  
 > **確認方法**: Supabase MCP経由で実際のDB構造を確認
 >
 > **関連**:
@@ -423,15 +423,15 @@ import type { Collection, CollectionLink } from "@features/links/types";
    - ❌ `useRemoveLinkFromCollection.ts` - リンク削除フック
 
 4. **UIコンポーネント** (`src/features/links/components/`)
-   - ❌ `CollectionList.tsx` - コレクション一覧表示
-   - ❌ `CollectionCard.tsx` - コレクションカード
-   - ❌ `CollectionForm.tsx` - コレクション作成・編集フォーム
+   - ✅ `CollectionCard.tsx` - コレクションカード（href/onPress、Link 対応）
+   - ✅ `CollectionChip.tsx` - コレクションチップ
+   - ❌ `CollectionForm.tsx` - コレクション作成・編集フォーム（CollectionCreateModal は作成用に存在）
    - ❌ `CollectionLinkList.tsx` - コレクション内リンク一覧
    - ❌ `AddToCollectionModal.tsx` - リンクをコレクションに追加するモーダル
 
 5. **画面** (`src/features/links/screens/`)
-   - ❌ `CollectionListScreen.tsx` - コレクション管理画面
-   - ❌ `CollectionDetailScreen.tsx` - コレクション詳細画面
+   - ✅ `CollectionListScreen.tsx` - コレクション一覧画面（UI のみ、モックデータ）
+   - ⚠️ `CollectionDetailScreen` - プレースホルダーのみ（`app/(protected)/collections/[id].tsx`）
 
 6. **クエリキー** (`src/features/links/constants/queryKeys.ts`)
    - ❌ collection関連のクエリキー定義

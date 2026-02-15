@@ -217,6 +217,12 @@
       "view_all_collections": "すべて表示",
       "view_all": "すべて表示"
     },
+    "collection_list": {
+      "title": "コレクション",
+      "my_collections": "マイコレクション",
+      "empty_title": "コレクションがまだありません",
+      "empty_description": "新規コレクションを作成して、リンクを整理しましょう"
+    },
     "collection_create": {
       "title": "新規コレクション",
       "name_label": "名前",

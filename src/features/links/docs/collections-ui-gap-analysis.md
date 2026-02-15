@@ -8,7 +8,7 @@
 
 1. [既存 UI の状態](#1-既存-ui-の状態)
 2. [不足している UI](#2-不足している-ui)
-3. [ルーティングの追加候補](#3-ルーティングの追加候補)
+3. [ルーティング](#3-ルーティング)
 4. [実装の優先順位](#4-実装の優先順位)
 
 ---
@@ -17,20 +17,21 @@
 
 ### 1.1 コンポーネント
 
-| コンポーネント          | パス                                | 状態                                                                |
-| ----------------------- | ----------------------------------- | ------------------------------------------------------------------- |
-| `CollectionCard`        | `components/CollectionCard.tsx`     | ✅ 実装済み。emoji, title, itemsCount 表示。`onPress` で遷移可能    |
-| `CollectionChip`        | `components/CollectionChip.tsx`     | ✅ 実装済み。emoji, title。選択状態の表示が可能                     |
-| `CollectionCreateModal` | `screens/CollectionCreateModal.tsx` | ✅ 実装済み。名前・絵文字入力フォーム。送信時はモーダルを閉じるのみ |
+| コンポーネント          | パス                                | 状態                                                                                        |
+| ----------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------- |
+| `CollectionCard`        | `components/CollectionCard.tsx`     | ✅ 実装済み。emoji, title, itemsCount。`href` で Link 遷移（prefetch 対応）、`onPress` も可 |
+| `CollectionChip`        | `components/CollectionChip.tsx`     | ✅ 実装済み。emoji, title。選択状態の表示が可能                                             |
+| `CollectionCreateModal` | `screens/CollectionCreateModal.tsx` | ✅ 実装済み。名前・絵文字入力フォーム。送信時はモーダルを閉じるのみ                         |
 
 ### 1.2 画面・セクション
 
-| 画面/セクション       | パス                              | 状態                                                                            |
-| --------------------- | --------------------------------- | ------------------------------------------------------------------------------- |
-| `LinksOverViewScreen` | `screens/LinksOverViewScreen.tsx` | ✅ 実装済み。Status カード、コレクショングリッド、Forgotten Links。モックデータ |
-| `CollectionsLane`     | `screens/CollectionsLane.tsx`     | ✅ 実装済み。ホーム画面の横スクロール。CollectionChip を表示                    |
-| `LinkDetailScreen`    | `screens/LinkDetailScreen.tsx`    | ✅ 実装済み。コレクションチップで追加・解除 UI。CollectionCreateModal 呼び出し  |
-| `LinkCreateModal`     | `screens/LinkCreateModal.tsx`     | ✅ 実装済み。コレクション選択 UI。選択状態のみ保持、保存時は未使用              |
+| 画面/セクション        | パス                               | 状態                                                                                          |
+| ---------------------- | ---------------------------------- | --------------------------------------------------------------------------------------------- |
+| `LinksOverViewScreen`  | `screens/LinksOverViewScreen.tsx`  | ✅ 実装済み。Status カード、コレクショングリッド、Forgotten Links。モックデータ。遷移実装済み |
+| `CollectionListScreen` | `screens/CollectionListScreen.tsx` | ✅ 実装済み（UI のみ）。Un Collectioned + コレクション一覧。モックデータ。空状態あり          |
+| `CollectionsLane`      | `screens/CollectionsLane.tsx`      | ✅ 実装済み。ホーム画面の横スクロール。CollectionChip を表示                                  |
+| `LinkDetailScreen`     | `screens/LinkDetailScreen.tsx`     | ✅ 実装済み。コレクションチップで追加・解除 UI。CollectionCreateModal 呼び出し                |
+| `LinkCreateModal`      | `screens/LinkCreateModal.tsx`      | ✅ 実装済み。コレクション選択 UI。選択状態のみ保持、保存時は未使用                            |
 
 ---
 
@@ -38,10 +39,9 @@
 
 ### 2.1 画面（Screen）
 
-| 画面                       | 説明                                                                               | 優先度 |
-| -------------------------- | ---------------------------------------------------------------------------------- | ------ |
-| **CollectionListScreen**   | 全コレクション一覧。「すべて表示」の遷移先。Un Collectioned + 各コレクションを表示 | 高     |
-| **CollectionDetailScreen** | コレクション内リンク一覧。CollectionCard / CollectionChip タップ時の遷移先         | 高     |
+| 画面                       | 説明                                                                                               | 優先度 |
+| -------------------------- | -------------------------------------------------------------------------------------------------- | ------ |
+| **CollectionDetailScreen** | コレクション内リンク一覧。CollectionCard / CollectionChip タップ時の遷移先。現状はプレースホルダー | 高     |
 
 ### 2.2 モーダル・ダイアログ
 
@@ -52,41 +52,41 @@
 
 ### 2.3 遷移の未実装
 
-| 場所                                   | 現状                 | 必要な対応                         |
-| -------------------------------------- | -------------------- | ---------------------------------- |
-| LinksOverViewScreen「すべて表示」      | `onPress={() => {}}` | CollectionListScreen へ遷移        |
-| LinksOverViewScreen の CollectionCard  | `onPress={() => {}}` | CollectionDetailScreen へ遷移      |
-| LinksOverViewScreen「Un Collectioned」 | `onPress={() => {}}` | コレクション未所属リンク一覧へ遷移 |
-| CollectionsLane の CollectionChip      | `onPress` が TODO    | CollectionDetailScreen へ遷移      |
+| 場所                              | 現状              | 必要な対応                    |
+| --------------------------------- | ----------------- | ----------------------------- |
+| CollectionsLane の CollectionChip | `onPress` が TODO | CollectionDetailScreen へ遷移 |
 
 ### 2.4 その他
 
 | UI                                    | 説明                                                                             | 優先度 |
 | ------------------------------------- | -------------------------------------------------------------------------------- | ------ |
 | **CollectionDetailScreen のヘッダー** | 編集・削除ボタン                                                                 | 中     |
-| **空状態**                            | CollectionDetailScreen（リンク 0 件）、CollectionListScreen（コレクション 0 件） | 中     |
+| **空状態**                            | CollectionDetailScreen（リンク 0 件）のみ未実装。CollectionListScreen は実装済み | 中     |
 | **Swipe UI でのコレクション選択**     | 「Read Soon」または特定コレクションへ振り分け                                    | 中     |
 
 ---
 
-## 3. ルーティングの追加候補
+## 3. ルーティング
+
+### 3.1 実装済みルート
 
 ```
 app/(protected)/
 ├── collections/
+│   ├── _layout.tsx
 │   ├── index.tsx          # CollectionListScreen
-│   └── [id].tsx           # CollectionDetailScreen
+│   └── [id].tsx           # CollectionDetailScreen（プレースホルダー）
 └── links/
-    └── un-collectioned.tsx # コレクション未所属リンク一覧（オプション）
+    └── un-collectioned.tsx # コレクション未所属リンク一覧（プレースホルダー）
 ```
 
-### 遷移パス例
+### 3.2 遷移パス
 
-| 遷移元                            | 遷移先                 | パス例                   |
-| --------------------------------- | ---------------------- | ------------------------ |
-| LinksOverViewScreen「すべて表示」 | CollectionListScreen   | `/collections`           |
-| CollectionCard タップ             | CollectionDetailScreen | `/collections/[id]`      |
-| 「Un Collectioned」タップ         | 未所属リンク一覧       | `/links/un-collectioned` |
+| 遷移元                            | 遷移先                 | パス例                   | 状態                            |
+| --------------------------------- | ---------------------- | ------------------------ | ------------------------------- |
+| LinksOverViewScreen「すべて表示」 | CollectionListScreen   | `/collections`           | ✅ 実装済み                     |
+| CollectionCard タップ             | CollectionDetailScreen | `/collections/[id]`      | ✅ 実装済み（プレースホルダー） |
+| 「Un Collectioned」タップ         | 未所属リンク一覧       | `/links/un-collectioned` | ✅ 実装済み（プレースホルダー） |
 
 ---
 
@@ -94,19 +94,20 @@ app/(protected)/
 
 ### Phase 1（必須）
 
-1. **CollectionListScreen** の作成
-2. **CollectionDetailScreen** の作成
-3. **ルート追加**（`app/(protected)/collections/`）
-4. **既存 UI からの遷移実装**（「すべて表示」、CollectionCard、CollectionsLane）
+1. ~~**CollectionListScreen** の作成~~ ✅ 完了（UI のみ、モックデータ）
+2. **CollectionDetailScreen** の実装（現状プレースホルダー）
+3. ~~**ルート追加**（`app/(protected)/collections/`）~~ ✅ 完了
+4. ~~**既存 UI からの遷移実装**（「すべて表示」、CollectionCard）~~ ✅ 完了
+5. **CollectionsLane の CollectionChip** から CollectionDetailScreen への遷移
 
 ### Phase 2（重要）
 
 1. **CollectionEditModal**
 2. **CollectionDeleteConfirm**
 3. **CollectionDetailScreen のヘッダーアクション**（編集・削除）
-4. **空状態 UI**
+4. **空状態 UI**（CollectionDetailScreen のリンク 0 件時）
 
 ### Phase 3（拡張）
 
-1. **「Un Collectioned」専用画面**
+1. **「Un Collectioned」専用画面** の本実装（現状プレースホルダー）
 2. **Swipe UI でのコレクション選択**

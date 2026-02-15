@@ -48,6 +48,7 @@ export function ScreenContainer({
           className="flex-1 bg-slate-50"
           style={{ paddingTop: HEADER_HEIGHT }}
           contentContainerClassName="grow"
+          contentInsetAdjustmentBehavior="automatic"
           scrollEventThrottle={16}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag"

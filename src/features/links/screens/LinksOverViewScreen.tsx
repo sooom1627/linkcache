@@ -53,11 +53,11 @@ const STATUS_ITEMS = [
 
 /** モック: コレクション（5件。Un Collectioned は別で固定表示） */
 const MOCK_COLLECTIONS = [
-  { emoji: "💼", title: "Work", itemsCount: 24 },
-  { emoji: "🎨", title: "Design", itemsCount: 56 },
-  { emoji: "🍳", title: "Recipes", itemsCount: 12 },
-  { emoji: "💻", title: "Tech", itemsCount: 31 },
-  { emoji: "📚", title: "Learning", itemsCount: 18 },
+  { id: "1", emoji: "💼", title: "Work", itemsCount: 24 },
+  { id: "2", emoji: "🎨", title: "Design", itemsCount: 56 },
+  { id: "3", emoji: "🍳", title: "Recipes", itemsCount: 12 },
+  { id: "4", emoji: "💻", title: "Tech", itemsCount: 31 },
+  { id: "5", emoji: "📚", title: "Learning", itemsCount: 18 },
 ];
 
 /** モック: Un Collectioned のリンク数 */
@@ -161,7 +161,7 @@ export function LinksOverViewScreen() {
             {t("links.overview.collections_section")}
           </Text>
           <Pressable
-            onPress={() => {}}
+            onPress={() => router.push("/collections")}
             className="-mr-1 flex-row items-center gap-0.5 py-1.5 pl-2 pr-1 active:opacity-70"
             accessibilityRole="link"
             accessibilityLabel={t("links.overview.view_all_collections")}
@@ -183,7 +183,7 @@ export function LinksOverViewScreen() {
                 emoji="📂"
                 title={t("links.overview.un_collectioned")}
                 itemsCount={MOCK_UN_COLLECTIONED_COUNT}
-                onPress={() => {}}
+                href="/links/un-collectioned"
               />
             </View>
             <View className="min-h-28 min-w-0 flex-1">
@@ -191,7 +191,7 @@ export function LinksOverViewScreen() {
                 emoji={MOCK_COLLECTIONS[0].emoji}
                 title={MOCK_COLLECTIONS[0].title}
                 itemsCount={MOCK_COLLECTIONS[0].itemsCount}
-                onPress={() => {}}
+                href={`/collections/${MOCK_COLLECTIONS[0].id}`}
               />
             </View>
           </View>
@@ -202,7 +202,7 @@ export function LinksOverViewScreen() {
                 emoji={MOCK_COLLECTIONS[1].emoji}
                 title={MOCK_COLLECTIONS[1].title}
                 itemsCount={MOCK_COLLECTIONS[1].itemsCount}
-                onPress={() => {}}
+                href={`/collections/${MOCK_COLLECTIONS[1].id}`}
               />
             </View>
             <View className="min-h-28 min-w-0 flex-1">
@@ -210,7 +210,7 @@ export function LinksOverViewScreen() {
                 emoji={MOCK_COLLECTIONS[2].emoji}
                 title={MOCK_COLLECTIONS[2].title}
                 itemsCount={MOCK_COLLECTIONS[2].itemsCount}
-                onPress={() => {}}
+                href={`/collections/${MOCK_COLLECTIONS[2].id}`}
               />
             </View>
           </View>
@@ -221,7 +221,7 @@ export function LinksOverViewScreen() {
                 emoji={MOCK_COLLECTIONS[3].emoji}
                 title={MOCK_COLLECTIONS[3].title}
                 itemsCount={MOCK_COLLECTIONS[3].itemsCount}
-                onPress={() => {}}
+                href={`/collections/${MOCK_COLLECTIONS[3].id}`}
               />
             </View>
             <View className="min-h-28 min-w-0 flex-1">
@@ -229,7 +229,7 @@ export function LinksOverViewScreen() {
                 emoji={MOCK_COLLECTIONS[4].emoji}
                 title={MOCK_COLLECTIONS[4].title}
                 itemsCount={MOCK_COLLECTIONS[4].itemsCount}
-                onPress={() => {}}
+                href={`/collections/${MOCK_COLLECTIONS[4].id}`}
               />
             </View>
           </View>
