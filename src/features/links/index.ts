@@ -14,6 +14,7 @@ export { useUpdateLinkReadStatus } from "./hooks/useUpdateLinkReadStatus";
 export type { UseUpdateLinkReadStatusReturn } from "./hooks/useUpdateLinkReadStatus";
 
 // Components
+export { CollectionChip } from "./components/CollectionChip";
 export { default as LinkCreateForm } from "./components/LinkCreateForm";
 export { default as LinkPasteContainer } from "./components/LinkPasteContainer";
 export { LinkListCard } from "./components/LinkListCard";

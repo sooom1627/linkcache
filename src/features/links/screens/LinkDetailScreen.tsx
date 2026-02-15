@@ -1,13 +1,6 @@
 import { useCallback, useState } from "react";
 
-import {
-  ActivityIndicator,
-  Alert,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-} from "react-native";
+import { ActivityIndicator, Alert, ScrollView, Text, View } from "react-native";
 
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
@@ -19,6 +12,7 @@ import { ErrorStateView } from "@/src/shared/components/ErrorStateView";
 import { useBottomSheetModal } from "@/src/shared/hooks/useBottomSheetModal";
 import { formatDateTime } from "@/src/shared/utils/timezone";
 
+import { CollectionChip } from "../components/CollectionChip";
 import { LinkDetailActionButtonGroup } from "../components/LinkDetailActionButtonGroup";
 import { LinkReadStatusModal } from "../components/LinkReadStatusModal";
 import { useDeleteLink } from "../hooks/useDeleteLink";
@@ -168,7 +162,7 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
 
   return (
     <>
-      <View className="relative h-full bg-slate-50 pb-24">
+      <View className="relative h-full bg-slate-50 pb-32">
         <ScrollView
           className="flex-1 pt-20"
           showsVerticalScrollIndicator={false}
@@ -278,40 +272,28 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
             <Text className="mb-2 text-sm font-semibold uppercase tracking-wide text-mainDark">
               Collections
             </Text>
-            <View className="mb-6 gap-2">
+            <View className="mb-6 flex-row flex-wrap gap-2">
               {[
                 { emoji: "📚", title: "Read Soon" },
                 { emoji: "🔬", title: "Tech" },
                 { emoji: "🎨", title: "Design" },
               ].map((col) => (
-                <Pressable
+                <CollectionChip
                   key={col.title}
-                  className="flex-row items-center gap-3 rounded-xl  bg-white p-3 active:scale-[0.98] active:opacity-90"
-                  accessibilityRole="button"
-                  accessibilityLabel={`Collection: ${col.title}`}
-                >
-                  <View className="size-10 items-center justify-center rounded-full bg-slate-100">
-                    <Text className="text-xl" selectable={false}>
-                      {col.emoji}
-                    </Text>
-                  </View>
-                  <Text
-                    className="flex-1 text-base font-semibold text-slate-900"
-                    numberOfLines={1}
-                  >
-                    {col.title}
-                  </Text>
-                </Pressable>
+                  emoji={col.emoji}
+                  title={col.title}
+                  onPress={() => {
+                    /* TODO: コレクション詳細へ遷移 */
+                  }}
+                />
               ))}
-              <Pressable
-                className="flex-row items-center justify-center gap-2 rounded-xl border border-dashed border-slate-300 bg-slate-50 py-3 active:opacity-80"
-                accessibilityRole="button"
-                accessibilityLabel="Add to collection"
-              >
-                <Text className="text-sm font-medium text-slate-500">
-                  + Add to collection
-                </Text>
-              </Pressable>
+              <CollectionChip
+                variant="add"
+                title="Add to collection"
+                onPress={() => {
+                  /* TODO: コレクション追加モーダル */
+                }}
+              />
             </View>
           </View>
         </ScrollView>
