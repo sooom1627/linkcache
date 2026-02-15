@@ -1,6 +1,13 @@
 import { useCallback, useState } from "react";
 
-import { ActivityIndicator, Alert, ScrollView, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
 
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
@@ -161,7 +168,7 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
 
   return (
     <>
-      <View className="relative flex-1 bg-slate-50">
+      <View className="relative h-full bg-slate-50 pb-24">
         <ScrollView
           className="flex-1 pt-20"
           showsVerticalScrollIndicator={false}
@@ -202,23 +209,22 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
             </View>
 
             {/* タイトル */}
-            <Text className="mb-4 text-2xl font-bold leading-tight text-slate-900">
+            <Text className="mb-4 line-clamp-2 text-2xl font-bold leading-tight text-slate-900">
               {link.title || link.url}
             </Text>
 
             {/* 説明文 */}
             {link.description && (
-              <Text className="mb-6 line-clamp-3 text-base leading-relaxed text-slate-600">
+              <Text className="mb-6 line-clamp-2 text-base leading-relaxed text-slate-600">
                 {link.description}
               </Text>
             )}
 
             {/* ステータス情報 */}
-            <View className="mb-6 rounded-2xl bg-white p-4">
-              <Text className="mb-3 text-sm font-semibold text-slate-700">
-                {t("links.detail.status_label")}
-              </Text>
-
+            <Text className="mb-2 text-sm font-semibold uppercase tracking-wide text-mainDark">
+              {t("links.detail.status_label")}
+            </Text>
+            <View className="mb-6 rounded-2xl border border-border bg-white p-4">
               {/* 現在のステータス */}
               <View className="mb-3 flex-row items-center gap-2">
                 {isDone ? (
@@ -266,6 +272,46 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
                   </Text>
                 </View>
               </View>
+            </View>
+
+            {/* collections */}
+            <Text className="mb-2 text-sm font-semibold uppercase tracking-wide text-mainDark">
+              Collections
+            </Text>
+            <View className="mb-6 gap-2">
+              {[
+                { emoji: "📚", title: "Read Soon" },
+                { emoji: "🔬", title: "Tech" },
+                { emoji: "🎨", title: "Design" },
+              ].map((col) => (
+                <Pressable
+                  key={col.title}
+                  className="flex-row items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 active:scale-[0.98] active:opacity-90"
+                  accessibilityRole="button"
+                  accessibilityLabel={`Collection: ${col.title}`}
+                >
+                  <View className="size-10 items-center justify-center rounded-full bg-slate-100">
+                    <Text className="text-xl" selectable={false}>
+                      {col.emoji}
+                    </Text>
+                  </View>
+                  <Text
+                    className="flex-1 text-base font-semibold text-slate-900"
+                    numberOfLines={1}
+                  >
+                    {col.title}
+                  </Text>
+                </Pressable>
+              ))}
+              <Pressable
+                className="flex-row items-center justify-center gap-2 rounded-xl border border-dashed border-slate-300 bg-slate-50 py-3 active:opacity-80"
+                accessibilityRole="button"
+                accessibilityLabel="Add to collection"
+              >
+                <Text className="text-sm font-medium text-slate-500">
+                  + Add to collection
+                </Text>
+              </Pressable>
             </View>
           </View>
         </ScrollView>

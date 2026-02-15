@@ -36,7 +36,7 @@ export function LinkListTabHeader({
             {t("links.dashboard.tabs.read_soon")}
           </Text>
           {activeTab === "read_soon" && (
-            <View className="absolute bottom-[-1.5] left-0 right-0 h-0.5 rounded-full bg-main" />
+            <View className="absolute inset-x-0 bottom-[-1.5] h-0.5 rounded-full bg-main" />
           )}
         </Pressable>
 
@@ -55,7 +55,7 @@ export function LinkListTabHeader({
             {t("links.dashboard.tabs.latest")}
           </Text>
           {activeTab === "latest" && (
-            <View className="absolute bottom-[-1.5] left-0 right-0 h-0.5 rounded-full bg-main" />
+            <View className="absolute inset-x-0 bottom-[-1.5] h-0.5 rounded-full bg-main" />
           )}
         </Pressable>
       </View>
