@@ -107,8 +107,8 @@ export function CollectionDetailScreen({
   }, []);
 
   const handleCloseMenu = useCallback(() => {
-    if (isMenuOpen) setIsMenuOpen(false);
-  }, [isMenuOpen]);
+    setIsMenuOpen(false);
+  }, []);
 
   const handleEdit = useCallback(() => {
     onEdit?.();
@@ -158,7 +158,7 @@ export function CollectionDetailScreen({
       collection ? (
         <View className="mb-4 gap-2">
           <View className="h-16" />
-          <View className="relative rounded-2xl bg-white px-4 py-4">
+          <View className="relative rounded-2xl bg-white p-4">
             <View className="flex-row items-center gap-3">
               {collection.emoji ? (
                 <View className="rounded-full bg-slate-100 p-2.5">
@@ -206,17 +206,6 @@ export function CollectionDetailScreen({
     [collection, links.length, t, onEdit, onDelete, handleToggleMenu],
   );
 
-  // コレクション未検出（不正なID）
-  if (!collection) {
-    return (
-      <View className="flex-1 items-center justify-center px-8">
-        <Text className="text-center text-base text-slate-500">
-          {t("links.collection_detail.not_found")}
-        </Text>
-      </View>
-    );
-  }
-
   const renderEmpty = useCallback(
     () => (
       <View className="items-center px-8 py-12">
@@ -233,6 +222,17 @@ export function CollectionDetailScreen({
     ),
     [t],
   );
+
+  // コレクション未検出（不正なID）
+  if (!collection) {
+    return (
+      <View className="flex-1 items-center justify-center px-8">
+        <Text className="text-center text-base text-slate-500">
+          {t("links.collection_detail.not_found")}
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1">

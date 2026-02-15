@@ -211,11 +211,17 @@
       "undo": "元に戻す"
     },
     "overview": {
+      "status": "ステータス",
+      "view_all": "すべて表示",
+      "view_all_links": "すべてのリンクを表示",
+      "forgotten_links": "忘れられたリンク",
+      "added_days_ago": "{{daysAgo}}日前に追加",
       "un_collectioned": "コレクションなし",
+      "un_collectioned_description": "コレクション未所属リンク",
+      "un_collectioned_todo": "TODO: Phase 3 で実装予定",
       "new_collection": "新規コレクション",
       "collections_section": "コレクション",
-      "view_all_collections": "すべて表示",
-      "view_all": "すべて表示"
+      "view_all_collections": "すべて表示"
     },
     "collection_list": {
       "title": "コレクション",

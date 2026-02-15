@@ -99,19 +99,19 @@ export function LinksOverViewScreen() {
       <View className="gap-2">
         <View className="flex-row items-center justify-between py-0.5">
           <Text className="text-sm font-semibold uppercase tracking-wider text-slate-500">
-            Status
+            {t("links.overview.status")}
           </Text>
           <Pressable
             onPress={() => handleStatusPress("all")}
             className="-mr-1 flex-row items-center gap-0.5 py-1.5 pl-2 pr-1 active:opacity-70"
             accessibilityRole="link"
-            accessibilityLabel="View all links"
+            accessibilityLabel={t("links.overview.view_all_links")}
           >
             <Text
               className="text-sm font-medium"
               style={{ color: colors.accent }}
             >
-              View All
+              {t("links.overview.view_all")}
             </Text>
             <ChevronRight size={14} color={colors.accent} strokeWidth={2.5} />
           </Pressable>
@@ -257,7 +257,7 @@ export function LinksOverViewScreen() {
       {/* 3. 要対応セクション */}
       <View className="gap-2">
         <Text className="text-sm font-semibold uppercase tracking-wider text-slate-500">
-          Forgotten Links
+          {t("links.overview.forgotten_links")}
         </Text>
         <View className="gap-1.5">
           {MOCK_NEED_ATTENTION.map((link, index) => (
@@ -269,7 +269,7 @@ export function LinksOverViewScreen() {
               className="flex-row items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-none active:bg-slate-50"
               style={CARD_STYLE}
               accessibilityRole="button"
-              accessibilityLabel={`${link.title}, added ${link.daysAgo} days ago, view detail`}
+              accessibilityLabel={`${link.title}, ${t("links.overview.added_days_ago", { daysAgo: link.daysAgo })}, view detail`}
             >
               <View
                 className="items-center justify-center overflow-hidden rounded-lg bg-slate-50"
@@ -291,7 +291,9 @@ export function LinksOverViewScreen() {
                 <View className="mt-2 flex-row items-center gap-1.5">
                   <Clock size={12} color={colors.iconMuted} strokeWidth={2} />
                   <Text className="text-xs text-slate-500">
-                    Added {link.daysAgo} days ago
+                    {t("links.overview.added_days_ago", {
+                      daysAgo: link.daysAgo,
+                    })}
                   </Text>
                 </View>
               </View>

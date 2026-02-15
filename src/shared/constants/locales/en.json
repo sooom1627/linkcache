@@ -211,11 +211,17 @@
       "undo": "Undo"
     },
     "overview": {
+      "status": "Status",
+      "view_all": "View All",
+      "view_all_links": "View all links",
+      "forgotten_links": "Forgotten Links",
+      "added_days_ago": "Added {{daysAgo}} days ago",
       "un_collectioned": "Un Collectioned",
+      "un_collectioned_description": "Un Collectioned Links",
+      "un_collectioned_todo": "TODO: Coming in Phase 3",
       "new_collection": "New Collection",
       "collections_section": "Collections",
-      "view_all_collections": "View all collections",
-      "view_all": "View All"
+      "view_all_collections": "View all collections"
     },
     "collection_list": {
       "title": "Collections",

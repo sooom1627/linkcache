@@ -26,10 +26,10 @@ export default function UnCollectionedPlaceholder() {
     >
       <View className="flex-1 items-center justify-center px-6">
         <Text className="text-center text-base text-slate-500">
-          Un Collectioned Links
+          {t("links.overview.un_collectioned_description")}
         </Text>
         <Text className="mt-2 text-center text-sm text-slate-400">
-          TODO: Phase 3 で実装予定
+          {t("links.overview.un_collectioned_todo")}
         </Text>
       </View>
     </ScreenContainer>
