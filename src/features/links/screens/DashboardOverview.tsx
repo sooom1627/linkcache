@@ -11,7 +11,6 @@ import {
   TrendingUp,
 } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
-import Animated, { FadeInDown } from "react-native-reanimated";
 
 import { colors } from "@/src/shared/constants/colors";
 
@@ -45,10 +44,7 @@ export function DashboardOverview({
       <View className="h-[140px] flex-row gap-3">
         {/* Left: Inbox (Main Action) */}
         {inboxCount > 0 ? (
-          <Animated.View
-            entering={FadeInDown.duration(400).delay(0).springify()}
-            className="flex-1"
-          >
+          <View className="flex-1">
             <View
               className="flex-1 overflow-hidden rounded-2xl border border-slate-900 shadow-none"
               style={CARD_STYLE}
@@ -90,10 +86,9 @@ export function DashboardOverview({
                 </View>
               </Pressable>
             </View>
-          </Animated.View>
+          </View>
         ) : (
-          <Animated.View
-            entering={FadeInDown.duration(400).delay(0).springify()}
+          <View
             className="flex-1 justify-between rounded-lg border border-slate-200 bg-white p-5 shadow-none"
             style={CARD_STYLE}
           >
@@ -108,15 +103,12 @@ export function DashboardOverview({
             <Text className="text-xs text-slate-500">
               {t("links.dashboard.no_pending_links")}
             </Text>
-          </Animated.View>
+          </View>
         )}
 
         {/* Right: Stats */}
         <View className="w-[42%] gap-2">
-          <Animated.View
-            entering={FadeInDown.duration(400).delay(50).springify()}
-            className="flex-1"
-          >
+          <View className="flex-1">
             <View
               className="flex-1 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-none"
               style={CARD_STYLE}
@@ -133,11 +125,8 @@ export function DashboardOverview({
                 </Text>
               </View>
             </View>
-          </Animated.View>
-          <Animated.View
-            entering={FadeInDown.duration(400).delay(100).springify()}
-            className="flex-1"
-          >
+          </View>
+          <View className="flex-1">
             <View
               className="flex-1 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-none"
               style={CARD_STYLE}
@@ -154,7 +143,7 @@ export function DashboardOverview({
                 </Text>
               </View>
             </View>
-          </Animated.View>
+          </View>
         </View>
       </View>
     </View>
