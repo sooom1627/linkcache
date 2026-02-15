@@ -57,7 +57,7 @@ export function CollectionsLane() {
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ gap: 10, paddingRight: 16 }}
+        contentContainerStyle={{ gap: 8, paddingRight: 16 }}
       >
         {MOCK_COLLECTIONS.map((col) => (
           <CollectionCard key={col.title} emoji={col.emoji} title={col.title} />

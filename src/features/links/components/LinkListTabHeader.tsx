@@ -20,15 +20,13 @@ export function LinkListTabHeader({
 
   return (
     <View>
-      <View className="mb-4 flex-row gap-4 border-b border-border rounded-lg">
+      <View className="mb-4 flex-row gap-4 rounded-lg border-b border-border">
         <Pressable
           onPress={() => onTabChange("read_soon")}
           accessibilityRole="tab"
           accessibilityState={{ selected: activeTab === "read_soon" }}
           accessibilityLabel={t("links.dashboard.tabs.read_soon")}
-          className={`pb-3 ${
-            activeTab === "read_soon" ? "border-b-2 border-main" : ""
-          }`}
+          className="relative rounded-lg pb-3"
         >
           <Text
             className={`text-sm font-semibold uppercase tracking-wider ${
@@ -37,6 +35,9 @@ export function LinkListTabHeader({
           >
             {t("links.dashboard.tabs.read_soon")}
           </Text>
+          {activeTab === "read_soon" && (
+            <View className="absolute bottom-[-1.5] left-0 right-0 h-0.5 rounded-full bg-main" />
+          )}
         </Pressable>
 
         <Pressable
@@ -44,9 +45,7 @@ export function LinkListTabHeader({
           accessibilityRole="tab"
           accessibilityState={{ selected: activeTab === "latest" }}
           accessibilityLabel={t("links.dashboard.tabs.latest")}
-          className={`pb-3 ${
-            activeTab === "latest" ? "border-b-2 border-main" : ""
-          }`}
+          className="relative rounded-lg pb-3"
         >
           <Text
             className={`text-sm font-semibold uppercase tracking-wider ${
@@ -55,6 +54,9 @@ export function LinkListTabHeader({
           >
             {t("links.dashboard.tabs.latest")}
           </Text>
+          {activeTab === "latest" && (
+            <View className="absolute bottom-[-1.5] left-0 right-0 h-0.5 rounded-full bg-main" />
+          )}
         </Pressable>
       </View>
     </View>
