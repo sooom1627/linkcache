@@ -1,39 +1,104 @@
-import { Text, View } from "react-native";
+import { useCallback } from "react";
+
+import { Alert, Text, View } from "react-native";
 
 import { useLocalSearchParams, useRouter } from "expo-router";
 
 import { useTranslation } from "react-i18next";
 
+import {
+  CollectionDetailScreen,
+  mockCollections,
+} from "@/src/features/links/screens/CollectionDetailScreen";
 import { ScreenContainer } from "@/src/shared/components/layout/ScreenContainer";
 
 /**
- * コレクション詳細画面（プレースホルダー）
+ * コレクション詳細ルート
  *
- * CollectionDetailScreen 実装までの仮画面。
  * CollectionCard タップ時の遷移先。
  */
-export default function CollectionDetailPlaceholder() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+export default function CollectionDetailRoute() {
+  const params = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { t } = useTranslation();
+
+  const handleEdit = useCallback(() => {
+    // TODO: CollectionEditModal 実装後にモーダルを表示
+    Alert.alert(
+      t("links.collection_detail.header_edit"),
+      t("links.collection_detail.edit_coming_soon"),
+      [{ text: "OK" }],
+    );
+  }, [t]);
+
+  const handleDelete = useCallback(() => {
+    Alert.alert(
+      t("links.collection_detail.delete_confirm.title"),
+      t("links.collection_detail.delete_confirm.message"),
+      [
+        {
+          text: t("links.collection_detail.delete_confirm.cancel"),
+          style: "cancel",
+        },
+        {
+          text: t("links.collection_detail.delete_confirm.confirm"),
+          style: "destructive",
+          onPress: () => {
+            // TODO: コレクション削除 API 実装後に呼び出し
+            router.back();
+          },
+        },
+      ],
+      { cancelable: true },
+    );
+  }, [t, router]);
+
+  const rawId = params.id;
+  const collectionId =
+    typeof rawId === "string"
+      ? rawId
+      : Array.isArray(rawId)
+        ? rawId[0]
+        : undefined;
+  const collection =
+    collectionId != null ? (mockCollections[collectionId] ?? null) : null;
+  const headerTitle = collection
+    ? `${collection.emoji} ${collection.title}`
+    : t("links.collection_list.title");
+
+  if (collectionId == null || collectionId === "") {
+    return (
+      <ScreenContainer
+        scrollable={false}
+        noPaddingBottom
+        centerContent
+        topComponent={false}
+        headerTitle={t("links.collection_list.title")}
+        onBackPress={() => router.back()}
+      >
+        <View className="flex-1 items-center justify-center px-6">
+          <Text className="text-center text-base text-slate-500">
+            {t("links.collection_detail.not_found")}
+          </Text>
+        </View>
+      </ScreenContainer>
+    );
+  }
 
   return (
     <ScreenContainer
       scrollable={false}
       noPaddingBottom
-      centerContent={true}
+      centerContent={false}
       topComponent={false}
-      headerTitle={t("links.collection_list.title")}
+      headerTitle={headerTitle}
       onBackPress={() => router.back()}
     >
-      <View className="flex-1 items-center justify-center px-6">
-        <Text className="text-center text-base text-slate-500">
-          CollectionDetailScreen (id: {id})
-        </Text>
-        <Text className="mt-2 text-center text-sm text-slate-400">
-          TODO: 実装予定
-        </Text>
-      </View>
+      <CollectionDetailScreen
+        collectionId={collectionId}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
     </ScreenContainer>
   );
 }

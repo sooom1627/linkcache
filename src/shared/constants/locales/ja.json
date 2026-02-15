@@ -223,6 +223,22 @@
       "empty_title": "コレクションがまだありません",
       "empty_description": "新規コレクションを作成して、リンクを整理しましょう"
     },
+    "collection_detail": {
+      "empty_title": "このコレクションにはリンクがありません",
+      "empty_description": "リンク詳細画面からコレクションに追加できます",
+      "items_count": "件",
+      "not_found": "コレクションが見つかりません",
+      "header_edit": "編集",
+      "header_delete": "削除",
+      "header_more_options": "その他のオプション",
+      "edit_coming_soon": "編集機能は近日公開予定です。",
+      "delete_confirm": {
+        "title": "コレクションを削除",
+        "message": "このコレクションを削除してもよろしいですか？リンクは削除されません。",
+        "cancel": "キャンセル",
+        "confirm": "削除"
+      }
+    },
     "collection_create": {
       "title": "新規コレクション",
       "name_label": "名前",
