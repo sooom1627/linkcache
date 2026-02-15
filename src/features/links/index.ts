@@ -2,6 +2,8 @@
 export * from "./types";
 
 // Hooks
+export { useCreateCollection } from "./hooks/useCreateCollection";
+export type { UseCreateCollectionReturn } from "./hooks/useCreateCollection";
 export { useCreateLink } from "./hooks/useCreateLink";
 export { useDeleteLink } from "./hooks/useDeleteLink";
 export type { UseDeleteLinkReturn } from "./hooks/useDeleteLink";
@@ -40,6 +42,7 @@ export {
 export { isValidUrl } from "./utils/urlValidation";
 
 // API
+export { createCollection } from "./api/createCollection.api";
 export { createLinkWithStatus } from "./api/createLink.api";
 export type {
   CreateLinkParams,

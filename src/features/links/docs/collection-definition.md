@@ -400,7 +400,7 @@ import type { Collection, CollectionLink } from "@features/links/types";
 ### ❌ 未実装
 
 1. **API関数** (`src/features/links/api/`)
-   - ❌ `createCollection.api.ts` - コレクション作成
+   - ✅ `createCollection.api.ts` - コレクション作成
    - ❌ `fetchCollections.api.ts` - コレクション一覧取得
    - ❌ `getCollection.api.ts` - コレクション詳細取得
    - ❌ `updateCollection.api.ts` - コレクション更新
@@ -410,13 +410,13 @@ import type { Collection, CollectionLink } from "@features/links/types";
    - ❌ `getCollectionLinks.api.ts` - コレクション内のリンク一覧取得
 
 2. **型定義の拡張** (`src/features/links/types/`)
-   - ❌ リクエスト/レスポンス型定義
-   - ❌ Zodスキーマ（バリデーション用）
+   - ✅ CreateCollectionParams, CreateCollectionResponse（collections.types.ts）
+   - ✅ createCollectionSchema（Zod バリデーション）
 
 3. **カスタムフック** (`src/features/links/hooks/`)
    - ❌ `useCollections.ts` - コレクション一覧取得フック
    - ❌ `useCollection.ts` - コレクション詳細取得フック
-   - ❌ `useCreateCollection.ts` - コレクション作成フック
+   - ✅ `useCreateCollection.ts` - コレクション作成フック
    - ❌ `useUpdateCollection.ts` - コレクション更新フック
    - ❌ `useDeleteCollection.ts` - コレクション削除フック
    - ❌ `useCollectionLinks.ts` - コレクション内リンク取得フック
@@ -426,7 +426,7 @@ import type { Collection, CollectionLink } from "@features/links/types";
 4. **UIコンポーネント** (`src/features/links/components/`)
    - ✅ `CollectionCard.tsx` - コレクションカード（href/onPress、Link 対応）
    - ✅ `CollectionChip.tsx` - コレクションチップ
-   - ✅ `CollectionCreateModal.tsx` - コレクション作成フォーム
+   - ✅ `CollectionCreateModal.tsx` - コレクション作成フォーム（API 連携済み）
    - ✅ `CollectionEditModal.tsx` - コレクション編集フォーム（CollectionDetailScreen の Edit 押下で表示）
    - ❌ `CollectionLinkList.tsx` - コレクション内リンク一覧
    - ❌ `AddToCollectionModal.tsx` - リンクをコレクションに追加するモーダル
@@ -436,7 +436,7 @@ import type { Collection, CollectionLink } from "@features/links/types";
    - ⚠️ `CollectionDetailScreen` - プレースホルダーのみ（`app/(protected)/collections/[id].tsx`）
 
 6. **クエリキー** (`src/features/links/constants/queryKeys.ts`)
-   - ❌ collection関連のクエリキー定義
+   - ✅ collectionQueryKeys（lists, detail, links）
 
 ---
 

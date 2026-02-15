@@ -251,7 +251,11 @@
       "name_placeholder": "e.g. Work, Design, Tech",
       "emoji_label": "Emoji (optional)",
       "emoji_placeholder": "e.g. 📚",
-      "submit": "Create Collection"
+      "submit": "Create Collection",
+      "error_title": "Failed to create",
+      "error_message": "Could not create collection. Please try again.",
+      "validation_name_max": "Name must be 100 characters or less.",
+      "clear_form": "Clear"
     },
     "collection_edit": {
       "title": "Edit Collection",
