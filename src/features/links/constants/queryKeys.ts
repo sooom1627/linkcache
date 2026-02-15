@@ -67,3 +67,25 @@ export const linkQueryKeys = {
    */
   ogpMetadata: (url: string) => [...linkQueryKeys.ogp(), url] as const,
 } as const;
+
+/**
+ * コレクション関連のReact Queryキャッシュキー
+ *
+ * コレクション機能に関連するクエリキーを管理します。
+ *
+ * @example
+ * ```ts
+ * useQuery({ queryKey: collectionQueryKeys.lists(), ... });
+ * useQuery({ queryKey: collectionQueryKeys.detail(id), ... });
+ * useQuery({ queryKey: collectionQueryKeys.links(collectionId), ... });
+ * queryClient.invalidateQueries({ queryKey: collectionQueryKeys.lists() });
+ * ```
+ */
+export const collectionQueryKeys = {
+  all: ["collections"] as const,
+  lists: () => [...collectionQueryKeys.all, "list"] as const,
+  details: () => [...collectionQueryKeys.all, "detail"] as const,
+  detail: (id: string) => [...collectionQueryKeys.details(), id] as const,
+  links: (collectionId: string) =>
+    [...collectionQueryKeys.detail(collectionId), "links"] as const,
+} as const;
