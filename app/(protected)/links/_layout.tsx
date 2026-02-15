@@ -15,6 +15,10 @@ export default function LinksLayout() {
           name="index"
           options={{ headerShown: false, animation: "slide_from_right" }}
         />
+        <Stack.Screen
+          name="un-collectioned"
+          options={{ headerShown: false, animation: "slide_from_right" }}
+        />
       </Stack>
     </SafeAreaView>
   );
