@@ -79,7 +79,7 @@ export function LinksOverViewScreen() {
     present: presentCollectionCreateModal,
     dismiss: dismissCollectionCreateModal,
   } = useBottomSheetModal();
-  const { collections } = useCollections();
+  const { collections } = useCollections({ limit: 5 });
 
   const handleStatusPress = (statusParam: string) => {
     const params = statusParam === "all" ? {} : { status: statusParam };

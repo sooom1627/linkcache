@@ -1,3 +1,4 @@
+import type { FetchCollectionsParams } from "../types/collections.types";
 import type { LinkFilterParams } from "../types/linkList.types";
 
 /**
@@ -83,7 +84,10 @@ export const linkQueryKeys = {
  */
 export const collectionQueryKeys = {
   all: ["collections"] as const,
-  lists: () => [...collectionQueryKeys.all, "list"] as const,
+  lists: (params?: FetchCollectionsParams) =>
+    params
+      ? ([...collectionQueryKeys.all, "list", params] as const)
+      : ([...collectionQueryKeys.all, "list"] as const),
   details: () => [...collectionQueryKeys.all, "detail"] as const,
   detail: (id: string) => [...collectionQueryKeys.details(), id] as const,
   links: (collectionId: string) =>

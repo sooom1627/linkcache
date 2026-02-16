@@ -1,6 +1,9 @@
 import { supabase } from "@/src/shared/lib/supabase";
 
-import type { CollectionWithCount } from "../types/collections.types";
+import type {
+  CollectionWithCount,
+  FetchCollectionsParams,
+} from "../types/collections.types";
 
 type CollectionRow = {
   id: string;
@@ -15,10 +18,13 @@ type CollectionRow = {
  * RLS により user_id で自動フィルタされます。
  * itemsCount は collection_links の件数です。
  *
+ * @param params - オプション（limit, order）。未指定時は全件・updated_at 降順
  * @returns コレクション一覧（id, name, emoji, itemsCount）
  * @throws 未認証時、Supabase エラー時
  */
-export async function fetchCollections(): Promise<CollectionWithCount[]> {
+export async function fetchCollections(
+  params?: FetchCollectionsParams,
+): Promise<CollectionWithCount[]> {
   const {
     data: { user },
     error: authError,
@@ -28,9 +34,18 @@ export async function fetchCollections(): Promise<CollectionWithCount[]> {
     throw new Error("Not authenticated");
   }
 
-  const { data, error } = await supabase
+  let query = supabase
     .from("collections")
-    .select("*, collection_links(count)");
+    .select("*, collection_links(count)")
+    .order("updated_at", {
+      ascending: params?.order === "asc",
+    });
+
+  if (params?.limit != null) {
+    query = query.limit(params.limit);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     throw error;

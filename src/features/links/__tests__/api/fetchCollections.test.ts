@@ -10,6 +10,23 @@ type GetUserResponse = {
   error: null;
 };
 
+/** Supabase の select().order().limit() チェーンをモックする */
+function createSelectChain(resolvedValue: {
+  data: unknown;
+  error: { message: string; code: string } | null;
+}) {
+  const promise = Promise.resolve(resolvedValue);
+  const chain = {
+    order: jest.fn(),
+    limit: jest.fn(),
+    then: promise.then.bind(promise),
+    catch: promise.catch.bind(promise),
+  };
+  chain.order.mockReturnValue(chain);
+  chain.limit.mockReturnValue(promise);
+  return chain;
+}
+
 jest.mock("@/src/shared/lib/supabase", () => ({
   supabase: {
     auth: {
@@ -52,22 +69,28 @@ describe("fetchCollections", () => {
   });
 
   it("calls Supabase select with correct parameters", async () => {
-    mockSelect.mockResolvedValueOnce({
+    const chain = createSelectChain({
       data: [MOCK_COLLECTION_1],
       error: null,
     });
+    mockSelect.mockReturnValueOnce(chain);
 
     await fetchCollections();
 
     expect(supabase.from).toHaveBeenCalledWith("collections");
     expect(mockSelect).toHaveBeenCalledWith("*, collection_links(count)");
+    expect(chain.order).toHaveBeenCalledWith("updated_at", {
+      ascending: false,
+    });
   });
 
   it("returns collections with id, name, emoji, itemsCount when select succeeds", async () => {
-    mockSelect.mockResolvedValueOnce({
-      data: [MOCK_COLLECTION_1, MOCK_COLLECTION_2],
-      error: null,
-    });
+    mockSelect.mockReturnValueOnce(
+      createSelectChain({
+        data: [MOCK_COLLECTION_1, MOCK_COLLECTION_2],
+        error: null,
+      }),
+    );
 
     const result = await fetchCollections();
 
@@ -91,10 +114,12 @@ describe("fetchCollections", () => {
       ...MOCK_COLLECTION_1,
       collection_links: [],
     };
-    mockSelect.mockResolvedValueOnce({
-      data: [collectionWithoutLinks],
-      error: null,
-    });
+    mockSelect.mockReturnValueOnce(
+      createSelectChain({
+        data: [collectionWithoutLinks],
+        error: null,
+      }),
+    );
 
     const result = await fetchCollections();
 
@@ -103,10 +128,12 @@ describe("fetchCollections", () => {
 
   it("throws error when Supabase returns an error", async () => {
     const mockError = { message: "Database error", code: "PGRST001" };
-    mockSelect.mockResolvedValueOnce({
-      data: null,
-      error: mockError,
-    });
+    mockSelect.mockReturnValueOnce(
+      createSelectChain({
+        data: null,
+        error: mockError,
+      }),
+    );
 
     await expect(fetchCollections()).rejects.toEqual(mockError);
   });
@@ -118,5 +145,58 @@ describe("fetchCollections", () => {
     });
 
     await expect(fetchCollections()).rejects.toThrow("Not authenticated");
+  });
+
+  it("calls limit when limit param is provided", async () => {
+    const chain = createSelectChain({
+      data: [MOCK_COLLECTION_1, MOCK_COLLECTION_2],
+      error: null,
+    });
+    mockSelect.mockReturnValueOnce(chain);
+
+    await fetchCollections({ limit: 2 });
+
+    expect(chain.limit).toHaveBeenCalledWith(2);
+  });
+
+  it("returns limited results when limit param is provided", async () => {
+    mockSelect.mockReturnValueOnce(
+      createSelectChain({
+        data: [MOCK_COLLECTION_1, MOCK_COLLECTION_2],
+        error: null,
+      }),
+    );
+
+    const result = await fetchCollections({ limit: 2 });
+
+    expect(result).toHaveLength(2);
+  });
+
+  it("calls order with ascending true when order is asc", async () => {
+    const chain = createSelectChain({
+      data: [MOCK_COLLECTION_1],
+      error: null,
+    });
+    mockSelect.mockReturnValueOnce(chain);
+
+    await fetchCollections({ order: "asc" });
+
+    expect(chain.order).toHaveBeenCalledWith("updated_at", {
+      ascending: true,
+    });
+  });
+
+  it("calls order with ascending false when order is desc", async () => {
+    const chain = createSelectChain({
+      data: [MOCK_COLLECTION_1],
+      error: null,
+    });
+    mockSelect.mockReturnValueOnce(chain);
+
+    await fetchCollections({ order: "desc" });
+
+    expect(chain.order).toHaveBeenCalledWith("updated_at", {
+      ascending: false,
+    });
   });
 });
