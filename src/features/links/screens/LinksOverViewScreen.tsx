@@ -147,7 +147,7 @@ export function LinksOverViewScreen() {
         </View>
       </View>
 
-      {/* 2. コレクションセクション（Un Collectioned 固定 + 5件、New Collection は細い1列ライン） */}
+      {/* 2. コレクションセクション（最大5件・2カラム） */}
       <View className="gap-2">
         <View className="flex-row items-center justify-between py-0.5">
           <Text className="text-sm font-semibold uppercase tracking-wider text-slate-500">
@@ -169,7 +169,7 @@ export function LinksOverViewScreen() {
           </Pressable>
         </View>
         <View className="gap-2">
-          {/* 1行目: Un Collectioned（固定）+ 最初のコレクション */}
+          {/* 2カラム: Un Collectioned + 最大5件のコレクション */}
           <View className="flex-row gap-2">
             <View className="min-h-28 min-w-0 flex-1">
               <CollectionCard
@@ -179,7 +179,7 @@ export function LinksOverViewScreen() {
                 href="/links/un-collectioned"
               />
             </View>
-            {collections[0] ? (
+            {collections[0] && (
               <View className="min-h-28 min-w-0 flex-1">
                 <CollectionCard
                   emoji={collections[0].emoji ?? undefined}
@@ -188,20 +188,14 @@ export function LinksOverViewScreen() {
                   href={`/collections/${collections[0].id}`}
                 />
               </View>
-            ) : null}
+            )}
           </View>
-          {/* 2行目以降: 残りのコレクション（2カラム） */}
-          {Array.from({
-            length: Math.ceil(Math.max(0, collections.length - 1) / 2),
-          }).map((_, rowIndex) => {
-            const rowItems = collections.slice(
-              rowIndex * 2 + 1,
-              rowIndex * 2 + 3,
-            );
-            if (rowItems.length === 0) return null;
+          {[1, 3].map((start) => {
+            const pair = collections.slice(start, start + 2);
+            if (pair.length === 0) return null;
             return (
-              <View key={rowIndex} className="flex-row gap-2">
-                {rowItems.map((col) => (
+              <View key={start} className="flex-row gap-2">
+                {pair.map((col) => (
                   <View key={col.id} className="min-h-28 min-w-0 flex-1">
                     <CollectionCard
                       emoji={col.emoji ?? undefined}
@@ -214,7 +208,7 @@ export function LinksOverViewScreen() {
               </View>
             );
           })}
-          {/* New Collection: 細い1列ライン */}
+          {/* New Collection */}
           <Pressable
             onPress={presentCollectionCreateModal}
             className="flex-row items-center justify-center gap-2 rounded-xl border border-dashed border-slate-300 bg-slate-50/50 py-3 active:bg-slate-100"
