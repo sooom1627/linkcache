@@ -31,3 +31,14 @@ export const updateCollectionSchema = createCollectionSchema.partial();
  * コレクション更新APIのパラメータ
  */
 export type UpdateCollectionParams = z.infer<typeof updateCollectionSchema>;
+
+/**
+ * コレクション一覧取得APIの戻り値型（UI用）
+ * itemsCount は collection_links の件数
+ */
+export type CollectionWithCount = {
+  id: string;
+  name: string;
+  emoji: string | null;
+  itemsCount: number;
+};

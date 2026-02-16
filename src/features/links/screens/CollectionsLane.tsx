@@ -3,12 +3,11 @@ import { ScrollView, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 
 import { CollectionChip } from "../components/CollectionChip";
-
-import { mockCollections } from "./CollectionDetailScreen";
+import { useCollections } from "../hooks/useCollections";
 
 export function CollectionsLane() {
   const router = useRouter();
-  const collections = Object.values(mockCollections);
+  const { collections } = useCollections();
 
   return (
     <View>
@@ -23,8 +22,8 @@ export function CollectionsLane() {
         {collections.map((col) => (
           <CollectionChip
             key={col.id}
-            emoji={col.emoji}
-            title={col.title}
+            emoji={col.emoji ?? undefined}
+            title={col.name}
             onPress={() => router.push(`/collections/${col.id}`)}
           />
         ))}

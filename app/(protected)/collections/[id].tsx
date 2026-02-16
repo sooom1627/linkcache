@@ -6,10 +6,8 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 
 import { useTranslation } from "react-i18next";
 
-import {
-  CollectionDetailScreen,
-  mockCollections,
-} from "@/src/features/links/screens/CollectionDetailScreen";
+import { useCollections } from "@/src/features/links/hooks/useCollections";
+import { CollectionDetailScreen } from "@/src/features/links/screens/CollectionDetailScreen";
 import { CollectionEditModal } from "@/src/features/links/screens/CollectionEditModal";
 import { ScreenContainer } from "@/src/shared/components/layout/ScreenContainer";
 import { useBottomSheetModal } from "@/src/shared/hooks/useBottomSheetModal";
@@ -23,6 +21,7 @@ export default function CollectionDetailRoute() {
   const params = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { t } = useTranslation();
+  const { collections } = useCollections();
   const {
     ref: editModalRef,
     present: presentEditModal,
@@ -63,9 +62,11 @@ export default function CollectionDetailRoute() {
         ? rawId[0]
         : undefined;
   const collection =
-    collectionId != null ? (mockCollections[collectionId] ?? null) : null;
+    collectionId != null
+      ? (collections.find((c) => c.id === collectionId) ?? null)
+      : null;
   const headerTitle = collection
-    ? `${collection.emoji} ${collection.title}`
+    ? `${collection.emoji ?? ""} ${collection.name}`.trim() || collection.name
     : t("links.collection_list.title");
 
   if (collectionId == null || collectionId === "") {
@@ -105,8 +106,8 @@ export default function CollectionDetailRoute() {
         <CollectionEditModal
           ref={editModalRef}
           collectionId={collection.id}
-          initialName={collection.title}
-          initialEmoji={collection.emoji}
+          initialName={collection.name}
+          initialEmoji={collection.emoji ?? ""}
           onClose={dismissEditModal}
         />
       ) : null}

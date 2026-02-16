@@ -11,21 +11,10 @@ import { ToggleMenu } from "@/src/shared/components/ToggleMenu";
 import { colors } from "@/src/shared/constants/colors";
 
 import { LinkListCard } from "../components/LinkListCard";
+import { useCollections } from "../hooks/useCollections";
 import type { UserLink } from "../types/linkList.types";
 
-/** モック: コレクション情報（CollectionListScreen と整合）。ルートのヘッダー表示用にエクスポート */
-export const mockCollections: Record<
-  string,
-  { id: string; emoji: string; title: string; itemsCount: number }
-> = {
-  "1": { id: "1", emoji: "💼", title: "Work", itemsCount: 24 },
-  "2": { id: "2", emoji: "🎨", title: "Design", itemsCount: 56 },
-  "3": { id: "3", emoji: "🍳", title: "Recipes", itemsCount: 12 },
-  "4": { id: "4", emoji: "💻", title: "Tech", itemsCount: 31 },
-  "5": { id: "5", emoji: "📚", title: "Learning", itemsCount: 18 },
-};
-
-/** モック: コレクション別リンク（API未実装のため） */
+/** モック: コレクション別リンク（API未実装のため、機能6で置き換え予定） */
 const MOCK_COLLECTION_LINKS: Record<string, UserLink[]> = {
   "1": [
     {
@@ -98,8 +87,9 @@ export function CollectionDetailScreen({
 }: CollectionDetailScreenProps) {
   const { t } = useTranslation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { collections } = useCollections();
 
-  const collection = mockCollections[collectionId] ?? null;
+  const collection = collections.find((c) => c.id === collectionId) ?? null;
   const links = MOCK_COLLECTION_LINKS[collectionId] ?? [];
 
   const handleToggleMenu = useCallback(() => {
@@ -173,14 +163,15 @@ export function CollectionDetailScreen({
                   numberOfLines={1}
                   selectable
                 >
-                  {collection.title}
+                  {collection.name}
                 </Text>
                 <Text
                   className="mt-0.5 text-sm text-slate-500"
                   style={{ fontVariant: ["tabular-nums"] }}
                   selectable
                 >
-                  {links.length} {t("links.collection_detail.items_count")}
+                  {collection.itemsCount}{" "}
+                  {t("links.collection_detail.items_count")}
                 </Text>
               </View>
               {onEdit != null || onDelete != null ? (
@@ -203,7 +194,7 @@ export function CollectionDetailScreen({
           </View>
         </View>
       ) : null,
-    [collection, links.length, t, onEdit, onDelete, handleToggleMenu],
+    [collection, t, onEdit, onDelete, handleToggleMenu],
   );
 
   const renderEmpty = useCallback(

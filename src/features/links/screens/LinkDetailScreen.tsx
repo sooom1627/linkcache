@@ -15,6 +15,7 @@ import { formatDateTime } from "@/src/shared/utils/timezone";
 import { CollectionChip } from "../components/CollectionChip";
 import { LinkDetailActionButtonGroup } from "../components/LinkDetailActionButtonGroup";
 import { LinkReadStatusModal } from "../components/LinkReadStatusModal";
+import { useCollections } from "../hooks/useCollections";
 import { useDeleteLink } from "../hooks/useDeleteLink";
 import { useLinkDetail } from "../hooks/useLinkDetail";
 import { extractDomain } from "../hooks/useLinkPaste";
@@ -23,15 +24,6 @@ import { shareLink } from "../utils/share";
 import { getStatusStyle } from "../utils/statusStyles";
 
 import { CollectionCreateModal } from "./CollectionCreateModal";
-
-/** モック: 全コレクション（API未実装のため） */
-const MOCK_COLLECTIONS = [
-  { id: "1", emoji: "📚", title: "Read Soon" },
-  { id: "2", emoji: "🔬", title: "Tech" },
-  { id: "3", emoji: "🎨", title: "Design" },
-  { id: "4", emoji: "💼", title: "Work" },
-  { id: "5", emoji: "💡", title: "Ideas" },
-] as const;
 
 interface LinkDetailScreenProps {
   linkId: string;
@@ -59,12 +51,13 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
     present: presentCollectionCreateModal,
     dismiss: dismissCollectionCreateModal,
   } = useBottomSheetModal();
+  const { collections } = useCollections();
 
   const isDone = link?.status === "done";
 
-  /** このリンクが属するコレクションID（タップでトグル、API未実装のためローカル状態） */
+  /** このリンクが属するコレクションID（タップでトグル、API未実装のためローカル状態。機能7でサーバー連携予定） */
   const [linkedCollectionIds, setLinkedCollectionIds] = useState<Set<string>>(
-    () => new Set(["1", "2"]),
+    () => new Set(),
   );
 
   const handleToggleCollection = useCallback((collectionId: string) => {
@@ -306,11 +299,11 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
               {t("links.detail.collections_label")}
             </Text>
             <View className="mb-6 flex-row flex-wrap gap-2">
-              {MOCK_COLLECTIONS.map((col) => (
+              {collections.map((col) => (
                 <CollectionChip
                   key={col.id}
-                  emoji={col.emoji}
-                  title={col.title}
+                  emoji={col.emoji ?? undefined}
+                  title={col.name}
                   selected={linkedCollectionIds.has(col.id)}
                   onPress={() => handleToggleCollection(col.id)}
                   accessibilityHint={t("links.detail.collections_tap_hint")}
