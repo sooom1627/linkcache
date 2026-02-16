@@ -88,6 +88,7 @@ class ShareViewController: UIViewController {
         case loginRequired
         case saveFailed
         case tryFromApp
+        case savedToQueue
 
         var ja: String {
             switch self {
@@ -100,6 +101,7 @@ class ShareViewController: UIViewController {
             case .loginRequired: return "アプリからサインインが必要です"
             case .saveFailed: return "保存に失敗しました"
             case .tryFromApp: return "アプリから再度お試しください"
+            case .savedToQueue: return "アプリ起動時に自動保存されます"
             }
         }
 
@@ -114,6 +116,7 @@ class ShareViewController: UIViewController {
             case .loginRequired: return "Sign in from the app"
             case .saveFailed: return "Save failed"
             case .tryFromApp: return "Try again from the app"
+            case .savedToQueue: return "Will sync when you open the app"
             }
         }
     }
@@ -322,56 +325,67 @@ class ShareViewController: UIViewController {
                 let step2StartTime = Date()
                 self.updateLoadingState(message: self.localized(.loadingLink), url: url)
 
-                // Keychain からトークン取得（認証エラーは早めに検出）
-                guard let token = KeychainService.getSupabaseToken() else {
-                    self.showError(
-                        message: self.localized(.pleaseLogin),
-                        subMessage: self.localized(.loginRequired)
-                    )
-                    DispatchQueue.main.asyncAfter(deadline: .now() + Anim.errorDismissDelay) { [weak self] in
-                        self?.animateOut { self?.closeExtension() }
-                    }
-                    return
-                }
-
-                // Step 3: OGPメタデータを取得
-                OGPMetadataFetcher.fetch(url: url) { [weak self] metadata in
+                // Keychain からトークン取得（非同期、必要に応じてリフレッシュ）
+                KeychainService.getSupabaseToken { [weak self] token in
                     guard let self = self else { return }
 
-                    // Step 2完了 - 最小表示時間を確保してからStep 3へ
-                    let step2Elapsed = Date().timeIntervalSince(step2StartTime)
-                    let step2Delay = max(0, Anim.minimumStepDuration - step2Elapsed)
+                    guard let token = token else {
+                        DispatchQueue.main.async { [weak self] in
+                            guard let self = self else { return }
+                            // 認証失敗時もキューに保存して後で同期
+                            PendingLinksQueue.enqueue(url: url)
+                            self.showError(
+                                message: self.localized(.pleaseLogin),
+                                subMessage: self.localized(.loginRequired)
+                            )
+                            DispatchQueue.main.asyncAfter(deadline: .now() + Anim.errorDismissDelay) { [weak self] in
+                                self?.animateOut { self?.closeExtension() }
+                            }
+                        }
+                        return
+                    }
 
-                    DispatchQueue.main.asyncAfter(deadline: .now() + step2Delay) { [weak self] in
+                    // Step 3: OGPメタデータを取得
+                    OGPMetadataFetcher.fetch(url: url) { [weak self] metadata in
                         guard let self = self else { return }
 
-                        // Step 4: URLを保存中
-                        let step3StartTime = Date()
-                        self.updateLoadingState(message: self.localized(.savingURL), url: url)
+                        // Step 2完了 - 最小表示時間を確保してからStep 3へ
+                        let step2Elapsed = Date().timeIntervalSince(step2StartTime)
+                        let step2Delay = max(0, Anim.minimumStepDuration - step2Elapsed)
 
-                        // Step 5: Supabase に保存（メタデータあり/なし両対応）
-                        SupabaseAPIClient.saveLink(url: url, token: token, metadata: metadata) { [weak self] success in
+                        DispatchQueue.main.asyncAfter(deadline: .now() + step2Delay) { [weak self] in
                             guard let self = self else { return }
 
-                            // Step 3完了 - 最小表示時間を確保してからStep 4へ
-                            let step3Elapsed = Date().timeIntervalSince(step3StartTime)
-                            let step3Delay = max(0, Anim.minimumStepDuration - step3Elapsed)
+                            // Step 4: URLを保存中
+                            let step3StartTime = Date()
+                            self.updateLoadingState(message: self.localized(.savingURL), url: url)
 
-                            DispatchQueue.main.asyncAfter(deadline: .now() + step3Delay) { [weak self] in
+                            // Step 5: Supabase に保存（メタデータあり/なし両対応）
+                            SupabaseAPIClient.saveLink(url: url, token: token, metadata: metadata) { [weak self] success in
                                 guard let self = self else { return }
 
-                                if success {
-                                    self.showSuccess(url: url)
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + Anim.successDismissDelay) { [weak self] in
-                                        self?.animateOut { self?.closeExtension() }
-                                    }
-                                } else {
-                                    self.showError(
-                                        message: self.localized(.saveFailed),
-                                        subMessage: self.localized(.tryFromApp)
-                                    )
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + Anim.errorDismissDelay) { [weak self] in
-                                        self?.animateOut { self?.closeExtension() }
+                                // Step 3完了 - 最小表示時間を確保してからStep 4へ
+                                let step3Elapsed = Date().timeIntervalSince(step3StartTime)
+                                let step3Delay = max(0, Anim.minimumStepDuration - step3Elapsed)
+
+                                DispatchQueue.main.asyncAfter(deadline: .now() + step3Delay) { [weak self] in
+                                    guard let self = self else { return }
+
+                                    if success {
+                                        self.showSuccess(url: url)
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + Anim.successDismissDelay) { [weak self] in
+                                            self?.animateOut { self?.closeExtension() }
+                                        }
+                                    } else {
+                                        // 保存失敗時はキューに追加して後で同期
+                                        PendingLinksQueue.enqueue(url: url)
+                                        self.showError(
+                                            message: self.localized(.saveFailed),
+                                            subMessage: self.localized(.savedToQueue)
+                                        )
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + Anim.errorDismissDelay) { [weak self] in
+                                            self?.animateOut { self?.closeExtension() }
+                                        }
                                     }
                                 }
                             }

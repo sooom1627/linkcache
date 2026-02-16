@@ -15,15 +15,105 @@ enum KeychainService {
     /// この値は直接使用されていませんが、プラグイン互換性のため保持しています。
     private static let keychainService = "com.sooom.linkcache.dev"
 
-    /// Keychainから Supabase セッショントークンを取得
+    /// Keychainから Supabase セッショントークンを取得（必要に応じてリフレッシュ）
     ///
     /// Expo SecureStore と同じ Keychain Access Group を使用して、
     /// メインアプリで保存された認証トークンを読み取ります。
-    /// トークンの有効期限もチェックし、期限切れの場合は nil を返します。
+    /// トークンの有効期限が切れている場合は、refresh_token を使用して
+    /// 新しいアクセストークンを取得します。
     ///
-    /// - Returns: 有効な access_token、取得失敗または期限切れの場合は nil
-    static func getSupabaseToken() -> String? {
-        // Service名を指定しないことで、Expo SecureStoreが使用するService名に関係なく検索可能
+    /// - Parameter completion: 有効な access_token、取得失敗の場合は nil
+    static func getSupabaseToken(completion: @escaping (String?) -> Void) {
+        guard let sessionData = readSessionFromKeychain() else {
+            completion(nil)
+            return
+        }
+
+        do {
+            guard let json = try JSONSerialization.jsonObject(with: sessionData) as? [String: Any],
+                  let accessToken = json["access_token"] as? String else {
+                #if DEBUG
+                print("[ShareExtension] Failed to parse access_token from JSON")
+                #endif
+                completion(nil)
+                return
+            }
+
+            // トークンの有効期限をチェック
+            guard let expiresAt = json["expires_at"] as? TimeInterval else {
+                #if DEBUG
+                print("[ShareExtension] expires_at not found in session - treating token as invalid")
+                #endif
+                completion(nil)
+                return
+            }
+
+            let expirationDate = Date(timeIntervalSince1970: expiresAt)
+
+            // 期限に余裕がある場合はそのまま返す（30秒のバッファ）
+            if expirationDate > Date().addingTimeInterval(30) {
+                #if DEBUG
+                print("[ShareExtension] Token is valid, expires at: \(expirationDate)")
+                #endif
+                completion(accessToken)
+                return
+            }
+
+            // 期限切れ or 間もなく切れる場合はリフレッシュを試行
+            #if DEBUG
+            print("[ShareExtension] Token expired or expiring soon, attempting refresh...")
+            #endif
+
+            guard let refreshToken = json["refresh_token"] as? String else {
+                #if DEBUG
+                print("[ShareExtension] No refresh_token found in session")
+                #endif
+                completion(nil)
+                return
+            }
+
+            refreshAccessToken(refreshToken: refreshToken) { newToken in
+                completion(newToken)
+            }
+        } catch {
+            #if DEBUG
+            print("[ShareExtension] Failed to parse Supabase session: \(error)")
+            #endif
+            completion(nil)
+        }
+    }
+
+    /// 同期版（後方互換性のため保持、新コードはasync版を使用すること）
+    static func getSupabaseTokenSync() -> String? {
+        guard let sessionData = readSessionFromKeychain() else {
+            return nil
+        }
+
+        do {
+            guard let json = try JSONSerialization.jsonObject(with: sessionData) as? [String: Any],
+                  let accessToken = json["access_token"] as? String else {
+                return nil
+            }
+
+            guard let expiresAt = json["expires_at"] as? TimeInterval else {
+                return nil
+            }
+
+            let expirationDate = Date(timeIntervalSince1970: expiresAt)
+            if expirationDate <= Date() {
+                return nil
+            }
+
+            return accessToken
+        } catch {
+            return nil
+        }
+    }
+
+    // MARK: - Private Helpers
+
+    /// Keychainからセッションデータを読み取る
+    private static func readSessionFromKeychain() -> Data? {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: supabaseSessionKey,
@@ -64,43 +154,197 @@ enum KeychainService {
         print("[ShareExtension] Retrieved data from Keychain: \(data.count) bytes")
         #endif
 
-        // JSON をパースして access_token を取得
-        do {
-            guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-                  let accessToken = json["access_token"] as? String else {
-                #if DEBUG
-                print("[ShareExtension] Failed to parse access_token from JSON")
-                #endif
-                return nil
-            }
+        return data
+    }
 
-            // トークンの有効期限をチェック
-            // expires_at が存在しない場合は、セッションデータが不完全と見なしトークンを無効として扱う
-            guard let expiresAt = json["expires_at"] as? TimeInterval else {
-                #if DEBUG
-                print("[ShareExtension] expires_at not found in session - treating token as invalid")
-                #endif
-                return nil
-            }
+    /// Supabase Auth API を使用してトークンをリフレッシュ
+    private static func refreshAccessToken(refreshToken: String, completion: @escaping (String?) -> Void) {
+        let supabaseUrl = Bundle.main.object(forInfoDictionaryKey: "SUPABASE_URL") as? String ?? ""
+        let supabaseAnonKey = Bundle.main.object(forInfoDictionaryKey: "SUPABASE_ANON_KEY") as? String ?? ""
 
-            let expirationDate = Date(timeIntervalSince1970: expiresAt)
-            if expirationDate <= Date() {
-                #if DEBUG
-                print("[ShareExtension] Token expired at: \(expirationDate)")
-                #endif
-                return nil
-            }
-
+        guard !supabaseUrl.isEmpty, !supabaseAnonKey.isEmpty else {
             #if DEBUG
-            print("[ShareExtension] Successfully retrieved Supabase token")
+            print("[ShareExtension] Cannot refresh: Supabase config missing")
             #endif
-            return accessToken
-        } catch {
-            #if DEBUG
-            print("[ShareExtension] Failed to parse Supabase session: \(error)")
-            #endif
-            return nil
+            completion(nil)
+            return
         }
+
+        let endpoint = "\(supabaseUrl)/auth/v1/token?grant_type=refresh_token"
+        guard let url = URL(string: endpoint) else {
+            completion(nil)
+            return
+        }
+
+        let body: [String: Any] = ["refresh_token": refreshToken]
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: body) else {
+            completion(nil)
+            return
+        }
+
+        let config = URLSessionConfiguration.default
+        config.timeoutIntervalForRequest = 10.0
+        let session = URLSession(configuration: config)
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue(supabaseAnonKey, forHTTPHeaderField: "apikey")
+        request.httpBody = jsonData
+
+        let task = session.dataTask(with: request) { data, response, error in
+            session.finishTasksAndInvalidate()
+
+            guard error == nil,
+                  let httpResponse = response as? HTTPURLResponse,
+                  httpResponse.statusCode == 200,
+                  let data = data else {
+                #if DEBUG
+                print("[ShareExtension] Token refresh failed: \(error?.localizedDescription ?? "unknown")")
+                #endif
+                completion(nil)
+                return
+            }
+
+            do {
+                guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                      let newAccessToken = json["access_token"] as? String else {
+                    #if DEBUG
+                    print("[ShareExtension] Failed to parse refreshed token")
+                    #endif
+                    completion(nil)
+                    return
+                }
+
+                // リフレッシュ成功: Keychainに新しいセッションを保存
+                // メインアプリが次回起動時に最新のセッションを読み取れるようにする
+                saveSessionToKeychain(json)
+
+                #if DEBUG
+                print("[ShareExtension] Token refreshed successfully")
+                #endif
+                completion(newAccessToken)
+            } catch {
+                #if DEBUG
+                print("[ShareExtension] Failed to parse refresh response: \(error)")
+                #endif
+                completion(nil)
+            }
+        }
+
+        task.resume()
+    }
+
+    /// リフレッシュ後のセッションをKeychainに書き戻す
+    private static func saveSessionToKeychain(_ sessionJson: [String: Any]) {
+        guard let data = try? JSONSerialization.data(withJSONObject: sessionJson) else {
+            #if DEBUG
+            print("[ShareExtension] Failed to serialize refreshed session for Keychain")
+            #endif
+            return
+        }
+
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: supabaseSessionKey
+        ]
+
+        let attributes: [String: Any] = [
+            kSecValueData as String: data
+        ]
+
+        let status = SecItemUpdate(query as CFDictionary, attributes as CFDictionary)
+
+        #if DEBUG
+        if status == errSecSuccess {
+            print("[ShareExtension] Refreshed session saved to Keychain")
+        } else {
+            print("[ShareExtension] Failed to save refreshed session to Keychain: \(status)")
+        }
+        #endif
+    }
+}
+
+// MARK: - Pending Links Queue
+
+/// Share Extension で保存失敗したリンクをApp Group UserDefaultsにキューイング
+enum PendingLinksQueue {
+
+    /// App Group identifier
+    private static var appGroupId: String {
+        let bundleId = Bundle.main.bundleIdentifier ?? ""
+        // Share Extension のバンドルIDから App Group ID を推定
+        // com.sooom.linkcache.dev.share-extension -> group.com.sooom.linkcache.dev
+        // com.sooom.linkcache.share-extension -> group.com.sooom.linkcache
+        let base = bundleId.replacingOccurrences(of: ".share-extension", with: "")
+        return "group.\(base)"
+    }
+
+    private static let pendingLinksKey = "pendingLinks"
+
+    /// 保存失敗したリンクをキューに追加
+    ///
+    /// App Group の UserDefaults に URL を保存し、
+    /// メインアプリが次回起動時に同期できるようにします。
+    ///
+    /// - Parameter url: キューイングするURL
+    static func enqueue(url: String) {
+        guard let defaults = UserDefaults(suiteName: appGroupId) else {
+            #if DEBUG
+            print("[ShareExtension] Failed to access App Group UserDefaults: \(appGroupId)")
+            #endif
+            return
+        }
+
+        var pending = defaults.stringArray(forKey: pendingLinksKey) ?? []
+
+        // 重複チェック
+        guard !pending.contains(url) else {
+            #if DEBUG
+            print("[ShareExtension] URL already in pending queue: \(url)")
+            #endif
+            return
+        }
+
+        pending.append(url)
+
+        // キューサイズ上限（100件）
+        if pending.count > 100 {
+            pending = Array(pending.suffix(100))
+        }
+
+        defaults.set(pending, forKey: pendingLinksKey)
+
+        #if DEBUG
+        print("[ShareExtension] Enqueued pending link: \(url) (total: \(pending.count))")
+        #endif
+    }
+
+    /// キューに保留中のリンクがあるか
+    static func hasPendingLinks() -> Bool {
+        guard let defaults = UserDefaults(suiteName: appGroupId) else { return false }
+        let pending = defaults.stringArray(forKey: pendingLinksKey) ?? []
+        return !pending.isEmpty
+    }
+
+    /// 保留中のリンク一覧を取得
+    static func getPendingLinks() -> [String] {
+        guard let defaults = UserDefaults(suiteName: appGroupId) else { return [] }
+        return defaults.stringArray(forKey: pendingLinksKey) ?? []
+    }
+
+    /// 特定のリンクをキューから削除（保存成功後）
+    static func dequeue(url: String) {
+        guard let defaults = UserDefaults(suiteName: appGroupId) else { return }
+        var pending = defaults.stringArray(forKey: pendingLinksKey) ?? []
+        pending.removeAll { $0 == url }
+        defaults.set(pending, forKey: pendingLinksKey)
+    }
+
+    /// キューを全てクリア
+    static func clearAll() {
+        guard let defaults = UserDefaults(suiteName: appGroupId) else { return }
+        defaults.removeObject(forKey: pendingLinksKey)
     }
 }
 

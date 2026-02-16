@@ -20,6 +20,7 @@ interface DashboardOverviewProps {
   inboxCount: number;
   readCount: number;
   allLinksCount: number;
+  isLoading?: boolean;
 }
 
 /**
@@ -35,6 +36,7 @@ export function DashboardOverview({
   inboxCount,
   readCount,
   allLinksCount,
+  isLoading = false,
 }: DashboardOverviewProps) {
   const router = useRouter();
   const { t } = useTranslation();
@@ -72,7 +74,7 @@ export function DashboardOverview({
                     <Layers size={18} color="white" strokeWidth={2} />
                   </View>
                   <Text className="text-4xl font-bold tracking-tight text-white">
-                    {inboxCount}
+                    {isLoading ? "-" : inboxCount}
                   </Text>
                   <Text className="mt-0.5 text-xs font-medium text-slate-400">
                     {t("links.dashboard.unsorted_links")}
@@ -118,7 +120,7 @@ export function DashboardOverview({
               </View>
               <View>
                 <Text className="text-2xl font-bold tabular-nums text-slate-900">
-                  {readCount}
+                  {isLoading ? "-" : readCount}
                 </Text>
                 <Text className="mt-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
                   {t("links.dashboard.read_week")}
@@ -136,7 +138,7 @@ export function DashboardOverview({
               </View>
               <View>
                 <Text className="text-2xl font-bold tabular-nums text-slate-900">
-                  {allLinksCount}
+                  {isLoading ? "-" : allLinksCount}
                 </Text>
                 <Text className="mt-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
                   {t("links.dashboard.all_links")}

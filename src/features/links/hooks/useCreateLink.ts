@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
+import { checkDuplicateLink } from "../api/checkDuplicateLink.api";
 import {
   createLinkWithStatus,
   type CreateLinkResponse,
@@ -8,6 +9,19 @@ import { linkQueryKeys } from "../constants/queryKeys";
 import type { OgpMetadata } from "../utils/metadata";
 import { fetchOgpMetadata } from "../utils/metadata";
 import { normalizeUrl } from "../utils/normalizeUrl";
+
+/**
+ * 重複リンクエラー
+ *
+ * 既に同じURLが保存されている場合にスローされます。
+ * UI側でエラータイプを判別するために使用します。
+ */
+export class DuplicateLinkError extends Error {
+  constructor() {
+    super("DUPLICATE_LINK");
+    this.name = "DuplicateLinkError";
+  }
+}
 
 /**
  * リンク作成フックの戻り値
@@ -26,17 +40,23 @@ export interface UseCreateLinkReturn {
  * リンク作成フック
  *
  * URLからOGPメタデータを取得し、リンクを作成します。
+ * 重複チェックを行い、既に保存済みのURLの場合はDuplicateLinkErrorをスローします。
  * メタデータ取得に失敗してもURLのみでリンクは作成されます。
  *
  * @returns リンク作成mutation関数と状態
  *
  * @example
  * ```tsx
- * const { createLink, isPending, isError, isSuccess } = useCreateLink();
+ * const { createLink, isPending, isError, isSuccess, error } = useCreateLink();
  *
  * const handleSubmit = () => {
  *   createLink("https://example.com");
  * };
+ *
+ * // 重複チェック
+ * if (error instanceof DuplicateLinkError) {
+ *   // 重複エラーの表示
+ * }
  * ```
  */
 export function useCreateLink(): UseCreateLinkReturn {
@@ -46,6 +66,12 @@ export function useCreateLink(): UseCreateLinkReturn {
     mutationFn: async (url: string) => {
       // URLを正規化
       const normalizedUrl = normalizeUrl(url);
+
+      // 重複チェック: 同じURLが既に保存されていないか確認
+      const isDuplicate = await checkDuplicateLink(normalizedUrl);
+      if (isDuplicate) {
+        throw new DuplicateLinkError();
+      }
 
       // React Queryのキャッシュを活用してOGPメタデータを取得
       // キャッシュがあればそれを使用、なければfetchしてキャッシュに保存

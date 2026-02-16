@@ -107,13 +107,16 @@
       "saving": "Saving...",
       "error_messages": {
         "url_required": "URL is required",
-        "url_invalid": "Please enter a valid URL"
+        "url_invalid": "Please enter a valid URL",
+        "url_duplicate": "This link has already been saved"
       },
       "callback_messages": {
         "success_title": "Link Saved",
         "success_message": "Link has been added to your inbox",
         "error_title": "Save Failed",
-        "error_message": "Failed to save link. Please try again."
+        "error_message": "Failed to save link. Please try again.",
+        "duplicate_title": "Duplicate Link",
+        "duplicate_message": "This link has already been saved to your library."
       }
     },
     "paste": {
@@ -227,7 +230,9 @@
       "title": "Collections",
       "my_collections": "My Collections",
       "empty_title": "No collections yet",
-      "empty_description": "Create a new collection to organize your links"
+      "empty_description": "Create a new collection to organize your links",
+      "coming_soon": "Coming Soon",
+      "coming_soon_description": "Collections feature is currently in development. Stay tuned!"
     },
     "collection_detail": {
       "empty_title": "No links in this collection",

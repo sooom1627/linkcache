@@ -107,13 +107,16 @@
       "saving": "保存中...",
       "error_messages": {
         "url_required": "URLは必須です",
-        "url_invalid": "有効なURLを入力してください"
+        "url_invalid": "有効なURLを入力してください",
+        "url_duplicate": "このリンクは既に保存されています"
       },
       "callback_messages": {
         "success_title": "リンクを保存しました",
         "success_message": "リンクがインボックスに追加されました",
         "error_title": "保存に失敗しました",
-        "error_message": "リンクを保存できませんでした。再度お試しください。"
+        "error_message": "リンクを保存できませんでした。再度お試しください。",
+        "duplicate_title": "リンクが重複しています",
+        "duplicate_message": "このリンクは既にライブラリに保存されています。"
       }
     },
     "paste": {
@@ -227,7 +230,9 @@
       "title": "コレクション",
       "my_collections": "マイコレクション",
       "empty_title": "コレクションがまだありません",
-      "empty_description": "新規コレクションを作成して、リンクを整理しましょう"
+      "empty_description": "新規コレクションを作成して、リンクを整理しましょう",
+      "coming_soon": "近日公開",
+      "coming_soon_description": "コレクション機能は現在開発中です。もうしばらくお待ちください！"
     },
     "collection_detail": {
       "empty_title": "このコレクションにはリンクがありません",
