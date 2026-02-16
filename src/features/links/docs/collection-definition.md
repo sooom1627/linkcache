@@ -29,15 +29,14 @@
 
 #### テーブル構造
 
-| カラム名      | データ型      | NULL許可 | デフォルト値        | 説明                               |
-| ------------- | ------------- | -------- | ------------------- | ---------------------------------- |
-| `id`          | `uuid`        | NO       | `gen_random_uuid()` | 主キー（自動生成）                 |
-| `user_id`     | `uuid`        | NO       | -                   | ユーザーID（外部キー: `users.id`） |
-| `name`        | `text`        | NO       | -                   | コレクション名（必須）             |
-| `description` | `text`        | YES      | -                   | 説明文（オプション）               |
-| `emoji`       | `text`        | YES      | -                   | 表示用絵文字（オプション、例: 📚） |
-| `created_at`  | `timestamptz` | YES      | `now()`             | 作成日時（自動設定）               |
-| `updated_at`  | `timestamptz` | YES      | `now()`             | 更新日時（自動設定）               |
+| カラム名     | データ型      | NULL許可 | デフォルト値        | 説明                               |
+| ------------ | ------------- | -------- | ------------------- | ---------------------------------- |
+| `id`         | `uuid`        | NO       | `gen_random_uuid()` | 主キー（自動生成）                 |
+| `user_id`    | `uuid`        | NO       | -                   | ユーザーID（外部キー: `users.id`） |
+| `name`       | `text`        | NO       | -                   | コレクション名（必須）             |
+| `emoji`      | `text`        | YES      | -                   | 表示用絵文字（オプション、例: 📚） |
+| `created_at` | `timestamptz` | YES      | `now()`             | 作成日時（自動設定）               |
+| `updated_at` | `timestamptz` | YES      | `now()`             | 更新日時（自動設定）               |
 
 #### 主キー
 
@@ -131,7 +130,6 @@
 │ - id (PK)       │
 │ - user_id (FK)  │
 │ - name          │
-│ - description   │
 │ - emoji         │
 │ - created_at    │
 │ - updated_at    │
@@ -193,7 +191,6 @@ type Collection = {
   id: string; // UUID
   user_id: string; // UUID (users.idへの外部キー)
   name: string; // 必須
-  description: string | null; // オプション
   emoji: string | null; // オプション（表示用絵文字、例: 📚）
   created_at: string | null; // ISO8601形式のタイムスタンプ
   updated_at: string | null; // ISO8601形式のタイムスタンプ
@@ -454,7 +451,6 @@ import type { Collection, CollectionLink } from "@features/links/types";
 // コレクション作成
 export async function createCollection(params: {
   name: string;
-  description?: string;
   emoji?: string;
 }): Promise<Collection>;
 
@@ -467,7 +463,7 @@ export async function getCollection(id: string): Promise<Collection>;
 // コレクション更新
 export async function updateCollection(
   id: string,
-  params: { name?: string; description?: string; emoji?: string },
+  params: { name?: string; emoji?: string },
 ): Promise<Collection>;
 
 // コレクション削除
@@ -501,20 +497,17 @@ export async function getCollectionLinks(
 // リクエスト型
 export interface CreateCollectionParams {
   name: string;
-  description?: string;
   emoji?: string;
 }
 
 export interface UpdateCollectionParams {
   name?: string;
-  description?: string;
   emoji?: string;
 }
 
 // Zodスキーマ
 export const createCollectionSchema = z.object({
   name: z.string().min(1).max(100),
-  description: z.string().max(500).optional(),
 });
 ```
 
