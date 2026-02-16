@@ -165,8 +165,11 @@ export function CollectionDetailScreen({ rawId }: CollectionDetailScreenProps) {
           <View className="h-16" />
           <View className="relative rounded-2xl bg-white p-4">
             <View className="flex-row items-center gap-3">
-              <View className="rounded-full bg-slate-100 p-2.5">
-                <Text className="text-2xl" selectable={false}>
+              <View className="flex size-14 items-center justify-center rounded-full bg-slate-100">
+                <Text
+                  className="text-2xl font-semibold uppercase"
+                  selectable={false}
+                >
                   {collection.emoji ?? collection.name?.[0] ?? ""}
                 </Text>
               </View>
