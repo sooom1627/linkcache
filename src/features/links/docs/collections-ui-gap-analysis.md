@@ -11,6 +11,7 @@
 
 | 日付       | 内容                                                                                                                                                                                                                                                        |
 | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-02-15 | CollectionCreateModal に API 連携を実装。useCreateCollection + createCollection API。Zod バリデーション（名前 100 文字超過で Alert）。onDismiss でフォームリセット（外タップ・パンダウン時もクリア）。                                                      |
 | 2026-02-15 | CollectionDetailScreen に編集・削除メニューを実装。コレクションカード右側の ellipsis から ToggleMenu で Edit/Delete を選択可能。削除は Alert で確認。Edit は CollectionEditModal を開く。翻訳キー（header_edit, header_delete, collection_edit 等）を追加。 |
 | 2026-02-15 | CollectionEditModal を新規作成。CollectionCreateModal と UI 統一。Edit 押下で表示。API 連携は未実装。                                                                                                                                                       |
 | 2026-02-15 | CollectionsLane の CollectionChip に `router.push(\`/collections/${id}\`)` を実装。mockCollections を共有して CollectionDetailScreen へ遷移。                                                                                                               |
@@ -37,12 +38,12 @@
 
 ### 1.1 コンポーネント
 
-| コンポーネント          | パス                                | 状態                                                                                         |
-| ----------------------- | ----------------------------------- | -------------------------------------------------------------------------------------------- |
-| `CollectionCard`        | `components/CollectionCard.tsx`     | ✅ 実装済み。emoji, title, itemsCount。`href` で Link 遷移（prefetch 対応）、`onPress` も可  |
-| `CollectionChip`        | `components/CollectionChip.tsx`     | ✅ 実装済み。emoji, title。選択状態の表示が可能                                              |
-| `CollectionCreateModal` | `screens/CollectionCreateModal.tsx` | ✅ 実装済み。名前・絵文字入力フォーム。送信時はモーダルを閉じるのみ                          |
-| `CollectionEditModal`   | `screens/CollectionEditModal.tsx`   | ✅ 実装済み。コレクション名・絵文字の編集。CollectionCreateModal と UI 統一。Edit 押下で表示 |
+| コンポーネント          | パス                                | 状態                                                                                                                         |
+| ----------------------- | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `CollectionCard`        | `components/CollectionCard.tsx`     | ✅ 実装済み。emoji, title, itemsCount。`href` で Link 遷移（prefetch 対応）、`onPress` も可                                  |
+| `CollectionChip`        | `components/CollectionChip.tsx`     | ✅ 実装済み。emoji, title。選択状態の表示が可能                                                                              |
+| `CollectionCreateModal` | `screens/CollectionCreateModal.tsx` | ✅ 実装済み。名前・絵文字入力フォーム。API 連携済み（useCreateCollection）。Zod バリデーション、onDismiss でフォームリセット |
+| `CollectionEditModal`   | `screens/CollectionEditModal.tsx`   | ✅ 実装済み。コレクション名・絵文字の編集。CollectionCreateModal と UI 統一。Edit 押下で表示                                 |
 
 ### 1.2 画面・セクション
 

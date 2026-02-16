@@ -251,7 +251,11 @@
       "name_placeholder": "例: 仕事, デザイン, テック",
       "emoji_label": "絵文字（任意）",
       "emoji_placeholder": "例: 📚",
-      "submit": "コレクションを作成"
+      "submit": "コレクションを作成",
+      "error_title": "作成に失敗しました",
+      "error_message": "コレクションを作成できませんでした。再度お試しください。",
+      "validation_name_max": "名前は100文字以内で入力してください。",
+      "clear_form": "クリア"
     },
     "collection_edit": {
       "title": "コレクションを編集",
