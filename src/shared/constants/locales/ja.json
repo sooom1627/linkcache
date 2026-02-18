@@ -230,6 +230,7 @@
       "empty_description": "新規コレクションを作成して、リンクを整理しましょう"
     },
     "collection_detail": {
+      "loading": "読み込み中...",
       "empty_title": "このコレクションにはリンクがありません",
       "empty_description": "リンク詳細画面からコレクションに追加できます",
       "items_count": "件",

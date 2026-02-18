@@ -12,6 +12,7 @@ import { colors } from "@/src/shared/constants/colors";
 import { useBottomSheetModal } from "@/src/shared/hooks/useBottomSheetModal";
 
 import { LinkListCard } from "../components/LinkListCard";
+import { useCollection } from "../hooks/useCollection";
 import { useCollections } from "../hooks/useCollections";
 import type { UserLink } from "../types/linkList.types";
 
@@ -101,9 +102,13 @@ export function CollectionDetailScreen({ rawId }: CollectionDetailScreenProps) {
   } = useBottomSheetModal();
 
   const collectionId = parseCollectionId(rawId);
+  const { collection: detailCollection, isLoading: isDetailLoading } =
+    useCollection(collectionId ?? "");
   const collection =
     collectionId != null && collectionId !== ""
-      ? (collections.find((c) => c.id === collectionId) ?? null)
+      ? (collections.find((c) => c.id === collectionId) ??
+        detailCollection ??
+        null)
       : null;
   const links =
     (collectionId ? MOCK_COLLECTION_LINKS[collectionId] : null) ?? [];
@@ -228,8 +233,30 @@ export function CollectionDetailScreen({ rawId }: CollectionDetailScreenProps) {
     [t],
   );
 
-  // コレクション未検出（不正なID or 存在しないID）
-  if (collectionId == null || collectionId === "" || !collection) {
+  // 不正なID
+  if (collectionId == null || collectionId === "") {
+    return (
+      <View className="flex-1 items-center justify-center px-6">
+        <Text className="text-center text-base text-slate-500">
+          {t("links.collection_detail.not_found")}
+        </Text>
+      </View>
+    );
+  }
+
+  // フォールバック取得中（一覧に無く、単体取得を待っている）
+  if (!collection && isDetailLoading) {
+    return (
+      <View className="flex-1 items-center justify-center px-6">
+        <Text className="text-center text-base text-slate-500">
+          {t("links.collection_detail.loading")}
+        </Text>
+      </View>
+    );
+  }
+
+  // コレクション未検出（存在しないID）
+  if (!collection) {
     return (
       <View className="flex-1 items-center justify-center px-6">
         <Text className="text-center text-base text-slate-500">
