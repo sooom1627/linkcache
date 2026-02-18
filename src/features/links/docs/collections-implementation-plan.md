@@ -1,6 +1,6 @@
 # Collections 機能 実装計画（機能単位）
 
-> **最終更新**: 2026年2月17日  
+> **最終更新**: 2026年2月19日  
 > **前提**: UIレイヤーは実装済み。本ドキュメントは API・hooks・types の統合実装を**機能単位**で整理する。  
 > **関連**:
 >
@@ -25,12 +25,12 @@
 - **UI**: 実装済み（CollectionListScreen, CollectionDetailScreen, CollectionCreateModal, CollectionEditModal, CollectionChip 等）
 - **DB**: `collections`, `collection_links` テーブル定義済み、RLS 有効
 - **型**: `Collection`, `CollectionLink`, `CollectionWithCount`（links.types.ts, collections.types.ts）
-- **API / Hooks**: 機能1（作成）、機能2（一覧取得）実装済み。その他は未実装（モックデータ使用中）
+- **API / Hooks**: 機能1（作成）、機能2（一覧取得）、機能5（詳細取得）実装済み。その他は未実装（モックデータ使用中）
 
 ### アーキテクチャ（ルートと画面の責務）
 
 - **`app/(protected)/collections/[id].tsx`**: ルーティングとレイアウトのみ。`rawId` を CollectionDetailScreen に渡す。
-- **CollectionDetailScreen**: 画面ロジックを集約。`rawId` を解析し、useCollections でコレクション取得、Edit/Delete モーダル管理、メニュー表示。
+- **CollectionDetailScreen**: 画面ロジックを集約。`rawId` を解析し、useCollections + useCollection（フォールバック）でコレクション取得、Edit/Delete モーダル管理、メニュー表示。
 
 ### ブランチ戦略
 
@@ -69,7 +69,7 @@
 - **Hook**: useCollections（useQuery + collectionQueryKeys.lists()）
 - **型**: CollectionWithCount（id, name, emoji, itemsCount）
 - **UI**: CollectionListScreen, LinksOverViewScreen, CollectionsLane, LinkDetailScreen, LinkCreateModal, CollectionDetailScreen
-- **CollectionDetailScreen**: `rawId` を受け取り parseCollectionId で ID 解析。useCollections で一覧取得し find で該当コレクションを特定。emoji 未設定時は name の頭文字をフォールバック表示。Edit メニューで CollectionEditModal を表示（useBottomSheetModal）
+- **CollectionDetailScreen**: `rawId` を受け取り parseCollectionId で ID 解析。useCollections で一覧取得し find で該当コレクションを特定。一覧に無い場合は useCollection で単体取得（フォールバック）。emoji 未設定時は name の頭文字をフォールバック表示。Edit メニューで CollectionEditModal を表示（useBottomSheetModal）
 
 ---
 
@@ -101,15 +101,22 @@
 
 ---
 
-### 機能5: コレクション詳細取得
+### 機能5: コレクション詳細取得 ✅ 実装済み
 
-**利用箇所**: CollectionDetailScreen（現状は useCollections + find で代用。直接 URL 遷移時や一覧未ロード時のフォールバック用に単体取得を追加）
+**利用箇所**: CollectionDetailScreen
 
-| レイヤー | ファイル               | 備考                                                                        |
-| -------- | ---------------------- | --------------------------------------------------------------------------- |
-| api      | `getCollection.api.ts` | `supabase.from("collections").select().eq().single()`                       |
-| hooks    | `useCollection.ts`     | useQuery + collectionQueryKeys.detail(id)、enabled: id != null && id !== "" |
-| UI接続   | CollectionDetailScreen | useCollections で不足する場合のフォールバック                               |
+**役割**: 主に**フォールバック用途**。通常フロー（一覧→詳細遷移）では useCollections のキャッシュで十分。必須ではない。
+
+| 取得経路       | 条件                             | データソース              |
+| -------------- | -------------------------------- | ------------------------- |
+| 主経路         | 一覧画面から遷移、キャッシュ済み | useCollections + find     |
+| フォールバック | 直接URL遷移、一覧未ロード        | useCollection（単体取得） |
+
+| レイヤー | ファイル               | 備考                                                                              |
+| -------- | ---------------------- | --------------------------------------------------------------------------------- |
+| api      | `getCollection.api.ts` | `supabase.from("collections").select("*, collection_links(count)").eq().single()` |
+| hooks    | `useCollection.ts`     | useQuery + collectionQueryKeys.detail(id)、enabled: id != null && id !== ""       |
+| UI接続   | CollectionDetailScreen | collection = find(collections) ?? detailCollection。ローディング・not_found 表示  |
 
 ---
 
@@ -189,7 +196,7 @@ useCreateLink を拡張するか、LinkCreateModal 内で useCreateLink と useA
     ↓
 機能2: コレクション一覧取得 ✅
     ↓
-機能5: コレクション詳細取得
+機能5: コレクション詳細取得 ✅
     ↓
 機能7: リンクをコレクションに追加
     ↓
@@ -206,7 +213,7 @@ useCreateLink を拡張するか、LinkCreateModal 内で useCreateLink と useA
 
 1. 機能1: 作成 → CollectionCreateModal
 2. 機能2: 一覧取得 → CollectionListScreen, CollectionsLane, LinkDetailScreen 等
-3. 機能5: 詳細取得 → CollectionDetailScreen ヘッダー
+3. 機能5: 詳細取得（フォールバック）→ CollectionDetailScreen ヘッダー ✅
 4. 機能3 + 4: 編集・削除 → CollectionDetailScreen 内の CollectionEditModal, Delete メニュー
 5. 機能6: コレクション内リンク → CollectionDetailScreen
 6. 機能7 + 8 + 9: リンク連携 → LinkDetailScreen, LinkCreateModal
