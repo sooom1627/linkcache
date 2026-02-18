@@ -11,16 +11,9 @@ import ModalHeader from "@/src/shared/components/modals/ModalHeader";
 
 import { CollectionChip } from "../components/CollectionChip";
 import LinkPasteContainer from "../components/LinkPasteContainer";
+import { useCollections } from "../hooks/useCollections";
 import { useCreateLink } from "../hooks/useCreateLink";
 import { useLinkPaste } from "../hooks/useLinkPaste";
-
-/** 仮データ: コレクション選択UI用（UIレイヤーのみ） */
-const MOCK_COLLECTIONS = [
-  { id: "1", emoji: "📚", title: "Read Soon" },
-  { id: "2", emoji: "🔬", title: "Tech" },
-  { id: "3", emoji: "🎨", title: "Design" },
-  { id: "4", emoji: "💡", title: "Ideas" },
-] as const;
 
 interface LinkCreateModalProps {
   onClose?: () => void;
@@ -57,6 +50,7 @@ export const LinkCreateModal = forwardRef<
     error,
     reset: resetCreate,
   } = useCreateLink();
+  const { collections } = useCollections();
 
   const hasAutoPastedRef = useRef(false);
 
@@ -166,11 +160,11 @@ export const LinkCreateModal = forwardRef<
                 Select Collections
               </Text>
               <View className="mt-3 flex-row flex-wrap gap-2">
-                {MOCK_COLLECTIONS.map((col) => (
+                {collections.map((col) => (
                   <CollectionChip
                     key={col.id}
-                    emoji={col.emoji}
-                    title={col.title}
+                    emoji={col.emoji ?? undefined}
+                    title={col.name}
                     selected={selectedCollectionIds.has(col.id)}
                     onPress={() => toggleCollection(col.id)}
                   />

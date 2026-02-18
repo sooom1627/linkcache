@@ -31,3 +31,24 @@ export const updateCollectionSchema = createCollectionSchema.partial();
  * コレクション更新APIのパラメータ
  */
 export type UpdateCollectionParams = z.infer<typeof updateCollectionSchema>;
+
+/**
+ * コレクション一覧取得のオプション
+ */
+export type FetchCollectionsParams = {
+  /** 取得件数の上限。未指定時は全件 */
+  limit?: number;
+  /** updated_at の並び順。デフォルトは desc（新しい順） */
+  order?: "asc" | "desc";
+};
+
+/**
+ * コレクション一覧取得APIの戻り値型（UI用）
+ * itemsCount は collection_links の件数
+ */
+export type CollectionWithCount = {
+  id: string;
+  name: string;
+  emoji: string | null;
+  itemsCount: number;
+};

@@ -9,23 +9,15 @@ import { useTranslation } from "react-i18next";
 import type { ToggleMenuItem } from "@/src/shared/components/ToggleMenu";
 import { ToggleMenu } from "@/src/shared/components/ToggleMenu";
 import { colors } from "@/src/shared/constants/colors";
+import { useBottomSheetModal } from "@/src/shared/hooks/useBottomSheetModal";
 
 import { LinkListCard } from "../components/LinkListCard";
+import { useCollections } from "../hooks/useCollections";
 import type { UserLink } from "../types/linkList.types";
 
-/** モック: コレクション情報（CollectionListScreen と整合）。ルートのヘッダー表示用にエクスポート */
-export const mockCollections: Record<
-  string,
-  { id: string; emoji: string; title: string; itemsCount: number }
-> = {
-  "1": { id: "1", emoji: "💼", title: "Work", itemsCount: 24 },
-  "2": { id: "2", emoji: "🎨", title: "Design", itemsCount: 56 },
-  "3": { id: "3", emoji: "🍳", title: "Recipes", itemsCount: 12 },
-  "4": { id: "4", emoji: "💻", title: "Tech", itemsCount: 31 },
-  "5": { id: "5", emoji: "📚", title: "Learning", itemsCount: 18 },
-};
+import { CollectionEditModal } from "./CollectionEditModal";
 
-/** モック: コレクション別リンク（API未実装のため） */
+/** モック: コレクション別リンク（API未実装のため、機能6で置き換え予定） */
 const MOCK_COLLECTION_LINKS: Record<string, UserLink[]> = {
   "1": [
     {
@@ -79,9 +71,16 @@ const MOCK_COLLECTION_LINKS: Record<string, UserLink[]> = {
 };
 
 interface CollectionDetailScreenProps {
-  collectionId: string;
-  onEdit?: () => void;
-  onDelete?: () => void;
+  rawId: string | string[] | undefined;
+}
+
+function parseCollectionId(
+  rawId: string | string[] | undefined,
+): string | undefined {
+  if (rawId == null) return undefined;
+  if (typeof rawId === "string") return rawId;
+  if (Array.isArray(rawId)) return rawId[0];
+  return undefined;
 }
 
 /**
@@ -91,16 +90,23 @@ interface CollectionDetailScreenProps {
  * CollectionCard / CollectionChip タップ時の遷移先。
  * 現状はモックデータ使用。
  */
-export function CollectionDetailScreen({
-  collectionId,
-  onEdit,
-  onDelete,
-}: CollectionDetailScreenProps) {
+export function CollectionDetailScreen({ rawId }: CollectionDetailScreenProps) {
   const { t } = useTranslation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { collections } = useCollections();
+  const {
+    ref: editModalRef,
+    present: presentEditModal,
+    dismiss: dismissEditModal,
+  } = useBottomSheetModal();
 
-  const collection = mockCollections[collectionId] ?? null;
-  const links = MOCK_COLLECTION_LINKS[collectionId] ?? [];
+  const collectionId = parseCollectionId(rawId);
+  const collection =
+    collectionId != null && collectionId !== ""
+      ? (collections.find((c) => c.id === collectionId) ?? null)
+      : null;
+  const links =
+    (collectionId ? MOCK_COLLECTION_LINKS[collectionId] : null) ?? [];
 
   const handleToggleMenu = useCallback(() => {
     setIsMenuOpen((prev) => !prev);
@@ -111,14 +117,13 @@ export function CollectionDetailScreen({
   }, []);
 
   const handleEdit = useCallback(() => {
-    onEdit?.();
     handleCloseMenu();
-  }, [onEdit, handleCloseMenu]);
+    presentEditModal();
+  }, [handleCloseMenu, presentEditModal]);
 
   const handleDelete = useCallback(() => {
-    onDelete?.();
     handleCloseMenu();
-  }, [onDelete, handleCloseMenu]);
+  }, [handleCloseMenu]);
 
   const menuItems: ToggleMenuItem[] = useMemo(
     () => [
@@ -160,50 +165,50 @@ export function CollectionDetailScreen({
           <View className="h-16" />
           <View className="relative rounded-2xl bg-white p-4">
             <View className="flex-row items-center gap-3">
-              {collection.emoji ? (
-                <View className="rounded-full bg-slate-100 p-2.5">
-                  <Text className="text-2xl" selectable={false}>
-                    {collection.emoji}
-                  </Text>
-                </View>
-              ) : null}
+              <View className="flex size-14 items-center justify-center rounded-full bg-slate-100">
+                <Text
+                  className="text-2xl font-semibold uppercase"
+                  selectable={false}
+                >
+                  {collection.emoji ?? collection.name?.[0] ?? ""}
+                </Text>
+              </View>
               <View className="flex-1">
                 <Text
                   className="text-xl font-semibold text-slate-900"
                   numberOfLines={1}
                   selectable
                 >
-                  {collection.title}
+                  {collection.name}
                 </Text>
                 <Text
                   className="mt-0.5 text-sm text-slate-500"
                   style={{ fontVariant: ["tabular-nums"] }}
                   selectable
                 >
-                  {links.length} {t("links.collection_detail.items_count")}
+                  {collection.itemsCount}{" "}
+                  {t("links.collection_detail.items_count")}
                 </Text>
               </View>
-              {onEdit != null || onDelete != null ? (
-                <View className="relative">
-                  <TouchableOpacity
-                    onPress={handleToggleMenu}
-                    className="rounded-full bg-slate-100 p-2.5"
-                    hitSlop={10}
-                    activeOpacity={0.8}
-                    accessibilityRole="button"
-                    accessibilityLabel={t(
-                      "links.collection_detail.header_more_options",
-                    )}
-                  >
-                    <Ellipsis size={20} color={colors.icon} strokeWidth={2.5} />
-                  </TouchableOpacity>
-                </View>
-              ) : null}
+              <View className="relative">
+                <TouchableOpacity
+                  onPress={handleToggleMenu}
+                  className="rounded-full bg-slate-100 p-2.5"
+                  hitSlop={10}
+                  activeOpacity={0.8}
+                  accessibilityRole="button"
+                  accessibilityLabel={t(
+                    "links.collection_detail.header_more_options",
+                  )}
+                >
+                  <Ellipsis size={20} color={colors.icon} strokeWidth={2.5} />
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         </View>
       ) : null,
-    [collection, links.length, t, onEdit, onDelete, handleToggleMenu],
+    [collection, t, handleToggleMenu],
   );
 
   const renderEmpty = useCallback(
@@ -223,10 +228,10 @@ export function CollectionDetailScreen({
     [t],
   );
 
-  // コレクション未検出（不正なID）
-  if (!collection) {
+  // コレクション未検出（不正なID or 存在しないID）
+  if (collectionId == null || collectionId === "" || !collection) {
     return (
-      <View className="flex-1 items-center justify-center px-8">
+      <View className="flex-1 items-center justify-center px-6">
         <Text className="text-center text-base text-slate-500">
           {t("links.collection_detail.not_found")}
         </Text>
@@ -246,7 +251,7 @@ export function CollectionDetailScreen({
         contentInsetAdjustmentBehavior="automatic"
         showsVerticalScrollIndicator={false}
       />
-      {(onEdit != null || onDelete != null) && isMenuOpen ? (
+      {isMenuOpen ? (
         <>
           <Pressable
             onPress={handleCloseMenu}
@@ -268,6 +273,13 @@ export function CollectionDetailScreen({
           </View>
         </>
       ) : null}
+      <CollectionEditModal
+        ref={editModalRef}
+        collectionId={collection.id}
+        initialName={collection.name}
+        initialEmoji={collection.emoji ?? ""}
+        onClose={dismissEditModal}
+      />
     </View>
   );
 }

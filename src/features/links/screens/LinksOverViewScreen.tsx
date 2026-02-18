@@ -6,6 +6,7 @@ import { ChevronRight, Clock, Link2, Plus } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 
 import { CollectionCard } from "@/src/features/links/components/CollectionCard";
+import { useCollections } from "@/src/features/links/hooks/useCollections";
 import { CollectionCreateModal } from "@/src/features/links/screens/CollectionCreateModal";
 import { colors } from "@/src/shared/constants/colors";
 import { useBottomSheetModal } from "@/src/shared/hooks/useBottomSheetModal";
@@ -51,15 +52,6 @@ const STATUS_ITEMS = [
   },
 ] as const;
 
-/** モック: コレクション（5件。Un Collectioned は別で固定表示） */
-const MOCK_COLLECTIONS = [
-  { id: "1", emoji: "💼", title: "Work", itemsCount: 24 },
-  { id: "2", emoji: "🎨", title: "Design", itemsCount: 56 },
-  { id: "3", emoji: "🍳", title: "Recipes", itemsCount: 12 },
-  { id: "4", emoji: "💻", title: "Tech", itemsCount: 31 },
-  { id: "5", emoji: "📚", title: "Learning", itemsCount: 18 },
-];
-
 /** モック: Un Collectioned のリンク数 */
 const MOCK_UN_COLLECTIONED_COUNT = 8;
 
@@ -87,6 +79,7 @@ export function LinksOverViewScreen() {
     present: presentCollectionCreateModal,
     dismiss: dismissCollectionCreateModal,
   } = useBottomSheetModal();
+  const { collections } = useCollections({ limit: 5 });
 
   const handleStatusPress = (statusParam: string) => {
     const params = statusParam === "all" ? {} : { status: statusParam };
@@ -154,7 +147,7 @@ export function LinksOverViewScreen() {
         </View>
       </View>
 
-      {/* 2. コレクションセクション（Un Collectioned 固定 + 5件、New Collection は細い1列ライン） */}
+      {/* 2. コレクションセクション（最大5件・2カラム） */}
       <View className="gap-2">
         <View className="flex-row items-center justify-between py-0.5">
           <Text className="text-sm font-semibold uppercase tracking-wider text-slate-500">
@@ -176,7 +169,7 @@ export function LinksOverViewScreen() {
           </Pressable>
         </View>
         <View className="gap-2">
-          {/* 1行目: Un Collectioned（固定）+ Work */}
+          {/* 2カラム: Un Collectioned + 最大5件のコレクション */}
           <View className="flex-row gap-2">
             <View className="min-h-28 min-w-0 flex-1">
               <CollectionCard
@@ -186,54 +179,36 @@ export function LinksOverViewScreen() {
                 href="/links/un-collectioned"
               />
             </View>
-            <View className="min-h-28 min-w-0 flex-1">
-              <CollectionCard
-                emoji={MOCK_COLLECTIONS[0].emoji}
-                title={MOCK_COLLECTIONS[0].title}
-                itemsCount={MOCK_COLLECTIONS[0].itemsCount}
-                href={`/collections/${MOCK_COLLECTIONS[0].id}`}
-              />
-            </View>
+            {collections[0] && (
+              <View className="min-h-28 min-w-0 flex-1">
+                <CollectionCard
+                  emoji={collections[0].emoji ?? undefined}
+                  title={collections[0].name}
+                  itemsCount={collections[0].itemsCount}
+                  href={`/collections/${collections[0].id}`}
+                />
+              </View>
+            )}
           </View>
-          {/* 2行目: Design + Recipes */}
-          <View className="flex-row gap-2">
-            <View className="min-h-28 min-w-0 flex-1">
-              <CollectionCard
-                emoji={MOCK_COLLECTIONS[1].emoji}
-                title={MOCK_COLLECTIONS[1].title}
-                itemsCount={MOCK_COLLECTIONS[1].itemsCount}
-                href={`/collections/${MOCK_COLLECTIONS[1].id}`}
-              />
-            </View>
-            <View className="min-h-28 min-w-0 flex-1">
-              <CollectionCard
-                emoji={MOCK_COLLECTIONS[2].emoji}
-                title={MOCK_COLLECTIONS[2].title}
-                itemsCount={MOCK_COLLECTIONS[2].itemsCount}
-                href={`/collections/${MOCK_COLLECTIONS[2].id}`}
-              />
-            </View>
-          </View>
-          {/* 3行目: Tech + Learning */}
-          <View className="flex-row gap-2">
-            <View className="min-h-28 min-w-0 flex-1">
-              <CollectionCard
-                emoji={MOCK_COLLECTIONS[3].emoji}
-                title={MOCK_COLLECTIONS[3].title}
-                itemsCount={MOCK_COLLECTIONS[3].itemsCount}
-                href={`/collections/${MOCK_COLLECTIONS[3].id}`}
-              />
-            </View>
-            <View className="min-h-28 min-w-0 flex-1">
-              <CollectionCard
-                emoji={MOCK_COLLECTIONS[4].emoji}
-                title={MOCK_COLLECTIONS[4].title}
-                itemsCount={MOCK_COLLECTIONS[4].itemsCount}
-                href={`/collections/${MOCK_COLLECTIONS[4].id}`}
-              />
-            </View>
-          </View>
-          {/* New Collection: 細い1列ライン */}
+          {[1, 3].map((start) => {
+            const pair = collections.slice(start, start + 2);
+            if (pair.length === 0) return null;
+            return (
+              <View key={start} className="flex-row gap-2">
+                {pair.map((col) => (
+                  <View key={col.id} className="min-h-28 min-w-0 flex-1">
+                    <CollectionCard
+                      emoji={col.emoji ?? undefined}
+                      title={col.name}
+                      itemsCount={col.itemsCount}
+                      href={`/collections/${col.id}`}
+                    />
+                  </View>
+                ))}
+              </View>
+            );
+          })}
+          {/* New Collection */}
           <Pressable
             onPress={presentCollectionCreateModal}
             className="flex-row items-center justify-center gap-2 rounded-xl border border-dashed border-slate-300 bg-slate-50/50 py-3 active:bg-slate-100"
