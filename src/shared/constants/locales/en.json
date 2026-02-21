@@ -230,6 +230,7 @@
       "empty_description": "Create a new collection to organize your links"
     },
     "collection_detail": {
+      "loading": "Loading...",
       "empty_title": "No links in this collection",
       "empty_description": "Add links to this collection from the link detail screen",
       "items_count": "items",
