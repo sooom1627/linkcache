@@ -25,7 +25,7 @@
 - **UI**: 実装済み（CollectionListScreen, CollectionDetailScreen, CollectionCreateModal, CollectionEditModal, CollectionChip 等）
 - **DB**: `collections`, `collection_links` テーブル定義済み、RLS 有効
 - **型**: `Collection`, `CollectionLink`, `CollectionWithCount`（links.types.ts, collections.types.ts）
-- **API / Hooks**: 機能1（作成）、機能2（一覧取得）、機能5（詳細取得）実装済み。その他は未実装（モックデータ使用中）
+- **API / Hooks**: 機能1（作成）、機能2（一覧取得）、機能5（詳細取得）、機能7（リンク追加）実装済み。その他は未実装（モックデータ使用中）
 
 ### アーキテクチャ（ルートと画面の責務）
 
@@ -134,7 +134,7 @@
 
 ---
 
-### 機能7: リンクをコレクションに追加
+### 機能7: リンクをコレクションに追加 ✅ 実装済み
 
 **利用箇所**: LinkDetailScreen（CollectionChip タップ）, LinkCreateModal（保存時のコレクション選択）, Swipe UI（将来）
 
@@ -162,14 +162,12 @@
 
 ---
 
-### LinkCreateModal 保存フロー（機能7との連携）
+### LinkCreateModal 保存フロー（機能7との連携）✅ 実装済み
 
-1. useCreateLink().createLink(url) でリンク作成
+1. useCreateLink().createLinkAsync(url) でリンク作成
 2. レスポンスの link_id を取得
-3. selectedCollectionIds の各 ID に対して addLinkToCollection(collectionId, link_id)
-4. 全成功後にモーダルを閉じる
-
-useCreateLink を拡張するか、LinkCreateModal 内で useCreateLink と useAddLinkToCollection を組み合わせる。
+3. selectedCollectionIds の各 ID に対して addLinkToCollectionAsync({ collectionId, linkId })
+4. 全成功後に Alert 表示とモーダルを閉じる
 
 ---
 
@@ -198,7 +196,7 @@ useCreateLink を拡張するか、LinkCreateModal 内で useCreateLink と useA
     ↓
 機能5: コレクション詳細取得 ✅
     ↓
-機能7: リンクをコレクションに追加
+機能7: リンクをコレクションに追加 ✅
     ↓
 機能9: リンクに紐づくコレクション一覧取得
     ↓

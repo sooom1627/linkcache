@@ -402,7 +402,7 @@ import type { Collection, CollectionLink } from "@features/links/types";
    - ❌ `getCollection.api.ts` - コレクション詳細取得
    - ❌ `updateCollection.api.ts` - コレクション更新
    - ❌ `deleteCollection.api.ts` - コレクション削除
-   - ❌ `addLinkToCollection.api.ts` - リンクをコレクションに追加
+   - ✅ `addLinkToCollection.api.ts` - リンクをコレクションに追加
    - ❌ `removeLinkFromCollection.api.ts` - リンクをコレクションから削除
    - ❌ `getCollectionLinks.api.ts` - コレクション内のリンク一覧取得
 
@@ -417,7 +417,7 @@ import type { Collection, CollectionLink } from "@features/links/types";
    - ❌ `useUpdateCollection.ts` - コレクション更新フック
    - ❌ `useDeleteCollection.ts` - コレクション削除フック
    - ❌ `useCollectionLinks.ts` - コレクション内リンク取得フック
-   - ❌ `useAddLinkToCollection.ts` - リンク追加フック
+   - ✅ `useAddLinkToCollection.ts` - リンク追加フック
    - ❌ `useRemoveLinkFromCollection.ts` - リンク削除フック
 
 4. **UIコンポーネント** (`src/features/links/components/`)

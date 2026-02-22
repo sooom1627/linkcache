@@ -33,11 +33,10 @@ export interface UseCreateLinkReturn {
  *
  * @example
  * ```tsx
- * const { createLink, isPending, isError, isSuccess } = useCreateLink();
- *
- * const handleSubmit = () => {
- *   createLink("https://example.com");
- * };
+ * const { createLink, createLinkAsync, isPending } = useCreateLink();
+ * createLink("https://example.com");
+ * // await が必要な場合（例: LinkCreateModal でコレクション追加と連携）
+ * const { link_id } = await createLinkAsync(url);
  * ```
  */
 export function useCreateLink(): UseCreateLinkReturn {

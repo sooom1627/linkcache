@@ -9,6 +9,20 @@ export interface AddLinkToCollectionArgs {
   linkId: string;
 }
 
+/**
+ * リンクをコレクションに追加するフック
+ *
+ * useMutation で addLinkToCollection API を呼び出し、
+ * 成功時に collectionQueryKeys.links と linkQueryKeys.detail を無効化する。
+ *
+ * @example
+ * ```tsx
+ * const { addLinkToCollection, addLinkToCollectionAsync } = useAddLinkToCollection();
+ * addLinkToCollection({ collectionId, linkId }, { onSuccess, onError });
+ * // または await が必要な場合
+ * await addLinkToCollectionAsync({ collectionId, linkId });
+ * ```
+ */
 export function useAddLinkToCollection() {
   const queryClient = useQueryClient();
 
