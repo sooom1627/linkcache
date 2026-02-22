@@ -14,6 +14,7 @@ import { normalizeUrl } from "../utils/normalizeUrl";
  */
 export interface UseCreateLinkReturn {
   createLink: (url: string) => void;
+  createLinkAsync: (url: string) => Promise<CreateLinkResponse>;
   isPending: boolean;
   isError: boolean;
   isSuccess: boolean;
@@ -78,6 +79,7 @@ export function useCreateLink(): UseCreateLinkReturn {
 
   return {
     createLink: mutation.mutate,
+    createLinkAsync: mutation.mutateAsync,
     isPending: mutation.isPending,
     isError: mutation.isError,
     isSuccess: mutation.isSuccess,

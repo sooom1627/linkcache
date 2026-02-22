@@ -15,6 +15,7 @@ import { formatDateTime } from "@/src/shared/utils/timezone";
 import { CollectionChip } from "../components/CollectionChip";
 import { LinkDetailActionButtonGroup } from "../components/LinkDetailActionButtonGroup";
 import { LinkReadStatusModal } from "../components/LinkReadStatusModal";
+import { useAddLinkToCollection } from "../hooks/useAddLinkToCollection";
 import { useCollections } from "../hooks/useCollections";
 import { useDeleteLink } from "../hooks/useDeleteLink";
 import { useLinkDetail } from "../hooks/useLinkDetail";
@@ -56,25 +57,58 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
     isLoading: isCollectionsLoading,
     isError: isCollectionsError,
   } = useCollections();
+  const { addLinkToCollection } = useAddLinkToCollection();
 
   const isDone = link?.status === "done";
 
-  /** このリンクが属するコレクションID（タップでトグル、API未実装のためローカル状態。機能7でサーバー連携予定） */
+  /** このリンクが属するコレクションID（機能9でサーバー取得予定。追加は即時反映、削除は機能8でサーバー連携） */
   const [linkedCollectionIds, setLinkedCollectionIds] = useState<Set<string>>(
     () => new Set(),
   );
 
-  const handleToggleCollection = useCallback((collectionId: string) => {
-    setLinkedCollectionIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(collectionId)) {
-        next.delete(collectionId);
-      } else {
-        next.add(collectionId);
+  const handleToggleCollection = useCallback(
+    (collectionId: string) => {
+      if (!link) return;
+
+      if (linkedCollectionIds.has(collectionId)) {
+        setLinkedCollectionIds((prev) => {
+          const next = new Set(prev);
+          next.delete(collectionId);
+          return next;
+        });
+        return;
       }
-      return next;
-    });
-  }, []);
+
+      addLinkToCollection(
+        { collectionId, linkId: link.link_id },
+        {
+          onSuccess: () =>
+            setLinkedCollectionIds((prev) => new Set([...prev, collectionId])),
+          onError: (err: unknown) => {
+            const code = (err as { code?: string })?.code;
+            if (code === "23505") {
+              setLinkedCollectionIds(
+                (prev) => new Set([...prev, collectionId]),
+              );
+              Alert.alert(
+                t("links.detail.collection_already_added", {
+                  defaultValue: "既に追加済みです",
+                }),
+              );
+            } else {
+              Alert.alert(
+                t("common.error_generic", {
+                  defaultValue: "エラーが発生しました",
+                }),
+                err instanceof Error ? err.message : String(err),
+              );
+            }
+          },
+        },
+      );
+    },
+    [link, linkedCollectionIds, addLinkToCollection, t],
+  );
 
   const handleBack = useCallback(() => {
     router.back();
