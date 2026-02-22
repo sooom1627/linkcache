@@ -43,7 +43,6 @@ describe("updateLinkReadStatus", () => {
     );
     // statusがundefinedの場合は、更新ペイロードにstatusフィールドを含めない
     expect(mockUpdate.mock.calls.length).toBeGreaterThan(0);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const updateCall = mockUpdate.mock.calls[0][0] as {
       read_at: string;
       status?: unknown;
@@ -73,7 +72,6 @@ describe("updateLinkReadStatus", () => {
     });
     // statusがundefinedの場合は、更新ペイロードにstatusフィールドを含めない
     expect(mockUpdate.mock.calls.length).toBeGreaterThan(0);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const updateCall = mockUpdate.mock.calls[0][0] as {
       read_at: null;
       status?: unknown;
@@ -132,7 +130,6 @@ describe("updateLinkReadStatus", () => {
     );
     // statusがundefinedの場合は、更新ペイロードにstatusフィールドを含めない
     expect(mockUpdate.mock.calls.length).toBeGreaterThan(0);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const updateCall = mockUpdate.mock.calls[0][0] as {
       read_at: string;
       status?: unknown;

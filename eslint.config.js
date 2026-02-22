@@ -294,6 +294,11 @@ module.exports = [
       "max-lines": "off",
       // any型の使用を許可（モック作成用）
       "@typescript-eslint/no-explicit-any": "off",
+      // モック由来のany伝播を許容（jest.fn()・jest.mock()の戻り値は型推論不可）
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-unsafe-member-access": "off",
+      "@typescript-eslint/no-unsafe-call": "off",
+      "@typescript-eslint/no-unsafe-return": "off",
       // 非nullアサーション（!）の使用を許可
       "@typescript-eslint/no-non-null-assertion": "off",
       // マジックナンバーの使用を許可（テストデータ直値）

@@ -79,6 +79,7 @@ export const linkQueryKeys = {
  * useQuery({ queryKey: collectionQueryKeys.lists(), ... });
  * useQuery({ queryKey: collectionQueryKeys.detail(id), ... });
  * useQuery({ queryKey: collectionQueryKeys.links(collectionId), ... });
+ * useQuery({ queryKey: collectionQueryKeys.forLink(linkId), ... });
  * queryClient.invalidateQueries({ queryKey: collectionQueryKeys.lists() });
  * ```
  */
@@ -92,4 +93,11 @@ export const collectionQueryKeys = {
   detail: (id: string) => [...collectionQueryKeys.details(), id] as const,
   links: (collectionId: string) =>
     [...collectionQueryKeys.detail(collectionId), "links"] as const,
+
+  /**
+   * リンクに紐づくコレクションID一覧のクエリキー
+   * @param linkId - リンクID
+   */
+  forLink: (linkId: string) =>
+    [...collectionQueryKeys.all, "forLink", linkId] as const,
 } as const;

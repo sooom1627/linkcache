@@ -36,10 +36,10 @@ export async function addLinkToCollection(
       link_id: params.linkId,
     })
     .select()
-    .single();
+    .single<CollectionLink>();
 
   if (error) throw error;
   if (!data) throw new Error("No data returned");
 
-  return data as CollectionLink;
+  return data;
 }

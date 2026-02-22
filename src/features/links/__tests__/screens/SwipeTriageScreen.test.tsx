@@ -19,7 +19,6 @@ jest.mock("../../api/updateLinkStatus.api", () => ({
 // ライブラリコンポーネントをモック
 // CardProps<T>はT自体を拡張するため、itemではなく直接アイテムのプロパティを渡す
 jest.mock("react-native-swipeable-card-stack", () => {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const { View } = require("react-native");
   return {
     SwipeableCardStack: ({

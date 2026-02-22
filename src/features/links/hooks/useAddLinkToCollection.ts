@@ -13,7 +13,8 @@ export interface AddLinkToCollectionArgs {
  * リンクをコレクションに追加するフック
  *
  * useMutation で addLinkToCollection API を呼び出し、
- * 成功時に collectionQueryKeys.links と linkQueryKeys.detail を無効化する。
+ * 楽観的更新（onMutate）とロールバック（onError）を実装。
+ * 成功時に collectionQueryKeys.links、collectionQueryKeys.forLink、linkQueryKeys.detail を無効化する。
  *
  * @example
  * ```tsx
@@ -28,9 +29,29 @@ export function useAddLinkToCollection() {
 
   const mutation = useMutation({
     mutationFn: addLinkToCollection,
-    onSuccess: (_, { collectionId, linkId }) => {
+    onMutate: async ({ collectionId, linkId }) => {
+      const queryKey = collectionQueryKeys.forLink(linkId);
+      await queryClient.cancelQueries({ queryKey });
+      const previousIds = queryClient.getQueryData<string[]>(queryKey);
+      queryClient.setQueryData<string[]>(queryKey, (old) =>
+        old?.includes(collectionId) ? old : [...(old ?? []), collectionId],
+      );
+      return { previousIds };
+    },
+    onError: (_, { linkId }, context) => {
+      if (context?.previousIds != null) {
+        queryClient.setQueryData(
+          collectionQueryKeys.forLink(linkId),
+          context.previousIds,
+        );
+      }
+    },
+    onSettled: (_data, _error, { collectionId, linkId }) => {
       queryClient.invalidateQueries({
         queryKey: collectionQueryKeys.links(collectionId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: collectionQueryKeys.forLink(linkId),
       });
       queryClient.invalidateQueries({
         queryKey: linkQueryKeys.detail(linkId),

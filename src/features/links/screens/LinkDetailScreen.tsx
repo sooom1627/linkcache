@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import { ActivityIndicator, Alert, ScrollView, Text, View } from "react-native";
 
@@ -13,10 +13,12 @@ import { useBottomSheetModal } from "@/src/shared/hooks/useBottomSheetModal";
 import { formatDateTime } from "@/src/shared/utils/timezone";
 
 import { CollectionChip } from "../components/CollectionChip";
+import { CollectionsSectionSkeleton } from "../components/CollectionsSectionSkeleton";
 import { LinkDetailActionButtonGroup } from "../components/LinkDetailActionButtonGroup";
 import { LinkReadStatusModal } from "../components/LinkReadStatusModal";
 import { useAddLinkToCollection } from "../hooks/useAddLinkToCollection";
 import { useCollections } from "../hooks/useCollections";
+import { useCollectionsForLink } from "../hooks/useCollectionsForLink";
 import { useDeleteLink } from "../hooks/useDeleteLink";
 import { useLinkDetail } from "../hooks/useLinkDetail";
 import { extractDomain } from "../hooks/useLinkPaste";
@@ -57,39 +59,29 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
     isLoading: isCollectionsLoading,
     isError: isCollectionsError,
   } = useCollections();
+  const { linkedCollectionIds, isLoading: isLinkedCollectionsLoading } =
+    useCollectionsForLink(link?.link_id ?? "");
   const { addLinkToCollection } = useAddLinkToCollection();
 
   const isDone = link?.status === "done";
 
-  /** このリンクが属するコレクションID（機能9でサーバー取得予定。追加は即時反映、削除は機能8でサーバー連携） */
-  const [linkedCollectionIds, setLinkedCollectionIds] = useState<Set<string>>(
-    () => new Set(),
-  );
+  /** スケルトン表示: 画面表示時の初回読み込み時のみ */
+  const isCollectionsSectionLoading = isLinkedCollectionsLoading;
 
   const handleToggleCollection = useCallback(
     (collectionId: string) => {
       if (!link) return;
 
       if (linkedCollectionIds.has(collectionId)) {
-        setLinkedCollectionIds((prev) => {
-          const next = new Set(prev);
-          next.delete(collectionId);
-          return next;
-        });
         return;
       }
 
       addLinkToCollection(
         { collectionId, linkId: link.link_id },
         {
-          onSuccess: () =>
-            setLinkedCollectionIds((prev) => new Set([...prev, collectionId])),
           onError: (err: unknown) => {
             const code = (err as { code?: string })?.code;
             if (code === "23505") {
-              setLinkedCollectionIds(
-                (prev) => new Set([...prev, collectionId]),
-              );
               Alert.alert(
                 t("links.detail.collection_already_added", {
                   defaultValue: "既に追加済みです",
@@ -109,6 +101,12 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
     },
     [link, linkedCollectionIds, addLinkToCollection, t],
   );
+
+  const sortedCollections = useMemo(() => {
+    const linked = collections.filter((c) => linkedCollectionIds.has(c.id));
+    const unlinked = collections.filter((c) => !linkedCollectionIds.has(c.id));
+    return [...linked, ...unlinked];
+  }, [collections, linkedCollectionIds]);
 
   const handleBack = useCallback(() => {
     router.back();
@@ -337,7 +335,9 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
               {t("links.detail.collections_label")}
             </Text>
             <View className="mb-6 flex-row flex-wrap gap-2">
-              {isCollectionsLoading ? (
+              {isCollectionsSectionLoading ? (
+                <CollectionsSectionSkeleton />
+              ) : isCollectionsLoading ? (
                 <ActivityIndicator size="small" color="#6B7280" />
               ) : isCollectionsError ? (
                 <Text className="text-sm text-slate-400">
@@ -346,7 +346,7 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
                   })}
                 </Text>
               ) : (
-                collections.map((col) => (
+                sortedCollections.map((col) => (
                   <CollectionChip
                     key={col.id}
                     emoji={col.emoji ?? undefined}
@@ -357,11 +357,13 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
                   />
                 ))
               )}
-              <CollectionChip
-                variant="add"
-                title={t("links.detail.create_new_collection")}
-                onPress={presentCollectionCreateModal}
-              />
+              {!isCollectionsSectionLoading && (
+                <CollectionChip
+                  variant="add"
+                  title={t("links.detail.create_new_collection")}
+                  onPress={presentCollectionCreateModal}
+                />
+              )}
             </View>
           </View>
         </ScrollView>
