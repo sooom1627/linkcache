@@ -51,7 +51,11 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
     present: presentCollectionCreateModal,
     dismiss: dismissCollectionCreateModal,
   } = useBottomSheetModal();
-  const { collections } = useCollections();
+  const {
+    collections,
+    isLoading: isCollectionsLoading,
+    isError: isCollectionsError,
+  } = useCollections();
 
   const isDone = link?.status === "done";
 
@@ -299,16 +303,26 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
               {t("links.detail.collections_label")}
             </Text>
             <View className="mb-6 flex-row flex-wrap gap-2">
-              {collections.map((col) => (
-                <CollectionChip
-                  key={col.id}
-                  emoji={col.emoji ?? undefined}
-                  title={col.name}
-                  selected={linkedCollectionIds.has(col.id)}
-                  onPress={() => handleToggleCollection(col.id)}
-                  accessibilityHint={t("links.detail.collections_tap_hint")}
-                />
-              ))}
+              {isCollectionsLoading ? (
+                <ActivityIndicator size="small" color="#6B7280" />
+              ) : isCollectionsError ? (
+                <Text className="text-sm text-slate-400">
+                  {t("common.error_generic", {
+                    defaultValue: "Could not load collections.",
+                  })}
+                </Text>
+              ) : (
+                collections.map((col) => (
+                  <CollectionChip
+                    key={col.id}
+                    emoji={col.emoji ?? undefined}
+                    title={col.name}
+                    selected={linkedCollectionIds.has(col.id)}
+                    onPress={() => handleToggleCollection(col.id)}
+                    accessibilityHint={t("links.detail.collections_tap_hint")}
+                  />
+                ))
+              )}
               <CollectionChip
                 variant="add"
                 title={t("links.detail.create_new_collection")}

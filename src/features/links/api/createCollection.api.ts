@@ -1,9 +1,7 @@
 import { supabase } from "@/src/shared/lib/supabase";
 
-import type {
-  CreateCollectionParams,
-  CreateCollectionResponse,
-} from "../types/collections.types";
+import type { CreateCollectionParams } from "../types/collections.types";
+import type { Collection } from "../types/links.types";
 
 /**
  * コレクションを作成する
@@ -16,7 +14,7 @@ import type {
  */
 export async function createCollection(
   params: CreateCollectionParams,
-): Promise<CreateCollectionResponse> {
+): Promise<Collection> {
   const {
     data: { user },
     error: authError,
@@ -39,7 +37,7 @@ export async function createCollection(
     .single();
 
   const { data, error } = result as {
-    data: CreateCollectionResponse | null;
+    data: Collection | null;
     error: Error | null;
   };
 
@@ -51,5 +49,5 @@ export async function createCollection(
     throw new Error("No data returned");
   }
 
-  return data as CreateCollectionResponse;
+  return data;
 }

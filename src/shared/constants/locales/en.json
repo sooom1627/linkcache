@@ -221,7 +221,8 @@
       "un_collectioned_todo": "Links not in any collection will appear here.",
       "new_collection": "New Collection",
       "collections_section": "Collections",
-      "view_all_collections": "View all collections"
+      "view_all_collections": "View all collections",
+      "collections_top": "Collections (Top {{count}})"
     },
     "collection_list": {
       "title": "Collections",

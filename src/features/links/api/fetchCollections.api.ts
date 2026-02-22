@@ -45,13 +45,13 @@ export async function fetchCollections(
     query = query.limit(params.limit);
   }
 
-  const { data, error } = await query;
+  const { data, error } = await query.overrideTypes<CollectionRow[]>();
 
   if (error) {
     throw error;
   }
 
-  const rows = (data ?? []) as CollectionRow[];
+  const rows = data ?? [];
 
   return rows.map((row) => ({
     id: row.id,

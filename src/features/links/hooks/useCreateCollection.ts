@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { createCollection } from "../api/createCollection.api";
 import { collectionQueryKeys } from "../constants/queryKeys";
-import type { CreateCollectionResponse } from "../types/collections.types";
+import type { Collection } from "../types/links.types";
 
 /**
  * コレクション作成フックの戻り値
@@ -13,7 +13,7 @@ export interface UseCreateCollectionReturn {
   isError: boolean;
   isSuccess: boolean;
   error: Error | null;
-  data: CreateCollectionResponse | undefined;
+  data: Collection | undefined;
   reset: () => void;
 }
 

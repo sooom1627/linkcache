@@ -44,7 +44,7 @@ export function useCollections(
     collections: data ?? [],
     isLoading,
     isError,
-    error: error as Error | null,
+    error,
     refetch,
   };
 }

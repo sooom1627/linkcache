@@ -1,6 +1,12 @@
 import { useCallback, useMemo, useState } from "react";
 
-import { Pressable, Text, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  Pressable,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 import { FlashList } from "@shopify/flash-list";
 import { Ellipsis, FolderOpen, Pencil, Trash2 } from "lucide-react-native";
@@ -79,9 +85,7 @@ function parseCollectionId(
   rawId: string | string[] | undefined,
 ): string | undefined {
   if (rawId == null) return undefined;
-  if (typeof rawId === "string") return rawId;
-  if (Array.isArray(rawId)) return rawId[0];
-  return undefined;
+  return Array.isArray(rawId) ? rawId[0] : rawId;
 }
 
 /**
@@ -94,7 +98,7 @@ function parseCollectionId(
 export function CollectionDetailScreen({ rawId }: CollectionDetailScreenProps) {
   const { t } = useTranslation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { collections } = useCollections();
+  const { collections, isLoading: isCollectionsLoading } = useCollections();
   const {
     ref: editModalRef,
     present: presentEditModal,
@@ -144,7 +148,7 @@ export function CollectionDetailScreen({ rawId }: CollectionDetailScreenProps) {
         icon: <Trash2 size={20} color={colors.error} strokeWidth={2.5} />,
         label: t("links.collection_detail.header_delete"),
         onPress: handleDelete,
-        disabled: !isMenuOpen,
+        disabled: true,
         color: colors.error,
         className: "min-w-[200px]",
       },
@@ -233,7 +237,6 @@ export function CollectionDetailScreen({ rawId }: CollectionDetailScreenProps) {
     [t],
   );
 
-  // 不正なID
   if (collectionId == null || collectionId === "") {
     return (
       <View className="flex-1 items-center justify-center px-6">
@@ -244,18 +247,14 @@ export function CollectionDetailScreen({ rawId }: CollectionDetailScreenProps) {
     );
   }
 
-  // フォールバック取得中（一覧に無く、単体取得を待っている）
-  if (!collection && isDetailLoading) {
+  if (!collection && (isCollectionsLoading || isDetailLoading)) {
     return (
-      <View className="flex-1 items-center justify-center px-6">
-        <Text className="text-center text-base text-slate-500">
-          {t("links.collection_detail.loading")}
-        </Text>
+      <View className="flex-1 items-center justify-center">
+        <ActivityIndicator size="large" color="#6B7280" />
       </View>
     );
   }
 
-  // コレクション未検出（存在しないID）
   if (!collection) {
     return (
       <View className="flex-1 items-center justify-center px-6">

@@ -1,6 +1,6 @@
 import { forwardRef, useCallback, useEffect, useRef, useState } from "react";
 
-import { Alert, Text, View } from "react-native";
+import { ActivityIndicator, Alert, Text, View } from "react-native";
 
 import type { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useTranslation } from "react-i18next";
@@ -50,7 +50,11 @@ export const LinkCreateModal = forwardRef<
     error,
     reset: resetCreate,
   } = useCreateLink();
-  const { collections } = useCollections();
+  const {
+    collections,
+    isLoading: isCollectionsLoading,
+    isError: isCollectionsError,
+  } = useCollections();
 
   const hasAutoPastedRef = useRef(false);
 
@@ -160,15 +164,25 @@ export const LinkCreateModal = forwardRef<
                 Select Collections
               </Text>
               <View className="mt-3 flex-row flex-wrap gap-2">
-                {collections.map((col) => (
-                  <CollectionChip
-                    key={col.id}
-                    emoji={col.emoji ?? undefined}
-                    title={col.name}
-                    selected={selectedCollectionIds.has(col.id)}
-                    onPress={() => toggleCollection(col.id)}
-                  />
-                ))}
+                {isCollectionsLoading ? (
+                  <ActivityIndicator size="small" color="#6B7280" />
+                ) : isCollectionsError ? (
+                  <Text className="text-sm text-slate-400">
+                    {t("common.error_generic", {
+                      defaultValue: "Could not load collections.",
+                    })}
+                  </Text>
+                ) : (
+                  collections.map((col) => (
+                    <CollectionChip
+                      key={col.id}
+                      emoji={col.emoji ?? undefined}
+                      title={col.name}
+                      selected={selectedCollectionIds.has(col.id)}
+                      onPress={() => toggleCollection(col.id)}
+                    />
+                  ))
+                )}
               </View>
             </View>
             {/* 保存ボタン */}

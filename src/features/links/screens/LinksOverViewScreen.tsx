@@ -1,4 +1,4 @@
-import { Pressable, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, Text, View } from "react-native";
 
 import { useRouter } from "expo-router";
 
@@ -52,7 +52,7 @@ const STATUS_ITEMS = [
   },
 ] as const;
 
-/** モック: Un Collectioned のリンク数 */
+// TODO: replace MOCK_UN_COLLECTIONED_COUNT with real un-collected count from useCollections()
 const MOCK_UN_COLLECTIONED_COUNT = 8;
 
 /** モック: 要対応リンク */
@@ -79,7 +79,11 @@ export function LinksOverViewScreen() {
     present: presentCollectionCreateModal,
     dismiss: dismissCollectionCreateModal,
   } = useBottomSheetModal();
-  const { collections } = useCollections({ limit: 5 });
+  const {
+    collections,
+    isLoading: isCollectionsLoading,
+    isError: isCollectionsError,
+  } = useCollections({ limit: 5 });
 
   const handleStatusPress = (statusParam: string) => {
     const params = statusParam === "all" ? {} : { status: statusParam };
@@ -169,7 +173,7 @@ export function LinksOverViewScreen() {
           </Pressable>
         </View>
         <View className="gap-2">
-          {/* 2カラム: Un Collectioned + 最大5件のコレクション */}
+          {/* Un Collectioned（常時表示） */}
           <View className="flex-row gap-2">
             <View className="min-h-28 min-w-0 flex-1">
               <CollectionCard
@@ -190,24 +194,40 @@ export function LinksOverViewScreen() {
               </View>
             )}
           </View>
-          {[1, 3].map((start) => {
-            const pair = collections.slice(start, start + 2);
-            if (pair.length === 0) return null;
-            return (
-              <View key={start} className="flex-row gap-2">
-                {pair.map((col) => (
-                  <View key={col.id} className="min-h-28 min-w-0 flex-1">
-                    <CollectionCard
-                      emoji={col.emoji ?? undefined}
-                      title={col.name}
-                      itemsCount={col.itemsCount}
-                      href={`/collections/${col.id}`}
-                    />
+          {isCollectionsLoading ? (
+            <View className="items-center py-4">
+              <ActivityIndicator size="small" color="#6B7280" />
+            </View>
+          ) : isCollectionsError ? (
+            <View className="items-center py-4">
+              <Text className="text-sm text-slate-400">
+                {t("common.error_generic", {
+                  defaultValue: "Could not load collections.",
+                })}
+              </Text>
+            </View>
+          ) : (
+            <>
+              {[1, 3].map((start) => {
+                const pair = collections.slice(start, start + 2);
+                if (pair.length === 0) return null;
+                return (
+                  <View key={start} className="flex-row gap-2">
+                    {pair.map((col) => (
+                      <View key={col.id} className="min-h-28 min-w-0 flex-1">
+                        <CollectionCard
+                          emoji={col.emoji ?? undefined}
+                          title={col.name}
+                          itemsCount={col.itemsCount}
+                          href={`/collections/${col.id}`}
+                        />
+                      </View>
+                    ))}
                   </View>
-                ))}
-              </View>
-            );
-          })}
+                );
+              })}
+            </>
+          )}
           {/* New Collection */}
           <Pressable
             onPress={presentCollectionCreateModal}

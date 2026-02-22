@@ -221,7 +221,8 @@
       "un_collectioned_todo": "TODO: Phase 3 で実装予定",
       "new_collection": "新規コレクション",
       "collections_section": "コレクション",
-      "view_all_collections": "すべて表示"
+      "view_all_collections": "すべて表示",
+      "collections_top": "コレクション（Top {{count}}）"
     },
     "collection_list": {
       "title": "コレクション",

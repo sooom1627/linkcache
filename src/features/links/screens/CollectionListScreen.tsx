@@ -1,4 +1,4 @@
-import { Pressable, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, Text, View } from "react-native";
 
 import * as Haptics from "expo-haptics";
 
@@ -17,11 +17,10 @@ const CARD_STYLE = { borderCurve: "continuous" as const };
 const MOCK_UN_COLLECTIONED_COUNT = 8;
 
 /**
- * コレクション一覧画面（UIのみ）
+ * コレクション一覧画面
  *
  * 全コレクション一覧。「すべて表示」の遷移先。
- * Un Collectioned + 各コレクションを表示。モックデータ使用。
- * Link で prefetch・iOS プレビュー対応。API・hooks は後で実装予定。
+ * Un Collectioned + useCollections() で取得した各コレクションを表示。
  */
 export function CollectionListScreen() {
   const { t } = useTranslation();
@@ -36,8 +35,8 @@ export function CollectionListScreen() {
     presentCollectionCreateModal();
   };
 
-  const { collections } = useCollections();
-  const isEmpty = collections.length === 0;
+  const { collections, isLoading, isError } = useCollections();
+  const isEmpty = !isLoading && !isError && collections.length === 0;
 
   return (
     <View className="h-fit gap-6 pb-36">
@@ -62,7 +61,19 @@ export function CollectionListScreen() {
           {t("links.collection_list.my_collections")}
         </Text>
 
-        {isEmpty ? (
+        {isLoading ? (
+          <View className="items-center py-12">
+            <ActivityIndicator size="large" color="#6B7280" />
+          </View>
+        ) : isError ? (
+          <View className="items-center py-12">
+            <Text className="text-center text-base text-slate-500">
+              {t("common.error_generic", {
+                defaultValue: "An error occurred. Please try again.",
+              })}
+            </Text>
+          </View>
+        ) : isEmpty ? (
           <View className="mt-12 items-center px-8">
             <View className="mb-6 rounded-full bg-slate-50 p-6">
               <FolderOpen size={48} color={colors.iconMuted} strokeWidth={1} />
