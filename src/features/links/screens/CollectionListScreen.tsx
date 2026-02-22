@@ -1,4 +1,10 @@
-import { ActivityIndicator, Pressable, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  Pressable,
+  Text,
+  View,
+} from "react-native";
 
 import * as Haptics from "expo-haptics";
 
@@ -98,42 +104,37 @@ export function CollectionListScreen() {
           </View>
         ) : (
           <View className="gap-2">
-            {Array.from({ length: Math.ceil(collections.length / 2) }).map(
-              (_, rowIndex) => {
-                const rowItems = collections.slice(
-                  rowIndex * 2,
-                  rowIndex * 2 + 2,
-                );
-                if (rowItems.length === 0) return null;
-                return (
-                  <View key={rowIndex} className="flex-row gap-2">
-                    {rowItems.map((col) => (
-                      <View key={col.id} className="min-h-28 min-w-0 flex-1">
-                        <CollectionCard
-                          emoji={col.emoji ?? undefined}
-                          title={col.name}
-                          itemsCount={col.itemsCount}
-                          href={`/collections/${col.id}`}
-                        />
-                      </View>
-                    ))}
-                  </View>
-                );
-              },
-            )}
-            {/* New Collection: 細い1列ライン */}
-            <Pressable
-              onPress={handleNewCollectionPress}
-              className="flex-row items-center justify-center gap-2 rounded-xl border border-dashed border-slate-300 bg-slate-50/50 py-3 active:bg-slate-100"
-              style={CARD_STYLE}
-              accessibilityRole="button"
-              accessibilityLabel={t("links.overview.new_collection")}
-            >
-              <Plus size={20} color={colors.iconMuted} strokeWidth={2} />
-              <Text className="text-sm font-medium text-slate-600">
-                {t("links.overview.new_collection")}
-              </Text>
-            </Pressable>
+            <FlatList
+              data={collections}
+              numColumns={2}
+              scrollEnabled={false}
+              keyExtractor={(col) => col.id}
+              columnWrapperStyle={{ gap: 8, marginBottom: 8 }}
+              renderItem={({ item }) => (
+                <View className="min-h-28 min-w-0 flex-1">
+                  <CollectionCard
+                    emoji={item.emoji ?? undefined}
+                    title={item.name}
+                    itemsCount={item.itemsCount}
+                    href={`/collections/${item.id}`}
+                  />
+                </View>
+              )}
+              ListFooterComponent={
+                <Pressable
+                  onPress={handleNewCollectionPress}
+                  className="flex-row items-center justify-center gap-2 rounded-xl border border-dashed border-slate-300 bg-slate-50/50 py-3 active:bg-slate-100"
+                  style={CARD_STYLE}
+                  accessibilityRole="button"
+                  accessibilityLabel={t("links.overview.new_collection")}
+                >
+                  <Plus size={20} color={colors.iconMuted} strokeWidth={2} />
+                  <Text className="text-sm font-medium text-slate-600">
+                    {t("links.overview.new_collection")}
+                  </Text>
+                </Pressable>
+              }
+            />
           </View>
         )}
       </View>

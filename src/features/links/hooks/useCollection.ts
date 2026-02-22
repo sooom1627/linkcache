@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { getCollection } from "../api/getCollection.api";
 import { collectionQueryKeys } from "../constants/queryKeys";
@@ -18,21 +18,25 @@ export interface UseCollectionReturn {
 /**
  * 指定IDのコレクション詳細を取得するフック
  *
- * 直接URL遷移時や一覧未ロード時のフォールバック用。
- * useCollections で一覧から見つからない場合に使用する。
+ * 一覧画面からの遷移時は、キャッシュ済みの collections 一覧から該当アイテムを
+ * placeholderData として即時表示し、バックグラウンドで単体取得を実行する。
+ * 直接URL遷移時はキャッシュがなければローディング後に取得。
  *
  * @param id - コレクションID。空文字の場合はクエリを実行しない
- * @example
- * ```tsx
- * const { collection, isLoading } = useCollection(collectionId ?? "");
- * const resolved = collections.find(c => c.id === id) ?? collection;
- * ```
  */
 export function useCollection(id: string): UseCollectionReturn {
+  const queryClient = useQueryClient();
+  const cachedCollections = queryClient.getQueryData<CollectionWithCount[]>(
+    collectionQueryKeys.lists(),
+  );
+  const placeholderData =
+    id !== "" ? cachedCollections?.find((c) => c.id === id) : undefined;
+
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: collectionQueryKeys.detail(id),
     queryFn: () => getCollection(id),
-    enabled: id != null && id !== "",
+    enabled: id !== "",
+    placeholderData,
   });
 
   return {

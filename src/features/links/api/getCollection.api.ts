@@ -40,10 +40,6 @@ export async function getCollection(id: string): Promise<CollectionWithCount> {
     throw error;
   }
 
-  if (!data) {
-    throw new Error("Collection not found");
-  }
-
   return {
     id: data.id,
     name: data.name,

@@ -19,7 +19,6 @@ import { useBottomSheetModal } from "@/src/shared/hooks/useBottomSheetModal";
 
 import { LinkListCard } from "../components/LinkListCard";
 import { useCollection } from "../hooks/useCollection";
-import { useCollections } from "../hooks/useCollections";
 import type { UserLink } from "../types/linkList.types";
 
 import { CollectionEditModal } from "./CollectionEditModal";
@@ -98,7 +97,6 @@ function parseCollectionId(
 export function CollectionDetailScreen({ rawId }: CollectionDetailScreenProps) {
   const { t } = useTranslation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { collections, isLoading: isCollectionsLoading } = useCollections();
   const {
     ref: editModalRef,
     present: presentEditModal,
@@ -106,14 +104,7 @@ export function CollectionDetailScreen({ rawId }: CollectionDetailScreenProps) {
   } = useBottomSheetModal();
 
   const collectionId = parseCollectionId(rawId);
-  const { collection: detailCollection, isLoading: isDetailLoading } =
-    useCollection(collectionId ?? "");
-  const collection =
-    collectionId != null && collectionId !== ""
-      ? (collections.find((c) => c.id === collectionId) ??
-        detailCollection ??
-        null)
-      : null;
+  const { collection, isLoading } = useCollection(collectionId ?? "");
   const links =
     (collectionId ? MOCK_COLLECTION_LINKS[collectionId] : null) ?? [];
 
@@ -247,7 +238,7 @@ export function CollectionDetailScreen({ rawId }: CollectionDetailScreenProps) {
     );
   }
 
-  if (!collection && (isCollectionsLoading || isDetailLoading)) {
+  if (!collection && isLoading) {
     return (
       <View className="flex-1 items-center justify-center">
         <ActivityIndicator size="large" color="#6B7280" />

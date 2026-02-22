@@ -52,7 +52,7 @@ const STATUS_ITEMS = [
   },
 ] as const;
 
-// TODO: replace MOCK_UN_COLLECTIONED_COUNT with real un-collected count from useCollections()
+// TODO: replace MOCK_UN_COLLECTIONED_COUNT with real un-collected count when useUncollectedLinksCount (or similar API) is implemented
 const MOCK_UN_COLLECTIONED_COUNT = 8;
 
 /** モック: 要対応リンク */

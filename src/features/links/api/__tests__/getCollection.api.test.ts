@@ -25,7 +25,7 @@ jest.mock("@/src/shared/lib/supabase", () => ({
 }));
 
 const MOCK_USER_ID = "550e8400-e29b-41d4-a716-446655440001";
-const MOCK_COLLECTION_ID = "550e8400-e29b-41d4-a716-446655440001";
+const MOCK_COLLECTION_ID = "660e8400-e29b-41d4-a716-446655440002";
 const MOCK_COLLECTION = {
   id: MOCK_COLLECTION_ID,
   user_id: MOCK_USER_ID,
