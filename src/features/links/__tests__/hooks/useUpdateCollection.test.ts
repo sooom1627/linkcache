@@ -9,30 +9,30 @@ jest.mock("../../api/updateCollection.api", () => ({
   updateCollection: jest.fn(),
 }));
 
+const mockCollection = {
+  id: "col-1",
+  user_id: "user-1",
+  name: "Updated Name",
+  emoji: "🎯",
+  created_at: "2026-02-15T00:00:00Z",
+  updated_at: "2026-02-15T00:00:00Z",
+};
+
 describe("useUpdateCollection", () => {
+  let invalidateQueriesSpy: jest.SpyInstance;
+
   beforeEach(() => {
     jest.clearAllMocks();
+    invalidateQueriesSpy = jest.spyOn(testQueryClient, "invalidateQueries");
   });
 
   afterEach(() => {
+    invalidateQueriesSpy.mockRestore();
     clearQueryCache();
   });
 
   it("mutate 成功時に collections.lists() を invalidate する", async () => {
-    const mockCollection = {
-      id: "col-1",
-      user_id: "user-1",
-      name: "Updated Name",
-      emoji: "🎯",
-      created_at: "2026-02-15T00:00:00Z",
-      updated_at: "2026-02-15T00:00:00Z",
-    };
     (updateCollection as jest.Mock).mockResolvedValueOnce(mockCollection);
-
-    const invalidateQueriesSpy = jest.spyOn(
-      testQueryClient,
-      "invalidateQueries",
-    );
 
     const { result } = renderHook(() => useUpdateCollection(), { wrapper });
 
@@ -50,25 +50,10 @@ describe("useUpdateCollection", () => {
     expect(invalidateQueriesSpy).toHaveBeenCalledWith({
       queryKey: collectionQueryKeys.lists(),
     });
-
-    invalidateQueriesSpy.mockRestore();
   });
 
   it("mutate 成功時に collections.detail(id) を invalidate する", async () => {
-    const mockCollection = {
-      id: "col-1",
-      user_id: "user-1",
-      name: "Updated Name",
-      emoji: "🎯",
-      created_at: "2026-02-15T00:00:00Z",
-      updated_at: "2026-02-15T00:00:00Z",
-    };
     (updateCollection as jest.Mock).mockResolvedValueOnce(mockCollection);
-
-    const invalidateQueriesSpy = jest.spyOn(
-      testQueryClient,
-      "invalidateQueries",
-    );
 
     const { result } = renderHook(() => useUpdateCollection(), { wrapper });
 
@@ -86,8 +71,6 @@ describe("useUpdateCollection", () => {
     expect(invalidateQueriesSpy).toHaveBeenCalledWith({
       queryKey: collectionQueryKeys.detail("col-1"),
     });
-
-    invalidateQueriesSpy.mockRestore();
   });
 
   it("Supabase エラー時に isError が true になる", async () => {
