@@ -109,4 +109,99 @@ describe("useAddLinkToCollection", () => {
 
     expect(result.current.error).toBe(mockError);
   });
+
+  it("楽観的更新: APIレスポンス前にforLinkキャッシュが即時更新され、成功後にクエリが無効化される", async () => {
+    const initialIds = ["existing-col"];
+    testQueryClient.setQueryData(
+      collectionQueryKeys.forLink(MOCK_LINK_ID),
+      initialIds,
+    );
+
+    // Defer API resolution so we can observe the optimistic state first
+    let resolveApi!: (v: { collection_id: string; link_id: string }) => void;
+    (addLinkToCollection as jest.Mock).mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolveApi = resolve;
+        }),
+    );
+
+    const invalidateSpy = jest.spyOn(testQueryClient, "invalidateQueries");
+    const { result } = renderHook(() => useAddLinkToCollection(), { wrapper });
+
+    act(() => {
+      result.current.addLinkToCollection({
+        collectionId: MOCK_COLLECTION_ID,
+        linkId: MOCK_LINK_ID,
+      });
+    });
+
+    // Flush onMutate's async operations (cancelQueries + setQueryData)
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    // Optimistic update applied before API resolves
+    expect(
+      testQueryClient.getQueryData<string[]>(
+        collectionQueryKeys.forLink(MOCK_LINK_ID),
+      ),
+    ).toContain(MOCK_COLLECTION_ID);
+    expect(
+      testQueryClient.getQueryData<string[]>(
+        collectionQueryKeys.forLink(MOCK_LINK_ID),
+      ),
+    ).toContain("existing-col");
+    // onSettled has not fired yet
+    expect(invalidateSpy).not.toHaveBeenCalled();
+
+    // Resolve API → onSettled fires → invalidation
+    await act(async () => {
+      resolveApi({ collection_id: MOCK_COLLECTION_ID, link_id: MOCK_LINK_ID });
+    });
+
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true);
+    });
+
+    expect(invalidateSpy).toHaveBeenCalledWith({
+      queryKey: collectionQueryKeys.links(MOCK_COLLECTION_ID),
+    });
+    expect(invalidateSpy).toHaveBeenCalledWith({
+      queryKey: linkQueryKeys.detail(MOCK_LINK_ID),
+    });
+
+    invalidateSpy.mockRestore();
+  });
+
+  it("APIエラー時にforLinkキャッシュが元の状態にロールバックされる", async () => {
+    const initialIds = ["existing-col"];
+    testQueryClient.setQueryData(
+      collectionQueryKeys.forLink(MOCK_LINK_ID),
+      initialIds,
+    );
+
+    (addLinkToCollection as jest.Mock).mockRejectedValueOnce(new Error("fail"));
+
+    const { result } = renderHook(() => useAddLinkToCollection(), { wrapper });
+
+    act(() => {
+      result.current.addLinkToCollection({
+        collectionId: MOCK_COLLECTION_ID,
+        linkId: MOCK_LINK_ID,
+      });
+    });
+
+    await waitFor(() => {
+      expect(result.current.isError).toBe(true);
+    });
+
+    // onError should have restored the original IDs
+    expect(
+      testQueryClient.getQueryData<string[]>(
+        collectionQueryKeys.forLink(MOCK_LINK_ID),
+      ),
+    ).toEqual(initialIds);
+  });
 });

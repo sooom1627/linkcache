@@ -1,9 +1,8 @@
 import { renderHook, waitFor } from "@testing-library/react-native";
 
 import { fetchCollectionIdsByLink } from "../../api/fetchCollectionIdsByLink.api";
-import { collectionQueryKeys } from "../../constants/queryKeys";
 import { useCollectionsForLink } from "../../hooks/useCollectionsForLink";
-import { clearQueryCache, testQueryClient, wrapper } from "../test-utils";
+import { clearQueryCache, wrapper } from "../test-utils";
 
 jest.mock("../../api/fetchCollectionIdsByLink.api", () => ({
   fetchCollectionIdsByLink: jest.fn(),
@@ -89,19 +88,20 @@ describe("useCollectionsForLink", () => {
     expect(result.current.linkedCollectionIds.size).toBe(0);
   });
 
-  it("uses collectionQueryKeys.forLink for query key", async () => {
+  it("sets isError and error when API fails", async () => {
+    const mockError = new Error("API error");
+    (fetchCollectionIdsByLink as jest.Mock).mockRejectedValueOnce(mockError);
+
     const { result } = renderHook(() => useCollectionsForLink(MOCK_LINK_ID), {
       wrapper,
     });
 
     await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
+      expect(result.current.isError).toBe(true);
     });
 
-    const queryCache = testQueryClient.getQueryCache();
-    const queries = queryCache.findAll({
-      queryKey: collectionQueryKeys.forLink(MOCK_LINK_ID),
-    });
-    expect(queries).toHaveLength(1);
+    expect(result.current.error).toBe(mockError);
+    expect(result.current.isLoading).toBe(false);
+    expect(result.current.linkedCollectionIds.size).toBe(0);
   });
 });
