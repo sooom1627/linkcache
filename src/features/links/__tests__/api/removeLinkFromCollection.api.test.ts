@@ -91,7 +91,7 @@ describe("removeLinkFromCollection", () => {
     ).rejects.toThrow("Not authenticated");
   });
 
-  it("throws Supabase error on delete failure", async () => {
+  it("throws Error with message on delete failure", async () => {
     const mockError = { message: "delete failed", code: "42501" };
     mockDelete.mockReturnValue({
       eq: mockEq1.mockReturnValue({
@@ -104,6 +104,6 @@ describe("removeLinkFromCollection", () => {
         collectionId: MOCK_COLLECTION_ID,
         linkId: MOCK_LINK_ID,
       }),
-    ).rejects.toEqual(mockError);
+    ).rejects.toThrow("delete failed");
   });
 });

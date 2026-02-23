@@ -93,9 +93,7 @@ describe("useRemoveLinkFromCollection", () => {
   });
 
   it("applies optimistic update by removing collectionId from cache", async () => {
-    (removeLinkFromCollection as jest.Mock).mockImplementation(
-      () => new Promise(() => {}),
-    );
+    (removeLinkFromCollection as jest.Mock).mockResolvedValueOnce(undefined);
 
     const queryKey = collectionQueryKeys.forLink(MOCK_LINK_ID);
     testQueryClient.setQueryData<string[]>(queryKey, [
@@ -116,21 +114,21 @@ describe("useRemoveLinkFromCollection", () => {
       });
     });
 
+    // waitFor で setQueryData の updater 呼び出しを待つ（未解決 Promise を避ける）
     await waitFor(() => {
-      expect(result.current.isPending).toBe(true);
+      const relevantCall = setDataSpy.mock.calls.find(
+        ([key, updater]) =>
+          JSON.stringify(key) === JSON.stringify(queryKey) &&
+          typeof updater === "function",
+      );
+      expect(relevantCall).toBeDefined();
+
+      // updater 関数が collectionId を除外することを検証
+      const updater = relevantCall![1] as (
+        old: string[] | undefined,
+      ) => string[];
+      expect(updater([MOCK_COLLECTION_ID, "other-col"])).toEqual(["other-col"]);
     });
-
-    // onMutate が updater 関数を渡して setQueryData を呼んでいることを確認
-    const relevantCall = setDataSpy.mock.calls.find(
-      ([key, updater]) =>
-        JSON.stringify(key) === JSON.stringify(queryKey) &&
-        typeof updater === "function",
-    );
-    expect(relevantCall).toBeDefined();
-
-    // updater 関数が collectionId を除外することを検証
-    const updater = relevantCall![1] as (old: string[] | undefined) => string[];
-    expect(updater([MOCK_COLLECTION_ID, "other-col"])).toEqual(["other-col"]);
 
     setDataSpy.mockRestore();
   });
