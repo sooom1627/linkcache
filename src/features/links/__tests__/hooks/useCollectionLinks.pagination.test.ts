@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from "@testing-library/react-native";
+import { act, renderHook, waitFor } from "@testing-library/react-native";
 
 import { createMockLink } from "../../__mocks__/linkHelpers";
 import { fetchUserLinks } from "../../api/fetchLinks.api";
@@ -16,7 +16,6 @@ const MOCK_COLLECTION_ID = "col-abc-123";
 describe("useCollectionLinks - pagination & error", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    clearQueryCache();
   });
 
   afterEach(() => {
@@ -67,7 +66,9 @@ describe("useCollectionLinks - pagination & error", () => {
     expect(result.current.links).toHaveLength(1);
     expect(result.current.hasNextPage).toBe(true);
 
-    result.current.fetchNextPage();
+    act(() => {
+      result.current.fetchNextPage();
+    });
 
     await waitFor(() => {
       expect(result.current.hasNextPage).toBe(false);

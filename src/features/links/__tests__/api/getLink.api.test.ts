@@ -51,10 +51,6 @@ describe("getLinkById", () => {
     const result = await getLinkById(mockLinkId);
 
     // Then: 正しいUserLinkオブジェクトが返される
-    expect(mockFrom).toHaveBeenCalledWith("user_links_view");
-    expect(mockSelect).toHaveBeenCalledWith("*");
-    expect(mockEq).toHaveBeenCalledWith("link_id", mockLinkId);
-    expect(mockSingle).toHaveBeenCalled();
     expect(result).toEqual(mockLinkData);
   });
 

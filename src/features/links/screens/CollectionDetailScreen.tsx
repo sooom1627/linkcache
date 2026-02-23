@@ -107,7 +107,21 @@ export function CollectionDetailScreen({ rawId }: CollectionDetailScreenProps) {
           text: t("links.collection_detail.delete_confirm.confirm"),
           style: "destructive",
           onPress: () => {
-            deleteCollection(collectionId, { onSuccess: () => router.back() });
+            deleteCollection(collectionId, {
+              onSuccess: () => router.back(),
+              onError: (error) => {
+                __DEV__ &&
+                  console.warn(
+                    "[CollectionDetailScreen] deleteCollection failed:",
+                    error,
+                  );
+                Alert.alert(
+                  t("links.collection_detail.delete_error_title"),
+                  error?.message ??
+                    t("links.collection_detail.delete_error_message"),
+                );
+              },
+            });
           },
         },
       ],

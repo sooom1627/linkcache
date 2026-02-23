@@ -136,23 +136,14 @@ describe("useAddLinkToCollection", () => {
       });
     });
 
-    // Flush onMutate's async operations (cancelQueries + setQueryData)
-    await act(async () => {
-      await Promise.resolve();
-      await Promise.resolve();
+    // Wait for onMutate's async operations (cancelQueries + setQueryData) to complete
+    await waitFor(() => {
+      const data = testQueryClient.getQueryData<string[]>(
+        collectionQueryKeys.forLink(MOCK_LINK_ID),
+      );
+      expect(data).toContain(MOCK_COLLECTION_ID);
+      expect(data).toContain("existing-col");
     });
-
-    // Optimistic update applied before API resolves
-    expect(
-      testQueryClient.getQueryData<string[]>(
-        collectionQueryKeys.forLink(MOCK_LINK_ID),
-      ),
-    ).toContain(MOCK_COLLECTION_ID);
-    expect(
-      testQueryClient.getQueryData<string[]>(
-        collectionQueryKeys.forLink(MOCK_LINK_ID),
-      ),
-    ).toContain("existing-col");
     // onSettled has not fired yet
     expect(invalidateSpy).not.toHaveBeenCalled();
 

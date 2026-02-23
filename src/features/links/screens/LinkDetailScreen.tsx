@@ -308,19 +308,7 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
             <View className="mb-6 rounded-2xl bg-white p-4">
               {/* 現在のステータス */}
               <View className="mb-3 flex-row items-center gap-2">
-                {isDone ? (
-                  // Doneステータス: 優先表示
-                  <StatusDisplay
-                    status={link.status}
-                    statusStyle={statusStyle}
-                  />
-                ) : (
-                  // 未読: シンプルなアイコン+テキスト
-                  <StatusDisplay
-                    status={link.status}
-                    statusStyle={statusStyle}
-                  />
-                )}
+                <StatusDisplay status={link.status} statusStyle={statusStyle} />
               </View>
 
               {/* 日時情報 */}

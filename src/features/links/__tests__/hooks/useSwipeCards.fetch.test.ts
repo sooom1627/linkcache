@@ -2,7 +2,6 @@ import { renderHook, waitFor } from "@testing-library/react-native";
 
 import { createMockLink } from "../../__mocks__/linkHelpers";
 import { fetchUserLinks } from "../../api/fetchLinks.api";
-import { updateLinkStatus } from "../../api/updateLinkStatus.api";
 import { useSwipeCards } from "../../hooks/useSwipeCards";
 import { clearQueryCache, wrapper } from "../test-utils";
 
@@ -15,7 +14,6 @@ jest.mock("../../api/updateLinkStatus.api", () => ({
 }));
 
 const mockFetchUserLinks = jest.mocked(fetchUserLinks);
-jest.mocked(updateLinkStatus);
 
 describe("useSwipeCards - データ取得", () => {
   beforeEach(() => {

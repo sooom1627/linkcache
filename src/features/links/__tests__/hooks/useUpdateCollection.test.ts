@@ -3,13 +3,14 @@ import { act, renderHook, waitFor } from "@testing-library/react-native";
 import { updateCollection } from "../../api/updateCollection.api";
 import { collectionQueryKeys } from "../../constants/queryKeys";
 import { useUpdateCollection } from "../../hooks/useUpdateCollection";
+import type { Collection } from "../../types/links.types";
 import { clearQueryCache, testQueryClient, wrapper } from "../test-utils";
 
 jest.mock("../../api/updateCollection.api", () => ({
   updateCollection: jest.fn(),
 }));
 
-const mockCollection = {
+const mockCollection: Collection = {
   id: "col-1",
   user_id: "user-1",
   name: "Updated Name",

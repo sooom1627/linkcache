@@ -248,7 +248,9 @@
         "message": "このコレクションを削除してもよろしいですか？リンクは削除されません。",
         "cancel": "キャンセル",
         "confirm": "削除"
-      }
+      },
+      "delete_error_title": "削除に失敗しました",
+      "delete_error_message": "コレクションを削除できませんでした。再度お試しください。"
     },
     "collection_create": {
       "title": "新規コレクション",

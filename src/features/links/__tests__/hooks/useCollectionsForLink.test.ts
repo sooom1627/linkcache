@@ -9,6 +9,7 @@ jest.mock("../../api/fetchCollectionIdsByLink.api", () => ({
 }));
 
 describe("useCollectionsForLink", () => {
+  const mockFetchCollectionIdsByLink = jest.mocked(fetchCollectionIdsByLink);
   const MOCK_LINK_ID = "770e8400-e29b-41d4-a716-446655440002";
   const MOCK_COLLECTION_IDS = [
     "660e8400-e29b-41d4-a716-446655440001",
@@ -17,9 +18,7 @@ describe("useCollectionsForLink", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    (fetchCollectionIdsByLink as jest.Mock).mockResolvedValue(
-      MOCK_COLLECTION_IDS,
-    );
+    mockFetchCollectionIdsByLink.mockResolvedValue(MOCK_COLLECTION_IDS);
   });
 
   afterEach(() => {
@@ -74,7 +73,7 @@ describe("useCollectionsForLink", () => {
   });
 
   it("returns empty Set when API returns empty array", async () => {
-    (fetchCollectionIdsByLink as jest.Mock).mockResolvedValueOnce([]);
+    mockFetchCollectionIdsByLink.mockResolvedValueOnce([]);
 
     const { result } = renderHook(() => useCollectionsForLink(MOCK_LINK_ID), {
       wrapper,
@@ -90,7 +89,7 @@ describe("useCollectionsForLink", () => {
 
   it("sets isError and error when API fails", async () => {
     const mockError = new Error("API error");
-    (fetchCollectionIdsByLink as jest.Mock).mockRejectedValueOnce(mockError);
+    mockFetchCollectionIdsByLink.mockRejectedValueOnce(mockError);
 
     const { result } = renderHook(() => useCollectionsForLink(MOCK_LINK_ID), {
       wrapper,
