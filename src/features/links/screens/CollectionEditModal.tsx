@@ -22,11 +22,11 @@ export interface CollectionEditModalProps {
 }
 
 /**
- * コレクション編集モーダル（UIレイヤーのみ）
+ * コレクション編集モーダル
  *
  * 名前と絵文字を編集してコレクションを更新するフォームを表示します。
  * CollectionCreateModal と UI を統一。
- * 現時点ではAPI連携なし。送信時はモーダルを閉じるのみ。
+ * 送信時は useUpdateCollection を通じて Supabase にコレクション情報を保存します。
  */
 export const CollectionEditModal = forwardRef<
   BottomSheetModal,

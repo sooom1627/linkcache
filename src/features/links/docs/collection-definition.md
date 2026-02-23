@@ -394,14 +394,14 @@ import type { Collection, CollectionLink } from "@features/links/types";
    - ✅ `CollectionLink`型
    - ✅ 型のエクスポート
 
-### ❌ 未実装
+### ⚠️ 一部未実装
 
 1. **API関数** (`src/features/links/api/`)
    - ✅ `createCollection.api.ts` - コレクション作成
-   - ❌ `fetchCollections.api.ts` - コレクション一覧取得
-   - ❌ `getCollection.api.ts` - コレクション詳細取得
-   - ❌ `updateCollection.api.ts` - コレクション更新
-   - ❌ `deleteCollection.api.ts` - コレクション削除
+   - ✅ `fetchCollections.api.ts` - コレクション一覧取得
+   - ✅ `getCollection.api.ts` - コレクション詳細取得
+   - ✅ `updateCollection.api.ts` - コレクション更新
+   - ✅ `deleteCollection.api.ts` - コレクション削除
    - ✅ `addLinkToCollection.api.ts` - リンクをコレクションに追加
    - ✅ `removeLinkFromCollection.api.ts` - リンクをコレクションから削除
    - ❌ `getCollectionLinks.api.ts` - コレクション内のリンク一覧取得
@@ -411,26 +411,27 @@ import type { Collection, CollectionLink } from "@features/links/types";
    - ✅ createCollectionSchema（Zod バリデーション）
 
 3. **カスタムフック** (`src/features/links/hooks/`)
-   - ❌ `useCollections.ts` - コレクション一覧取得フック
-   - ❌ `useCollection.ts` - コレクション詳細取得フック
+   - ✅ `useCollections.ts` - コレクション一覧取得フック
+   - ✅ `useCollection.ts` - コレクション詳細取得フック
    - ✅ `useCreateCollection.ts` - コレクション作成フック
-   - ❌ `useUpdateCollection.ts` - コレクション更新フック
-   - ❌ `useDeleteCollection.ts` - コレクション削除フック
-   - ❌ `useCollectionLinks.ts` - コレクション内リンク取得フック
+   - ✅ `useUpdateCollection.ts` - コレクション更新フック
+   - ✅ `useDeleteCollection.ts` - コレクション削除フック
+   - ✅ `useCollectionLinks.ts` - コレクション内リンク取得フック
    - ✅ `useAddLinkToCollection.ts` - リンク追加フック
    - ✅ `useRemoveLinkFromCollection.ts` - リンク削除フック
 
 4. **UIコンポーネント** (`src/features/links/components/`)
    - ✅ `CollectionCard.tsx` - コレクションカード（href/onPress、Link 対応）
    - ✅ `CollectionChip.tsx` - コレクションチップ
+   - ✅ `CollectionsSectionSkeleton.tsx` - コレクション一覧のスケルトンローディング
    - ✅ `CollectionCreateModal.tsx` - コレクション作成フォーム（API 連携済み）
-   - ✅ `CollectionEditModal.tsx` - コレクション編集フォーム（CollectionDetailScreen の Edit 押下で表示）
+   - ✅ `CollectionEditModal.tsx` - コレクション編集フォーム（API 連携済み）
    - ❌ `CollectionLinkList.tsx` - コレクション内リンク一覧
    - ❌ `AddToCollectionModal.tsx` - リンクをコレクションに追加するモーダル
 
 5. **画面** (`src/features/links/screens/`)
-   - ✅ `CollectionListScreen.tsx` - コレクション一覧画面（UI のみ、モックデータ）
-   - ⚠️ `CollectionDetailScreen` - プレースホルダーのみ（`app/(protected)/collections/[id].tsx`）
+   - ✅ `CollectionListScreen.tsx` - コレクション一覧画面（useCollections フックで実データ取得）
+   - ✅ `CollectionDetailScreen.tsx` - コレクション詳細画面（useCollection / useCollectionLinks 連携済み）
 
 6. **クエリキー** (`src/features/links/constants/queryKeys.ts`)
    - ✅ collectionQueryKeys（lists, detail, links）
