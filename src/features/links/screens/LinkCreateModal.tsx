@@ -99,18 +99,29 @@ export const LinkCreateModal = forwardRef<
     if (!preview?.url) return;
     try {
       const { link_id } = await createLinkAsync(preview.url);
-      if (selectedCollectionIds.size > 0) {
-        await Promise.all(
-          Array.from(selectedCollectionIds).map((collectionId) =>
-            addLinkToCollectionAsync({ collectionId, linkId: link_id }),
-          ),
-        );
-      }
+      const collectionIds = Array.from(selectedCollectionIds);
+
       Alert.alert(
         t("links.create.callback_messages.success_title"),
         t("links.create.callback_messages.success_message"),
       );
       handleClose();
+
+      if (collectionIds.length > 0) {
+        Promise.allSettled(
+          collectionIds.map((collectionId) =>
+            addLinkToCollectionAsync({ collectionId, linkId: link_id }),
+          ),
+        ).then((results) => {
+          const hasFailures = results.some((r) => r.status === "rejected");
+          if (hasFailures) {
+            Alert.alert(
+              t("links.create.callback_messages.collection_add_error_title"),
+              t("links.create.callback_messages.collection_add_error_message"),
+            );
+          }
+        });
+      }
     } catch {
       Alert.alert(
         t("links.create.callback_messages.error_title"),

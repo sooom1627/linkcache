@@ -114,7 +114,9 @@
         "success_title": "リンクを保存しました",
         "success_message": "リンクがインボックスに追加されました",
         "error_title": "保存に失敗しました",
-        "error_message": "リンクを保存できませんでした。再度お試しください。"
+        "error_message": "リンクを保存できませんでした。再度お試しください。",
+        "collection_add_error_title": "一部のコレクションに追加できませんでした",
+        "collection_add_error_message": "リンクは保存されましたが、選択したコレクションの一部に追加できませんでした。"
       }
     },
     "paste": {
@@ -266,7 +268,9 @@
       "name_placeholder": "例: 仕事, デザイン, テック",
       "emoji_label": "絵文字（任意）",
       "emoji_placeholder": "例: 📚",
-      "submit": "保存"
+      "submit": "保存",
+      "error_title": "更新に失敗しました",
+      "error_message": "コレクションを更新できませんでした。再度お試しください。"
     },
     "detail": {
       "title": "リンク詳細",
@@ -300,6 +304,7 @@
   "common": {
     "back": "戻る",
     "retry": "再試行",
-    "error_title": "エラーが発生しました"
+    "error_title": "エラーが発生しました",
+    "error_generic": "データを読み込めませんでした。もう一度お試しください。"
   }
 }

@@ -205,8 +205,15 @@ export function CollectionDetailScreen({ rawId }: CollectionDetailScreenProps) {
     [isFetchingNextPage],
   );
 
-  const renderEmpty = useCallback(
-    () => (
+  const renderEmpty = useCallback(() => {
+    if (isLinksLoading) {
+      return (
+        <View className="items-center py-12">
+          <ActivityIndicator size="large" color="#6B7280" />
+        </View>
+      );
+    }
+    return (
       <View className="items-center px-8 py-12">
         <View className="mb-6 rounded-full bg-slate-50 p-6">
           <FolderOpen size={48} color={colors.iconMuted} strokeWidth={1} />
@@ -218,9 +225,8 @@ export function CollectionDetailScreen({ rawId }: CollectionDetailScreenProps) {
           {t("links.collection_detail.empty_description")}
         </Text>
       </View>
-    ),
-    [t],
-  );
+    );
+  }, [t, isLinksLoading]);
 
   if (collectionId == null || collectionId === "") {
     return (
@@ -253,7 +259,7 @@ export function CollectionDetailScreen({ rawId }: CollectionDetailScreenProps) {
   return (
     <View className="flex-1">
       <FlashList
-        data={isLinksLoading ? undefined : links}
+        data={isLinksLoading ? (links ?? []) : links}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         ListHeaderComponent={renderListHeader}

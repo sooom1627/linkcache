@@ -114,7 +114,9 @@
         "success_title": "Link Saved",
         "success_message": "Link has been added to your inbox",
         "error_title": "Save Failed",
-        "error_message": "Failed to save link. Please try again."
+        "error_message": "Failed to save link. Please try again.",
+        "collection_add_error_title": "Could not add to some collections",
+        "collection_add_error_message": "Link was saved, but could not be added to some selected collections."
       }
     },
     "paste": {
@@ -266,7 +268,9 @@
       "name_placeholder": "e.g. Work, Design, Tech",
       "emoji_label": "Emoji (optional)",
       "emoji_placeholder": "e.g. 📚",
-      "submit": "Save"
+      "submit": "Save",
+      "error_title": "Failed to update",
+      "error_message": "Could not update collection. Please try again."
     },
     "detail": {
       "title": "Link Details",
@@ -300,6 +304,7 @@
   "common": {
     "back": "Back",
     "retry": "Try Again",
-    "error_title": "Something went wrong"
+    "error_title": "Something went wrong",
+    "error_generic": "Could not load data. Please try again."
   }
 }

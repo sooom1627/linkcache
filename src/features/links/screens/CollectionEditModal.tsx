@@ -1,6 +1,6 @@
 import { forwardRef, useCallback, useEffect, useState } from "react";
 
-import { Pressable, Text, TextInput, View } from "react-native";
+import { Alert, Pressable, Text, TextInput, View } from "react-native";
 
 import type { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { Plus } from "lucide-react-native";
@@ -57,9 +57,22 @@ export const CollectionEditModal = forwardRef<
   const handleSubmit = useCallback(() => {
     updateCollection(
       { id: collectionId, params: { name: name.trim(), emoji: emoji || null } },
-      { onSuccess: handleClose },
+      {
+        onSuccess: handleClose,
+        onError: (error) => {
+          __DEV__ &&
+            console.warn(
+              "[CollectionEditModal] updateCollection failed:",
+              error,
+            );
+          Alert.alert(
+            t("links.collection_edit.error_title"),
+            t("links.collection_edit.error_message"),
+          );
+        },
+      },
     );
-  }, [updateCollection, collectionId, name, emoji, handleClose]);
+  }, [updateCollection, collectionId, name, emoji, handleClose, t]);
 
   const handleModalChange = useCallback(
     (index: number) => {
