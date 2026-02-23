@@ -12,10 +12,16 @@ import {
  *
  * Supabase RPC `get_user_links` を呼び出し、
  * ページング付きでリンク一覧を取得します。
+ * collectionId を指定すると、そのコレクション内のリンクのみに絞り込みます。
  *
  * @param params - 取得パラメータ
  * @param params.pageSize - 1ページあたりの件数 (デフォルト: 20)
  * @param params.page - ページ番号 (0始まり、デフォルト: 0)
+ * @param params.status - ステータスフィルタ
+ * @param params.isRead - 既読状態フィルタ
+ * @param params.limit - 件数制限（ページング無視）
+ * @param params.orderBy - ソート順
+ * @param params.collectionId - コレクションIDでフィルタ（指定時はそのコレクション内のリンクのみ）
  * @returns ページング情報付きのリンク一覧
  * @throws Supabaseエラー（認証エラー、DBエラーなど）
  *
@@ -26,12 +32,23 @@ import {
  *
  * // 2ページ目を10件ずつ取得
  * const page2 = await fetchUserLinks({ pageSize: 10, page: 1 });
+ *
+ * // コレクション内のリンクを取得
+ * const collectionLinks = await fetchUserLinks({ collectionId: "col-123" });
  * ```
  */
 export async function fetchUserLinks(
   params: GetUserLinksParams = {},
 ): Promise<GetUserLinksResponse> {
-  const { pageSize = 20, page = 0, status, isRead, limit, orderBy } = params;
+  const {
+    pageSize = 20,
+    page = 0,
+    status,
+    isRead,
+    limit,
+    orderBy,
+    collectionId,
+  } = params;
 
   // orderBy を許可リストで検証
   const validatedOrderBy = orderBySchema.parse(orderBy ?? null);
@@ -43,6 +60,7 @@ export async function fetchUserLinks(
     p_is_read: isRead ?? null,
     p_limit: limit ?? null,
     p_order_by: validatedOrderBy,
+    p_collection_id: collectionId ?? null,
   });
 
   if (response.error) {

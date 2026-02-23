@@ -53,6 +53,7 @@ describe("fetchUserLinks", () => {
         p_is_read: null,
         p_limit: null,
         p_order_by: null,
+        p_collection_id: null,
       });
       expect(result.data).toHaveLength(1);
       expect(result.hasMore).toBe(false);
@@ -80,6 +81,7 @@ describe("fetchUserLinks", () => {
         p_is_read: null,
         p_limit: null,
         p_order_by: null,
+        p_collection_id: null,
       });
       expect(result.hasMore).toBe(true);
       expect(result.totalCount).toBe(50);
@@ -106,6 +108,7 @@ describe("fetchUserLinks", () => {
         p_is_read: null,
         p_limit: null,
         p_order_by: null,
+        p_collection_id: null,
       });
       expect(result.totalCount).toBe(5);
     });
@@ -131,6 +134,7 @@ describe("fetchUserLinks", () => {
         p_is_read: false,
         p_limit: null,
         p_order_by: null,
+        p_collection_id: null,
       });
       expect(result.totalCount).toBe(3);
     });
@@ -156,6 +160,7 @@ describe("fetchUserLinks", () => {
         p_is_read: null,
         p_limit: 5,
         p_order_by: null,
+        p_collection_id: null,
       });
       expect(result.hasMore).toBe(false);
     });
@@ -185,6 +190,7 @@ describe("fetchUserLinks", () => {
         p_is_read: true,
         p_limit: 5,
         p_order_by: null,
+        p_collection_id: null,
       });
       expect(result.totalCount).toBe(2);
     });
@@ -213,6 +219,7 @@ describe("fetchUserLinks", () => {
         p_is_read: null,
         p_limit: null,
         p_order_by: "triaged_at_asc",
+        p_collection_id: null,
       });
       expect(result.totalCount).toBe(3);
     });
@@ -240,6 +247,7 @@ describe("fetchUserLinks", () => {
         p_is_read: null,
         p_limit: null,
         p_order_by: "created_at_desc",
+        p_collection_id: null,
       });
       expect(result.totalCount).toBe(5);
     });
@@ -265,7 +273,51 @@ describe("fetchUserLinks", () => {
         p_is_read: null,
         p_limit: null,
         p_order_by: null,
+        p_collection_id: null,
       });
+      expect(result.totalCount).toBe(1);
+    });
+
+    it("collectionIdを指定してコレクション内リンクを取得できる", async () => {
+      const mockResponse = {
+        data: {
+          data: [
+            {
+              status_id: "550e8400-e29b-41d4-a716-446655440000",
+              user_id: "550e8400-e29b-41d4-a716-446655440001",
+              status: "new",
+              triaged_at: null,
+              read_at: null,
+              link_id: "550e8400-e29b-41d4-a716-446655440002",
+              url: "https://example.com",
+              title: "Example",
+              image_url: null,
+              favicon_url: null,
+              site_name: "Example Site",
+              link_created_at: "2024-01-01T00:00:00Z",
+            },
+          ],
+          hasMore: false,
+          totalCount: 1,
+        },
+        error: null,
+      };
+
+      mockRpc.mockResolvedValueOnce(mockResponse);
+
+      const collectionId = "550e8400-e29b-41d4-a716-446655440099";
+      const result = await fetchUserLinks({ collectionId });
+
+      expect(mockRpc).toHaveBeenCalledWith("get_user_links", {
+        p_page_size: 20,
+        p_page: 0,
+        p_status: null,
+        p_is_read: null,
+        p_limit: null,
+        p_order_by: null,
+        p_collection_id: collectionId,
+      });
+      expect(result.data).toHaveLength(1);
       expect(result.totalCount).toBe(1);
     });
 

@@ -18,63 +18,12 @@ import { colors } from "@/src/shared/constants/colors";
 import { useBottomSheetModal } from "@/src/shared/hooks/useBottomSheetModal";
 
 import { LinkListCard } from "../components/LinkListCard";
+import { LinkListLoadingFooter } from "../components/LinkListLoadingFooter";
 import { useCollection } from "../hooks/useCollection";
+import { useCollectionLinks } from "../hooks/useCollectionLinks";
 import type { UserLink } from "../types/linkList.types";
 
 import { CollectionEditModal } from "./CollectionEditModal";
-
-/** モック: コレクション別リンク（API未実装のため、機能6で置き換え予定） */
-const MOCK_COLLECTION_LINKS: Record<string, UserLink[]> = {
-  "1": [
-    {
-      status_id: "ls-1",
-      user_id: "u-1",
-      status: "read_soon",
-      triaged_at: "2024-01-15T10:00:00Z",
-      read_at: null,
-      link_id: "l-1",
-      url: "https://example.com/react-performance",
-      title: "Optimizing React Native Performance",
-      image_url: null,
-      favicon_url: null,
-      site_name: "example.com",
-      link_created_at: "2024-01-10T09:00:00Z",
-    },
-    {
-      status_id: "ls-2",
-      user_id: "u-1",
-      status: "done",
-      triaged_at: "2024-01-12T14:00:00Z",
-      read_at: "2024-01-14T16:00:00Z",
-      link_id: "l-2",
-      url: "https://example.com/design-systems",
-      title: "Design Systems Best Practices",
-      image_url: null,
-      favicon_url: null,
-      site_name: "example.com",
-      link_created_at: "2024-01-08T11:00:00Z",
-    },
-  ],
-  "2": [],
-  "3": [],
-  "4": [
-    {
-      status_id: "ls-3",
-      user_id: "u-1",
-      status: "new",
-      triaged_at: null,
-      read_at: null,
-      link_id: "l-3",
-      url: "https://example.com/expo-router",
-      title: "Expo Router Deep Dive",
-      image_url: null,
-      favicon_url: null,
-      site_name: "example.com",
-      link_created_at: "2024-01-20T08:00:00Z",
-    },
-  ],
-  "5": [],
-};
 
 interface CollectionDetailScreenProps {
   rawId: string | string[] | undefined;
@@ -90,9 +39,11 @@ function parseCollectionId(
 /**
  * コレクション詳細画面
  *
- * コレクション内のリンク一覧を表示。
+ * コレクション内のリンク一覧を FlashList + LinkListCard で表示。
  * CollectionCard / CollectionChip タップ時の遷移先。
- * 現状はモックデータ使用。
+ *
+ * - useCollection: コレクション詳細（名前、emoji、件数）
+ * - useCollectionLinks: コレクション内リンク一覧（fetchUserLinks({ collectionId }) 経由）
  */
 export function CollectionDetailScreen({ rawId }: CollectionDetailScreenProps) {
   const { t } = useTranslation();
@@ -104,9 +55,23 @@ export function CollectionDetailScreen({ rawId }: CollectionDetailScreenProps) {
   } = useBottomSheetModal();
 
   const collectionId = parseCollectionId(rawId);
-  const { collection, isLoading } = useCollection(collectionId ?? "");
-  const links =
-    (collectionId ? MOCK_COLLECTION_LINKS[collectionId] : null) ?? [];
+  const { collection, isLoading: isCollectionLoading } = useCollection(
+    collectionId ?? "",
+  );
+  const {
+    links,
+    isLoading: isLinksLoading,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = useCollectionLinks(collectionId ?? "");
+  const isLoading = isCollectionLoading || isLinksLoading;
+
+  const handleEndReached = useCallback(() => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const handleToggleMenu = useCallback(() => {
     setIsMenuOpen((prev) => !prev);
@@ -211,6 +176,11 @@ export function CollectionDetailScreen({ rawId }: CollectionDetailScreenProps) {
     [collection, t, handleToggleMenu],
   );
 
+  const renderFooter = useCallback(
+    () => <LinkListLoadingFooter isLoading={isFetchingNextPage} />,
+    [isFetchingNextPage],
+  );
+
   const renderEmpty = useCallback(
     () => (
       <View className="items-center px-8 py-12">
@@ -259,14 +229,17 @@ export function CollectionDetailScreen({ rawId }: CollectionDetailScreenProps) {
   return (
     <View className="flex-1">
       <FlashList
-        data={links}
+        data={isLinksLoading ? undefined : links}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         ListHeaderComponent={renderListHeader}
         ListEmptyComponent={renderEmpty}
+        ListFooterComponent={renderFooter}
         contentContainerStyle={{ paddingTop: 8, paddingBottom: 120 }}
         contentInsetAdjustmentBehavior="automatic"
         showsVerticalScrollIndicator={false}
+        onEndReached={handleEndReached}
+        onEndReachedThreshold={0.5}
       />
       {isMenuOpen ? (
         <>
