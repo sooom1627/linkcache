@@ -1,5 +1,6 @@
 import { renderHook, waitFor } from "@testing-library/react-native";
 
+import { createMockLink } from "../../__mocks__/linkHelpers";
 import { fetchUserLinks } from "../../api/fetchLinks.api";
 import { collectionQueryKeys } from "../../constants/queryKeys";
 import { useCollectionLinks } from "../../hooks/useCollectionLinks";
@@ -13,33 +14,22 @@ const mockFetchUserLinks = jest.mocked(fetchUserLinks);
 
 const MOCK_COLLECTION_ID = "col-abc-123";
 
-const createMockLink = (
-  id: number,
-  status: "new" | "read_soon" | "stock" | "done" = "new",
-) => ({
-  status_id: `status-${id}`,
-  user_id: "user-1",
-  status,
-  triaged_at: null,
-  read_at: null,
-  link_id: `link-${id}`,
-  url: `https://example${id}.com`,
-  title: `Example ${id}`,
-  image_url: null,
-  favicon_url: null,
-  site_name: `Site ${id}`,
-  link_created_at: `2024-01-0${id}T00:00:00Z`,
-});
-
 describe("useCollectionLinks", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     clearQueryCache();
   });
 
+  afterEach(() => {
+    clearQueryCache();
+  });
+
   it("collectionIdを指定してリンク一覧を取得する", async () => {
     const mockData = {
-      data: [createMockLink(1, "new"), createMockLink(2, "read_soon")],
+      data: [
+        createMockLink(1, { status: "new" }),
+        createMockLink(2, { status: "read_soon" }),
+      ],
       hasMore: false,
       totalCount: 2,
     };
@@ -58,6 +48,8 @@ describe("useCollectionLinks", () => {
 
     expect(mockFetchUserLinks).toHaveBeenCalledWith({
       collectionId: MOCK_COLLECTION_ID,
+      pageSize: 20,
+      page: 0,
     });
     expect(result.current.links).toHaveLength(2);
     expect(result.current.links[0].title).toBe("Example 1");
@@ -138,7 +130,7 @@ describe("useCollectionLinks", () => {
     expect(result.current.links[0].status).toBe("new");
   });
 
-  it("返り値にlinks, isLoading, isError, error, refetchを含む", () => {
+  it("返り値にlinks, isLoading, isError, error, refetch, fetchNextPage, hasNextPage, totalCountを含む", () => {
     mockFetchUserLinks.mockResolvedValueOnce({
       data: [],
       hasMore: false,
@@ -152,9 +144,62 @@ describe("useCollectionLinks", () => {
 
     expect(result.current).toHaveProperty("links");
     expect(result.current).toHaveProperty("isLoading");
+    expect(result.current).toHaveProperty("isFetchingNextPage");
     expect(result.current).toHaveProperty("isError");
     expect(result.current).toHaveProperty("error");
+    expect(result.current).toHaveProperty("hasNextPage");
+    expect(result.current).toHaveProperty("totalCount");
     expect(result.current).toHaveProperty("refetch");
+    expect(result.current).toHaveProperty("fetchNextPage");
     expect(typeof result.current.refetch).toBe("function");
+    expect(typeof result.current.fetchNextPage).toBe("function");
+  });
+
+  it("hasMoreがtrueのときfetchNextPageで次ページを取得する", async () => {
+    const page0Data = {
+      data: [createMockLink(1, { status: "new" })],
+      hasMore: true,
+      totalCount: 25,
+    };
+    const page1Data = {
+      data: [createMockLink(2, { status: "read_soon" })],
+      hasMore: false,
+      totalCount: 25,
+    };
+    mockFetchUserLinks
+      .mockResolvedValueOnce(page0Data)
+      .mockResolvedValueOnce(page1Data);
+
+    const { result } = renderHook(
+      () => useCollectionLinks(MOCK_COLLECTION_ID),
+      { wrapper },
+    );
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    expect(result.current.links).toHaveLength(1);
+    expect(result.current.hasNextPage).toBe(true);
+
+    result.current.fetchNextPage();
+
+    await waitFor(() => {
+      expect(result.current.hasNextPage).toBe(false);
+    });
+
+    expect(mockFetchUserLinks).toHaveBeenCalledTimes(2);
+    expect(mockFetchUserLinks).toHaveBeenNthCalledWith(1, {
+      collectionId: MOCK_COLLECTION_ID,
+      pageSize: 20,
+      page: 0,
+    });
+    expect(mockFetchUserLinks).toHaveBeenNthCalledWith(2, {
+      collectionId: MOCK_COLLECTION_ID,
+      pageSize: 20,
+      page: 1,
+    });
+    expect(result.current.links).toHaveLength(2);
+    expect(result.current.totalCount).toBe(25);
   });
 });

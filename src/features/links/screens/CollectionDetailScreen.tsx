@@ -18,6 +18,7 @@ import { colors } from "@/src/shared/constants/colors";
 import { useBottomSheetModal } from "@/src/shared/hooks/useBottomSheetModal";
 
 import { LinkListCard } from "../components/LinkListCard";
+import { LinkListLoadingFooter } from "../components/LinkListLoadingFooter";
 import { useCollection } from "../hooks/useCollection";
 import { useCollectionLinks } from "../hooks/useCollectionLinks";
 import type { UserLink } from "../types/linkList.types";
@@ -57,10 +58,20 @@ export function CollectionDetailScreen({ rawId }: CollectionDetailScreenProps) {
   const { collection, isLoading: isCollectionLoading } = useCollection(
     collectionId ?? "",
   );
-  const { links, isLoading: isLinksLoading } = useCollectionLinks(
-    collectionId ?? "",
-  );
+  const {
+    links,
+    isLoading: isLinksLoading,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = useCollectionLinks(collectionId ?? "");
   const isLoading = isCollectionLoading || isLinksLoading;
+
+  const handleEndReached = useCallback(() => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const handleToggleMenu = useCallback(() => {
     setIsMenuOpen((prev) => !prev);
@@ -165,6 +176,11 @@ export function CollectionDetailScreen({ rawId }: CollectionDetailScreenProps) {
     [collection, t, handleToggleMenu],
   );
 
+  const renderFooter = useCallback(
+    () => <LinkListLoadingFooter isLoading={isFetchingNextPage} />,
+    [isFetchingNextPage],
+  );
+
   const renderEmpty = useCallback(
     () => (
       <View className="items-center px-8 py-12">
@@ -213,14 +229,17 @@ export function CollectionDetailScreen({ rawId }: CollectionDetailScreenProps) {
   return (
     <View className="flex-1">
       <FlashList
-        data={links}
+        data={isLinksLoading ? undefined : links}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         ListHeaderComponent={renderListHeader}
         ListEmptyComponent={renderEmpty}
+        ListFooterComponent={renderFooter}
         contentContainerStyle={{ paddingTop: 8, paddingBottom: 120 }}
         contentInsetAdjustmentBehavior="automatic"
         showsVerticalScrollIndicator={false}
+        onEndReached={handleEndReached}
+        onEndReachedThreshold={0.5}
       />
       {isMenuOpen ? (
         <>
