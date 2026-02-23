@@ -1,6 +1,6 @@
 import { supabase } from "@/src/shared/lib/supabase";
 
-import { getLinkById } from "../getLink.api";
+import { getLinkById } from "../../api/getLink.api";
 
 // Supabase クライアントをモック
 jest.mock("@/src/shared/lib/supabase", () => ({

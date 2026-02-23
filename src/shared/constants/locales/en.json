@@ -101,6 +101,7 @@
     "subtitle": "Organize your links",
     "create": {
       "title": "Add Link",
+      "selectCollections": "Select Collections",
       "add_button": "Add Link",
       "url_placeholder": "Enter URL",
       "submit_button": "Save Link",

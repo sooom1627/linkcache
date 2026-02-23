@@ -14,6 +14,7 @@ import { normalizeUrl } from "../utils/normalizeUrl";
  */
 export interface UseCreateLinkReturn {
   createLink: (url: string) => void;
+  createLinkAsync: (url: string) => Promise<CreateLinkResponse>;
   isPending: boolean;
   isError: boolean;
   isSuccess: boolean;
@@ -32,11 +33,10 @@ export interface UseCreateLinkReturn {
  *
  * @example
  * ```tsx
- * const { createLink, isPending, isError, isSuccess } = useCreateLink();
- *
- * const handleSubmit = () => {
- *   createLink("https://example.com");
- * };
+ * const { createLink, createLinkAsync, isPending } = useCreateLink();
+ * createLink("https://example.com");
+ * // await が必要な場合（例: LinkCreateModal でコレクション追加と連携）
+ * const { link_id } = await createLinkAsync(url);
  * ```
  */
 export function useCreateLink(): UseCreateLinkReturn {
@@ -78,6 +78,7 @@ export function useCreateLink(): UseCreateLinkReturn {
 
   return {
     createLink: mutation.mutate,
+    createLinkAsync: mutation.mutateAsync,
     isPending: mutation.isPending,
     isError: mutation.isError,
     isSuccess: mutation.isSuccess,

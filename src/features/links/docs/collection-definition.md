@@ -402,7 +402,7 @@ import type { Collection, CollectionLink } from "@features/links/types";
    - ❌ `getCollection.api.ts` - コレクション詳細取得
    - ❌ `updateCollection.api.ts` - コレクション更新
    - ❌ `deleteCollection.api.ts` - コレクション削除
-   - ❌ `addLinkToCollection.api.ts` - リンクをコレクションに追加
+   - ✅ `addLinkToCollection.api.ts` - リンクをコレクションに追加
    - ❌ `removeLinkFromCollection.api.ts` - リンクをコレクションから削除
    - ❌ `getCollectionLinks.api.ts` - コレクション内のリンク一覧取得
 
@@ -417,7 +417,7 @@ import type { Collection, CollectionLink } from "@features/links/types";
    - ❌ `useUpdateCollection.ts` - コレクション更新フック
    - ❌ `useDeleteCollection.ts` - コレクション削除フック
    - ❌ `useCollectionLinks.ts` - コレクション内リンク取得フック
-   - ❌ `useAddLinkToCollection.ts` - リンク追加フック
+   - ✅ `useAddLinkToCollection.ts` - リンク追加フック
    - ❌ `useRemoveLinkFromCollection.ts` - リンク削除フック
 
 4. **UIコンポーネント** (`src/features/links/components/`)
@@ -632,8 +632,8 @@ export const collectionQueryKeys = {
 
 - ✅ **データベーススキーマ**: 完全に定義済み（RLS、制約、トリガー含む）
 - ✅ **型定義**: 基本型は定義済み
-- ❌ **API関数**: 未実装
-- ❌ **カスタムフック**: 未実装
+- ⚠️ **API関数**: 一部実装済み（`createCollection.api.ts`、`addLinkToCollection.api.ts` 等）
+- ⚠️ **カスタムフック**: 一部実装済み（`useCreateCollection.ts`、`useAddLinkToCollection.ts` 等）
 - ❌ **UIコンポーネント**: 未実装
 - ❌ **画面**: 未実装
 

@@ -1,4 +1,4 @@
-import { forwardRef, useCallback, useEffect, useRef, useState } from "react";
+import { forwardRef, useCallback, useRef, useState } from "react";
 
 import { ActivityIndicator, Alert, Text, View } from "react-native";
 
@@ -11,6 +11,7 @@ import ModalHeader from "@/src/shared/components/modals/ModalHeader";
 
 import { CollectionChip } from "../components/CollectionChip";
 import LinkPasteContainer from "../components/LinkPasteContainer";
+import { useAddLinkToCollection } from "../hooks/useAddLinkToCollection";
 import { useCollections } from "../hooks/useCollections";
 import { useCreateLink } from "../hooks/useCreateLink";
 import { useLinkPaste } from "../hooks/useLinkPaste";
@@ -41,15 +42,8 @@ export const LinkCreateModal = forwardRef<
   const { status, preview, errorMessage, pasteFromClipboard, reset, canSave } =
     useLinkPaste({ initialStatus: "loading" });
 
-  // リンク作成フック
-  const {
-    createLink,
-    isPending,
-    isSuccess,
-    isError,
-    error,
-    reset: resetCreate,
-  } = useCreateLink();
+  const { createLinkAsync, isPending, reset: resetCreate } = useCreateLink();
+  const { addLinkToCollectionAsync } = useAddLinkToCollection();
   const {
     collections,
     isLoading: isCollectionsLoading,
@@ -58,7 +52,6 @@ export const LinkCreateModal = forwardRef<
 
   const hasAutoPastedRef = useRef(false);
 
-  // コレクション選択（仮UI: 選択状態のみ保持、保存時は未使用）
   const [selectedCollectionIds, setSelectedCollectionIds] = useState<
     Set<string>
   >(() => new Set());
@@ -102,32 +95,36 @@ export const LinkCreateModal = forwardRef<
     onClose?.();
   }, [onClose, reset, resetCreate]);
 
-  // 保存処理
-  const handleSave = useCallback(() => {
+  const handleSave = useCallback(async () => {
     if (!preview?.url) return;
-    createLink(preview.url);
-  }, [preview, createLink]);
-
-  // 成功時の処理
-  useEffect(() => {
-    if (isSuccess) {
+    try {
+      const { link_id } = await createLinkAsync(preview.url);
+      if (selectedCollectionIds.size > 0) {
+        await Promise.all(
+          Array.from(selectedCollectionIds).map((collectionId) =>
+            addLinkToCollectionAsync({ collectionId, linkId: link_id }),
+          ),
+        );
+      }
       Alert.alert(
         t("links.create.callback_messages.success_title"),
         t("links.create.callback_messages.success_message"),
       );
       handleClose();
-    }
-  }, [isSuccess, t, handleClose]);
-
-  // エラー時の処理
-  useEffect(() => {
-    if (isError && error) {
+    } catch {
       Alert.alert(
         t("links.create.callback_messages.error_title"),
         t("links.create.callback_messages.error_message"),
       );
     }
-  }, [isError, error, t]);
+  }, [
+    preview?.url,
+    createLinkAsync,
+    selectedCollectionIds,
+    addLinkToCollectionAsync,
+    t,
+    handleClose,
+  ]);
 
   // ボタンの無効化条件
   const isSubmitDisabled = !canSave || isPending;
@@ -158,10 +155,10 @@ export const LinkCreateModal = forwardRef<
         {/* 保存メニュー */}
         {(status === "preview" || status === "noOgp") && (
           <>
-            {/* collections selector（仮UI: 選択のみ、保存時は未使用） */}
+            {/* コレクション選択 */}
             <View className="mt-6">
               <Text className="text-sm font-semibold uppercase tracking-wide text-mainDark">
-                Select Collections
+                {t("links.create.selectCollections")}
               </Text>
               <View className="mt-3 flex-row flex-wrap gap-2">
                 {isCollectionsLoading ? (
