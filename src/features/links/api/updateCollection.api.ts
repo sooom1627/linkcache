@@ -6,10 +6,13 @@ import type { Collection } from "../types/links.types";
 /**
  * コレクションを更新する
  *
+ * 認証済みユーザーのコレクションを collections テーブルで UPDATE します。
+ * params はすべてオプションのため、変更したいフィールドのみ渡せます。
+ *
  * @param args.id - 更新対象のコレクションID
- * @param args.params - 更新パラメータ（name, emoji）
+ * @param args.params - 更新パラメータ（name?, emoji?）
  * @returns 更新されたコレクション
- * @throws 未認証時、Supabase エラー時
+ * @throws 未認証時、Supabase エラー時、レコードが見つからない時
  */
 export async function updateCollection({
   id,

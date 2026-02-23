@@ -1,6 +1,6 @@
 # Collections 機能 実装計画（機能単位）
 
-> **最終更新**: 2026年2月23日  
+> **最終更新**: 2026年2月23日（機能3・4 実装完了）  
 > **前提**: UIレイヤーは実装済み。本ドキュメントは API・hooks・types の統合実装を**機能単位**で整理する。  
 > **関連**:
 >
@@ -25,7 +25,7 @@
 - **UI**: 実装済み（CollectionListScreen, CollectionDetailScreen, CollectionCreateModal, CollectionEditModal, CollectionChip 等）
 - **DB**: `collections`, `collection_links` テーブル定義済み、RLS 有効
 - **型**: `Collection`, `CollectionLink`, `CollectionWithCount`（links.types.ts, collections.types.ts）
-- **API / Hooks**: 機能1（作成）、機能2（一覧取得）、機能5（詳細取得）、機能6（コレクション内リンク一覧）、機能7（リンク追加）、機能8（リンク削除）、機能9（リンク別コレクション取得）実装済み。その他は未実装
+- **API / Hooks**: 機能1（作成）、機能2（一覧取得）、機能3（編集）、機能4（削除）、機能5（詳細取得）、機能6（コレクション内リンク一覧）、機能7（リンク追加）、機能8（リンク削除）、機能9（リンク別コレクション取得）実装済み
 
 ### アーキテクチャ（ルートと画面の責務）
 
@@ -73,7 +73,7 @@
 
 ---
 
-### 機能3: コレクション編集
+### 機能3: コレクション編集 ✅ 実装済み
 
 **利用箇所**: CollectionEditModal（CollectionDetailScreen 内で useBottomSheetModal により表示）
 
@@ -81,23 +81,23 @@
 | -------- | ------------------------- | -------------------------------------------- |
 | api      | `updateCollection.api.ts` | `supabase.from("collections").update().eq()` |
 | hooks    | `useUpdateCollection.ts`  | useMutation、引数 `{ id, params }`           |
-| UI接続   | CollectionEditModal       | handleSubmit で mutate                       |
+| UI接続   | CollectionEditModal       | handleSubmit で mutate、isPending 中ボタン無効化 |
 
-**invalidate**: lists() と detail(id)
+**invalidate**: `lists()` と `detail(id)`
 
 ---
 
-### 機能4: コレクション削除
+### 機能4: コレクション削除 ✅ 実装済み
 
 **利用箇所**: CollectionDetailScreen（Delete メニュー）
 
 | レイヤー | ファイル                  | 備考                                         |
 | -------- | ------------------------- | -------------------------------------------- |
 | api      | `deleteCollection.api.ts` | `supabase.from("collections").delete().eq()` |
-| hooks    | `useDeleteCollection.ts`  | useMutation、引数 id                         |
-| UI接続   | CollectionDetailScreen    | 確認後 mutate、成功時に router.back()        |
+| hooks    | `useDeleteCollection.ts`  | useMutation、引数 id、isPending 返却         |
+| UI接続   | CollectionDetailScreen    | Alert.alert で確認後 mutate、成功時 router.back() |
 
-**注意**: collection_links の CASCADE 削除が DB にない場合、先に削除するか ON DELETE CASCADE を追加。collection-definition.md 参照。
+**DB**: `collection_links.collection_id` FK に `ON DELETE CASCADE` 適用済み（migration: `20260223091839_add_cascade_delete_collection_links`）。コレクション削除時に collection_links はDBが自動削除。
 
 ---
 
@@ -205,9 +205,8 @@
     ↓
 機能6: コレクション内リンク一覧取得 ✅
 機能8: リンクをコレクションから削除 ✅
-    ↓
-機能3: コレクション編集
-機能4: コレクション削除
+機能3: コレクション編集 ✅
+機能4: コレクション削除 ✅
 ```
 
 **推奨実装順**:

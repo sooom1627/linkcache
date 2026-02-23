@@ -3,7 +3,8 @@ import { supabase } from "@/src/shared/lib/supabase";
 /**
  * コレクションを削除する
  *
- * ON DELETE CASCADE により collection_links も自動削除される。
+ * collections テーブルから指定 ID のレコードを DELETE します。
+ * FK の ON DELETE CASCADE により、紐づく collection_links はDBが自動削除します。
  *
  * @param id - 削除対象のコレクションID
  * @throws 未認証時、Supabase エラー時
