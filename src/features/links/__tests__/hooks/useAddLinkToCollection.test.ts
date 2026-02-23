@@ -78,6 +78,9 @@ describe("useAddLinkToCollection", () => {
       queryKey: collectionQueryKeys.links(MOCK_COLLECTION_ID),
     });
     expect(invalidateSpy).toHaveBeenCalledWith({
+      queryKey: collectionQueryKeys.forLink(MOCK_LINK_ID),
+    });
+    expect(invalidateSpy).toHaveBeenCalledWith({
       queryKey: linkQueryKeys.detail(MOCK_LINK_ID),
     });
 

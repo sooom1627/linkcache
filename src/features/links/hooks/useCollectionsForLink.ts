@@ -41,7 +41,7 @@ export function useCollectionsForLink(
   const { data, isLoading, isFetching, isError, error, refetch } = useQuery({
     queryKey: collectionQueryKeys.forLink(linkId),
     queryFn: () => fetchCollectionIdsByLink(linkId),
-    enabled: linkId != null && linkId !== "",
+    enabled: linkId !== "",
   });
 
   const ids = data ?? [];
@@ -52,7 +52,7 @@ export function useCollectionsForLink(
     isLoading,
     isFetching,
     isError,
-    error: error as Error | null,
+    error,
     refetch,
   };
 }

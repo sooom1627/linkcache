@@ -77,15 +77,15 @@ describe("fetchCollectionIdsByLink", () => {
     );
   });
 
-  it("throws Supabase error on failure", async () => {
+  it("throws Error with Supabase message on failure", async () => {
     const mockError = { message: "database error", code: "PGRST001" };
     mockEq.mockResolvedValueOnce({
       data: null,
       error: mockError,
     });
 
-    await expect(fetchCollectionIdsByLink(MOCK_LINK_ID)).rejects.toEqual(
-      mockError,
+    await expect(fetchCollectionIdsByLink(MOCK_LINK_ID)).rejects.toThrow(
+      "database error",
     );
   });
 });

@@ -32,7 +32,7 @@ export async function fetchCollectionIdsByLink(
     .select("collection_id")
     .eq("link_id", linkId);
 
-  if (error) throw error;
+  if (error) throw new Error(error.message);
 
   const rows: CollectionLinkRow[] = data ?? [];
   return rows.map((row) => row.collection_id);
