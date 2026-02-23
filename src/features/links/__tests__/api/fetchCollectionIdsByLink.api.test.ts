@@ -1,6 +1,6 @@
 import { supabase } from "@/src/shared/lib/supabase";
 
-import { fetchCollectionIdsByLink } from "../fetchCollectionIdsByLink.api";
+import { fetchCollectionIdsByLink } from "../../api/fetchCollectionIdsByLink.api";
 
 const mockSelect = jest.fn();
 const mockEq = jest.fn();

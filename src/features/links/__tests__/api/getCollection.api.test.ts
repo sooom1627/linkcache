@@ -1,6 +1,6 @@
 import { supabase } from "@/src/shared/lib/supabase";
 
-import { getCollection } from "../getCollection.api";
+import { getCollection } from "../../api/getCollection.api";
 
 const mockSelect = jest.fn();
 const mockEq = jest.fn();

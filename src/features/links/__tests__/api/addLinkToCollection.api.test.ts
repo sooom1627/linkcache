@@ -1,6 +1,6 @@
 import { supabase } from "@/src/shared/lib/supabase";
 
-import { addLinkToCollection } from "../addLinkToCollection.api";
+import { addLinkToCollection } from "../../api/addLinkToCollection.api";
 
 const mockInsert = jest.fn();
 const mockSelect = jest.fn();
