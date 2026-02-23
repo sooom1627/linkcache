@@ -12,10 +12,16 @@ import {
  *
  * Supabase RPC `get_user_links` を呼び出し、
  * ページング付きでリンク一覧を取得します。
+ * collectionId を指定すると、そのコレクション内のリンクのみに絞り込みます。
  *
  * @param params - 取得パラメータ
  * @param params.pageSize - 1ページあたりの件数 (デフォルト: 20)
  * @param params.page - ページ番号 (0始まり、デフォルト: 0)
+ * @param params.status - ステータスフィルタ
+ * @param params.isRead - 既読状態フィルタ
+ * @param params.limit - 件数制限（ページング無視）
+ * @param params.orderBy - ソート順
+ * @param params.collectionId - コレクションIDでフィルタ（指定時はそのコレクション内のリンクのみ）
  * @returns ページング情報付きのリンク一覧
  * @throws Supabaseエラー（認証エラー、DBエラーなど）
  *
@@ -26,6 +32,9 @@ import {
  *
  * // 2ページ目を10件ずつ取得
  * const page2 = await fetchUserLinks({ pageSize: 10, page: 1 });
+ *
+ * // コレクション内のリンクを取得
+ * const collectionLinks = await fetchUserLinks({ collectionId: "col-123" });
  * ```
  */
 export async function fetchUserLinks(

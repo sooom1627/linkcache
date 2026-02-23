@@ -46,11 +46,12 @@ describe("useSwipeCards", () => {
         },
       );
 
+      // cardsはuseEffectでlinksから設定されるため、isLoadingより遅れて更新される
+      // CIではタイミング差で失敗するため、最終的に欲しい状態（cards）で待つ
       await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
+        expect(result.current.cards).toHaveLength(3);
       });
 
-      expect(result.current.cards).toHaveLength(3);
       expect(result.current.cards[0]).toEqual(mockLink1);
       expect(result.current.error).toBeNull();
     });
@@ -71,10 +72,8 @@ describe("useSwipeCards", () => {
       );
 
       await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
+        expect(result.current.cards).toHaveLength(1);
       });
-
-      expect(result.current.cards).toHaveLength(1);
       expect(mockFetchUserLinks).toHaveBeenCalledWith(
         expect.objectContaining({ status: "stock" }),
       );
@@ -97,10 +96,8 @@ describe("useSwipeCards", () => {
       );
 
       await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
+        expect(result.current.cards).toHaveLength(2);
       });
-
-      expect(result.current.cards).toHaveLength(2);
       expect(mockFetchUserLinks).toHaveBeenCalledWith(
         expect.objectContaining({
           status: "read_soon",

@@ -91,6 +91,16 @@ export const collectionQueryKeys = {
       : ([...collectionQueryKeys.all, "list"] as const),
   details: () => [...collectionQueryKeys.all, "detail"] as const,
   detail: (id: string) => [...collectionQueryKeys.details(), id] as const,
+  /**
+   * コレクション内リンク一覧のクエリキー
+   *
+   * detail(collectionId) の子キーなので、コレクション削除時に
+   * detail を invalidate すれば links も一緒に無効化される。
+   * useAddLinkToCollection の onSettled でも invalidate される。
+   *
+   * @param collectionId - コレクションID
+   * @returns ["collections", "detail", collectionId, "links"]
+   */
   links: (collectionId: string) =>
     [...collectionQueryKeys.detail(collectionId), "links"] as const,
 

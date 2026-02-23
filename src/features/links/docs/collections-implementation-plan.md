@@ -1,6 +1,6 @@
 # Collections 機能 実装計画（機能単位）
 
-> **最終更新**: 2026年2月22日  
+> **最終更新**: 2026年2月23日  
 > **前提**: UIレイヤーは実装済み。本ドキュメントは API・hooks・types の統合実装を**機能単位**で整理する。  
 > **関連**:
 >
@@ -25,7 +25,7 @@
 - **UI**: 実装済み（CollectionListScreen, CollectionDetailScreen, CollectionCreateModal, CollectionEditModal, CollectionChip 等）
 - **DB**: `collections`, `collection_links` テーブル定義済み、RLS 有効
 - **型**: `Collection`, `CollectionLink`, `CollectionWithCount`（links.types.ts, collections.types.ts）
-- **API / Hooks**: 機能1（作成）、機能2（一覧取得）、機能5（詳細取得）、機能7（リンク追加）、機能9（リンク別コレクション取得）実装済み。その他は未実装（モックデータ使用中）
+- **API / Hooks**: 機能1（作成）、機能2（一覧取得）、機能5（詳細取得）、機能6（コレクション内リンク一覧）、機能7（リンク追加）、機能9（リンク別コレクション取得）実装済み。その他は未実装
 
 ### アーキテクチャ（ルートと画面の責務）
 
@@ -120,17 +120,20 @@
 
 ---
 
-### 機能6: コレクション内リンク一覧取得
+### 機能6: コレクション内リンク一覧取得 ✅ 実装済み
 
 **利用箇所**: CollectionDetailScreen（FlashList の data）
 
-| レイヤー | ファイル                      | 備考                                                     |
-| -------- | ----------------------------- | -------------------------------------------------------- |
-| api      | `fetchCollectionLinks.api.ts` | collection_links と links, link_status を JOIN           |
-| hooks    | `useCollectionLinks.ts`       | useQuery + collectionQueryKeys.links(collectionId)       |
-| UI接続   | CollectionDetailScreen        | MOCK_COLLECTION_LINKS → useCollectionLinks(collectionId) |
+**実装方針**: 専用 API を作らず、既存の `get_user_links` RPC に `p_collection_id` パラメータを追加して拡張。`fetchUserLinks({ collectionId })` で呼び出し、レスポンスは `UserLink[]` のまま `LinkListCard` で表示。
 
-**注意**: UserLink 型との整合性を確認。fetchUserLinks や RPC/ビューを検討。
+| レイヤー | ファイル                          | 備考                                                            |
+| -------- | --------------------------------- | --------------------------------------------------------------- |
+| DB       | `get_user_links` RPC              | `p_collection_id UUID DEFAULT NULL` 追加、WHERE句でサブクエリ   |
+| api      | `fetchLinks.api.ts`（既存を拡張） | `p_collection_id: collectionId ?? null` を送信                  |
+| hooks    | `useCollectionLinks.ts`           | useQuery + collectionQueryKeys.links(collectionId)              |
+| UI接続   | CollectionDetailScreen            | useCollectionLinks(collectionId) でリンク取得、ローディング統合 |
+
+**キャッシュ**: `collectionQueryKeys.links(collectionId)` = `["collections", "detail", collectionId, "links"]`。`useAddLinkToCollection` の `onSettled` で自動 invalidate。`linkQueryKeys` とは独立。
 
 ---
 
@@ -200,10 +203,10 @@
     ↓
 機能9: リンクに紐づくコレクション一覧取得 ✅
     ↓
+機能6: コレクション内リンク一覧取得 ✅
+    ↓
 機能3: コレクション編集
 機能4: コレクション削除
-    ↓
-機能6: コレクション内リンク一覧取得
 機能8: リンクをコレクションから削除
 ```
 
@@ -220,14 +223,14 @@
 
 ## クイックリファレンス
 
-| 機能                 | API                        | Hook                          | 主なUI                                |
-| -------------------- | -------------------------- | ----------------------------- | ------------------------------------- |
-| 作成                 | `createCollection`         | `useCreateCollection`         | CollectionCreateModal                 |
-| 一覧取得             | `fetchCollections`         | `useCollections`              | CollectionListScreen, CollectionsLane |
-| 編集                 | `updateCollection`         | `useUpdateCollection`         | CollectionEditModal                   |
-| 削除                 | `deleteCollection`         | `useDeleteCollection`         | CollectionDetailScreen                |
-| 詳細取得             | `getCollection`            | `useCollection`               | CollectionDetailScreen                |
-| コレクション内リンク | `fetchCollectionLinks`     | `useCollectionLinks`          | CollectionDetailScreen                |
-| リンク追加           | `addLinkToCollection`      | `useAddLinkToCollection`      | LinkDetailScreen, LinkCreateModal     |
-| リンク削除           | `removeLinkFromCollection` | `useRemoveLinkFromCollection` | LinkDetailScreen                      |
-| リンク別コレクション | `fetchCollectionIdsByLink` | `useCollectionsForLink`       | LinkDetailScreen                      |
+| 機能                 | API                                | Hook                          | 主なUI                                |
+| -------------------- | ---------------------------------- | ----------------------------- | ------------------------------------- |
+| 作成                 | `createCollection`                 | `useCreateCollection`         | CollectionCreateModal                 |
+| 一覧取得             | `fetchCollections`                 | `useCollections`              | CollectionListScreen, CollectionsLane |
+| 編集                 | `updateCollection`                 | `useUpdateCollection`         | CollectionEditModal                   |
+| 削除                 | `deleteCollection`                 | `useDeleteCollection`         | CollectionDetailScreen                |
+| 詳細取得             | `getCollection`                    | `useCollection`               | CollectionDetailScreen                |
+| コレクション内リンク | `fetchUserLinks({ collectionId })` | `useCollectionLinks`          | CollectionDetailScreen                |
+| リンク追加           | `addLinkToCollection`              | `useAddLinkToCollection`      | LinkDetailScreen, LinkCreateModal     |
+| リンク削除           | `removeLinkFromCollection`         | `useRemoveLinkFromCollection` | LinkDetailScreen                      |
+| リンク別コレクション | `fetchCollectionIdsByLink`         | `useCollectionsForLink`       | LinkDetailScreen                      |

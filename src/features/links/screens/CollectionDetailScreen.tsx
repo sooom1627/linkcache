@@ -38,8 +38,11 @@ function parseCollectionId(
 /**
  * コレクション詳細画面
  *
- * コレクション内のリンク一覧を表示。
+ * コレクション内のリンク一覧を FlashList + LinkListCard で表示。
  * CollectionCard / CollectionChip タップ時の遷移先。
+ *
+ * - useCollection: コレクション詳細（名前、emoji、件数）
+ * - useCollectionLinks: コレクション内リンク一覧（fetchUserLinks({ collectionId }) 経由）
  */
 export function CollectionDetailScreen({ rawId }: CollectionDetailScreenProps) {
   const { t } = useTranslation();
