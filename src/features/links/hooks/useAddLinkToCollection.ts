@@ -12,7 +12,7 @@ import type { CollectionLink } from "../types/links.types";
  *
  * useMutation で addLinkToCollection API を呼び出し、
  * 楽観的更新（onMutate）とロールバック（onError）を実装。
- * 成功時に collectionQueryKeys.links、collectionQueryKeys.forLink、linkQueryKeys.detail を無効化する。
+ * onSettled 時に collectionQueryKeys.lists、collectionQueryKeys.links、collectionQueryKeys.forLink、linkQueryKeys.detail を無効化する。
  *
  * @example
  * ```tsx
@@ -50,6 +50,9 @@ export function useAddLinkToCollection() {
       }
     },
     onSettled: (_data, _error, { collectionId, linkId }) => {
+      queryClient.invalidateQueries({
+        queryKey: collectionQueryKeys.lists(),
+      });
       queryClient.invalidateQueries({
         queryKey: collectionQueryKeys.links(collectionId),
       });

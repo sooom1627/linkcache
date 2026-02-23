@@ -80,6 +80,9 @@ describe("useRemoveLinkFromCollection", () => {
     });
 
     expect(invalidateSpy).toHaveBeenCalledWith({
+      queryKey: collectionQueryKeys.lists(),
+    });
+    expect(invalidateSpy).toHaveBeenCalledWith({
       queryKey: collectionQueryKeys.links(MOCK_COLLECTION_ID),
     });
     expect(invalidateSpy).toHaveBeenCalledWith({
