@@ -4,6 +4,8 @@ export * from "./types";
 // Hooks
 export { useCollection } from "./hooks/useCollection";
 export type { UseCollectionReturn } from "./hooks/useCollection";
+export { useCollectionLinks } from "./hooks/useCollectionLinks";
+export type { UseCollectionLinksReturn } from "./hooks/useCollectionLinks";
 export { useAddLinkToCollection } from "./hooks/useAddLinkToCollection";
 export { useCreateCollection } from "./hooks/useCreateCollection";
 export type { UseCreateCollectionReturn } from "./hooks/useCreateCollection";

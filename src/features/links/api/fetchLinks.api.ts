@@ -31,7 +31,15 @@ import {
 export async function fetchUserLinks(
   params: GetUserLinksParams = {},
 ): Promise<GetUserLinksResponse> {
-  const { pageSize = 20, page = 0, status, isRead, limit, orderBy } = params;
+  const {
+    pageSize = 20,
+    page = 0,
+    status,
+    isRead,
+    limit,
+    orderBy,
+    collectionId,
+  } = params;
 
   // orderBy を許可リストで検証
   const validatedOrderBy = orderBySchema.parse(orderBy ?? null);
@@ -43,6 +51,7 @@ export async function fetchUserLinks(
     p_is_read: isRead ?? null,
     p_limit: limit ?? null,
     p_order_by: validatedOrderBy,
+    p_collection_id: collectionId ?? null,
   });
 
   if (response.error) {
