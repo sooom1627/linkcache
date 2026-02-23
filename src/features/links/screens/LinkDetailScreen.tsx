@@ -23,6 +23,7 @@ import { useDeleteLink } from "../hooks/useDeleteLink";
 import { useLinkDetail } from "../hooks/useLinkDetail";
 import { extractDomain } from "../hooks/useLinkPaste";
 import { useOpenLink } from "../hooks/useOpenLink";
+import { useRemoveLinkFromCollection } from "../hooks/useRemoveLinkFromCollection";
 import { shareLink } from "../utils/share";
 import { getStatusStyle } from "../utils/statusStyles";
 
@@ -62,6 +63,7 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
   const { linkedCollectionIds, isLoading: isLinkedCollectionsLoading } =
     useCollectionsForLink(link?.link_id ?? "");
   const { addLinkToCollection } = useAddLinkToCollection();
+  const { removeLinkFromCollection } = useRemoveLinkFromCollection();
 
   const isDone = link?.status === "done";
 
@@ -73,6 +75,19 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
       if (!link) return;
 
       if (linkedCollectionIds.has(collectionId)) {
+        removeLinkFromCollection(
+          { collectionId, linkId: link.link_id },
+          {
+            onError: (err: unknown) => {
+              Alert.alert(
+                t("common.error_generic", {
+                  defaultValue: "エラーが発生しました",
+                }),
+                err instanceof Error ? err.message : String(err),
+              );
+            },
+          },
+        );
         return;
       }
 
@@ -99,7 +114,13 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
         },
       );
     },
-    [link, linkedCollectionIds, addLinkToCollection, t],
+    [
+      link,
+      linkedCollectionIds,
+      addLinkToCollection,
+      removeLinkFromCollection,
+      t,
+    ],
   );
 
   const sortedCollections = useMemo(() => {

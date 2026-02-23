@@ -25,7 +25,7 @@
 - **UI**: 実装済み（CollectionListScreen, CollectionDetailScreen, CollectionCreateModal, CollectionEditModal, CollectionChip 等）
 - **DB**: `collections`, `collection_links` テーブル定義済み、RLS 有効
 - **型**: `Collection`, `CollectionLink`, `CollectionWithCount`（links.types.ts, collections.types.ts）
-- **API / Hooks**: 機能1（作成）、機能2（一覧取得）、機能5（詳細取得）、機能6（コレクション内リンク一覧）、機能7（リンク追加）、機能9（リンク別コレクション取得）実装済み。その他は未実装
+- **API / Hooks**: 機能1（作成）、機能2（一覧取得）、機能5（詳細取得）、機能6（コレクション内リンク一覧）、機能7（リンク追加）、機能8（リンク削除）、機能9（リンク別コレクション取得）実装済み。その他は未実装
 
 ### アーキテクチャ（ルートと画面の責務）
 
@@ -151,7 +151,7 @@
 
 ---
 
-### 機能8: リンクをコレクションから削除
+### 機能8: リンクをコレクションから削除 ✅ 実装済み
 
 **利用箇所**: LinkDetailScreen（CollectionChip タップで解除）
 
@@ -161,7 +161,7 @@
 | hooks    | `useRemoveLinkFromCollection.ts`  | useMutation、引数 `{ collectionId, linkId }`           |
 | UI接続   | LinkDetailScreen                  | handleToggleCollection 削除時                          |
 
-**invalidate**: links(collectionId) と linkQueryKeys.detail(linkId)
+**invalidate**: useRemoveLinkFromCollection 実行時に `collectionQueryKeys.links(collectionId)`、`collectionQueryKeys.forLink(linkId)`、`linkQueryKeys.detail(linkId)` を無効化。楽観的更新（onMutate）とロールバック（onError）を実装。
 
 ---
 
@@ -204,10 +204,10 @@
 機能9: リンクに紐づくコレクション一覧取得 ✅
     ↓
 機能6: コレクション内リンク一覧取得 ✅
+機能8: リンクをコレクションから削除 ✅
     ↓
 機能3: コレクション編集
 機能4: コレクション削除
-機能8: リンクをコレクションから削除
 ```
 
 **推奨実装順**:
