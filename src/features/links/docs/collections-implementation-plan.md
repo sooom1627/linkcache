@@ -77,10 +77,10 @@
 
 **利用箇所**: CollectionEditModal（CollectionDetailScreen 内で useBottomSheetModal により表示）
 
-| レイヤー | ファイル                  | 備考                                         |
-| -------- | ------------------------- | -------------------------------------------- |
-| api      | `updateCollection.api.ts` | `supabase.from("collections").update().eq()` |
-| hooks    | `useUpdateCollection.ts`  | useMutation、引数 `{ id, params }`           |
+| レイヤー | ファイル                  | 備考                                             |
+| -------- | ------------------------- | ------------------------------------------------ |
+| api      | `updateCollection.api.ts` | `supabase.from("collections").update().eq()`     |
+| hooks    | `useUpdateCollection.ts`  | useMutation、引数 `{ id, params }`               |
 | UI接続   | CollectionEditModal       | handleSubmit で mutate、isPending 中ボタン無効化 |
 
 **invalidate**: `lists()` と `detail(id)`
@@ -91,10 +91,10 @@
 
 **利用箇所**: CollectionDetailScreen（Delete メニュー）
 
-| レイヤー | ファイル                  | 備考                                         |
-| -------- | ------------------------- | -------------------------------------------- |
-| api      | `deleteCollection.api.ts` | `supabase.from("collections").delete().eq()` |
-| hooks    | `useDeleteCollection.ts`  | useMutation、引数 id、isPending 返却         |
+| レイヤー | ファイル                  | 備考                                              |
+| -------- | ------------------------- | ------------------------------------------------- |
+| api      | `deleteCollection.api.ts` | `supabase.from("collections").delete().eq()`      |
+| hooks    | `useDeleteCollection.ts`  | useMutation、引数 id、isPending 返却              |
 | UI接続   | CollectionDetailScreen    | Alert.alert で確認後 mutate、成功時 router.back() |
 
 **DB**: `collection_links.collection_id` FK に `ON DELETE CASCADE` 適用済み（migration: `20260223091839_add_cascade_delete_collection_links`）。コレクション削除時に collection_links はDBが自動削除。
