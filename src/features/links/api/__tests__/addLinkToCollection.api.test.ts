@@ -9,7 +9,7 @@ const mockGetUser = jest.fn();
 
 type GetUserResponse = {
   data: { user: { id: string } | null };
-  error: null;
+  error: { message?: string } | null;
 };
 
 jest.mock("@/src/shared/lib/supabase", () => ({
@@ -86,6 +86,21 @@ describe("addLinkToCollection", () => {
     mockGetUser.mockResolvedValueOnce({
       data: { user: null },
       error: null,
+    });
+
+    await expect(
+      addLinkToCollection({
+        collectionId: MOCK_COLLECTION_ID,
+        linkId: MOCK_LINK_ID,
+      }),
+    ).rejects.toThrow("Not authenticated");
+  });
+
+  it("throws when auth fails (authError non-null)", async () => {
+    const mockAuthError = { message: "Session expired" };
+    mockGetUser.mockResolvedValueOnce({
+      data: { user: null },
+      error: mockAuthError,
     });
 
     await expect(

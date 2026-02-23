@@ -1,13 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { addLinkToCollection } from "../api/addLinkToCollection.api";
+import {
+  addLinkToCollection,
+  type AddLinkToCollectionParams,
+} from "../api/addLinkToCollection.api";
 import { collectionQueryKeys, linkQueryKeys } from "../constants/queryKeys";
 import type { CollectionLink } from "../types/links.types";
-
-export interface AddLinkToCollectionArgs {
-  collectionId: string;
-  linkId: string;
-}
 
 /**
  * リンクをコレクションに追加するフック
@@ -27,7 +25,12 @@ export interface AddLinkToCollectionArgs {
 export function useAddLinkToCollection() {
   const queryClient = useQueryClient();
 
-  const mutation = useMutation({
+  const mutation = useMutation<
+    CollectionLink,
+    Error,
+    AddLinkToCollectionParams,
+    { previousIds: string[] | undefined }
+  >({
     mutationFn: addLinkToCollection,
     onMutate: async ({ collectionId, linkId }) => {
       const queryKey = collectionQueryKeys.forLink(linkId);

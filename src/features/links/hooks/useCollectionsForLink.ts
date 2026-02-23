@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+
 import { useQuery } from "@tanstack/react-query";
 
 import { fetchCollectionIdsByLink } from "../api/fetchCollectionIdsByLink.api";
@@ -44,8 +46,7 @@ export function useCollectionsForLink(
     enabled: linkId !== "",
   });
 
-  const ids = data ?? [];
-  const linkedCollectionIds = new Set(ids);
+  const linkedCollectionIds = useMemo(() => new Set(data ?? []), [data]);
 
   return {
     linkedCollectionIds,

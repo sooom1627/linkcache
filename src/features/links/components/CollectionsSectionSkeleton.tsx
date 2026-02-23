@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { View } from "react-native";
 
 import Animated, {
+  cancelAnimation,
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
@@ -23,6 +24,9 @@ export function CollectionsSectionSkeleton() {
 
   useEffect(() => {
     opacity.value = withRepeat(withTiming(1, { duration: 800 }), -1, true);
+    return () => {
+      cancelAnimation(opacity);
+    };
   }, [opacity]);
 
   const animatedStyle = useAnimatedStyle(() => ({
