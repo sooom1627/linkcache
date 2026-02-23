@@ -12,6 +12,8 @@ import { BaseBottomSheetModal } from "@/src/shared/components/modals";
 import ModalHeader from "@/src/shared/components/modals/ModalHeader";
 import { colors } from "@/src/shared/constants/colors";
 
+import { useUpdateCollection } from "../hooks/useUpdateCollection";
+
 export interface CollectionEditModalProps {
   collectionId: string;
   initialName: string;
@@ -34,6 +36,7 @@ export const CollectionEditModal = forwardRef<
   const [name, setName] = useState(initialName);
   const [emoji, setEmoji] = useState(initialEmoji);
   const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
+  const { updateCollection, isPending } = useUpdateCollection();
 
   // モーダル表示時に初期値を反映（別コレクションから開き直した場合など）
   useEffect(() => {
@@ -52,9 +55,11 @@ export const CollectionEditModal = forwardRef<
   }, []);
 
   const handleSubmit = useCallback(() => {
-    // UIレイヤーのみ: 送信処理は未実装。モーダルを閉じる。
-    handleClose();
-  }, [handleClose]);
+    updateCollection(
+      { id: collectionId, params: { name: name.trim(), emoji: emoji || null } },
+      { onSuccess: handleClose },
+    );
+  }, [updateCollection, collectionId, name, emoji, handleClose]);
 
   const handleModalChange = useCallback(
     (index: number) => {
@@ -66,7 +71,7 @@ export const CollectionEditModal = forwardRef<
     [initialName, initialEmoji],
   );
 
-  const isSubmitDisabled = !name.trim();
+  const isSubmitDisabled = !name.trim() || isPending;
 
   return (
     <BaseBottomSheetModal

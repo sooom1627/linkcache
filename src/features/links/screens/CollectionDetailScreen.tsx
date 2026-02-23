@@ -2,11 +2,14 @@ import { useCallback, useMemo, useState } from "react";
 
 import {
   ActivityIndicator,
+  Alert,
   Pressable,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+
+import { useRouter } from "expo-router";
 
 import { FlashList } from "@shopify/flash-list";
 import { Ellipsis, FolderOpen, Pencil, Trash2 } from "lucide-react-native";
@@ -21,6 +24,7 @@ import { LinkListCard } from "../components/LinkListCard";
 import { LinkListLoadingFooter } from "../components/LinkListLoadingFooter";
 import { useCollection } from "../hooks/useCollection";
 import { useCollectionLinks } from "../hooks/useCollectionLinks";
+import { useDeleteCollection } from "../hooks/useDeleteCollection";
 import type { UserLink } from "../types/linkList.types";
 
 import { CollectionEditModal } from "./CollectionEditModal";
@@ -47,6 +51,7 @@ function parseCollectionId(
  */
 export function CollectionDetailScreen({ rawId }: CollectionDetailScreenProps) {
   const { t } = useTranslation();
+  const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const {
     ref: editModalRef,
@@ -55,6 +60,7 @@ export function CollectionDetailScreen({ rawId }: CollectionDetailScreenProps) {
   } = useBottomSheetModal();
 
   const collectionId = parseCollectionId(rawId);
+  const { deleteCollection, isPending: isDeleting } = useDeleteCollection();
   const { collection, isLoading: isCollectionLoading } = useCollection(
     collectionId ?? "",
   );
@@ -88,7 +94,25 @@ export function CollectionDetailScreen({ rawId }: CollectionDetailScreenProps) {
 
   const handleDelete = useCallback(() => {
     handleCloseMenu();
-  }, [handleCloseMenu]);
+    if (!collectionId) return;
+    Alert.alert(
+      t("links.collection_detail.delete_confirm.title"),
+      t("links.collection_detail.delete_confirm.message"),
+      [
+        {
+          text: t("links.collection_detail.delete_confirm.cancel"),
+          style: "cancel",
+        },
+        {
+          text: t("links.collection_detail.delete_confirm.confirm"),
+          style: "destructive",
+          onPress: () => {
+            deleteCollection(collectionId, { onSuccess: () => router.back() });
+          },
+        },
+      ],
+    );
+  }, [handleCloseMenu, collectionId, deleteCollection, router, t]);
 
   const menuItems: ToggleMenuItem[] = useMemo(
     () => [
@@ -104,12 +128,12 @@ export function CollectionDetailScreen({ rawId }: CollectionDetailScreenProps) {
         icon: <Trash2 size={20} color={colors.error} strokeWidth={2.5} />,
         label: t("links.collection_detail.header_delete"),
         onPress: handleDelete,
-        disabled: true,
+        disabled: isDeleting,
         color: colors.error,
         className: "min-w-[200px]",
       },
     ],
-    [t, handleEdit, handleDelete, isMenuOpen],
+    [t, handleEdit, handleDelete, isMenuOpen, isDeleting],
   );
 
   const renderItem = useCallback(
