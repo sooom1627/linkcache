@@ -22,7 +22,9 @@ export interface UseDeleteCollectionReturn {
  * コレクション削除フック
  *
  * useMutation で deleteCollection API を呼び出し、
- * 成功時に lists() のキャッシュを無効化します。
+ * 成功時に collectionQueryKeys.all（["collections"]）を invalidate します。
+ * これにより lists / detail / links / forLink すべての関連キャッシュが
+ * 一括でクリアされます。
  * ON DELETE CASCADE により collection_links はDB側で自動削除されます。
  *
  * @example
@@ -38,7 +40,7 @@ export function useDeleteCollection(): UseDeleteCollectionReturn {
     mutationFn: deleteCollection,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: collectionQueryKeys.lists(),
+        queryKey: collectionQueryKeys.all,
       });
     },
   });

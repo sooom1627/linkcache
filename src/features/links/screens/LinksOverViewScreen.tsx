@@ -183,7 +183,7 @@ export function LinksOverViewScreen() {
                 href="/links/un-collectioned"
               />
             </View>
-            {collections[0] && (
+            {!isCollectionsLoading && !isCollectionsError && collections[0] && (
               <View className="min-h-28 min-w-0 flex-1">
                 <CollectionCard
                   emoji={collections[0].emoji ?? undefined}

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 
 import { ActivityIndicator, Alert, ScrollView, Text, View } from "react-native";
 
@@ -28,6 +28,30 @@ import { shareLink } from "../utils/share";
 import { getStatusStyle } from "../utils/statusStyles";
 
 import { CollectionCreateModal } from "./CollectionCreateModal";
+
+interface StatusDisplayProps {
+  status: string | null;
+  statusStyle: ReturnType<typeof getStatusStyle>;
+}
+
+const StatusDisplay = memo(function StatusDisplay({
+  status,
+  statusStyle,
+}: StatusDisplayProps) {
+  const { t } = useTranslation();
+  return (
+    <View className="flex-row items-center gap-1.5">
+      <Circle size={12} fill={statusStyle.icon} color={statusStyle.icon} />
+      <Text className={`text-base font-medium ${statusStyle.text}`}>
+        {status
+          ? t(`links.card.action_modal.status.${status}`, {
+              defaultValue: status,
+            })
+          : ""}
+      </Text>
+    </View>
+  );
+});
 
 interface LinkDetailScreenProps {
   linkId: string;
@@ -222,26 +246,6 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
 
   const domain = extractDomain(link.url);
   const statusStyle = getStatusStyle(link.status);
-
-  // ステータス表示用の共通コンポーネント
-  const StatusDisplay = ({
-    status,
-    statusStyle,
-  }: {
-    status: string | null;
-    statusStyle: ReturnType<typeof getStatusStyle>;
-  }) => (
-    <View className="flex-row items-center gap-1.5">
-      <Circle size={12} fill={statusStyle.icon} color={statusStyle.icon} />
-      <Text className={`text-base font-medium ${statusStyle.text}`}>
-        {status
-          ? t(`links.card.action_modal.status.${status}`, {
-              defaultValue: status,
-            })
-          : ""}
-      </Text>
-    </View>
-  );
 
   return (
     <>

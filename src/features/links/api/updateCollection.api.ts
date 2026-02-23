@@ -30,17 +30,12 @@ export async function updateCollection({
     throw new Error("Not authenticated");
   }
 
-  const result = await supabase
+  const { data, error } = await supabase
     .from("collections")
-    .update(params as Record<string, unknown>)
+    .update(params)
     .eq("id", id)
     .select()
-    .single();
-
-  const { data, error } = result as {
-    data: Collection | null;
-    error: Error | null;
-  };
+    .single<Collection>();
 
   if (error) {
     throw error;

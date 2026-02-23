@@ -38,7 +38,5 @@ export async function removeLinkFromCollection(
     .eq("collection_id", params.collectionId)
     .eq("link_id", params.linkId);
 
-  if (error) {
-    throw new Error(error.message ?? "Failed to remove link from collection");
-  }
+  if (error) throw error;
 }

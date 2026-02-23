@@ -1,3 +1,4 @@
+import type { ReactElement } from "react";
 import { useEffect } from "react";
 
 import { View } from "react-native";
@@ -10,6 +11,8 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
+import { colors } from "@/src/shared/constants/colors";
+
 const SKELETON_CHIP_COUNT = 4;
 
 /**
@@ -19,7 +22,7 @@ const SKELETON_CHIP_COUNT = 4;
  * パルスアニメーションで待機状態を可視化する。
  * LinkDetailScreen のコレクション一覧読み込み中に表示する。
  */
-export function CollectionsSectionSkeleton() {
+export function CollectionsSectionSkeleton(): ReactElement {
   const opacity = useSharedValue(0.5);
 
   useEffect(() => {
@@ -48,7 +51,7 @@ export function CollectionsSectionSkeleton() {
               width: 60 + index * 20,
               height: 36,
               borderRadius: 18,
-              backgroundColor: "#e2e8f0",
+              backgroundColor: colors.surfaceMutedActive,
             },
           ]}
         />

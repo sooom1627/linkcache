@@ -18,7 +18,7 @@ describe("useDeleteCollection", () => {
     clearQueryCache();
   });
 
-  it("mutate 成功時に collections.lists() を invalidate する", async () => {
+  it("mutate 成功時に collectionQueryKeys.all を invalidate する", async () => {
     (deleteCollection as jest.Mock).mockResolvedValueOnce(undefined);
 
     const invalidateQueriesSpy = jest.spyOn(
@@ -37,7 +37,7 @@ describe("useDeleteCollection", () => {
     });
 
     expect(invalidateQueriesSpy).toHaveBeenCalledWith({
-      queryKey: collectionQueryKeys.lists(),
+      queryKey: collectionQueryKeys.all,
     });
 
     invalidateQueriesSpy.mockRestore();
