@@ -42,11 +42,11 @@ export function useAddLinkToCollection() {
       return { previousIds };
     },
     onError: (_, { linkId }, context) => {
-      if (context?.previousIds != null) {
-        queryClient.setQueryData(
-          collectionQueryKeys.forLink(linkId),
-          context.previousIds,
-        );
+      const queryKey = collectionQueryKeys.forLink(linkId);
+      if (context?.previousIds !== undefined) {
+        queryClient.setQueryData(queryKey, context.previousIds);
+      } else {
+        queryClient.removeQueries({ queryKey });
       }
     },
     onSettled: (_data, _error, { collectionId, linkId }) => {
