@@ -144,7 +144,7 @@
 | hooks    | `useAddLinkToCollection.ts`       | useMutation、引数 `{ collectionId, linkId }` |
 | UI接続   | LinkDetailScreen, LinkCreateModal | handleToggleCollection 追加時、保存時        |
 
-**invalidate**: links(collectionId) と linkQueryKeys.detail(linkId)。重複追加時はユニーク制約エラー → 適切なフィードバック。
+**invalidate**: useAddLinkToCollection 実行時に `collectionQueryKeys.links(collectionId)`、`collectionQueryKeys.forLink(linkId)`、`linkQueryKeys.detail(linkId)` を無効化。重複追加時はユニーク制約エラー → 適切なフィードバック。
 
 ---
 

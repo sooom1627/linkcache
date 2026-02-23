@@ -158,7 +158,7 @@ export const LinkCreateModal = forwardRef<
             {/* コレクション選択 */}
             <View className="mt-6">
               <Text className="text-sm font-semibold uppercase tracking-wide text-mainDark">
-                Select Collections
+                {t("links.create.selectCollections")}
               </Text>
               <View className="mt-3 flex-row flex-wrap gap-2">
                 {isCollectionsLoading ? (

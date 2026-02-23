@@ -632,8 +632,8 @@ export const collectionQueryKeys = {
 
 - ✅ **データベーススキーマ**: 完全に定義済み（RLS、制約、トリガー含む）
 - ✅ **型定義**: 基本型は定義済み
-- ❌ **API関数**: 未実装
-- ❌ **カスタムフック**: 未実装
+- ⚠️ **API関数**: 一部実装済み（`createCollection.api.ts`、`addLinkToCollection.api.ts` 等）
+- ⚠️ **カスタムフック**: 一部実装済み（`useCreateCollection.ts`、`useAddLinkToCollection.ts` 等）
 - ❌ **UIコンポーネント**: 未実装
 - ❌ **画面**: 未実装
 

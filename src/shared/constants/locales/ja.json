@@ -101,6 +101,7 @@
     "subtitle": "リンクを整理しましょう",
     "create": {
       "title": "リンクを追加",
+      "selectCollections": "コレクションを選択",
       "add_button": "リンクを追加",
       "url_placeholder": "URLを入力",
       "submit_button": "リンクを保存",
