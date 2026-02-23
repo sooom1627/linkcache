@@ -370,7 +370,7 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
                   />
                 ))
               )}
-              {!isCollectionsSectionLoading && (
+              {!isCollectionsSectionLoading && !isCollectionsError && (
                 <CollectionChip
                   variant="add"
                   title={t("links.detail.create_new_collection")}

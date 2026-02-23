@@ -135,7 +135,7 @@ export function CollectionDetailScreen({ rawId }: CollectionDetailScreenProps) {
         icon: <Pencil size={20} color={colors.icon} strokeWidth={2.5} />,
         label: t("links.collection_detail.header_edit"),
         onPress: handleEdit,
-        disabled: !isMenuOpen,
+        disabled: isDeleting,
       },
       {
         id: "delete",
@@ -147,7 +147,7 @@ export function CollectionDetailScreen({ rawId }: CollectionDetailScreenProps) {
         className: "min-w-[200px]",
       },
     ],
-    [t, handleEdit, handleDelete, isMenuOpen, isDeleting],
+    [t, handleEdit, handleDelete, isDeleting],
   );
 
   const renderItem = useCallback(
