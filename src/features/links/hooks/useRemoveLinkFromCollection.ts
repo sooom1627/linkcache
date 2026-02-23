@@ -11,13 +11,17 @@ import { collectionQueryKeys, linkQueryKeys } from "../constants/queryKeys";
  *
  * useMutation で removeLinkFromCollection API を呼び出し、
  * 楽観的更新（onMutate）とロールバック（onError）を実装。
- * 成功時に collectionQueryKeys.links、collectionQueryKeys.forLink、linkQueryKeys.detail を無効化する。
+ * onSettled 時に collectionQueryKeys.links、collectionQueryKeys.forLink、linkQueryKeys.detail を無効化する。
+ *
+ * @returns removeLinkFromCollection（mutate）、removeLinkFromCollectionAsync（mutateAsync）、
+ *   isPending、isError、isSuccess、error、reset
  *
  * @example
  * ```tsx
  * const { removeLinkFromCollection, removeLinkFromCollectionAsync } = useRemoveLinkFromCollection();
+ * // コールバック形式
  * removeLinkFromCollection({ collectionId, linkId }, { onSuccess, onError });
- * // または await が必要な場合
+ * // await が必要な場合
  * await removeLinkFromCollectionAsync({ collectionId, linkId });
  * ```
  */

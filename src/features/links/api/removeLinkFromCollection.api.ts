@@ -1,7 +1,12 @@
 import { supabase } from "@/src/shared/lib/supabase";
 
+/**
+ * リンクをコレクションから削除する際のパラメータ
+ */
 export interface RemoveLinkFromCollectionParams {
+  /** コレクションID */
   collectionId: string;
+  /** リンクID */
   linkId: string;
 }
 
@@ -12,6 +17,7 @@ export interface RemoveLinkFromCollectionParams {
  * 存在しないレコードの削除時はエラーにならず、影響行数0で完了する。
  *
  * @param params - collectionId, linkId
+ * @returns Promise<void> 成功時は何も返さない
  * @throws 未認証時、Supabase エラー時
  */
 export async function removeLinkFromCollection(
