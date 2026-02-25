@@ -148,8 +148,21 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
   );
 
   const sortedCollections = useMemo(() => {
-    const linked = collections.filter((c) => linkedCollectionIds.has(c.id));
-    const unlinked = collections.filter((c) => !linkedCollectionIds.has(c.id));
+    type Element = (typeof collections)[number];
+    const { linked, unlinked } = collections.reduce<{
+      linked: Element[];
+      unlinked: Element[];
+    }>(
+      (acc, c) => {
+        if (linkedCollectionIds.has(c.id)) {
+          acc.linked.push(c);
+        } else {
+          acc.unlinked.push(c);
+        }
+        return acc;
+      },
+      { linked: [] as Element[], unlinked: [] as Element[] },
+    );
     return [...linked, ...unlinked];
   }, [collections, linkedCollectionIds]);
 
@@ -370,13 +383,15 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
                   />
                 ))
               )}
-              {!isCollectionsSectionLoading && !isCollectionsError && (
-                <CollectionChip
-                  variant="add"
-                  title={t("links.detail.create_new_collection")}
-                  onPress={presentCollectionCreateModal}
-                />
-              )}
+              {!isCollectionsSectionLoading &&
+                !isCollectionsLoading &&
+                !isCollectionsError && (
+                  <CollectionChip
+                    variant="add"
+                    title={t("links.detail.create_new_collection")}
+                    onPress={presentCollectionCreateModal}
+                  />
+                )}
             </View>
           </View>
         </ScrollView>

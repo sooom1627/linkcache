@@ -71,7 +71,6 @@ export function CollectionDetailScreen({ rawId }: CollectionDetailScreenProps) {
     hasNextPage,
     fetchNextPage,
   } = useCollectionLinks(collectionId ?? "");
-  const isLoading = isCollectionLoading || isLinksLoading;
 
   const handleEndReached = useCallback(() => {
     if (hasNextPage && !isFetchingNextPage) {
@@ -252,7 +251,7 @@ export function CollectionDetailScreen({ rawId }: CollectionDetailScreenProps) {
     );
   }
 
-  if (!collection && isLoading) {
+  if (!collection && isCollectionLoading) {
     return (
       <View className="flex-1 items-center justify-center">
         <ActivityIndicator size="large" color="#6B7280" />
