@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 export type Json =
   | string
   | number
@@ -54,7 +55,7 @@ export type Database = {
       collections: {
         Row: {
           created_at: string | null;
-          description: string | null;
+          emoji: string | null;
           id: string;
           name: string;
           updated_at: string | null;
@@ -62,7 +63,7 @@ export type Database = {
         };
         Insert: {
           created_at?: string | null;
-          description?: string | null;
+          emoji?: string | null;
           id?: string;
           name: string;
           updated_at?: string | null;
@@ -70,7 +71,7 @@ export type Database = {
         };
         Update: {
           created_at?: string | null;
-          description?: string | null;
+          emoji?: string | null;
           id?: string;
           name?: string;
           updated_at?: string | null;
@@ -246,8 +247,23 @@ export type Database = {
         Returns: Json;
       };
       get_user_links: {
-        Args: { p_page?: number; p_page_size?: number };
+        Args: {
+          p_collection_id?: string;
+          p_is_read?: boolean;
+          p_limit?: number;
+          p_order_by?: string;
+          p_page?: number;
+          p_page_size?: number;
+          p_status?: Database["public"]["Enums"]["triage_status"];
+        };
         Returns: Json;
+      };
+      get_user_links_count: {
+        Args: {
+          p_is_read?: boolean;
+          p_status?: Database["public"]["Enums"]["triage_status"];
+        };
+        Returns: number;
       };
     };
     Enums: {
@@ -267,28 +283,28 @@ type DefaultSchema = DatabaseWithoutInternals[Extract<
 >];
 
 export type Tables<
-  TTableNameOrOptions extends
+  DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TTableName extends TTableNameOrOptions extends {
+  TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals;
   }
-    ? keyof (DatabaseWithoutInternals[TTableNameOrOptions["schema"]]["Tables"] &
-        DatabaseWithoutInternals[TTableNameOrOptions["schema"]]["Views"])
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
-> = TTableNameOrOptions extends {
+> = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals;
 }
-  ? (DatabaseWithoutInternals[TTableNameOrOptions["schema"]]["Tables"] &
-      DatabaseWithoutInternals[TTableNameOrOptions["schema"]]["Views"])[TTableName] extends {
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R;
     }
     ? R
     : never
-  : TTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
         DefaultSchema["Views"])
     ? (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])[TTableNameOrOptions] extends {
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
         Row: infer R;
       }
       ? R
@@ -296,24 +312,24 @@ export type Tables<
     : never;
 
 export type TablesInsert<
-  TTableNameOrOptions extends
+  DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TTableName extends TTableNameOrOptions extends {
+  TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals;
   }
-    ? keyof DatabaseWithoutInternals[TTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = TTableNameOrOptions extends {
+> = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals;
 }
-  ? DatabaseWithoutInternals[TTableNameOrOptions["schema"]]["Tables"][TTableName] extends {
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I;
     }
     ? I
     : never
-  : TTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][TTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
         Insert: infer I;
       }
       ? I
@@ -321,24 +337,24 @@ export type TablesInsert<
     : never;
 
 export type TablesUpdate<
-  TTableNameOrOptions extends
+  DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TTableName extends TTableNameOrOptions extends {
+  TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals;
   }
-    ? keyof DatabaseWithoutInternals[TTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = TTableNameOrOptions extends {
+> = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals;
 }
-  ? DatabaseWithoutInternals[TTableNameOrOptions["schema"]]["Tables"][TTableName] extends {
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U;
     }
     ? U
     : never
-  : TTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][TTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
         Update: infer U;
       }
       ? U
@@ -346,37 +362,37 @@ export type TablesUpdate<
     : never;
 
 export type Enums<
-  TEnumNameOrOptions extends
+  DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
-  TEnumName extends TEnumNameOrOptions extends {
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals;
   }
-    ? keyof DatabaseWithoutInternals[TEnumNameOrOptions["schema"]]["Enums"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
-> = TEnumNameOrOptions extends {
+> = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals;
 }
-  ? DatabaseWithoutInternals[TEnumNameOrOptions["schema"]]["Enums"][TEnumName]
-  : TEnumNameOrOptions extends keyof DefaultSchema["Enums"]
-    ? DefaultSchema["Enums"][TEnumNameOrOptions]
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
     : never;
 
 export type CompositeTypes<
-  TCompositeTypeNameOrOptions extends
+  PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  TCompositeTypeName extends TCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals;
   }
-    ? keyof DatabaseWithoutInternals[TCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
-> = TCompositeTypeNameOrOptions extends {
+> = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals;
 }
-  ? DatabaseWithoutInternals[TCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][TCompositeTypeName]
-  : TCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-    ? DefaultSchema["CompositeTypes"][TCompositeTypeNameOrOptions]
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never;
 
 export const Constants = {

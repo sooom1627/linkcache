@@ -1,3 +1,4 @@
+import type { FetchCollectionsParams } from "../types/collections.types";
 import type { LinkFilterParams } from "../types/linkList.types";
 
 /**
@@ -66,4 +67,47 @@ export const linkQueryKeys = {
    * @param url - 正規化されたURL
    */
   ogpMetadata: (url: string) => [...linkQueryKeys.ogp(), url] as const,
+} as const;
+
+/**
+ * コレクション関連のReact Queryキャッシュキー
+ *
+ * コレクション機能に関連するクエリキーを管理します。
+ *
+ * @example
+ * ```ts
+ * useQuery({ queryKey: collectionQueryKeys.lists(), ... });
+ * useQuery({ queryKey: collectionQueryKeys.detail(id), ... });
+ * useQuery({ queryKey: collectionQueryKeys.links(collectionId), ... });
+ * useQuery({ queryKey: collectionQueryKeys.forLink(linkId), ... });
+ * queryClient.invalidateQueries({ queryKey: collectionQueryKeys.lists() });
+ * ```
+ */
+export const collectionQueryKeys = {
+  all: ["collections"] as const,
+  lists: (params?: FetchCollectionsParams) =>
+    params
+      ? ([...collectionQueryKeys.all, "list", params] as const)
+      : ([...collectionQueryKeys.all, "list"] as const),
+  details: () => [...collectionQueryKeys.all, "detail"] as const,
+  detail: (id: string) => [...collectionQueryKeys.details(), id] as const,
+  /**
+   * コレクション内リンク一覧のクエリキー
+   *
+   * detail(collectionId) の子キーなので、コレクション削除時に
+   * detail を invalidate すれば links も一緒に無効化される。
+   * useAddLinkToCollection の onSettled でも invalidate される。
+   *
+   * @param collectionId - コレクションID
+   * @returns ["collections", "detail", collectionId, "links"]
+   */
+  links: (collectionId: string) =>
+    [...collectionQueryKeys.detail(collectionId), "links"] as const,
+
+  /**
+   * リンクに紐づくコレクションID一覧のクエリキー
+   * @param linkId - リンクID
+   */
+  forLink: (linkId: string) =>
+    [...collectionQueryKeys.all, "forLink", linkId] as const,
 } as const;

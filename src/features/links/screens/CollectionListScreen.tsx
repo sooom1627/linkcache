@@ -1,4 +1,10 @@
-import { Pressable, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  Pressable,
+  Text,
+  View,
+} from "react-native";
 
 import * as Haptics from "expo-haptics";
 
@@ -6,30 +12,21 @@ import { FolderOpen, Plus } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 
 import { CollectionCard } from "@/src/features/links/components/CollectionCard";
+import { useCollections } from "@/src/features/links/hooks/useCollections";
 import { CollectionCreateModal } from "@/src/features/links/screens/CollectionCreateModal";
 import { colors } from "@/src/shared/constants/colors";
 import { useBottomSheetModal } from "@/src/shared/hooks/useBottomSheetModal";
 
 const CARD_STYLE = { borderCurve: "continuous" as const };
 
-/** モック: コレクション一覧 */
-const MOCK_COLLECTIONS = [
-  { id: "1", emoji: "💼", title: "Work", itemsCount: 24 },
-  { id: "2", emoji: "🎨", title: "Design", itemsCount: 56 },
-  { id: "3", emoji: "🍳", title: "Recipes", itemsCount: 12 },
-  { id: "4", emoji: "💻", title: "Tech", itemsCount: 31 },
-  { id: "5", emoji: "📚", title: "Learning", itemsCount: 18 },
-];
-
 /** モック: Un Collectioned のリンク数 */
 const MOCK_UN_COLLECTIONED_COUNT = 8;
 
 /**
- * コレクション一覧画面（UIのみ）
+ * コレクション一覧画面
  *
  * 全コレクション一覧。「すべて表示」の遷移先。
- * Un Collectioned + 各コレクションを表示。モックデータ使用。
- * Link で prefetch・iOS プレビュー対応。API・hooks は後で実装予定。
+ * Un Collectioned + useCollections() で取得した各コレクションを表示。
  */
 export function CollectionListScreen() {
   const { t } = useTranslation();
@@ -44,8 +41,8 @@ export function CollectionListScreen() {
     presentCollectionCreateModal();
   };
 
-  const collections = MOCK_COLLECTIONS;
-  const isEmpty = collections.length === 0;
+  const { collections, isLoading, isError } = useCollections();
+  const isEmpty = !isLoading && !isError && collections.length === 0;
 
   return (
     <View className="h-fit gap-6 pb-36">
@@ -70,7 +67,19 @@ export function CollectionListScreen() {
           {t("links.collection_list.my_collections")}
         </Text>
 
-        {isEmpty ? (
+        {isLoading ? (
+          <View className="items-center py-12">
+            <ActivityIndicator size="large" color="#6B7280" />
+          </View>
+        ) : isError ? (
+          <View className="items-center py-12">
+            <Text className="text-center text-base text-slate-500">
+              {t("common.error_generic", {
+                defaultValue: "An error occurred. Please try again.",
+              })}
+            </Text>
+          </View>
+        ) : isEmpty ? (
           <View className="mt-12 items-center px-8">
             <View className="mb-6 rounded-full bg-slate-50 p-6">
               <FolderOpen size={48} color={colors.iconMuted} strokeWidth={1} />
@@ -95,40 +104,37 @@ export function CollectionListScreen() {
           </View>
         ) : (
           <View className="gap-2">
-            {[0, 1, 2].map((rowIndex) => {
-              const rowItems = collections.slice(
-                rowIndex * 2,
-                rowIndex * 2 + 2,
-              );
-              if (rowItems.length === 0) return null;
-              return (
-                <View key={rowIndex} className="flex-row gap-2">
-                  {rowItems.map((col) => (
-                    <View key={col.id} className="min-h-28 min-w-0 flex-1">
-                      <CollectionCard
-                        emoji={col.emoji}
-                        title={col.title}
-                        itemsCount={col.itemsCount}
-                        href={`/collections/${col.id}`}
-                      />
-                    </View>
-                  ))}
+            <FlatList
+              data={collections}
+              numColumns={2}
+              scrollEnabled={false}
+              keyExtractor={(col) => col.id}
+              columnWrapperStyle={{ gap: 8, marginBottom: 8 }}
+              renderItem={({ item }) => (
+                <View className="min-h-28 min-w-0 flex-1">
+                  <CollectionCard
+                    emoji={item.emoji ?? undefined}
+                    title={item.name}
+                    itemsCount={item.itemsCount}
+                    href={`/collections/${item.id}`}
+                  />
                 </View>
-              );
-            })}
-            {/* New Collection: 細い1列ライン */}
-            <Pressable
-              onPress={handleNewCollectionPress}
-              className="flex-row items-center justify-center gap-2 rounded-xl border border-dashed border-slate-300 bg-slate-50/50 py-3 active:bg-slate-100"
-              style={CARD_STYLE}
-              accessibilityRole="button"
-              accessibilityLabel={t("links.overview.new_collection")}
-            >
-              <Plus size={20} color={colors.iconMuted} strokeWidth={2} />
-              <Text className="text-sm font-medium text-slate-600">
-                {t("links.overview.new_collection")}
-              </Text>
-            </Pressable>
+              )}
+              ListFooterComponent={
+                <Pressable
+                  onPress={handleNewCollectionPress}
+                  className="flex-row items-center justify-center gap-2 rounded-xl border border-dashed border-slate-300 bg-slate-50/50 py-3 active:bg-slate-100"
+                  style={CARD_STYLE}
+                  accessibilityRole="button"
+                  accessibilityLabel={t("links.overview.new_collection")}
+                >
+                  <Plus size={20} color={colors.iconMuted} strokeWidth={2} />
+                  <Text className="text-sm font-medium text-slate-600">
+                    {t("links.overview.new_collection")}
+                  </Text>
+                </Pressable>
+              }
+            />
           </View>
         )}
       </View>

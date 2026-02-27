@@ -1,6 +1,6 @@
 import { forwardRef, useCallback, useEffect, useState } from "react";
 
-import { Pressable, Text, TextInput, View } from "react-native";
+import { Alert, Pressable, Text, TextInput, View } from "react-native";
 
 import type { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { Plus } from "lucide-react-native";
@@ -12,6 +12,8 @@ import { BaseBottomSheetModal } from "@/src/shared/components/modals";
 import ModalHeader from "@/src/shared/components/modals/ModalHeader";
 import { colors } from "@/src/shared/constants/colors";
 
+import { useUpdateCollection } from "../hooks/useUpdateCollection";
+
 export interface CollectionEditModalProps {
   collectionId: string;
   initialName: string;
@@ -20,11 +22,11 @@ export interface CollectionEditModalProps {
 }
 
 /**
- * コレクション編集モーダル（UIレイヤーのみ）
+ * コレクション編集モーダル
  *
  * 名前と絵文字を編集してコレクションを更新するフォームを表示します。
  * CollectionCreateModal と UI を統一。
- * 現時点ではAPI連携なし。送信時はモーダルを閉じるのみ。
+ * 送信時は useUpdateCollection を通じて Supabase にコレクション情報を保存します。
  */
 export const CollectionEditModal = forwardRef<
   BottomSheetModal,
@@ -34,6 +36,7 @@ export const CollectionEditModal = forwardRef<
   const [name, setName] = useState(initialName);
   const [emoji, setEmoji] = useState(initialEmoji);
   const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
+  const { updateCollection, isPending } = useUpdateCollection();
 
   // モーダル表示時に初期値を反映（別コレクションから開き直した場合など）
   useEffect(() => {
@@ -52,9 +55,24 @@ export const CollectionEditModal = forwardRef<
   }, []);
 
   const handleSubmit = useCallback(() => {
-    // UIレイヤーのみ: 送信処理は未実装。モーダルを閉じる。
-    handleClose();
-  }, [handleClose]);
+    updateCollection(
+      { id: collectionId, params: { name: name.trim(), emoji: emoji || null } },
+      {
+        onSuccess: handleClose,
+        onError: (error) => {
+          __DEV__ &&
+            console.warn(
+              "[CollectionEditModal] updateCollection failed:",
+              error,
+            );
+          Alert.alert(
+            t("links.collection_edit.error_title"),
+            t("links.collection_edit.error_message"),
+          );
+        },
+      },
+    );
+  }, [updateCollection, collectionId, name, emoji, handleClose, t]);
 
   const handleModalChange = useCallback(
     (index: number) => {
@@ -66,7 +84,7 @@ export const CollectionEditModal = forwardRef<
     [initialName, initialEmoji],
   );
 
-  const isSubmitDisabled = !name.trim();
+  const isSubmitDisabled = !name.trim() || isPending;
 
   return (
     <BaseBottomSheetModal

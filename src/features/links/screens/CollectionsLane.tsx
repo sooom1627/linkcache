@@ -1,19 +1,33 @@
-import { ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, ScrollView, Text, View } from "react-native";
 
 import { useRouter } from "expo-router";
 
-import { CollectionChip } from "../components/CollectionChip";
+import { useTranslation } from "react-i18next";
 
-import { mockCollections } from "./CollectionDetailScreen";
+import { CollectionChip } from "../components/CollectionChip";
+import { useCollections } from "../hooks/useCollections";
 
 export function CollectionsLane() {
+  const { t } = useTranslation();
   const router = useRouter();
-  const collections = Object.values(mockCollections);
+  const { collections, isLoading, isError } = useCollections({ limit: 5 });
+
+  if (isLoading) {
+    return (
+      <View className="items-center py-4">
+        <ActivityIndicator size="small" color="#6B7280" />
+      </View>
+    );
+  }
+
+  if (isError || collections.length === 0) return null;
 
   return (
     <View>
       <Text className="mb-2 text-sm font-semibold uppercase tracking-wider text-textMuted">
-        Collections
+        {t("links.overview.collections_top", {
+          count: collections.length,
+        })}
       </Text>
       <ScrollView
         horizontal
@@ -23,8 +37,8 @@ export function CollectionsLane() {
         {collections.map((col) => (
           <CollectionChip
             key={col.id}
-            emoji={col.emoji}
-            title={col.title}
+            emoji={col.emoji ?? undefined}
+            title={col.name}
             onPress={() => router.push(`/collections/${col.id}`)}
           />
         ))}

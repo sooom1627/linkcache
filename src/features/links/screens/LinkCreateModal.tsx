@@ -1,6 +1,6 @@
-import { forwardRef, useCallback, useEffect, useRef, useState } from "react";
+import { forwardRef, useCallback, useRef, useState } from "react";
 
-import { Alert, Text, View } from "react-native";
+import { ActivityIndicator, Alert, Text, View } from "react-native";
 
 import type { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useTranslation } from "react-i18next";
@@ -11,16 +11,10 @@ import ModalHeader from "@/src/shared/components/modals/ModalHeader";
 
 import { CollectionChip } from "../components/CollectionChip";
 import LinkPasteContainer from "../components/LinkPasteContainer";
+import { useAddLinkToCollection } from "../hooks/useAddLinkToCollection";
+import { useCollections } from "../hooks/useCollections";
 import { useCreateLink } from "../hooks/useCreateLink";
 import { useLinkPaste } from "../hooks/useLinkPaste";
-
-/** 仮データ: コレクション選択UI用（UIレイヤーのみ） */
-const MOCK_COLLECTIONS = [
-  { id: "1", emoji: "📚", title: "Read Soon" },
-  { id: "2", emoji: "🔬", title: "Tech" },
-  { id: "3", emoji: "🎨", title: "Design" },
-  { id: "4", emoji: "💡", title: "Ideas" },
-] as const;
 
 interface LinkCreateModalProps {
   onClose?: () => void;
@@ -48,19 +42,16 @@ export const LinkCreateModal = forwardRef<
   const { status, preview, errorMessage, pasteFromClipboard, reset, canSave } =
     useLinkPaste({ initialStatus: "loading" });
 
-  // リンク作成フック
+  const { createLinkAsync, isPending, reset: resetCreate } = useCreateLink();
+  const { addLinkToCollectionAsync } = useAddLinkToCollection();
   const {
-    createLink,
-    isPending,
-    isSuccess,
-    isError,
-    error,
-    reset: resetCreate,
-  } = useCreateLink();
+    collections,
+    isLoading: isCollectionsLoading,
+    isError: isCollectionsError,
+  } = useCollections();
 
   const hasAutoPastedRef = useRef(false);
 
-  // コレクション選択（仮UI: 選択状態のみ保持、保存時は未使用）
   const [selectedCollectionIds, setSelectedCollectionIds] = useState<
     Set<string>
   >(() => new Set());
@@ -104,32 +95,47 @@ export const LinkCreateModal = forwardRef<
     onClose?.();
   }, [onClose, reset, resetCreate]);
 
-  // 保存処理
-  const handleSave = useCallback(() => {
+  const handleSave = useCallback(async () => {
     if (!preview?.url) return;
-    createLink(preview.url);
-  }, [preview, createLink]);
+    try {
+      const { link_id } = await createLinkAsync(preview.url);
+      const collectionIds = Array.from(selectedCollectionIds);
 
-  // 成功時の処理
-  useEffect(() => {
-    if (isSuccess) {
       Alert.alert(
         t("links.create.callback_messages.success_title"),
         t("links.create.callback_messages.success_message"),
       );
       handleClose();
-    }
-  }, [isSuccess, t, handleClose]);
 
-  // エラー時の処理
-  useEffect(() => {
-    if (isError && error) {
+      if (collectionIds.length > 0) {
+        Promise.allSettled(
+          collectionIds.map((collectionId) =>
+            addLinkToCollectionAsync({ collectionId, linkId: link_id }),
+          ),
+        ).then((results) => {
+          const hasFailures = results.some((r) => r.status === "rejected");
+          if (hasFailures) {
+            Alert.alert(
+              t("links.create.callback_messages.collection_add_error_title"),
+              t("links.create.callback_messages.collection_add_error_message"),
+            );
+          }
+        });
+      }
+    } catch {
       Alert.alert(
         t("links.create.callback_messages.error_title"),
         t("links.create.callback_messages.error_message"),
       );
     }
-  }, [isError, error, t]);
+  }, [
+    preview?.url,
+    createLinkAsync,
+    selectedCollectionIds,
+    addLinkToCollectionAsync,
+    t,
+    handleClose,
+  ]);
 
   // ボタンの無効化条件
   const isSubmitDisabled = !canSave || isPending;
@@ -160,21 +166,31 @@ export const LinkCreateModal = forwardRef<
         {/* 保存メニュー */}
         {(status === "preview" || status === "noOgp") && (
           <>
-            {/* collections selector（仮UI: 選択のみ、保存時は未使用） */}
+            {/* コレクション選択 */}
             <View className="mt-6">
               <Text className="text-sm font-semibold uppercase tracking-wide text-mainDark">
-                Select Collections
+                {t("links.create.selectCollections")}
               </Text>
               <View className="mt-3 flex-row flex-wrap gap-2">
-                {MOCK_COLLECTIONS.map((col) => (
-                  <CollectionChip
-                    key={col.id}
-                    emoji={col.emoji}
-                    title={col.title}
-                    selected={selectedCollectionIds.has(col.id)}
-                    onPress={() => toggleCollection(col.id)}
-                  />
-                ))}
+                {isCollectionsLoading ? (
+                  <ActivityIndicator size="small" color="#6B7280" />
+                ) : isCollectionsError ? (
+                  <Text className="text-sm text-slate-400">
+                    {t("common.error_generic", {
+                      defaultValue: "Could not load collections.",
+                    })}
+                  </Text>
+                ) : (
+                  collections.map((col) => (
+                    <CollectionChip
+                      key={col.id}
+                      emoji={col.emoji ?? undefined}
+                      title={col.name}
+                      selected={selectedCollectionIds.has(col.id)}
+                      onPress={() => toggleCollection(col.id)}
+                    />
+                  ))
+                )}
               </View>
             </View>
             {/* 保存ボタン */}

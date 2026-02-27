@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 
 import { ActivityIndicator, Alert, ScrollView, Text, View } from "react-native";
 
@@ -13,25 +13,45 @@ import { useBottomSheetModal } from "@/src/shared/hooks/useBottomSheetModal";
 import { formatDateTime } from "@/src/shared/utils/timezone";
 
 import { CollectionChip } from "../components/CollectionChip";
+import { CollectionsSectionSkeleton } from "../components/CollectionsSectionSkeleton";
 import { LinkDetailActionButtonGroup } from "../components/LinkDetailActionButtonGroup";
 import { LinkReadStatusModal } from "../components/LinkReadStatusModal";
+import { useAddLinkToCollection } from "../hooks/useAddLinkToCollection";
+import { useCollections } from "../hooks/useCollections";
+import { useCollectionsForLink } from "../hooks/useCollectionsForLink";
 import { useDeleteLink } from "../hooks/useDeleteLink";
 import { useLinkDetail } from "../hooks/useLinkDetail";
 import { extractDomain } from "../hooks/useLinkPaste";
 import { useOpenLink } from "../hooks/useOpenLink";
+import { useRemoveLinkFromCollection } from "../hooks/useRemoveLinkFromCollection";
 import { shareLink } from "../utils/share";
 import { getStatusStyle } from "../utils/statusStyles";
 
 import { CollectionCreateModal } from "./CollectionCreateModal";
 
-/** モック: 全コレクション（API未実装のため） */
-const MOCK_COLLECTIONS = [
-  { id: "1", emoji: "📚", title: "Read Soon" },
-  { id: "2", emoji: "🔬", title: "Tech" },
-  { id: "3", emoji: "🎨", title: "Design" },
-  { id: "4", emoji: "💼", title: "Work" },
-  { id: "5", emoji: "💡", title: "Ideas" },
-] as const;
+interface StatusDisplayProps {
+  status: string | null;
+  statusStyle: ReturnType<typeof getStatusStyle>;
+}
+
+const StatusDisplay = memo(function StatusDisplay({
+  status,
+  statusStyle,
+}: StatusDisplayProps) {
+  const { t } = useTranslation();
+  return (
+    <View className="flex-row items-center gap-1.5">
+      <Circle size={12} fill={statusStyle.icon} color={statusStyle.icon} />
+      <Text className={`text-base font-medium ${statusStyle.text}`}>
+        {status
+          ? t(`links.card.action_modal.status.${status}`, {
+              defaultValue: status,
+            })
+          : ""}
+      </Text>
+    </View>
+  );
+});
 
 interface LinkDetailScreenProps {
   linkId: string;
@@ -59,25 +79,92 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
     present: presentCollectionCreateModal,
     dismiss: dismissCollectionCreateModal,
   } = useBottomSheetModal();
+  const {
+    collections,
+    isLoading: isCollectionsLoading,
+    isError: isCollectionsError,
+  } = useCollections();
+  const { linkedCollectionIds, isLoading: isLinkedCollectionsLoading } =
+    useCollectionsForLink(link?.link_id ?? "");
+  const { addLinkToCollection } = useAddLinkToCollection();
+  const { removeLinkFromCollection } = useRemoveLinkFromCollection();
 
   const isDone = link?.status === "done";
 
-  /** このリンクが属するコレクションID（タップでトグル、API未実装のためローカル状態） */
-  const [linkedCollectionIds, setLinkedCollectionIds] = useState<Set<string>>(
-    () => new Set(["1", "2"]),
+  /** スケルトン表示: 画面表示時の初回読み込み時のみ */
+  const isCollectionsSectionLoading = isLinkedCollectionsLoading;
+
+  const handleToggleCollection = useCallback(
+    (collectionId: string) => {
+      if (!link) return;
+
+      if (linkedCollectionIds.has(collectionId)) {
+        removeLinkFromCollection(
+          { collectionId, linkId: link.link_id },
+          {
+            onError: (err: unknown) => {
+              Alert.alert(
+                t("common.error_generic", {
+                  defaultValue: "エラーが発生しました",
+                }),
+                err instanceof Error ? err.message : String(err),
+              );
+            },
+          },
+        );
+        return;
+      }
+
+      addLinkToCollection(
+        { collectionId, linkId: link.link_id },
+        {
+          onError: (err: unknown) => {
+            const code = (err as { code?: string })?.code;
+            if (code === "23505") {
+              Alert.alert(
+                t("links.detail.collection_already_added", {
+                  defaultValue: "既に追加済みです",
+                }),
+              );
+            } else {
+              Alert.alert(
+                t("common.error_generic", {
+                  defaultValue: "エラーが発生しました",
+                }),
+                err instanceof Error ? err.message : String(err),
+              );
+            }
+          },
+        },
+      );
+    },
+    [
+      link,
+      linkedCollectionIds,
+      addLinkToCollection,
+      removeLinkFromCollection,
+      t,
+    ],
   );
 
-  const handleToggleCollection = useCallback((collectionId: string) => {
-    setLinkedCollectionIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(collectionId)) {
-        next.delete(collectionId);
-      } else {
-        next.add(collectionId);
-      }
-      return next;
-    });
-  }, []);
+  const sortedCollections = useMemo(() => {
+    type Element = (typeof collections)[number];
+    const { linked, unlinked } = collections.reduce<{
+      linked: Element[];
+      unlinked: Element[];
+    }>(
+      (acc, c) => {
+        if (linkedCollectionIds.has(c.id)) {
+          acc.linked.push(c);
+        } else {
+          acc.unlinked.push(c);
+        }
+        return acc;
+      },
+      { linked: [] as Element[], unlinked: [] as Element[] },
+    );
+    return [...linked, ...unlinked];
+  }, [collections, linkedCollectionIds]);
 
   const handleBack = useCallback(() => {
     router.back();
@@ -173,26 +260,6 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
   const domain = extractDomain(link.url);
   const statusStyle = getStatusStyle(link.status);
 
-  // ステータス表示用の共通コンポーネント
-  const StatusDisplay = ({
-    status,
-    statusStyle,
-  }: {
-    status: string | null;
-    statusStyle: ReturnType<typeof getStatusStyle>;
-  }) => (
-    <View className="flex-row items-center gap-1.5">
-      <Circle size={12} fill={statusStyle.icon} color={statusStyle.icon} />
-      <Text className={`text-base font-medium ${statusStyle.text}`}>
-        {status
-          ? t(`links.card.action_modal.status.${status}`, {
-              defaultValue: status,
-            })
-          : ""}
-      </Text>
-    </View>
-  );
-
   return (
     <>
       <View className="relative h-full bg-slate-50 pb-32">
@@ -254,19 +321,7 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
             <View className="mb-6 rounded-2xl bg-white p-4">
               {/* 現在のステータス */}
               <View className="mb-3 flex-row items-center gap-2">
-                {isDone ? (
-                  // Doneステータス: 優先表示
-                  <StatusDisplay
-                    status={link.status}
-                    statusStyle={statusStyle}
-                  />
-                ) : (
-                  // 未読: シンプルなアイコン+テキスト
-                  <StatusDisplay
-                    status={link.status}
-                    statusStyle={statusStyle}
-                  />
-                )}
+                <StatusDisplay status={link.status} statusStyle={statusStyle} />
               </View>
 
               {/* 日時情報 */}
@@ -306,21 +361,37 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
               {t("links.detail.collections_label")}
             </Text>
             <View className="mb-6 flex-row flex-wrap gap-2">
-              {MOCK_COLLECTIONS.map((col) => (
-                <CollectionChip
-                  key={col.id}
-                  emoji={col.emoji}
-                  title={col.title}
-                  selected={linkedCollectionIds.has(col.id)}
-                  onPress={() => handleToggleCollection(col.id)}
-                  accessibilityHint={t("links.detail.collections_tap_hint")}
-                />
-              ))}
-              <CollectionChip
-                variant="add"
-                title={t("links.detail.create_new_collection")}
-                onPress={presentCollectionCreateModal}
-              />
+              {isCollectionsSectionLoading ? (
+                <CollectionsSectionSkeleton />
+              ) : isCollectionsLoading ? (
+                <ActivityIndicator size="small" color="#6B7280" />
+              ) : isCollectionsError ? (
+                <Text className="text-sm text-slate-400">
+                  {t("common.error_generic", {
+                    defaultValue: "Could not load collections.",
+                  })}
+                </Text>
+              ) : (
+                sortedCollections.map((col) => (
+                  <CollectionChip
+                    key={col.id}
+                    emoji={col.emoji ?? undefined}
+                    title={col.name}
+                    selected={linkedCollectionIds.has(col.id)}
+                    onPress={() => handleToggleCollection(col.id)}
+                    accessibilityHint={t("links.detail.collections_tap_hint")}
+                  />
+                ))
+              )}
+              {!isCollectionsSectionLoading &&
+                !isCollectionsLoading &&
+                !isCollectionsError && (
+                  <CollectionChip
+                    variant="add"
+                    title={t("links.detail.create_new_collection")}
+                    onPress={presentCollectionCreateModal}
+                  />
+                )}
             </View>
           </View>
         </ScrollView>

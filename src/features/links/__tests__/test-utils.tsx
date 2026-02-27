@@ -10,7 +10,7 @@ const createTestQueryClient = () =>
       queries: {
         retry: false,
         staleTime: 0,
-        gcTime: 0,
+        gcTime: Infinity,
         // テスト環境では非同期更新を同期的に処理
         networkMode: "offlineFirst",
       },

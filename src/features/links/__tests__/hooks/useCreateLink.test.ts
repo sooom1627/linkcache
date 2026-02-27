@@ -40,6 +40,7 @@ describe("useCreateLink", () => {
     expect(result.current.isError).toBe(false);
     expect(result.current.isSuccess).toBe(false);
     expect(typeof result.current.createLink).toBe("function");
+    expect(typeof result.current.createLinkAsync).toBe("function");
   });
 
   it("fetches OGP metadata and creates link on mutation", async () => {

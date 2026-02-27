@@ -33,6 +33,24 @@ alwaysApply: true
 
 ---
 
+## Implementation Principles
+
+- **TDD**: Classical TDD with minimal mocking. Implement in Red → Green → Refactor order.
+- **STEP Management**: Define STEPs per feature. Run `pnpm run check` at each STEP completion for static quality verification. Fix critical issues immediately; defer minor ones for batch refactor.
+- **Package Manager**: Use pnpm.
+- **Supabase Operations**: Use MCP.
+
+**Reference Skills** (see each SKILL for details)
+
+| Area | Reference |
+|------|-----------|
+| Overall Guidelines | `.cursor/rules/cursor-rules.mdc` |
+| Frontend Implementation | `.cursor/skills/vercel-react-native-skills` |
+| Data Fetching | `.cursor/skills/native-data-fetching` |
+| Supabase Queries | `.cursor/skills/supabase-postgres-best-practices` |
+
+---
+
 ## Code Style & Structure
 - **Functional Programming**: Use functional and declarative patterns; strictly avoid classes.
 - **File Organization**: Organize by **Feature**. Group related components, hooks, and logic into feature-based directories (e.g., `features/auth`, `features/payments`).

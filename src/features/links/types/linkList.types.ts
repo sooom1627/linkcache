@@ -72,6 +72,8 @@ export interface GetUserLinksParams extends LinkFilterParams {
   page?: number;
   /** ソート順 (デフォルト: null) */
   orderBy?: string | null;
+  /** コレクションIDでフィルタ（指定時はそのコレクション内のリンクのみ取得） */
+  collectionId?: string;
 }
 
 /**

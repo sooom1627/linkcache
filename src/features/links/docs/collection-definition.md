@@ -1,6 +1,6 @@
 # Collection定義と利用状況の詳細整理
 
-> **最終更新**: 2026年2月15日  
+> **最終更新**: 2026年2月23日  
 > **確認方法**: Supabase MCP経由で実際のDB構造を確認
 >
 > **関連**:
@@ -29,15 +29,14 @@
 
 #### テーブル構造
 
-| カラム名      | データ型      | NULL許可 | デフォルト値        | 説明                               |
-| ------------- | ------------- | -------- | ------------------- | ---------------------------------- |
-| `id`          | `uuid`        | NO       | `gen_random_uuid()` | 主キー（自動生成）                 |
-| `user_id`     | `uuid`        | NO       | -                   | ユーザーID（外部キー: `users.id`） |
-| `name`        | `text`        | NO       | -                   | コレクション名（必須）             |
-| `description` | `text`        | YES      | -                   | 説明文（オプション）               |
-| `emoji`       | `text`        | YES      | -                   | 表示用絵文字（オプション、例: 📚） |
-| `created_at`  | `timestamptz` | YES      | `now()`             | 作成日時（自動設定）               |
-| `updated_at`  | `timestamptz` | YES      | `now()`             | 更新日時（自動設定）               |
+| カラム名     | データ型      | NULL許可 | デフォルト値        | 説明                               |
+| ------------ | ------------- | -------- | ------------------- | ---------------------------------- |
+| `id`         | `uuid`        | NO       | `gen_random_uuid()` | 主キー（自動生成）                 |
+| `user_id`    | `uuid`        | NO       | -                   | ユーザーID（外部キー: `users.id`） |
+| `name`       | `text`        | NO       | -                   | コレクション名（必須）             |
+| `emoji`      | `text`        | YES      | -                   | 表示用絵文字（オプション、例: 📚） |
+| `created_at` | `timestamptz` | YES      | `now()`             | 作成日時（自動設定）               |
+| `updated_at` | `timestamptz` | YES      | `now()`             | 更新日時（自動設定）               |
 
 #### 主キー
 
@@ -103,7 +102,7 @@
 
 ### 3. データモデル図
 
-```
+```text
 ┌─────────────────┐
 │   auth.users     │
 │  (Supabase Auth)│
@@ -131,7 +130,6 @@
 │ - id (PK)       │
 │ - user_id (FK)  │
 │ - name          │
-│ - description   │
 │ - emoji         │
 │ - created_at    │
 │ - updated_at    │
@@ -193,7 +191,6 @@ type Collection = {
   id: string; // UUID
   user_id: string; // UUID (users.idへの外部キー)
   name: string; // 必須
-  description: string | null; // オプション
   emoji: string | null; // オプション（表示用絵文字、例: 📚）
   created_at: string | null; // ISO8601形式のタイムスタンプ
   updated_at: string | null; // ISO8601形式のタイムスタンプ
@@ -397,46 +394,47 @@ import type { Collection, CollectionLink } from "@features/links/types";
    - ✅ `CollectionLink`型
    - ✅ 型のエクスポート
 
-### ❌ 未実装
+### ⚠️ 一部未実装
 
 1. **API関数** (`src/features/links/api/`)
-   - ❌ `createCollection.api.ts` - コレクション作成
-   - ❌ `fetchCollections.api.ts` - コレクション一覧取得
-   - ❌ `getCollection.api.ts` - コレクション詳細取得
-   - ❌ `updateCollection.api.ts` - コレクション更新
-   - ❌ `deleteCollection.api.ts` - コレクション削除
-   - ❌ `addLinkToCollection.api.ts` - リンクをコレクションに追加
-   - ❌ `removeLinkFromCollection.api.ts` - リンクをコレクションから削除
+   - ✅ `createCollection.api.ts` - コレクション作成
+   - ✅ `fetchCollections.api.ts` - コレクション一覧取得
+   - ✅ `getCollection.api.ts` - コレクション詳細取得
+   - ✅ `updateCollection.api.ts` - コレクション更新
+   - ✅ `deleteCollection.api.ts` - コレクション削除
+   - ✅ `addLinkToCollection.api.ts` - リンクをコレクションに追加
+   - ✅ `removeLinkFromCollection.api.ts` - リンクをコレクションから削除
    - ❌ `getCollectionLinks.api.ts` - コレクション内のリンク一覧取得
 
 2. **型定義の拡張** (`src/features/links/types/`)
-   - ❌ リクエスト/レスポンス型定義
-   - ❌ Zodスキーマ（バリデーション用）
+   - ✅ CreateCollectionParams, CreateCollectionResponse（collections.types.ts）
+   - ✅ createCollectionSchema（Zod バリデーション）
 
 3. **カスタムフック** (`src/features/links/hooks/`)
-   - ❌ `useCollections.ts` - コレクション一覧取得フック
-   - ❌ `useCollection.ts` - コレクション詳細取得フック
-   - ❌ `useCreateCollection.ts` - コレクション作成フック
-   - ❌ `useUpdateCollection.ts` - コレクション更新フック
-   - ❌ `useDeleteCollection.ts` - コレクション削除フック
-   - ❌ `useCollectionLinks.ts` - コレクション内リンク取得フック
-   - ❌ `useAddLinkToCollection.ts` - リンク追加フック
-   - ❌ `useRemoveLinkFromCollection.ts` - リンク削除フック
+   - ✅ `useCollections.ts` - コレクション一覧取得フック
+   - ✅ `useCollection.ts` - コレクション詳細取得フック
+   - ✅ `useCreateCollection.ts` - コレクション作成フック
+   - ✅ `useUpdateCollection.ts` - コレクション更新フック
+   - ✅ `useDeleteCollection.ts` - コレクション削除フック
+   - ✅ `useCollectionLinks.ts` - コレクション内リンク取得フック
+   - ✅ `useAddLinkToCollection.ts` - リンク追加フック
+   - ✅ `useRemoveLinkFromCollection.ts` - リンク削除フック
 
 4. **UIコンポーネント** (`src/features/links/components/`)
    - ✅ `CollectionCard.tsx` - コレクションカード（href/onPress、Link 対応）
    - ✅ `CollectionChip.tsx` - コレクションチップ
-   - ✅ `CollectionCreateModal.tsx` - コレクション作成フォーム
-   - ✅ `CollectionEditModal.tsx` - コレクション編集フォーム（CollectionDetailScreen の Edit 押下で表示）
+   - ✅ `CollectionsSectionSkeleton.tsx` - コレクション一覧のスケルトンローディング
+   - ✅ `CollectionCreateModal.tsx` - コレクション作成フォーム（API 連携済み）
+   - ✅ `CollectionEditModal.tsx` - コレクション編集フォーム（API 連携済み）
    - ❌ `CollectionLinkList.tsx` - コレクション内リンク一覧
    - ❌ `AddToCollectionModal.tsx` - リンクをコレクションに追加するモーダル
 
 5. **画面** (`src/features/links/screens/`)
-   - ✅ `CollectionListScreen.tsx` - コレクション一覧画面（UI のみ、モックデータ）
-   - ⚠️ `CollectionDetailScreen` - プレースホルダーのみ（`app/(protected)/collections/[id].tsx`）
+   - ✅ `CollectionListScreen.tsx` - コレクション一覧画面（useCollections フックで実データ取得）
+   - ✅ `CollectionDetailScreen.tsx` - コレクション詳細画面（useCollection / useCollectionLinks 連携済み）
 
 6. **クエリキー** (`src/features/links/constants/queryKeys.ts`)
-   - ❌ collection関連のクエリキー定義
+   - ✅ collectionQueryKeys（lists, detail, links）
 
 ---
 
@@ -454,7 +452,6 @@ import type { Collection, CollectionLink } from "@features/links/types";
 // コレクション作成
 export async function createCollection(params: {
   name: string;
-  description?: string;
   emoji?: string;
 }): Promise<Collection>;
 
@@ -467,7 +464,7 @@ export async function getCollection(id: string): Promise<Collection>;
 // コレクション更新
 export async function updateCollection(
   id: string,
-  params: { name?: string; description?: string; emoji?: string },
+  params: { name?: string; emoji?: string },
 ): Promise<Collection>;
 
 // コレクション削除
@@ -501,20 +498,17 @@ export async function getCollectionLinks(
 // リクエスト型
 export interface CreateCollectionParams {
   name: string;
-  description?: string;
   emoji?: string;
 }
 
 export interface UpdateCollectionParams {
   name?: string;
-  description?: string;
   emoji?: string;
 }
 
 // Zodスキーマ
 export const createCollectionSchema = z.object({
   name: z.string().min(1).max(100),
-  description: z.string().max(500).optional(),
 });
 ```
 
@@ -639,8 +633,8 @@ export const collectionQueryKeys = {
 
 - ✅ **データベーススキーマ**: 完全に定義済み（RLS、制約、トリガー含む）
 - ✅ **型定義**: 基本型は定義済み
-- ❌ **API関数**: 未実装
-- ❌ **カスタムフック**: 未実装
+- ⚠️ **API関数**: 一部実装済み（`createCollection.api.ts`、`addLinkToCollection.api.ts`、`removeLinkFromCollection.api.ts` 等）
+- ⚠️ **カスタムフック**: 一部実装済み（`useCreateCollection.ts`、`useAddLinkToCollection.ts`、`useRemoveLinkFromCollection.ts` 等）
 - ❌ **UIコンポーネント**: 未実装
 - ❌ **画面**: 未実装
 

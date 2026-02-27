@@ -2,6 +2,13 @@
 export * from "./types";
 
 // Hooks
+export { useCollection } from "./hooks/useCollection";
+export type { UseCollectionReturn } from "./hooks/useCollection";
+export { useCollectionLinks } from "./hooks/useCollectionLinks";
+export type { UseCollectionLinksReturn } from "./hooks/useCollectionLinks";
+export { useAddLinkToCollection } from "./hooks/useAddLinkToCollection";
+export { useCreateCollection } from "./hooks/useCreateCollection";
+export type { UseCreateCollectionReturn } from "./hooks/useCreateCollection";
 export { useCreateLink } from "./hooks/useCreateLink";
 export { useDeleteLink } from "./hooks/useDeleteLink";
 export type { UseDeleteLinkReturn } from "./hooks/useDeleteLink";
@@ -40,6 +47,8 @@ export {
 export { isValidUrl } from "./utils/urlValidation";
 
 // API
+export { createCollection } from "./api/createCollection.api";
+export { getCollection } from "./api/getCollection.api";
 export { createLinkWithStatus } from "./api/createLink.api";
 export type {
   CreateLinkParams,
@@ -50,4 +59,4 @@ export { fetchUserLinks } from "./api/fetchLinks.api";
 export { updateLinkReadStatus } from "./api/updateLinkReadStatus.api";
 
 // Constants
-export { linkQueryKeys } from "./constants/queryKeys";
+export { collectionQueryKeys, linkQueryKeys } from "./constants/queryKeys";
