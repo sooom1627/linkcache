@@ -49,7 +49,15 @@
       "edit_profile": "Edit Profile",
       "cancel": "Cancel",
       "take_photo": "Take Photo",
-      "choose_from_library": "Choose from Library"
+      "choose_from_library": "Choose from Library",
+      "upload_avatar": "Change Avatar",
+      "choose_a_photo_source": "Choose a photo source",
+      "image_select_error": "Could not select image. Please try again.",
+      "camera_error": "Could not take photo. Please try again.",
+      "avatar_upload_success": "Avatar uploaded successfully",
+      "avatar_upload_failed": "Could not upload avatar. Please try again.",
+      "avatar_delete_success": "Avatar deleted successfully",
+      "avatar_delete_failed": "Could not delete avatar. Please try again."
     },
     "setting_modal": {
       "title": "Settings",

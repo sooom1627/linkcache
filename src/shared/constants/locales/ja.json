@@ -48,7 +48,15 @@
       "edit_profile": "プロフィールを編集",
       "cancel": "キャンセル",
       "take_photo": "写真を撮る",
-      "choose_from_library": "ライブラリから選択"
+      "choose_from_library": "ライブラリから選択",
+      "upload_avatar": "アバターを変更",
+      "choose_a_photo_source": "写真のソースを選択してください",
+      "image_select_error": "画像を選択できませんでした。再度お試しください。",
+      "camera_error": "写真を撮影できませんでした。再度お試しください。",
+      "avatar_upload_success": "アバターをアップロードしました",
+      "avatar_upload_failed": "アバターをアップロードできませんでした。再度お試しください。",
+      "avatar_delete_success": "アバターを削除しました",
+      "avatar_delete_failed": "アバターを削除できませんでした。再度お試しください。"
     },
     "setting_modal": {
       "title": "設定",

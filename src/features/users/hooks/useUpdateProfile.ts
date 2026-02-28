@@ -1,7 +1,8 @@
-import { Alert } from "react-native";
-
 import type { PostgrestError } from "@supabase/supabase-js";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+import i18n from "@/src/shared/utils/i18n";
+import { showToastError } from "@/src/shared/utils/toast";
 
 import { useAuth } from "../../auth";
 import { updateProfile } from "../api";
@@ -50,7 +51,14 @@ export function useUpdateProfile(options?: {
       options?.onSuccess?.();
     },
     onError: (error) => {
-      Alert.alert("Error", "Failed to update profile");
+      showToastError(
+        i18n.t(
+          "users.setting_modal.profile_edit.callback_messages.error_title",
+        ),
+        i18n.t(
+          "users.setting_modal.profile_edit.callback_messages.error_message",
+        ),
+      );
       throw {
         message: "Failed to update profile",
         code: "PGRST116",

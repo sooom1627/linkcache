@@ -1,8 +1,10 @@
 import { useState } from "react";
 
-import { Alert, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 
 import { useTranslation } from "react-i18next";
+
+import { showToastError } from "@/src/shared/utils/toast";
 
 import {
   isReadyLanguageSetting,
@@ -27,10 +29,9 @@ export default function LanguageSettings() {
       setSelectedLanguage(language.code);
     } catch (error) {
       console.error("Language change error:", error);
-      Alert.alert(
+      showToastError(
         t("users.setting_modal.locale_setting.error_title"),
         t("users.setting_modal.locale_setting.error_message"),
-        [{ text: "OK" }],
       );
     }
   };
