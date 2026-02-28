@@ -68,7 +68,7 @@ export function UIProviders({ children }: PropsWithChildren) {
         >
           <SafeAreaProvider>
             {children}
-            <Toast />
+            <Toast position="bottom" bottomOffset={120} />
           </SafeAreaProvider>
         </KeyboardAvoidingView>
       </I18nextProvider>

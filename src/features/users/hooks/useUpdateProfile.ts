@@ -24,11 +24,9 @@ import type { UpdateProfileRequest, UserProfile } from "../types";
  *   onSuccess: () => {
  *     console.log('Profile updated');
  *   },
- *   onError: (error) => {
- *     Alert.alert('Error', error.message);
- *   }
  * });
  *
+ * // エラー時はToastで自動表示される。追加処理が必要な場合はonErrorを使用
  * // 使用時
  * updateProfile({ user_id: 'john_doe', username: 'John Doe' });
  * ```
