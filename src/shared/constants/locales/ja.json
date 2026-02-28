@@ -20,6 +20,14 @@
       "failed_message_default": "新規登録に失敗しました。再度お試しください。",
       "failed_message_already_registered": "メールアドレスがすでに登録されています。別のメールアドレスを使用してください。"
     },
+    "logout_messages": {
+      "success": "ログアウトしました",
+      "error": "問題が発生しました。再度お試しください。",
+      "confirm_title": "ログアウト",
+      "confirm_message": "ログアウトしてもよろしいですか？",
+      "cancel": "キャンセル",
+      "confirm": "ログアウト"
+    },
     "auth_form_messages": {
       "email_placeholder": "メールアドレス",
       "password_placeholder": "パスワード",

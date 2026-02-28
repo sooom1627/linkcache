@@ -21,6 +21,14 @@
       "failed_message_default": "Account creation failed. Please try again.",
       "failed_message_already_registered": "This email address is already registered. Please use a different email address."
     },
+    "logout_messages": {
+      "success": "Logged out successfully",
+      "error": "Something went wrong. Please try again.",
+      "confirm_title": "Logout",
+      "confirm_message": "Are you sure you want to logout?",
+      "cancel": "Cancel",
+      "confirm": "Logout"
+    },
     "auth_form_messages": {
       "email_placeholder": "Email",
       "password_placeholder": "Password",
