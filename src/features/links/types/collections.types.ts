@@ -46,6 +46,9 @@ export const userCollectionRowSchema = z.object({
   items_count: z.number(),
 });
 
+/** RPC get_user_collections の戻り値1行の型 */
+export type UserCollectionRow = z.infer<typeof userCollectionRowSchema>;
+
 export const userCollectionsSchema = z.array(userCollectionRowSchema);
 
 /**

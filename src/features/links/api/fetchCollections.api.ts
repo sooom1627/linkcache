@@ -3,8 +3,15 @@ import { supabase } from "@/src/shared/lib/supabase";
 import type {
   CollectionWithCount,
   FetchCollectionsParams,
+  UserCollectionRow,
 } from "../types/collections.types";
 import { userCollectionsSchema } from "../types/collections.types";
+
+/** RPC get_user_collections の期待する戻り値型（型アサーション用） */
+type GetUserCollectionsResponse = {
+  data: UserCollectionRow[] | null;
+  error: { message: string } | null;
+};
 
 /**
  * 認証済みユーザーのコレクション一覧を取得する
@@ -19,26 +26,27 @@ import { userCollectionsSchema } from "../types/collections.types";
 export async function fetchCollections(
   params?: FetchCollectionsParams,
 ): Promise<CollectionWithCount[]> {
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+  const authResponse = await supabase.auth.getUser();
 
-  if (authError || !user) {
+  if (authResponse.error || !authResponse.data.user) {
     throw new Error("Not authenticated");
   }
 
-  const { data, error } = await supabase.rpc("get_user_collections", {
+  const response = (await supabase.rpc("get_user_collections", {
     p_order_by: params?.orderBy ?? "updated_at",
     p_order: params?.order ?? "desc",
     p_limit: params?.limit ?? null,
-  });
+  })) as GetUserCollectionsResponse;
 
-  if (error) {
-    throw new Error(error.message);
+  if (response.error) {
+    throw new Error(response.error.message);
   }
 
-  const parsed = userCollectionsSchema.safeParse(data);
+  if (response.data === null) {
+    throw new Error("No data returned from RPC");
+  }
+
+  const parsed = userCollectionsSchema.safeParse(response.data);
   if (!parsed.success) {
     throw new Error(`Validation failed: ${parsed.error.message}`);
   }
