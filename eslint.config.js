@@ -27,6 +27,9 @@ module.exports = [
       "*.d.ts",
       // サンプル・例
       "app-example/**",
+      // AIツール用（skills, rules等）— アプリケーションコード外
+      ".cursor/**",
+      ".claude/**",
     ],
   },
 
