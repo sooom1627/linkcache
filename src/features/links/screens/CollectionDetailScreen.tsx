@@ -19,6 +19,7 @@ import type { ToggleMenuItem } from "@/src/shared/components/ToggleMenu";
 import { ToggleMenu } from "@/src/shared/components/ToggleMenu";
 import { colors } from "@/src/shared/constants/colors";
 import { useBottomSheetModal } from "@/src/shared/hooks/useBottomSheetModal";
+import { showToastError } from "@/src/shared/utils/toast";
 
 import { LinkListCard } from "../components/LinkListCard";
 import { LinkListLoadingFooter } from "../components/LinkListLoadingFooter";
@@ -114,7 +115,7 @@ export function CollectionDetailScreen({ rawId }: CollectionDetailScreenProps) {
                     "[CollectionDetailScreen] deleteCollection failed:",
                     error,
                   );
-                Alert.alert(
+                showToastError(
                   t("links.collection_detail.delete_error_title"),
                   error?.message ??
                     t("links.collection_detail.delete_error_message"),

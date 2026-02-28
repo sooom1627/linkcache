@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import { ErrorStateView } from "@/src/shared/components/ErrorStateView";
 import { useBottomSheetModal } from "@/src/shared/hooks/useBottomSheetModal";
 import { formatDateTime } from "@/src/shared/utils/timezone";
+import { showToastError } from "@/src/shared/utils/toast";
 
 import { CollectionChip } from "../components/CollectionChip";
 import { CollectionsSectionSkeleton } from "../components/CollectionsSectionSkeleton";
@@ -103,7 +104,7 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
           { collectionId, linkId: link.link_id },
           {
             onError: (err: unknown) => {
-              Alert.alert(
+              showToastError(
                 t("common.error_generic", {
                   defaultValue: "エラーが発生しました",
                 }),
@@ -121,13 +122,13 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
           onError: (err: unknown) => {
             const code = (err as { code?: string })?.code;
             if (code === "23505") {
-              Alert.alert(
+              showToastError(
                 t("links.detail.collection_already_added", {
                   defaultValue: "既に追加済みです",
                 }),
               );
             } else {
-              Alert.alert(
+              showToastError(
                 t("common.error_generic", {
                   defaultValue: "エラーが発生しました",
                 }),
@@ -218,12 +219,11 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
                     : t("links.detail.delete_error.message", {
                         defaultValue: "リンクの削除に失敗しました",
                       });
-                Alert.alert(
+                showToastError(
                   t("links.detail.delete_error.title", {
                     defaultValue: "削除エラー",
                   }),
                   errorMessage,
-                  [{ text: t("common.ok", { defaultValue: "OK" }) }],
                 );
               }
             })();

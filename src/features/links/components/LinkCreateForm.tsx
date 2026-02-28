@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { Alert, View } from "react-native";
+import { View } from "react-native";
 
 import { useTranslation } from "react-i18next";
 
 import FormButton from "@/src/shared/components/forms/FormButton";
 import FormInput from "@/src/shared/components/forms/FormInput";
+import { showToastError, showToastSuccess } from "@/src/shared/utils/toast";
 
 import { useCreateLink } from "../hooks/useCreateLink";
 import { LinkCreateSchema, type LinkCreateErrors } from "../types/linkSchema";
@@ -48,10 +49,7 @@ export default function LinkCreateForm({ onSuccess }: LinkCreateFormProps) {
   // 成功時の処理
   useEffect(() => {
     if (isSuccess) {
-      Alert.alert(
-        t("links.create.callback_messages.success_title"),
-        t("links.create.callback_messages.success_message"),
-      );
+      showToastSuccess(t("links.create.callback_messages.success_message"));
       setUrl("");
       reset();
       onSuccess?.();
@@ -61,7 +59,7 @@ export default function LinkCreateForm({ onSuccess }: LinkCreateFormProps) {
   // エラー時の処理
   useEffect(() => {
     if (isError && error) {
-      Alert.alert(
+      showToastError(
         t("links.create.callback_messages.error_title"),
         t("links.create.callback_messages.error_message"),
       );

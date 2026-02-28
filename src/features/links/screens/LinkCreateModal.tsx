@@ -1,6 +1,6 @@
 import { forwardRef, useCallback, useRef, useState } from "react";
 
-import { ActivityIndicator, Alert, Text, View } from "react-native";
+import { ActivityIndicator, Text, View } from "react-native";
 
 import type { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useTranslation } from "react-i18next";
@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import { FormButton } from "@/src/shared/components/forms";
 import { ScrollableBottomSheetModal } from "@/src/shared/components/modals";
 import ModalHeader from "@/src/shared/components/modals/ModalHeader";
+import { showToastError, showToastSuccess } from "@/src/shared/utils/toast";
 
 import { CollectionChip } from "../components/CollectionChip";
 import LinkPasteContainer from "../components/LinkPasteContainer";
@@ -101,10 +102,7 @@ export const LinkCreateModal = forwardRef<
       const { link_id } = await createLinkAsync(preview.url);
       const collectionIds = Array.from(selectedCollectionIds);
 
-      Alert.alert(
-        t("links.create.callback_messages.success_title"),
-        t("links.create.callback_messages.success_message"),
-      );
+      showToastSuccess(t("links.create.callback_messages.success_message"));
       handleClose();
 
       if (collectionIds.length > 0) {
@@ -115,7 +113,7 @@ export const LinkCreateModal = forwardRef<
         ).then((results) => {
           const hasFailures = results.some((r) => r.status === "rejected");
           if (hasFailures) {
-            Alert.alert(
+            showToastError(
               t("links.create.callback_messages.collection_add_error_title"),
               t("links.create.callback_messages.collection_add_error_message"),
             );
@@ -123,7 +121,7 @@ export const LinkCreateModal = forwardRef<
         });
       }
     } catch {
-      Alert.alert(
+      showToastError(
         t("links.create.callback_messages.error_title"),
         t("links.create.callback_messages.error_message"),
       );

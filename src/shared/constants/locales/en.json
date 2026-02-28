@@ -220,7 +220,9 @@
       "startAgain": "Start Again",
       "remaining": "remaining",
       "loadingMore": "(loading more...)",
-      "undo": "Undo"
+      "undo": "Undo",
+      "update_error": "Failed to update. Please try again.",
+      "undo_error": "Failed to undo. Please try again."
     },
     "overview": {
       "status": "Status",
@@ -309,7 +311,12 @@
         "description": "This action cannot be undone.",
         "cancel": "Cancel",
         "confirm": "Delete"
-      }
+      },
+      "delete_error": {
+        "title": "Delete Failed",
+        "message": "Could not delete link. Please try again."
+      },
+      "collection_already_added": "Already added to this collection"
     }
   },
   "common": {

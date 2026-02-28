@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { Alert } from "react-native";
-
 import * as Haptics from "expo-haptics";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { SwipeDirection } from "react-native-swipeable-card-stack";
+
+import i18n from "@/src/shared/utils/i18n";
+import { showToastError } from "@/src/shared/utils/toast";
 
 import { updateLinkStatus } from "../api/updateLinkStatus.api";
 import { linkQueryKeys } from "../constants/queryKeys";
@@ -162,7 +163,10 @@ export function useSwipeCards(
       // 失敗時はUIをロールバック
       rollbackSwipe();
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      Alert.alert("Error", "Failed to update. Please try again.");
+      showToastError(
+        i18n.t("common.error_title", { defaultValue: "Error" }),
+        i18n.t("links.swipeTriage.update_error"),
+      );
     },
   });
 
@@ -186,7 +190,10 @@ export function useSwipeCards(
       // 記録された方向を復元
       setSwipes((prev) => [...prev, variables.direction]);
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      Alert.alert("Error", "Failed to undo. Please try again.");
+      showToastError(
+        i18n.t("common.error_title", { defaultValue: "Error" }),
+        i18n.t("links.swipeTriage.undo_error"),
+      );
     },
   });
 
