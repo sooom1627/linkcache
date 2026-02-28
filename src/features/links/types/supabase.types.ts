@@ -258,6 +258,19 @@ export type Database = {
         };
         Returns: Json;
       };
+      get_user_collections: {
+        Args: {
+          p_order_by?: string;
+          p_order?: string;
+          p_limit?: number | null;
+        };
+        Returns: {
+          id: string;
+          name: string;
+          emoji: string | null;
+          items_count: number;
+        }[];
+      };
       get_user_links_count: {
         Args: {
           p_is_read?: boolean;

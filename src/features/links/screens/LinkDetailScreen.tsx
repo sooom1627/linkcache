@@ -83,7 +83,7 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
     collections,
     isLoading: isCollectionsLoading,
     isError: isCollectionsError,
-  } = useCollections();
+  } = useCollections({ orderBy: "items_count" });
   const { linkedCollectionIds, isLoading: isLinkedCollectionsLoading } =
     useCollectionsForLink(link?.link_id ?? "");
   const { addLinkToCollection } = useAddLinkToCollection();

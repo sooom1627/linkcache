@@ -26,11 +26,21 @@ export interface UseCollectionReturn {
  */
 export function useCollection(id: string): UseCollectionReturn {
   const queryClient = useQueryClient();
-  const cachedCollections = queryClient.getQueryData<CollectionWithCount[]>(
-    collectionQueryKeys.lists(),
-  );
-  const placeholderData =
-    id !== "" ? cachedCollections?.find((c) => c.id === id) : undefined;
+  // 一覧は params 付きでキャッシュされるため、getQueriesData でプレフィックス一致して取得
+  const queriesData = queryClient.getQueriesData<CollectionWithCount[]>({
+    queryKey: collectionQueryKeys.lists(),
+  });
+  let placeholderData: CollectionWithCount | undefined;
+  if (id !== "") {
+    for (const [, data] of queriesData) {
+      if (!Array.isArray(data)) continue;
+      const found = data.find((c) => c.id === id);
+      if (found) {
+        placeholderData = found;
+        break;
+      }
+    }
+  }
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: collectionQueryKeys.detail(id),
