@@ -41,7 +41,9 @@ export function CollectionListScreen() {
     presentCollectionCreateModal();
   };
 
-  const { collections, isLoading, isError } = useCollections();
+  const { collections, isLoading, isError } = useCollections({
+    orderBy: "items_count",
+  });
   const isEmpty = !isLoading && !isError && collections.length === 0;
 
   return (

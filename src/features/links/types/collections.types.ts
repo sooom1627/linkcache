@@ -33,9 +33,20 @@ export type UpdateCollectionParams = z.infer<typeof updateCollectionSchema>;
 export type FetchCollectionsParams = {
   /** 取得件数の上限。未指定時は全件 */
   limit?: number;
-  /** updated_at の並び順。デフォルトは desc（新しい順） */
+  /** 並び順。デフォルトは desc（降順） */
   order?: "asc" | "desc";
+  /** ソート基準。デフォルトは 'updated_at' */
+  orderBy?: "updated_at" | "items_count";
 };
+
+export const userCollectionRowSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string(),
+  emoji: z.string().nullable(),
+  items_count: z.number(),
+});
+
+export const userCollectionsSchema = z.array(userCollectionRowSchema);
 
 /**
  * コレクション一覧取得APIの戻り値型（UI用）

@@ -10,7 +10,10 @@ import { useCollections } from "../hooks/useCollections";
 export function CollectionsLane() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { collections, isLoading, isError } = useCollections({ limit: 5 });
+  const { collections, isLoading, isError } = useCollections({
+    orderBy: "items_count",
+    limit: 5,
+  });
 
   if (isLoading) {
     return (

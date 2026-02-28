@@ -83,7 +83,7 @@ export function LinksOverViewScreen() {
     collections,
     isLoading: isCollectionsLoading,
     isError: isCollectionsError,
-  } = useCollections({ limit: 5 });
+  } = useCollections({ orderBy: "items_count", limit: 5 });
 
   const handleStatusPress = (statusParam: string) => {
     const params = statusParam === "all" ? {} : { status: statusParam };

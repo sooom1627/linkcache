@@ -48,7 +48,7 @@ export const LinkCreateModal = forwardRef<
     collections,
     isLoading: isCollectionsLoading,
     isError: isCollectionsError,
-  } = useCollections();
+  } = useCollections({ orderBy: "items_count" });
 
   const hasAutoPastedRef = useRef(false);
 
