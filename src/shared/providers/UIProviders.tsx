@@ -5,6 +5,7 @@ import { KeyboardAvoidingView, Platform } from "react-native";
 import { I18nextProvider } from "react-i18next";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
 
 import { LoadingScreen } from "@/src/shared/components/LoadingScreen";
 import i18n from "@/src/shared/utils/i18n";
@@ -65,7 +66,10 @@ export function UIProviders({ children }: PropsWithChildren) {
           keyboardVerticalOffset={Platform.OS === "ios" ? 8 : 0}
           className="flex-1"
         >
-          <SafeAreaProvider>{children}</SafeAreaProvider>
+          <SafeAreaProvider>
+            {children}
+            <Toast />
+          </SafeAreaProvider>
         </KeyboardAvoidingView>
       </I18nextProvider>
     </GestureHandlerRootView>

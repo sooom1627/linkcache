@@ -18,6 +18,7 @@
       "buttonTitle": "Create Account",
       "failed_message_title": "Create Account Failed",
       "failed_message_description": "Account creation failed. Please try again.",
+      "failed_message_default": "Account creation failed. Please try again.",
       "failed_message_already_registered": "This email address is already registered. Please use a different email address."
     },
     "auth_form_messages": {
