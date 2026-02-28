@@ -1,50 +1,91 @@
-# Welcome to your Expo app 👋
+# linkcache
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Knowledge Triage & Growth Space のための Expo アプリです。  
+リンクを素早く保存し、**Swipe UI** で「あとで読む」「ストック」「完了」へ整理することを目的にしています。
 
-## Get started
+## 主な機能
 
-1. Install dependencies
+- リンクの追加（URL貼り付け / メタデータ取得）
+- スワイプでのトリアージ（Inbox → Read Soon/Stock → Completed）
+- コレクション（分類）管理
+- リンク詳細表示・ステータス更新
+- Supabase Auth を使った認証
+- iOS Share Extension を使ったリンク共有取り込み
 
-   ```bash
-   pnpm install
-   ```
+## 技術スタック
 
-2. Start the app
+- **Framework**: Expo (React Native)
+- **Routing**: Expo Router
+- **Language**: TypeScript
+- **Server State**: TanStack React Query
+- **Backend/Auth**: Supabase
+- **Validation**: Zod
+- **Styling**: NativeWind (Tailwind)
+- **Testing**: Jest + React Native Testing Library
+- **Package Manager**: pnpm
 
-   ```bash
-   pnpm expo start
-   ```
+## セットアップ
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+### 1. 依存関係のインストール
 
 ```bash
-npm run reset-project
+pnpm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### 2. 環境変数の準備
 
-## Learn more
+`.env.example` をコピーして `.env.local` を作成し、Supabase の値を設定してください。
 
-To learn more about developing your project with Expo, look at the following resources:
+```bash
+cp .env.example .env.local
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+必須キー:
 
-## Join the community
+- `EXPO_PUBLIC_SUPABASE_URL`
+- `EXPO_PUBLIC_SUPABASE_ANON_KEY`
 
-Join our community of developers creating universal apps.
+必要に応じて開発ビルド向けに以下も設定できます。
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- `APP_ENV=dev`
+
+### 3. アプリ起動
+
+```bash
+pnpm expo start
+```
+
+## 開発コマンド
+
+```bash
+pnpm expo start      # 開発サーバー起動
+pnpm test            # テスト実行
+pnpm typecheck       # TypeScript 型チェック
+pnpm lint            # ESLint
+pnpm run check       # format:fix + lint + typecheck + test
+```
+
+## ディレクトリ構成（抜粋）
+
+```text
+app/                    # Expo Router ルート
+src/
+  features/
+    auth/               # 認証
+    links/              # リンク管理・スワイプ・コレクション
+    users/              # プロフィール/設定
+    share-extension/    # 共有拡張連携
+  shared/               # 共通 components/hooks/utils/lib
+```
+
+## アーキテクチャ方針
+
+- Feature 単位で `api/`, `hooks/`, `components/`, `screens/`, `types/` を整理
+- API 呼び出しは `src/features/*/api` に集約
+- データ取得・更新は React Query を中心に実装
+- Supabase セッションは `expo-secure-store` 経由で安全に保持
+
+## 補足
+
+- iOS Share Extension の設定は `app.config.js` と `plugins/withShareExtension.ts` を参照してください。
+- 本番/開発で bundle identifier や scheme が切り替わるため、`APP_ENV` の設定に注意してください。
