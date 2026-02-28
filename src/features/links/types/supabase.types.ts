@@ -246,6 +246,7 @@ export type Database = {
         };
         Returns: Json;
       };
+      delete_user_link: { Args: { p_link_id: string }; Returns: undefined };
       get_user_links: {
         Args: {
           p_collection_id?: string;

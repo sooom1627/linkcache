@@ -2,16 +2,14 @@ import { supabase } from "@/src/shared/lib/supabase";
 
 import { deleteLinkById } from "../../api/deleteLink.api";
 
-// Supabase クライアントをモック
 jest.mock("@/src/shared/lib/supabase", () => ({
   supabase: {
-    from: jest.fn(),
+    rpc: jest.fn(),
   },
 }));
 
-const mockFrom = jest.mocked(supabase.from);
+const mockRpc = jest.mocked(supabase.rpc);
 
-// テスト用の有効なUUID
 const MOCK_LINK_ID = "550e8400-e29b-41d4-a716-446655440000";
 
 describe("deleteLinkById", () => {
@@ -19,68 +17,36 @@ describe("deleteLinkById", () => {
     jest.clearAllMocks();
   });
 
-  it("calls Supabase delete with correct link_id", async () => {
-    // Given: モック削除レスポンス
-    const mockEq = jest.fn().mockResolvedValue({
+  it("calls supabase.rpc with delete_user_link and correct link_id", async () => {
+    mockRpc.mockResolvedValue({
       data: null,
       error: null,
-    });
-    const mockDelete = jest.fn().mockReturnValue({
-      eq: mockEq,
-    });
+    } as never);
 
-    mockFrom.mockReturnValue({
-      delete: mockDelete,
-    } as unknown as ReturnType<typeof mockFrom>);
-
-    // When: deleteLinkById(link_id)を呼び出す
     await deleteLinkById(MOCK_LINK_ID);
 
-    // Then: 正しいパラメータでSupabaseが呼ばれる
-    expect(mockFrom).toHaveBeenCalledWith("link_status");
-    expect(mockDelete).toHaveBeenCalled();
-    expect(mockEq).toHaveBeenCalledWith("link_id", MOCK_LINK_ID);
+    expect(mockRpc).toHaveBeenCalledWith("delete_user_link", {
+      p_link_id: MOCK_LINK_ID,
+    });
   });
 
   it("throws error when Supabase returns an error", async () => {
-    // Given: Supabaseエラー
-    const mockError = {
-      message: "Failed to delete link",
-      code: "PGRST116",
-    };
-    const mockEq = jest.fn().mockResolvedValue({
+    mockRpc.mockResolvedValue({
       data: null,
-      error: mockError,
-    });
-    const mockDelete = jest.fn().mockReturnValue({
-      eq: mockEq,
-    });
+      error: { message: "RPC error", code: "PGRST116" },
+    } as never);
 
-    mockFrom.mockReturnValue({
-      delete: mockDelete,
-    } as unknown as ReturnType<typeof mockFrom>);
-
-    // When & Then: deleteLinkById(link_id)を呼び出すとエラーがthrowされる
     await expect(deleteLinkById(MOCK_LINK_ID)).rejects.toThrow(
-      "Failed to delete link: Failed to delete link",
+      "Failed to delete link: RPC error",
     );
   });
 
   it("handles successful deletion", async () => {
-    // Given: 成功レスポンス
-    const mockEq = jest.fn().mockResolvedValue({
+    mockRpc.mockResolvedValue({
       data: null,
       error: null,
-    });
-    const mockDelete = jest.fn().mockReturnValue({
-      eq: mockEq,
-    });
+    } as never);
 
-    mockFrom.mockReturnValue({
-      delete: mockDelete,
-    } as unknown as ReturnType<typeof mockFrom>);
-
-    // When & Then: deleteLinkById(link_id)が正常に完了する
     await expect(deleteLinkById(MOCK_LINK_ID)).resolves.toBeUndefined();
   });
 });
