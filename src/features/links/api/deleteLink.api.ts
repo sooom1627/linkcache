@@ -3,8 +3,9 @@ import { supabase } from "@/src/shared/lib/supabase";
 /**
  * 指定されたlink_idのリンクを削除する
  *
- * link_statusテーブルからユーザー固有のリンクステータスを削除します。
- * RLSポリシーにより、現在のユーザーが所有するリンクのみが削除されます。
+ * RPC関数 delete_user_link を呼び出し、link_status と collection_links を
+ * 単一トランザクションで削除します。
+ * SECURITY INVOKER により、RLSポリシーが適用されます。
  *
  * @param linkId - 削除するリンクのID
  * @throws Supabaseエラー（認証エラー、DBエラーなど）
@@ -15,10 +16,9 @@ import { supabase } from "@/src/shared/lib/supabase";
  * ```
  */
 export async function deleteLinkById(linkId: string): Promise<void> {
-  const { error } = await supabase
-    .from("link_status")
-    .delete()
-    .eq("link_id", linkId);
+  const { error } = await supabase.rpc("delete_user_link", {
+    p_link_id: linkId,
+  });
 
   if (error) {
     throw new Error(`Failed to delete link: ${error.message}`);

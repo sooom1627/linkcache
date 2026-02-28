@@ -1,7 +1,7 @@
 import { act, renderHook, waitFor } from "@testing-library/react-native";
 
 import { deleteLinkById } from "../../api/deleteLink.api";
-import { linkQueryKeys } from "../../constants/queryKeys";
+import { collectionQueryKeys, linkQueryKeys } from "../../constants/queryKeys";
 import { useDeleteLink } from "../../hooks/useDeleteLink";
 import { clearQueryCache, testQueryClient, wrapper } from "../test-utils";
 
@@ -126,6 +126,11 @@ describe("useDeleteLink", () => {
     // リンク詳細のキャッシュが無効化されることを確認
     expect(invalidateQueriesSpy).toHaveBeenCalledWith({
       queryKey: linkQueryKeys.details(),
+    });
+
+    // コレクション一覧のキャッシュが無効化されることを確認（itemsCount更新のため）
+    expect(invalidateQueriesSpy).toHaveBeenCalledWith({
+      queryKey: collectionQueryKeys.lists(),
     });
 
     invalidateQueriesSpy.mockRestore();

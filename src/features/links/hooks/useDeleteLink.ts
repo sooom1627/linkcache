@@ -2,7 +2,7 @@ import type { MutateOptions } from "@tanstack/react-query";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { deleteLinkById } from "../api/deleteLink.api";
-import { linkQueryKeys } from "../constants/queryKeys";
+import { collectionQueryKeys, linkQueryKeys } from "../constants/queryKeys";
 
 /**
  * リンク削除フックの戻り値
@@ -49,13 +49,14 @@ export function useDeleteLink(): UseDeleteLinkReturn {
   const mutation = useMutation<void, Error, string>({
     mutationFn: deleteLinkById,
     onSuccess: () => {
-      // リンク削除成功時にリンク一覧と詳細のキャッシュを無効化
-      // これにより、次回の取得時に最新データが取得される
       queryClient.invalidateQueries({
         queryKey: linkQueryKeys.lists(),
       });
       queryClient.invalidateQueries({
         queryKey: linkQueryKeys.details(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: collectionQueryKeys.lists(),
       });
     },
   });
