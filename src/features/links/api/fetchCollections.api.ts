@@ -48,7 +48,9 @@ export async function fetchCollections(
 
   const parsed = userCollectionsSchema.safeParse(response.data);
   if (!parsed.success) {
-    throw new Error(`Validation failed: ${parsed.error.message}`);
+    const firstMessage =
+      parsed.error.issues[0]?.message ?? "Unknown validation error";
+    throw new Error(`Validation failed: ${firstMessage}`);
   }
 
   return parsed.data.map((row) => ({
