@@ -26,9 +26,13 @@ export interface UseCollectionReturn {
  */
 export function useCollection(id: string): UseCollectionReturn {
   const queryClient = useQueryClient();
-  const cachedCollections = queryClient.getQueryData<CollectionWithCount[]>(
-    collectionQueryKeys.lists(),
-  );
+  // 一覧は params 付きでキャッシュされるため、getQueriesData でプレフィックス一致して取得
+  const queriesData = queryClient.getQueriesData<CollectionWithCount[]>({
+    queryKey: collectionQueryKeys.lists(),
+  });
+  const cachedCollections = queriesData.find(
+    (entry) => Array.isArray(entry[1]) && entry[1].length > 0,
+  )?.[1] as CollectionWithCount[] | undefined;
   const placeholderData =
     id !== "" ? cachedCollections?.find((c) => c.id === id) : undefined;
 
