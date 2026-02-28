@@ -30,11 +30,17 @@ export function useCollection(id: string): UseCollectionReturn {
   const queriesData = queryClient.getQueriesData<CollectionWithCount[]>({
     queryKey: collectionQueryKeys.lists(),
   });
-  const cachedCollections = queriesData.find(
-    (entry) => Array.isArray(entry[1]) && entry[1].length > 0,
-  )?.[1] as CollectionWithCount[] | undefined;
-  const placeholderData =
-    id !== "" ? cachedCollections?.find((c) => c.id === id) : undefined;
+  let placeholderData: CollectionWithCount | undefined;
+  if (id !== "") {
+    for (const [, data] of queriesData) {
+      if (!Array.isArray(data)) continue;
+      const found = data.find((c) => c.id === id);
+      if (found) {
+        placeholderData = found;
+        break;
+      }
+    }
+  }
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: collectionQueryKeys.detail(id),
