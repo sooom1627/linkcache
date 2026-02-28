@@ -1,8 +1,11 @@
 ---
-description: 
+description: Classical TDD, sociable tests, minimal mocking. Apply when writing or modifying tests.
 globs: **.test.*
 alwaysApply: false
 ---
+
+<!-- Rule: testing-strategy | Scope: TDD workflow, mock boundaries, test structure -->
+
 # Classical TDD テスト戦略
 
 ## 🎯 Core Philosophy: Classical Testing (Sociable Tests)

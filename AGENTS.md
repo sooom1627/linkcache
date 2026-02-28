@@ -33,6 +33,7 @@
 |---------|------------|-----------|
 | Network/API/fetch/React Query | `.cursor/skills/native-data-fetching/SKILL.md` | ANY data fetching |
 | React Native components, lists, animations | `.cursor/skills/vercel-react-native-skills/SKILL.md` | UI work |
+| Expo Router, styling, navigation, tabs | `.cursor/skills/building-native-ui/SKILL.md` | UI work |
 | SQL, schema, RLS, Postgres | `.cursor/skills/supabase-postgres-best-practices/SKILL.md` | DB work |
 | Expo upgrade, SDK | `.cursor/skills/upgrading-expo/SKILL.md` | SDK/dep changes |
 

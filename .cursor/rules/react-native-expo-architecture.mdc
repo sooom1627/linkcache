@@ -1,8 +1,11 @@
 ---
-description: 
+description: Feature-based structure, 4-step dev flow, API/hooks patterns. Apply when adding features or refactoring.
 globs: 
 alwaysApply: true
 ---
+
+<!-- Rule: react-native-expo-architecture | Scope: directory structure, dev flow, state management -->
+
 # React Native Expo Architecture Rules
 
 ## プロジェクト概要
