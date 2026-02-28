@@ -11,6 +11,8 @@ import {
 import { ChevronRight, Plus } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 
+import { showToastError } from "@/src/shared/utils/toast";
+
 import {
   useImagePicker,
   useProfile,
@@ -56,7 +58,7 @@ export default function UserCard({
     if (hasPermission) {
       void handleImagePicked(pickImageFromCamera);
     } else {
-      Alert.alert(
+      showToastError(
         t("users.user_card.permission_required"),
         t("users.user_card.please_allow_access_to_camera"),
       );
@@ -68,7 +70,7 @@ export default function UserCard({
     if (hasPermission) {
       void handleImagePicked(pickImageFromLibrary);
     } else {
-      Alert.alert(
+      showToastError(
         t("users.user_card.permission_required"),
         t("users.user_card.please_allow_access_to_photo_library"),
       );

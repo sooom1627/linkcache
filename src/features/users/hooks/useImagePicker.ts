@@ -1,6 +1,7 @@
-import { Alert } from "react-native";
-
 import * as ImagePicker from "expo-image-picker";
+
+import i18n from "@/src/shared/utils/i18n";
+import { showToastError } from "@/src/shared/utils/toast";
 
 /**
  * 画像選択結果の型
@@ -122,7 +123,10 @@ export function useImagePicker(): UseImagePickerReturn {
       };
     } catch (error) {
       console.error("Error picking image from library:", error);
-      Alert.alert("Error", "Could not select image. Please try again.");
+      showToastError(
+        i18n.t("common.error_title", { defaultValue: "Error" }),
+        i18n.t("users.user_card.image_select_error"),
+      );
       return null;
     }
   };
@@ -159,7 +163,10 @@ export function useImagePicker(): UseImagePickerReturn {
       };
     } catch (error) {
       console.error("Error taking photo with camera:", error);
-      Alert.alert("Error", "Could not take photo. Please try again.");
+      showToastError(
+        i18n.t("common.error_title", { defaultValue: "Error" }),
+        i18n.t("users.user_card.camera_error"),
+      );
       return null;
     }
   };

@@ -1,6 +1,5 @@
-import { Alert } from "react-native";
-
 import { renderHook } from "@testing-library/react-native";
+import Toast from "react-native-toast-message";
 
 import { convertFileToArrayBuffer } from "@/src/shared/utils/file";
 
@@ -24,9 +23,16 @@ jest.mock("../../../auth", () => ({
   }),
 }));
 
+jest.mock("react-native-toast-message", () => ({
+  __esModule: true,
+  default: {
+    show: jest.fn(),
+  },
+}));
+
 describe("useUploadAvatar", () => {
   beforeEach(() => {
-    jest.spyOn(Alert, "alert");
+    jest.spyOn(Toast, "show");
     jest.spyOn(console, "error").mockImplementation(() => {});
     jest.clearAllMocks();
   });
@@ -60,10 +66,10 @@ describe("useUploadAvatar", () => {
       "image/jpeg",
     );
     expect(onSuccessMock).toHaveBeenCalled();
-    expect(Alert.alert).toHaveBeenCalledWith(
-      "Success",
-      "Avatar uploaded successfully",
-    );
+    expect(Toast.show).toHaveBeenCalledWith({
+      type: "success",
+      text1: expect.any(String),
+    });
   });
 
   it("should handle upload error", async () => {
@@ -86,9 +92,12 @@ describe("useUploadAvatar", () => {
     }
 
     expect(onErrorMock).toHaveBeenCalled();
-    expect(Alert.alert).toHaveBeenCalledWith(
-      "Upload Failed",
-      expect.stringContaining("Could not upload avatar"),
+    expect(Toast.show).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "error",
+        text1: expect.any(String),
+        text2: expect.any(String),
+      }),
     );
   });
 });

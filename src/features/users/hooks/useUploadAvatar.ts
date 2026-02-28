@@ -1,5 +1,3 @@
-import { Alert } from "react-native";
-
 import type { PostgrestError } from "@supabase/supabase-js";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -7,6 +5,8 @@ import {
   convertFileToArrayBuffer,
   getExtensionFromMimeType,
 } from "@/src/shared/utils/file";
+import i18n from "@/src/shared/utils/i18n";
+import { showToastError, showToastSuccess } from "@/src/shared/utils/toast";
 
 import { useAuth } from "../../auth";
 import { uploadAvatar } from "../api";
@@ -33,11 +33,11 @@ export interface UploadAvatarRequest {
  * @example
  * ```tsx
  * const { mutate: uploadAvatar, isPending } = useUploadAvatar({
- *   onSuccess: (data) => {
- *     console.log('Avatar uploaded:', data.avatarUrl);
+ *   onSuccess: () => {
+ *     // Success toast is shown automatically by the hook
  *   },
- *   onError: (error) => {
- *     Alert.alert('Error', error.message);
+ *   onError: () => {
+ *     // Error toast is shown automatically by the hook
  *   }
  * });
  *
@@ -99,14 +99,14 @@ export function useUploadAvatar(options?: {
         });
       }
 
-      Alert.alert("Success", "Avatar uploaded successfully");
+      showToastSuccess(i18n.t("users.user_card.avatar_upload_success"));
       options?.onSuccess?.();
     },
     onError: (error) => {
       console.error("Avatar upload failed:", error.message);
-      Alert.alert(
-        "Upload Failed",
-        "Could not upload avatar. Please try again.",
+      showToastError(
+        i18n.t("common.error_title", { defaultValue: "Error" }),
+        i18n.t("users.user_card.avatar_upload_failed"),
       );
       options?.onError?.();
     },

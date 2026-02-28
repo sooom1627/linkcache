@@ -16,6 +16,7 @@ import { SocialOauthSection } from "@/src/features/auth/screens/SocialOauthSecti
 import type { AuthFormSection } from "@/src/features/auth/types/authFormSectionSchema.types";
 import { userQueryKeys } from "@/src/features/users/constants/queryKeys";
 import { Divider } from "@/src/shared/components/layout/Divider";
+import { showToastError } from "@/src/shared/utils/toast";
 
 export default function CreateAccount() {
   const router = useRouter();
@@ -41,7 +42,7 @@ export default function CreateAccount() {
             "auth_messages.create_account_messages.failed_message_already_registered",
           )
         : t("auth_messages.create_account_messages.failed_message_default");
-      Alert.alert(
+      showToastError(
         t("auth_messages.create_account_messages.failed_message_title"),
         friendlyMessage,
       );

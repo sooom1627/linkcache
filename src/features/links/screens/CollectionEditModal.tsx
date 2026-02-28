@@ -1,6 +1,6 @@
 import { forwardRef, useCallback, useEffect, useState } from "react";
 
-import { Alert, Pressable, Text, TextInput, View } from "react-native";
+import { Pressable, Text, TextInput, View } from "react-native";
 
 import type { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { Plus } from "lucide-react-native";
@@ -11,6 +11,7 @@ import { FormButton } from "@/src/shared/components/forms";
 import { BaseBottomSheetModal } from "@/src/shared/components/modals";
 import ModalHeader from "@/src/shared/components/modals/ModalHeader";
 import { colors } from "@/src/shared/constants/colors";
+import { showToastError } from "@/src/shared/utils/toast";
 
 import { useUpdateCollection } from "../hooks/useUpdateCollection";
 
@@ -65,7 +66,7 @@ export const CollectionEditModal = forwardRef<
               "[CollectionEditModal] updateCollection failed:",
               error,
             );
-          Alert.alert(
+          showToastError(
             t("links.collection_edit.error_title"),
             t("links.collection_edit.error_message"),
           );

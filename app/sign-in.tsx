@@ -1,4 +1,4 @@
-import { Alert, ScrollView, View } from "react-native";
+import { ScrollView, View } from "react-native";
 
 import { useRouter } from "expo-router";
 
@@ -16,6 +16,7 @@ import { SocialOauthSection } from "@/src/features/auth/screens/SocialOauthSecti
 import type { AuthFormSection } from "@/src/features/auth/types/authFormSectionSchema.types";
 import { userQueryKeys } from "@/src/features/users/constants/queryKeys";
 import { Divider } from "@/src/shared/components/layout/Divider";
+import { showToastError } from "@/src/shared/utils/toast";
 
 export default function SignIn() {
   const router = useRouter();
@@ -28,7 +29,7 @@ export default function SignIn() {
       router.replace("/");
     },
     onError: () => {
-      Alert.alert(
+      showToastError(
         t("auth_messages.sign_in_messages.failed_message_title"),
         t("auth_messages.sign_in_messages.failed_message_description"),
       );

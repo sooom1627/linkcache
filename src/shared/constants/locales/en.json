@@ -18,7 +18,16 @@
       "buttonTitle": "Create Account",
       "failed_message_title": "Create Account Failed",
       "failed_message_description": "Account creation failed. Please try again.",
+      "failed_message_default": "Account creation failed. Please try again.",
       "failed_message_already_registered": "This email address is already registered. Please use a different email address."
+    },
+    "logout_messages": {
+      "success": "Logged out successfully",
+      "error": "Something went wrong. Please try again.",
+      "confirm_title": "Logout",
+      "confirm_message": "Are you sure you want to logout?",
+      "cancel": "Cancel",
+      "confirm": "Logout"
     },
     "auth_form_messages": {
       "email_placeholder": "Email",
@@ -40,7 +49,15 @@
       "edit_profile": "Edit Profile",
       "cancel": "Cancel",
       "take_photo": "Take Photo",
-      "choose_from_library": "Choose from Library"
+      "choose_from_library": "Choose from Library",
+      "upload_avatar": "Change Avatar",
+      "choose_a_photo_source": "Choose a photo source",
+      "image_select_error": "Could not select image. Please try again.",
+      "camera_error": "Could not take photo. Please try again.",
+      "avatar_upload_success": "Avatar uploaded successfully",
+      "avatar_upload_failed": "Could not upload avatar. Please try again.",
+      "avatar_delete_success": "Avatar deleted successfully",
+      "avatar_delete_failed": "Could not delete avatar. Please try again."
     },
     "setting_modal": {
       "title": "Settings",
@@ -211,7 +228,9 @@
       "startAgain": "Start Again",
       "remaining": "remaining",
       "loadingMore": "(loading more...)",
-      "undo": "Undo"
+      "undo": "Undo",
+      "update_error": "Failed to update. Please try again.",
+      "undo_error": "Failed to undo. Please try again."
     },
     "overview": {
       "status": "Status",
@@ -300,7 +319,12 @@
         "description": "This action cannot be undone.",
         "cancel": "Cancel",
         "confirm": "Delete"
-      }
+      },
+      "delete_error": {
+        "title": "Delete Failed",
+        "message": "Could not delete link. Please try again."
+      },
+      "collection_already_added": "Already added to this collection"
     }
   },
   "common": {

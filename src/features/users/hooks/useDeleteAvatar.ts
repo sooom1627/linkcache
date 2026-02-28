@@ -1,7 +1,8 @@
-import { Alert } from "react-native";
-
 import type { PostgrestError } from "@supabase/supabase-js";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+import i18n from "@/src/shared/utils/i18n";
+import { showToastError, showToastSuccess } from "@/src/shared/utils/toast";
 
 import { useAuth } from "../../auth";
 import { deleteAvatar } from "../api";
@@ -20,10 +21,10 @@ import { userQueryKeys } from "../constants/queryKeys";
  * ```tsx
  * const { mutate: deleteAvatar, isPending } = useDeleteAvatar({
  *   onSuccess: () => {
- *     console.log('Avatar deleted');
+ *     // Success toast is shown automatically by the hook
  *   },
- *   onError: (error) => {
- *     Alert.alert('Error', error.message);
+ *   onError: () => {
+ *     // Error toast is shown automatically by the hook
  *   }
  * });
  *
@@ -50,13 +51,13 @@ export function useDeleteAvatar(options?: {
     onSuccess: () => {
       // プロフィールクエリを無効化して再取得
       queryClient.invalidateQueries({ queryKey: userQueryKeys.profile() });
-      Alert.alert("Success", "Avatar deleted successfully");
+      showToastSuccess(i18n.t("users.user_card.avatar_delete_success"));
       options?.onSuccess?.();
     },
     onError: (error) => {
-      Alert.alert(
-        "Delete Failed",
-        "Could not delete avatar. Please try again.",
+      showToastError(
+        i18n.t("common.error_title", { defaultValue: "Error" }),
+        i18n.t("users.user_card.avatar_delete_failed"),
       );
       console.error("Error deleting avatar:", error);
       options?.onError?.(error);

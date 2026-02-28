@@ -20,6 +20,14 @@
       "failed_message_default": "新規登録に失敗しました。再度お試しください。",
       "failed_message_already_registered": "メールアドレスがすでに登録されています。別のメールアドレスを使用してください。"
     },
+    "logout_messages": {
+      "success": "ログアウトしました",
+      "error": "問題が発生しました。再度お試しください。",
+      "confirm_title": "ログアウト",
+      "confirm_message": "ログアウトしてもよろしいですか？",
+      "cancel": "キャンセル",
+      "confirm": "ログアウト"
+    },
     "auth_form_messages": {
       "email_placeholder": "メールアドレス",
       "password_placeholder": "パスワード",
@@ -40,7 +48,15 @@
       "edit_profile": "プロフィールを編集",
       "cancel": "キャンセル",
       "take_photo": "写真を撮る",
-      "choose_from_library": "ライブラリから選択"
+      "choose_from_library": "ライブラリから選択",
+      "upload_avatar": "アバターを変更",
+      "choose_a_photo_source": "写真のソースを選択してください",
+      "image_select_error": "画像を選択できませんでした。再度お試しください。",
+      "camera_error": "写真を撮影できませんでした。再度お試しください。",
+      "avatar_upload_success": "アバターをアップロードしました",
+      "avatar_upload_failed": "アバターをアップロードできませんでした。再度お試しください。",
+      "avatar_delete_success": "アバターを削除しました",
+      "avatar_delete_failed": "アバターを削除できませんでした。再度お試しください。"
     },
     "setting_modal": {
       "title": "設定",
@@ -211,7 +227,9 @@
       "startAgain": "もう一度",
       "remaining": "件残り",
       "loadingMore": "（追加読み込み中...）",
-      "undo": "元に戻す"
+      "undo": "元に戻す",
+      "update_error": "更新に失敗しました。再度お試しください。",
+      "undo_error": "元に戻せませんでした。再度お試しください。"
     },
     "overview": {
       "status": "ステータス",
@@ -300,7 +318,12 @@
         "description": "この操作は取り消せません。",
         "cancel": "キャンセル",
         "confirm": "削除する"
-      }
+      },
+      "delete_error": {
+        "title": "削除に失敗しました",
+        "message": "リンクを削除できませんでした。再度お試しください。"
+      },
+      "collection_already_added": "既にこのコレクションに追加済みです"
     }
   },
   "common": {
