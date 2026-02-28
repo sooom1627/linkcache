@@ -33,11 +33,11 @@ export interface UploadAvatarRequest {
  * @example
  * ```tsx
  * const { mutate: uploadAvatar, isPending } = useUploadAvatar({
- *   onSuccess: (data) => {
- *     console.log('Avatar uploaded:', data.avatarUrl);
+ *   onSuccess: () => {
+ *     // Success toast is shown automatically by the hook
  *   },
- *   onError: (error) => {
- *     Alert.alert('Error', error.message);
+ *   onError: () => {
+ *     // Error toast is shown automatically by the hook
  *   }
  * });
  *

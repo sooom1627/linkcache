@@ -17,16 +17,9 @@ export function showToastSuccess(message: string): void {
  * @param message - メッセージ（省略可）
  */
 export function showToastError(title: string, message?: string): void {
-  if (message) {
-    Toast.show({
-      type: "error",
-      text1: title,
-      text2: message,
-    });
-  } else {
-    Toast.show({
-      type: "error",
-      text1: title,
-    });
-  }
+  Toast.show({
+    type: "error",
+    text1: title,
+    ...(message && { text2: message }),
+  });
 }

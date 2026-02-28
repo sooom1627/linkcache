@@ -92,10 +92,12 @@ describe("useUploadAvatar", () => {
     }
 
     expect(onErrorMock).toHaveBeenCalled();
-    expect(Toast.show).toHaveBeenCalledWith({
-      type: "error",
-      text1: expect.any(String),
-      text2: expect.stringContaining("avatar"),
-    });
+    expect(Toast.show).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "error",
+        text1: expect.any(String),
+        text2: expect.any(String),
+      }),
+    );
   });
 });

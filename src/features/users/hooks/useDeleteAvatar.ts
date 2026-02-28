@@ -21,10 +21,10 @@ import { userQueryKeys } from "../constants/queryKeys";
  * ```tsx
  * const { mutate: deleteAvatar, isPending } = useDeleteAvatar({
  *   onSuccess: () => {
- *     console.log('Avatar deleted');
+ *     // Success toast is shown automatically by the hook
  *   },
- *   onError: (error) => {
- *     Alert.alert('Error', error.message);
+ *   onError: () => {
+ *     // Error toast is shown automatically by the hook
  *   }
  * });
  *
