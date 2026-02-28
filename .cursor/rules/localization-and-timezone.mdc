@@ -15,6 +15,8 @@ globs:
 alwaysApply: false
 ---
 
+<!-- Rule: localization-and-timezone | Scope: i18n, expo-localization, dayjs, timezone, translations -->
+
 # 多言語設定とタイムゾーン対応ルール
 
 ## 概要

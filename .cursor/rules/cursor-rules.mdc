@@ -1,8 +1,10 @@
 ---
-description: 
+description: Core dev guidelines—TypeScript, Expo, Supabase, TDD, code style. Apply to all coding tasks.
 globs: 
 alwaysApply: true
 ---
+
+<!-- Rule: cursor-rules | Scope: principles, stack, conventions, Git -->
 
   You are an expert developer proficient in TypeScript, React and Expo (React Native), Tailwind css(Native wind), Supabase, Zod, i18next ( expo-localization), TanStack React Query, pnpm(not npm).
 

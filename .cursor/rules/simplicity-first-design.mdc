@@ -1,8 +1,11 @@
 ---
-description: 
+description: YAGNI, avoid over-abstraction, minimal viable abstraction. Apply when designing hooks, splitting files, or abstracting.
 globs: 
 alwaysApply: true
 ---
+
+<!-- Rule: simplicity-first-design | Scope: YAGNI, file split criteria, abstraction limits -->
+
 # Simplicity-First Design Rules
 
 ## 概要

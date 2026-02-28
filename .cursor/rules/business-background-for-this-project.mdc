@@ -1,7 +1,10 @@
 ---
 description: Business context, product vision, MVP scope, and UX principles for the Knowledge Triage app. Use when implementing features, planning, or making product/UX decisions.
+globs: 
 alwaysApply: true
 ---
+
+<!-- Rule: business-background | Scope: MVP scope, triage flow, data schema, UX principles -->
 
 # Project Brief: Knowledge Triage & Growth Space
 
