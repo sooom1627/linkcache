@@ -16,12 +16,12 @@
 
 **MUST** follow all rules in `.cursor/rules/`. They are `alwaysApply: true`—treat as mandatory.
 
-| Rule | Scope |
-|------|-------|
-| `cursor-rules.mdc` | Core principles, stack, TDD, code style |
-| `business-background-for-this-project.mdc` | MVP scope, UX, data schema |
-| `react-native-expo-architecture.mdc` | Feature structure, 4-step dev flow |
-| `simplicity-first-design.mdc` | YAGNI, avoid over-abstraction |
+| Rule                                       | Scope                                   |
+| ------------------------------------------ | --------------------------------------- |
+| `cursor-rules.mdc`                         | Core principles, stack, TDD, code style |
+| `business-background-for-this-project.mdc` | MVP scope, UX, data schema              |
+| `react-native-expo-architecture.mdc`       | Feature structure, 4-step dev flow      |
+| `simplicity-first-design.mdc`              | YAGNI, avoid over-abstraction           |
 
 ---
 
@@ -29,24 +29,24 @@
 
 **Read the skill's SKILL.md** before implementing. Do not skip.
 
-| Trigger | Skill Path | Read When |
-|---------|------------|-----------|
-| Network/API/fetch/React Query | `.cursor/skills/native-data-fetching/SKILL.md` | ANY data fetching |
-| React Native components, lists, animations | `.cursor/skills/vercel-react-native-skills/SKILL.md` | UI work |
-| Expo Router, styling, navigation, tabs | `.cursor/skills/building-native-ui/SKILL.md` | UI work |
-| SQL, schema, RLS, Postgres | `.cursor/skills/supabase-postgres-best-practices/SKILL.md` | DB work |
-| Expo upgrade, SDK | `.cursor/skills/upgrading-expo/SKILL.md` | SDK/dep changes |
+| Trigger                                    | Skill Path                                                 | Read When         |
+| ------------------------------------------ | ---------------------------------------------------------- | ----------------- |
+| Network/API/fetch/React Query              | `.cursor/skills/native-data-fetching/SKILL.md`             | ANY data fetching |
+| React Native components, lists, animations | `.cursor/skills/vercel-react-native-skills/SKILL.md`       | UI work           |
+| Expo Router, styling, navigation, tabs     | `.cursor/skills/building-native-ui/SKILL.md`               | UI work           |
+| SQL, schema, RLS, Postgres                 | `.cursor/skills/supabase-postgres-best-practices/SKILL.md` | DB work           |
+| Expo upgrade, SDK                          | `.cursor/skills/upgrading-expo/SKILL.md`                   | SDK/dep changes   |
 
 ---
 
 ## Commands
 
-| Action | Command |
-|--------|---------|
-| Install | `pnpm install` |
-| Dev | `pnpm expo start` |
-| Verify | `pnpm run check` |
-| Test | `pnpm test` |
+| Action  | Command           |
+| ------- | ----------------- |
+| Install | `pnpm install`    |
+| Dev     | `pnpm expo start` |
+| Verify  | `pnpm run check`  |
+| Test    | `pnpm test`       |
 
 ---
 
