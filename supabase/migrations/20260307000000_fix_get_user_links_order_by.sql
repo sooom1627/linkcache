@@ -37,7 +37,7 @@ CREATE OR REPLACE FUNCTION public.get_user_links(
 RETURNS json
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path TO 'public'
+SET search_path TO 'public', 'pg_temp'
 AS $function$
 DECLARE
   v_user_id UUID;
@@ -52,6 +52,19 @@ BEGIN
 
   IF v_user_id IS NULL THEN
     RAISE EXCEPTION 'Not authenticated';
+  END IF;
+
+  -- Input validation: reject invalid pagination parameters before any heavy work
+  IF p_page_size < 1 OR p_page_size > 100 THEN
+    RAISE EXCEPTION 'p_page_size must be between 1 and 100, got %', p_page_size;
+  END IF;
+
+  IF p_page < 0 THEN
+    RAISE EXCEPTION 'p_page must be >= 0, got %', p_page;
+  END IF;
+
+  IF p_limit IS NOT NULL AND (p_limit <= 0 OR p_limit > 1000) THEN
+    RAISE EXCEPTION 'p_limit must be between 1 and 1000 when provided, got %', p_limit;
   END IF;
 
   IF p_limit IS NOT NULL THEN
@@ -72,7 +85,7 @@ BEGIN
 
   SELECT COUNT(*)
   INTO v_total_count
-  FROM user_links_view
+  FROM public.user_links_view
   WHERE user_id = v_user_id
     AND (p_status IS NULL OR status = p_status)
     AND (p_is_read IS NULL
@@ -81,7 +94,7 @@ BEGIN
     AND (p_collection_id IS NULL
          OR link_id IN (
            SELECT cl.link_id
-           FROM collection_links cl
+           FROM public.collection_links cl
            WHERE cl.collection_id = p_collection_id
          ));
 
@@ -101,7 +114,7 @@ BEGIN
         favicon_url,
         site_name,
         link_created_at
-      FROM user_links_view
+      FROM public.user_links_view
       WHERE user_id = $1
         AND ($2::triage_status IS NULL OR status = $2::triage_status)
         AND ($3::boolean IS NULL
@@ -110,7 +123,7 @@ BEGIN
         AND ($6::uuid IS NULL
              OR link_id IN (
                SELECT cl.link_id
-               FROM collection_links cl
+               FROM public.collection_links cl
                WHERE cl.collection_id = $6::uuid
              ))
       %s
