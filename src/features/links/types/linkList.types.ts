@@ -16,6 +16,10 @@ export type TabType = "read_soon" | "latest";
  * orderBy パラメータの許可リスト
  *
  * RPC `get_user_links` で使用可能なソート順を定義します。
+ * - triaged_at_asc: link_status.triaged_at 昇順
+ * - created_at_desc: link_status.created_at 降順（ユーザーが Inbox に追加した日時）
+ * - null: デフォルト。link_status.created_at 降順でソート
+ *
  * 未検証の値がRPCに渡されると、SQLエラーの原因となる可能性があるため、
  * このスキーマで検証してから渡します。
  */
