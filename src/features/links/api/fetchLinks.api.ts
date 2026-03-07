@@ -20,7 +20,7 @@ import {
  * @param params.status - ステータスフィルタ
  * @param params.isRead - 既読状態フィルタ
  * @param params.limit - 件数制限（ページング無視）
- * @param params.orderBy - ソート順
+ * @param params.orderBy - ソート順（triaged_at_asc | created_at_desc | null。null 時は link_status.created_at 降順）
  * @param params.collectionId - コレクションIDでフィルタ（指定時はそのコレクション内のリンクのみ）
  * @returns ページング情報付きのリンク一覧
  * @throws Supabaseエラー（認証エラー、DBエラーなど）
