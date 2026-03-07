@@ -18,7 +18,7 @@ export default function Home() {
       centerContent={false}
       noPaddingBottom={true}
     >
-      <View className="flex-1 flex-col gap-4 pt-20">
+      <View className="flex-1 flex-col gap-4 pt-16">
         <WeekCalendarWidget />
         <LinkListTabs />
       </View>

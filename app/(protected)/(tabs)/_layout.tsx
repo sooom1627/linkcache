@@ -7,10 +7,10 @@ import { TabList, Tabs, TabSlot, TabTrigger } from "expo-router/ui";
 
 import {
   ChartNoAxesCombined,
+  Folder,
   House,
   Layers2,
-  List,
-  PlusCircle,
+  PlusCircle
 } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
@@ -25,7 +25,7 @@ import type { TabItem, TabPath } from "@/src/shared/types/Tabs.types";
 const tabs: TabItem[] = [
   { name: "(home)", href: "/", icon: House },
   { name: "(swipes)", href: "/swipes", icon: Layers2 },
-  { name: "(list)", href: "/link-list", icon: List },
+  { name: "(list)", href: "/link-list", icon: Folder },
   { name: "(dashboard)", href: "/dashboard", icon: ChartNoAxesCombined },
 ];
 
