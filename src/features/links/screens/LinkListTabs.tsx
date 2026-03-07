@@ -9,10 +9,10 @@ import { LinkListTabHeader } from "../components/LinkListTabHeader";
 import { useLinks } from "../hooks/useLinks";
 import type { TabType } from "../types/linkList.types";
 
-/** ダッシュボード用の表示件数制限 */
+/** Display limit for dashboard */
 const DASHBOARD_LIMIT = 10;
 
-/** タブのインデックス */
+/** Tab index mapping */
 const TAB_INDEX: Record<TabType, number> = {
   read_soon: 0,
   latest: 1,
@@ -20,7 +20,7 @@ const TAB_INDEX: Record<TabType, number> = {
   done: 3,
 };
 
-/** position → TabType の逆引き（TAB_INDEX から導出） */
+/** Reverse lookup from position to TabType (derived from TAB_INDEX) */
 const TAB_BY_INDEX: Record<number, TabType> = Object.fromEntries(
   (Object.entries(TAB_INDEX) as [TabType, number][]).map(([tab, index]) => [
     index,
@@ -29,38 +29,38 @@ const TAB_BY_INDEX: Record<number, TabType> = Object.fromEntries(
 );
 
 /**
- * リンクリストタブコンポーネント
+ * Link list tab component.
  *
- * スワイプとタブ切り替えでフィルタリングされたリンクリストを表示します。
+ * Displays filtered link list via swipe and tab switching.
  */
 
 export function LinkListTabs() {
   const [activeTab, setActiveTab] = useState<TabType>("read_soon");
   const pagerRef = useRef<PagerView>(null);
 
-  // Read Soon タブ: status="read_soon", limit=5
+  // Read Soon tab: status="read_soon", limit=DASHBOARD_LIMIT
   const readSoonQuery = useLinks({
     status: "read_soon",
     limit: DASHBOARD_LIMIT,
     isRead: false,
   });
-  // Latest タブ: limit=5（newステータス）
+  // Latest tab: limit=DASHBOARD_LIMIT (new status)
   const latestQuery = useLinks({
     limit: DASHBOARD_LIMIT,
     isRead: false,
     status: "new",
   });
 
-  // Stock, Done はまだ実装しない（UIのみ）
-  // 将来的には useLinks を追加する
+  // Stock, Done not yet implemented (UI only)
+  // TODO: Add useLinks in the future
 
-  // タブヘッダーからの切り替え
+  // Tab switching from header
   const handleTabChange = useCallback((tab: TabType) => {
     setActiveTab(tab);
     pagerRef.current?.setPage(TAB_INDEX[tab]);
   }, []);
 
-  // スワイプによるページ切り替え
+  // Page switching from swipe
   const handlePageSelected = useCallback(
     (e: { nativeEvent: { position: number } }) => {
       const newTab =
@@ -79,7 +79,7 @@ export function LinkListTabs() {
         initialPage={TAB_INDEX[activeTab]}
         onPageSelected={handlePageSelected}
       >
-        {/* Read Soon タブ */}
+        {/* Read Soon tab */}
         <View key="read_soon" className="flex-1">
           <LinkListTabContent
             isLoading={readSoonQuery.isLoading}
@@ -90,7 +90,7 @@ export function LinkListTabs() {
           />
         </View>
 
-        {/* Latest タブ */}
+        {/* Latest tab */}
         <View key="latest" className="flex-1">
           <LinkListTabContent
             isLoading={latestQuery.isLoading}
@@ -101,24 +101,24 @@ export function LinkListTabs() {
           />
         </View>
 
-        {/* Stock タブ (UIのみ) */}
+        {/* Stock tab (UI only) */}
         <View key="stock" className="flex-1">
           <LinkListTabContent
             isLoading={false}
             isError={false}
             error={null}
-            links={[]} // 空データ
+            links={[]} // Empty data
             tabType="stock"
           />
         </View>
 
-        {/* Done タブ (UIのみ) */}
+        {/* Done tab (UI only) */}
         <View key="done" className="flex-1">
           <LinkListTabContent
             isLoading={false}
             isError={false}
             error={null}
-            links={[]} // 空データ
+            links={[]} // Empty data
             tabType="done"
           />
         </View>

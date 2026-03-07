@@ -14,7 +14,7 @@ export function WeekCalendarWidget() {
   const daysWithActivity = [1, 3, 4, 7];
 
   return (
-    <View className="rounded-2xl bg-slate-100 px-4 py-4">
+    <View className="rounded-2xl bg-slate-100 p-4">
       <Text className="mb-3 text-center text-base font-semibold text-slate-800">
         {monthName} {year}
       </Text>
@@ -37,7 +37,7 @@ export function WeekCalendarWidget() {
           return (
             <View key={day} className="flex-1 items-center">
               <View
-                className={`h-8 w-8 items-center justify-center rounded-full ${
+                className={`size-8 items-center justify-center rounded-full ${
                   isSelected ? "bg-accent" : ""
                 }`}
               >
@@ -49,9 +49,9 @@ export function WeekCalendarWidget() {
                   {day}
                 </Text>
               </View>
-              <View className="mt-1 h-1.5 w-1.5 items-center justify-center">
+              <View className="mt-1 size-1.5 items-center justify-center">
                 {hasActivity && (
-                  <View className="h-1.5 w-1.5 rounded-full bg-accent" />
+                  <View className="size-1.5 rounded-full bg-accent" />
                 )}
               </View>
             </View>
