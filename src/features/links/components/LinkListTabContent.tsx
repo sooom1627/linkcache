@@ -5,9 +5,9 @@ import { ActivityIndicator, Pressable, Text, View } from "react-native";
 import { Link, useRouter } from "expo-router";
 
 import { FlashList } from "@shopify/flash-list";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ArrowRight, Layers2 } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ErrorStateView } from "@/src/shared/components/ErrorStateView";
 import { colors } from "@/src/shared/constants/colors";
