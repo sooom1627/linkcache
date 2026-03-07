@@ -20,6 +20,14 @@ const TAB_INDEX: Record<TabType, number> = {
   done: 3,
 };
 
+/** position → TabType の逆引き（TAB_INDEX から導出） */
+const TAB_BY_INDEX: Record<number, TabType> = Object.fromEntries(
+  (Object.entries(TAB_INDEX) as [TabType, number][]).map(([tab, index]) => [
+    index,
+    tab,
+  ]),
+);
+
 /**
  * リンクリストタブコンポーネント
  *
@@ -55,11 +63,8 @@ export function LinkListTabs() {
   // スワイプによるページ切り替え
   const handlePageSelected = useCallback(
     (e: { nativeEvent: { position: number } }) => {
-      const position = e.nativeEvent.position;
-      let newTab: TabType = "read_soon";
-      if (position === 1) newTab = "latest";
-      else if (position === 2) newTab = "stock";
-      else if (position === 3) newTab = "done";
+      const newTab =
+        TAB_BY_INDEX[e.nativeEvent.position] ?? ("read_soon" as TabType);
       setActiveTab(newTab);
     },
     [],
