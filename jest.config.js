@@ -9,6 +9,8 @@ module.exports = {
     "test-utils.tsx",
     ".cursor/",
     ".claude/",
+    ".storybook/",
+    "\\.stories\\.",
   ],
   moduleNameMapper: {
     "^react-native-app-group-directory$":
