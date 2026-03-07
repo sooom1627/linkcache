@@ -1,8 +1,8 @@
 import { ScrollView, Text, View } from "react-native";
 
-import { colors } from "@/src/shared/constants/colors";
-
 import type { Meta, StoryObj } from "@storybook/react";
+
+import { colors } from "@/src/shared/constants/colors";
 
 const colorGroups = [
   {
@@ -13,7 +13,10 @@ const colorGroups = [
       { name: "surfaceSecondary", value: colors.surfaceSecondary },
       { name: "surfaceMuted", value: colors.surfaceMuted },
       { name: "surfaceMutedActive", value: colors.surfaceMutedActive },
-      { name: "surfaceMutedActivePressed", value: colors.surfaceMutedActivePressed },
+      {
+        name: "surfaceMutedActivePressed",
+        value: colors.surfaceMutedActivePressed,
+      },
       { name: "emptyState", value: colors.emptyState },
     ],
   },

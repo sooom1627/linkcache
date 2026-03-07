@@ -29,5 +29,11 @@
     "expo-env.d.ts",
     "nativewind-env.d.ts"
   ],
-  "exclude": ["node_modules", "app-example", ".cursor", ".claude", ".storybook/storybook.requires.ts"]
+  "exclude": [
+    "node_modules",
+    "app-example",
+    ".cursor",
+    ".claude",
+    ".storybook/storybook.requires.ts"
+  ]
 }

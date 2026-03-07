@@ -58,9 +58,7 @@ function SpacingShowcase() {
         <View className="flex-row flex-wrap gap-4">
           {radiusTokens.map((token) => (
             <View key={token.label} className="items-center">
-              <View
-                className={`mb-2 size-16 bg-main ${token.className}`}
-              />
+              <View className={`mb-2 size-16 bg-main ${token.className}`} />
               <Text className="text-xs text-slate-500">{token.label}</Text>
             </View>
           ))}

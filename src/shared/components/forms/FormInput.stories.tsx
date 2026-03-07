@@ -1,19 +1,16 @@
 import { View } from "react-native";
 
+import type { Meta, StoryObj } from "@storybook/react";
 import { CircleAlert, Mail, Search } from "lucide-react-native";
 
 import { colors } from "@/src/shared/constants/colors";
-
-import type { Meta, StoryObj } from "@storybook/react";
 
 import FormInput from "./FormInput";
 
 const meta: Meta<typeof FormInput> = {
   title: "Components/FormInput",
   component: FormInput,
-  decorators: [
-    (storyFn) => <View className="p-4">{storyFn()}</View>,
-  ],
+  decorators: [(storyFn) => <View className="p-4">{storyFn()}</View>],
   args: {
     label: "メールアドレス",
     placeholder: "email@example.com",

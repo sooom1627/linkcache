@@ -7,9 +7,7 @@ import { Divider } from "./Divider";
 const meta: Meta<typeof Divider> = {
   title: "Components/Divider",
   component: Divider,
-  decorators: [
-    (storyFn) => <View className="bg-white p-4">{storyFn()}</View>,
-  ],
+  decorators: [(storyFn) => <View className="bg-white p-4">{storyFn()}</View>],
   argTypes: {
     text: { control: "text" },
   },
