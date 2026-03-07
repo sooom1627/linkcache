@@ -10,7 +10,7 @@ export type TriageStatus = Database["public"]["Enums"]["triage_status"];
 /**
  * タブタイプ（ダッシュボード用）
  */
-export type TabType = "read_soon" | "latest";
+export type TabType = "read_soon" | "latest" | "stock" | "done";
 
 /**
  * orderBy パラメータの許可リスト

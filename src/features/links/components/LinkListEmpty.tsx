@@ -28,8 +28,8 @@ export function LinkListEmpty({
   // フィルター適用時の空状態
   if (hasActiveFilters) {
     return (
-      <View className="mt-12 items-center px-8">
-        <View className="mb-6 rounded-full bg-slate-50 p-6">
+      <View className="items-center px-8">
+        <View className="mb-6 rounded-full bg-slate-100 p-6">
           <Filter size={48} color={colors.iconMuted} strokeWidth={1} />
         </View>
         <Text className="mb-2 text-center text-lg font-semibold text-slate-800">
@@ -57,8 +57,8 @@ export function LinkListEmpty({
 
   // 通常の空状態
   return (
-    <View className="mt-12 items-center px-8">
-      <View className="mb-6 rounded-full bg-slate-50 p-6">
+    <View className="items-center px-8">
+      <View className="mb-6 rounded-full bg-slate-100 p-6">
         <Inbox size={48} color={colors.iconMuted} strokeWidth={1} />
       </View>
       <Text className="mb-2 text-center text-lg font-semibold text-slate-800">

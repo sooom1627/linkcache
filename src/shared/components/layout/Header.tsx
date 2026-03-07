@@ -42,17 +42,23 @@ export default function Header({
         style={{ height: HEADER_HEIGHT }}
       >
         {topComponent ? (
-          <View className="flex-row items-center justify-start gap-2 px-4 py-2">
-            <Avatar
-              avatarUrl={profile?.avatar_url}
-              updatedAt={profile?.updated_at}
-              onPress={() => openModal("setting")}
-              size="medium"
-              accessibilityLabel="Open settings"
-            />
-            <View>
-              <Text className="text-base text-slate-500">{subtitle}</Text>
-              <Text className="text-xl font-bold text-slate-700">{title}</Text>
+          <View className="flex-row items-center justify-between gap-2 px-4 py-2">
+            <View className="flex-row items-center gap-2">
+              <View>
+                <Text className="text-lg text-slate-500">{subtitle}</Text>
+                <Text className="text-3xl font-bold text-slate-700">
+                  {title}
+                </Text>
+              </View>
+            </View>
+            <View className="flex-row">
+              <Avatar
+                avatarUrl={profile?.avatar_url}
+                updatedAt={profile?.updated_at}
+                onPress={() => openModal("setting")}
+                size="medium"
+                accessibilityLabel="Open settings"
+              />
             </View>
           </View>
         ) : (

@@ -207,8 +207,10 @@
       "read_week": "週間読了",
       "all_links": "全リンク",
       "tabs": {
-        "read_soon": "Read Soon",
-        "latest": "Latest Added"
+        "read_soon": "Soon",
+        "latest": "New",
+        "stock": "Stock",
+        "done": "Done"
       },
       "view_all": "すべて表示",
       "error_load_failed": "リンクの読み込みに失敗しました",

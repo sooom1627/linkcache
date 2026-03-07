@@ -1,12 +1,10 @@
-import { DashboardOverview, LinkListTabs } from "@/src/features/links/screens";
-import { CollectionsLane } from "@/src/features/links/screens/CollectionsLane";
+import { View } from "react-native";
+
+import { LinkListTabs } from "@/src/features/links/screens";
 import { useProfile } from "@/src/features/users";
 import { ScreenContainer } from "@/src/shared/components/layout/ScreenContainer";
+import { WeekCalendarWidget } from "@/src/shared/components/WeekCalendarWidget";
 import { formatDate } from "@/src/shared/utils/timezone";
-
-const MOCK_INBOX_COUNT = 12;
-const MOCK_READ_COUNT = 8;
-const MOCK_ALL_LINKS_COUNT = 142;
 
 export default function Home() {
   const { data: profile } = useProfile();
@@ -16,17 +14,14 @@ export default function Home() {
       headerTitle={`Hi, ${profile?.username} 👋`}
       subtitle={formatDate(new Date(), "long", "en-US")}
       topComponent={true}
-      scrollable={true}
+      scrollable={false}
       centerContent={false}
-      noPaddingBottom={false}
+      noPaddingBottom={true}
     >
-      <DashboardOverview
-        inboxCount={MOCK_INBOX_COUNT}
-        readCount={MOCK_READ_COUNT}
-        allLinksCount={MOCK_ALL_LINKS_COUNT}
-      />
-      <CollectionsLane />
-      <LinkListTabs />
+      <View className="flex-1 flex-col gap-4 pt-16">
+        <WeekCalendarWidget />
+        <LinkListTabs />
+      </View>
     </ScreenContainer>
   );
 }
