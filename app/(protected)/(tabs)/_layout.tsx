@@ -6,17 +6,17 @@ import { usePathname } from "expo-router";
 import { TabList, Tabs, TabSlot, TabTrigger } from "expo-router/ui";
 
 import {
-  ChartNoAxesCombined,
-  House,
-  Layers2,
-  List,
-  PlusCircle,
+    ChartNoAxesCombined,
+    House,
+    Layers2,
+    List,
+    PlusCircle,
 } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import {
-  SafeAreaView,
-  useSafeAreaInsets,
+    SafeAreaView,
+    useSafeAreaInsets,
 } from "react-native-safe-area-context";
 
 import { useModal } from "@/src/shared/providers";

@@ -3,7 +3,7 @@
  *
  * プロジェクト全体で使用する色の単一参照元。
  * - Main: Slate-800
- * - Accent: 濃い青（blue-700/600）
+ * - Accent: オレンジ（orange-500/600）
  *
  * ## 必要なカラーパターン（プロジェクト分析結果）
  *
@@ -15,7 +15,7 @@
  * - mainHover: ホバー/アクティブ時
  *
  * ### 3. アクセント系
- * - accent: 濃い青（強調、リンク、空状態アイコン等）
+ * - accent: オレンジ（強調、リンク、空状態アイコン等）
  * - accentMuted: アクセントの控えめ版
  *
  * ### 4. テキスト系
@@ -44,7 +44,7 @@
  * - browserControls / browserToolbar
  */
 
-// Tailwind参照: slate-800=#1e293b, blue-700=#1d4ed8, blue-600=#2563eb
+// Tailwind参照: slate-800=#1e293b, orange-500=#f97316, orange-600=#ea580c
 const palette = {
   // === 1. 背景・サーフェス ===
   screen: "#f8fafc", // slate-50
@@ -60,9 +60,9 @@ const palette = {
   mainHover: "#334155", // slate-700
   mainDark: "#0f172a", // slate-900
 
-  // === 3. アクセント（濃い青） ===
-  accent: "#1d4ed8", // blue-700
-  accentMuted: "#2563eb", // blue-600
+  // === 3. アクセント（オレンジ） ===
+  accent: "#f97316", // orange-500
+  accentMuted: "#ea580c", // orange-600
 
   // === 4. テキスト ===
   textPrimary: "#0f172a", // slate-900
@@ -114,8 +114,8 @@ export const colorClassNames = {
   main: "bg-slate-800",
   mainHover: "bg-slate-700",
   mainDark: "bg-slate-900",
-  accent: "bg-blue-700",
-  accentMuted: "bg-blue-600",
+  accent: "bg-orange-500",
+  accentMuted: "bg-orange-600",
   surface: "bg-white",
   surfaceMuted: "bg-slate-100",
   surfaceMutedActive: "bg-slate-200",

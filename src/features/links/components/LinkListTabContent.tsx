@@ -5,6 +5,7 @@ import { ActivityIndicator, Pressable, Text, View } from "react-native";
 import { Link, useRouter } from "expo-router";
 
 import { FlashList } from "@shopify/flash-list";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ArrowRight, Layers2 } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 
@@ -62,6 +63,9 @@ function EmptyReadSoon() {
  *
  * FlashList でリンクリストを仮想化表示。PagerView 内でネストされる。
  */
+/** 下部ナビゲーションバーの高さ（スクロール時に最後の項目が隠れないよう余白を確保） */
+const TAB_BAR_HEIGHT = 56;
+
 export const LinkListTabContent = memo(function LinkListTabContent({
   isLoading,
   isError,
@@ -70,6 +74,7 @@ export const LinkListTabContent = memo(function LinkListTabContent({
   tabType,
 }: LinkListTabContentProps) {
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
 
   const renderItem = useCallback(
     ({ item }: { item: UserLink }) => (
@@ -145,6 +150,7 @@ export const LinkListTabContent = memo(function LinkListTabContent({
       keyExtractor={keyExtractor}
       ListFooterComponent={ListFooterComponent}
       ListEmptyComponent={ListEmptyComponent}
+      contentContainerStyle={{ paddingBottom: insets.bottom + TAB_BAR_HEIGHT }}
       showsVerticalScrollIndicator={false}
     />
   );

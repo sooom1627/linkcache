@@ -12,9 +12,6 @@ import type { TabType } from "../types/linkList.types";
 /** ダッシュボード用の表示件数制限 */
 const DASHBOARD_LIMIT = 10;
 
-/** PagerViewの高さ（固定） */
-const PAGER_HEIGHT = 550;
-
 /** タブのインデックス */
 const TAB_INDEX: Record<TabType, number> = {
   read_soon: 0,
@@ -69,11 +66,11 @@ export function LinkListTabs() {
   );
 
   return (
-    <View>
+    <View className="flex-1 flex-col">
       <LinkListTabHeader activeTab={activeTab} onTabChange={handleTabChange} />
       <PagerView
         ref={pagerRef}
-        style={{ height: PAGER_HEIGHT }}
+        style={{ flex: 1 }}
         initialPage={TAB_INDEX[activeTab]}
         onPageSelected={handlePageSelected}
       >
