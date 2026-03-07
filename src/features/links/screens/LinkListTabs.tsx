@@ -6,11 +6,9 @@ import PagerView from "react-native-pager-view";
 
 import { LinkListTabContent } from "../components/LinkListTabContent";
 import { LinkListTabHeader } from "../components/LinkListTabHeader";
+import { listTabsLimit } from "../constants/listTabs";
 import { useLinks } from "../hooks/useLinks";
 import type { TabType } from "../types/linkList.types";
-
-/** Display limit for dashboard */
-const DASHBOARD_LIMIT = 10;
 
 /** Tab index mapping */
 const TAB_INDEX: Record<TabType, number> = {
@@ -41,18 +39,25 @@ export function LinkListTabs() {
   // Read Soon tab: status="read_soon", limit=DASHBOARD_LIMIT
   const readSoonQuery = useLinks({
     status: "read_soon",
-    limit: DASHBOARD_LIMIT,
+    limit: listTabsLimit,
     isRead: false,
   });
   // Latest tab: limit=DASHBOARD_LIMIT (new status)
   const latestQuery = useLinks({
-    limit: DASHBOARD_LIMIT,
+    limit: listTabsLimit,
     isRead: false,
     status: "new",
   });
-
-  // Stock, Done not yet implemented (UI only)
-  // TODO: Add useLinks in the future
+  // Stock tab: status="stock"
+  const stockQuery = useLinks({
+    status: "stock",
+    limit: listTabsLimit,
+  });
+  // Done tab: status="done"
+  const doneQuery = useLinks({
+    status: "done",
+    limit: listTabsLimit,
+  });
 
   // Tab switching from header
   const handleTabChange = useCallback((tab: TabType) => {
@@ -101,24 +106,24 @@ export function LinkListTabs() {
           />
         </View>
 
-        {/* Stock tab (UI only) */}
+        {/* Stock tab */}
         <View key="stock" className="flex-1">
           <LinkListTabContent
-            isLoading={false}
-            isError={false}
-            error={null}
-            links={[]} // Empty data
+            isLoading={stockQuery.isLoading}
+            isError={stockQuery.isError}
+            error={stockQuery.error}
+            links={stockQuery.links}
             tabType="stock"
           />
         </View>
 
-        {/* Done tab (UI only) */}
+        {/* Done tab */}
         <View key="done" className="flex-1">
           <LinkListTabContent
-            isLoading={false}
-            isError={false}
-            error={null}
-            links={[]} // Empty data
+            isLoading={doneQuery.isLoading}
+            isError={doneQuery.isError}
+            error={doneQuery.error}
+            links={doneQuery.links}
             tabType="done"
           />
         </View>

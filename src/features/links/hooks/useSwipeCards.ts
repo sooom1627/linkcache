@@ -9,6 +9,7 @@ import i18n from "@/src/shared/utils/i18n";
 import { showToastError } from "@/src/shared/utils/toast";
 
 import { updateLinkStatus } from "../api/updateLinkStatus.api";
+import { listTabsLimit } from "../constants/listTabs";
 import { linkQueryKeys } from "../constants/queryKeys";
 import type { TriageStatus, UserLink } from "../types/linkList.types";
 
@@ -227,12 +228,21 @@ export function useSwipeCards(
           queryKey: linkQueryKeys.listLimited({
             status: "read_soon",
             isRead: false,
+            limit: listTabsLimit,
           }),
         });
         void queryClient.invalidateQueries({
           queryKey: linkQueryKeys.listLimited({
             status: "new",
             isRead: false,
+            limit: listTabsLimit,
+          }),
+        });
+        // 左スワイプ時: アイテムがstockに移動するためStockタブを無効化
+        void queryClient.invalidateQueries({
+          queryKey: linkQueryKeys.listLimited({
+            status: "stock",
+            limit: listTabsLimit,
           }),
         });
         // LinkListScreenで使用されるクエリキー（フィルタなし）
@@ -270,10 +280,21 @@ export function useSwipeCards(
         queryKey: linkQueryKeys.listLimited({
           status: "read_soon",
           isRead: false,
+          limit: listTabsLimit,
         }),
       });
       void queryClient.invalidateQueries({
-        queryKey: linkQueryKeys.listLimited({ status: "new", isRead: false }),
+        queryKey: linkQueryKeys.listLimited({
+          status: "new",
+          isRead: false,
+          limit: listTabsLimit,
+        }),
+      });
+      void queryClient.invalidateQueries({
+        queryKey: linkQueryKeys.listLimited({
+          status: "stock",
+          limit: listTabsLimit,
+        }),
       });
       void queryClient.invalidateQueries({
         queryKey: linkQueryKeys.list(),

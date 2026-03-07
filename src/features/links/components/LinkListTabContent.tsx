@@ -18,6 +18,14 @@ import type { TabType, UserLink } from "../types/linkList.types";
 import { LinkListCard } from "./LinkListCard";
 import { LinkListEmpty } from "./LinkListEmpty";
 
+/** タブごとの View All 遷移先の status パラメータ */
+const TAB_VIEW_ALL_STATUS: Record<TabType, string> = {
+  read_soon: "read_soon",
+  latest: "new",
+  stock: "stock",
+  done: "done",
+};
+
 interface LinkListTabContentProps {
   isLoading: boolean;
   isError: boolean;
@@ -87,12 +95,10 @@ export const LinkListTabContent = memo(function LinkListTabContent({
 
   const keyExtractor = useCallback((item: UserLink) => item.status_id, []);
 
-  const viewAllHref =
-    tabType === "read_soon"
-      ? "/links?status=read_soon"
-      : tabType === "latest"
-        ? "/links?status=new"
-        : "/links";
+  const viewAllHref = {
+    pathname: "/links" as const,
+    params: { status: TAB_VIEW_ALL_STATUS[tabType] },
+  };
 
   const ListFooterComponent = useCallback(
     () => (
@@ -148,7 +154,7 @@ export const LinkListTabContent = memo(function LinkListTabContent({
       data={links}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
-      ListFooterComponent={ListFooterComponent}
+      ListFooterComponent={links.length > 0 ? ListFooterComponent : undefined}
       ListEmptyComponent={ListEmptyComponent}
       contentContainerStyle={{ paddingBottom: insets.bottom + TAB_BAR_HEIGHT }}
       showsVerticalScrollIndicator={false}
