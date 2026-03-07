@@ -59,7 +59,7 @@ export const LinkListTabContent = memo(function LinkListTabContent({
     // Read Soonタブの場合はTriageへ誘導するボタンを表示
     if (tabType === "read_soon") {
       return (
-        <View className="mt-12 items-center px-8">
+        <View className="flex-1 items-center justify-center px-8">
           <View className="mb-6 rounded-full bg-slate-50 p-6">
             <Layers2 size={48} color={colors.accent} strokeWidth={1} />
           </View>
@@ -83,8 +83,12 @@ export const LinkListTabContent = memo(function LinkListTabContent({
       );
     }
 
-    // Latestタブの場合は既存の空状態を表示
-    return <LinkListEmpty />;
+    // Latest/Stock/Doneタブの場合は既存の空状態を表示（中央配置）
+    return (
+      <View className="flex-1 items-center justify-center">
+        <LinkListEmpty />
+      </View>
+    );
   }
 
   // タブタイプに基づいて遷移先URLを決定

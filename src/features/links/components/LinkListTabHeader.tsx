@@ -1,8 +1,20 @@
-import { Pressable, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { useTranslation } from "react-i18next";
+import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
+
+import { colors } from "@/src/shared/constants/colors";
 
 import type { TabType } from "../types/linkList.types";
+
+const TABS: readonly TabType[] = [
+  "read_soon",
+  "latest",
+  "stock",
+  "done",
+] as const;
+
+const FADE_DURATION = 150;
 
 interface LinkListTabHeaderProps {
   activeTab: TabType;
@@ -11,6 +23,7 @@ interface LinkListTabHeaderProps {
 
 /**
  * タブヘッダーコンポーネント
+ * ピル型のコンテナ内にタブを配置。アクティブタブのみ白背景＋フェードアニメーション。
  */
 export function LinkListTabHeader({
   activeTab,
@@ -19,46 +32,48 @@ export function LinkListTabHeader({
   const { t } = useTranslation();
 
   return (
-    <View>
-      <View className="mb-4 flex-row gap-4 rounded-lg border-b border-border">
-        <Pressable
-          onPress={() => onTabChange("read_soon")}
-          accessibilityRole="tab"
-          accessibilityState={{ selected: activeTab === "read_soon" }}
-          accessibilityLabel={t("links.dashboard.tabs.read_soon")}
-          className="relative rounded-lg pb-3"
-        >
-          <Text
-            className={`text-sm font-semibold uppercase tracking-wider ${
-              activeTab === "read_soon" ? "text-mainDark" : "text-textMuted"
-            }`}
+    <View
+      className="mb-2 flex-row overflow-hidden rounded-full p-1"
+      style={{ backgroundColor: colors.surfaceMuted }}
+    >
+      {TABS.map((tab) => {
+        const isActive = activeTab === tab;
+        return (
+          <Pressable
+            key={tab}
+            onPress={() => onTabChange(tab)}
+            style={{ flexBasis: 0, flexGrow: 1, flexShrink: 1 }}
+            className="relative items-center justify-center rounded-full py-2"
+            accessibilityRole="tab"
+            accessibilityState={{ selected: isActive }}
+            accessibilityLabel={t(`links.dashboard.tabs.${tab}`)}
           >
-            {t("links.dashboard.tabs.read_soon")}
-          </Text>
-          {activeTab === "read_soon" && (
-            <View className="absolute inset-x-0 bottom-[-1.5] h-0.5 rounded-full bg-main" />
-          )}
-        </Pressable>
-
-        <Pressable
-          onPress={() => onTabChange("latest")}
-          accessibilityRole="tab"
-          accessibilityState={{ selected: activeTab === "latest" }}
-          accessibilityLabel={t("links.dashboard.tabs.latest")}
-          className="relative rounded-lg pb-3"
-        >
-          <Text
-            className={`text-sm font-semibold uppercase tracking-wider ${
-              activeTab === "latest" ? "text-mainDark" : "text-textMuted"
-            }`}
-          >
-            {t("links.dashboard.tabs.latest")}
-          </Text>
-          {activeTab === "latest" && (
-            <View className="absolute inset-x-0 bottom-[-1.5] h-0.5 rounded-full bg-main" />
-          )}
-        </Pressable>
-      </View>
+            {isActive && (
+              <Animated.View
+                pointerEvents="none"
+                entering={FadeIn.duration(FADE_DURATION)}
+                exiting={FadeOut.duration(FADE_DURATION)}
+                style={{
+                  ...StyleSheet.absoluteFillObject,
+                  backgroundColor: colors.surface,
+                  borderRadius: 9999,
+                }}
+              />
+            )}
+            <Text
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              className={`relative z-10 text-center text-sm ${
+                isActive
+                  ? "font-semibold text-mainDark"
+                  : "font-normal text-textMuted"
+              }`}
+            >
+              {t(`links.dashboard.tabs.${tab}`)}
+            </Text>
+          </Pressable>
+        );
+      })}
     </View>
   );
 }

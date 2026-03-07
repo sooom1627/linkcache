@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 import { View } from "react-native";
 
@@ -10,47 +10,24 @@ import { useLinks } from "../hooks/useLinks";
 import type { TabType } from "../types/linkList.types";
 
 /** ダッシュボード用の表示件数制限 */
-const DASHBOARD_LIMIT = 5;
+const DASHBOARD_LIMIT = 10;
 
-/** カード1件あたりの高さ（カードコンテンツ + パディング） */
-const CARD_HEIGHT = 100;
-
-/** 空状態の高さ（mt-20 + アイコン + テキスト + ボタン + パディング） */
-const EMPTY_STATE_HEIGHT = 350;
-
-/** ローディング・エラー状態の高さ */
-const LOADING_ERROR_HEIGHT = 100;
+/** PagerViewの高さ（固定） */
+const PAGER_HEIGHT = 550;
 
 /** タブのインデックス */
 const TAB_INDEX: Record<TabType, number> = {
   read_soon: 0,
   latest: 1,
+  stock: 2,
+  done: 3,
 };
 
 /**
  * リンクリストタブコンポーネント
  *
  * スワイプとタブ切り替えでフィルタリングされたリンクリストを表示します。
- * - "Read Soon" タブ: statusが"read_soon"のリンクを最大5件表示（APIでフィルタ）
- * - "Latest" タブ: statusが"new"のリンクを最大5件表示（APIでフィルタ）
  */
-/**
- * タブの状態とデータから高さを計算
- */
-function calculateTabHeight(
-  isLoading: boolean,
-  isError: boolean,
-  linkCount: number,
-): number {
-  if (isLoading || isError) {
-    return LOADING_ERROR_HEIGHT;
-  }
-  if (linkCount === 0) {
-    return EMPTY_STATE_HEIGHT;
-  }
-  // リンク数 × カード高さ + 上下のパディング
-  return linkCount * CARD_HEIGHT + 16;
-}
 
 export function LinkListTabs() {
   const [activeTab, setActiveTab] = useState<TabType>("read_soon");
@@ -69,6 +46,9 @@ export function LinkListTabs() {
     status: "new",
   });
 
+  // Stock, Done はまだ実装しない（UIのみ）
+  // 将来的には useLinks を追加する
+
   // タブヘッダーからの切り替え
   const handleTabChange = useCallback((tab: TabType) => {
     setActiveTab(tab);
@@ -79,51 +59,26 @@ export function LinkListTabs() {
   const handlePageSelected = useCallback(
     (e: { nativeEvent: { position: number } }) => {
       const position = e.nativeEvent.position;
-      const newTab = position === 0 ? "read_soon" : "latest";
+      let newTab: TabType = "read_soon";
+      if (position === 1) newTab = "latest";
+      else if (position === 2) newTab = "stock";
+      else if (position === 3) newTab = "done";
       setActiveTab(newTab);
     },
     [],
   );
-
-  // 各タブの高さを計算
-  const readSoonTabHeight = useMemo(
-    () =>
-      calculateTabHeight(
-        readSoonQuery.isLoading,
-        readSoonQuery.isError,
-        readSoonQuery.links.length,
-      ),
-    [
-      readSoonQuery.isLoading,
-      readSoonQuery.isError,
-      readSoonQuery.links.length,
-    ],
-  );
-
-  const latestTabHeight = useMemo(
-    () =>
-      calculateTabHeight(
-        latestQuery.isLoading,
-        latestQuery.isError,
-        latestQuery.links.length,
-      ),
-    [latestQuery.isLoading, latestQuery.isError, latestQuery.links.length],
-  );
-
-  // PagerViewの高さは両タブの最大値を使用
-  const pagerHeight = Math.max(readSoonTabHeight, latestTabHeight);
 
   return (
     <View>
       <LinkListTabHeader activeTab={activeTab} onTabChange={handleTabChange} />
       <PagerView
         ref={pagerRef}
-        style={{ height: pagerHeight }}
+        style={{ height: PAGER_HEIGHT }}
         initialPage={TAB_INDEX[activeTab]}
         onPageSelected={handlePageSelected}
       >
         {/* Read Soon タブ */}
-        <View key="read_soon">
+        <View key="read_soon" className="flex-1">
           <LinkListTabContent
             isLoading={readSoonQuery.isLoading}
             isError={readSoonQuery.isError}
@@ -134,13 +89,35 @@ export function LinkListTabs() {
         </View>
 
         {/* Latest タブ */}
-        <View key="latest">
+        <View key="latest" className="flex-1">
           <LinkListTabContent
             isLoading={latestQuery.isLoading}
             isError={latestQuery.isError}
             error={latestQuery.error}
             links={latestQuery.links}
             tabType="latest"
+          />
+        </View>
+
+        {/* Stock タブ (UIのみ) */}
+        <View key="stock" className="flex-1">
+          <LinkListTabContent
+            isLoading={false}
+            isError={false}
+            error={null}
+            links={[]} // 空データ
+            tabType="stock"
+          />
+        </View>
+
+        {/* Done タブ (UIのみ) */}
+        <View key="done" className="flex-1">
+          <LinkListTabContent
+            isLoading={false}
+            isError={false}
+            error={null}
+            links={[]} // 空データ
+            tabType="done"
           />
         </View>
       </PagerView>

@@ -208,8 +208,10 @@
       "read_week": "Read (Week)",
       "all_links": "All Links",
       "tabs": {
-        "read_soon": "Read Soon",
-        "latest": "Latest Added"
+        "read_soon": "Soon",
+        "latest": "New",
+        "stock": "Stock",
+        "done": "Done"
       },
       "view_all": "View All",
       "error_load_failed": "Failed to load links",
