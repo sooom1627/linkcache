@@ -152,14 +152,15 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
   const prevLinkIdRef = useRef<string>(linkId);
   const [orderVersion, setOrderVersion] = useState(0);
 
+  // Reset display order synchronously during render when linkId changes
+  // (must happen before useMemo reads the ref to avoid stale order flash)
+  if (prevLinkIdRef.current !== linkId) {
+    displayOrderRef.current = [];
+    prevLinkIdRef.current = linkId;
+  }
+
   // Maintain stable display order in a ref; bump version to trigger re-render
   useEffect(() => {
-    // Reset display order when navigating to a different link
-    if (prevLinkIdRef.current !== linkId) {
-      displayOrderRef.current = [];
-      prevLinkIdRef.current = linkId;
-    }
-
     // Skip while data is still loading
     if (collections.length === 0 || isLinkedCollectionsLoading) {
       return;
