@@ -161,13 +161,14 @@ export const LinkListTabContent = memo(function LinkListTabContent({
 
   const ListFooterComponent = useCallback(
     () => (
-      <View className="flex-row items-center justify-center py-4">
+      <View className="items-center pb-14 pt-6">
+        <View className="mb-4 h-px w-12 bg-slate-200" />
         <Link href={viewAllHref} asChild>
-          <Pressable className="flex-row items-center justify-center gap-2 rounded-full border border-slate-200 px-4 py-2">
-            <Text className="text-center text-sm text-slate-500">
+          <Pressable className="flex-row items-center justify-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-5 py-2.5 active:bg-slate-100">
+            <Text className="text-sm font-medium text-slate-700">
               {t("links.dashboard.view_all")}
             </Text>
-            <ArrowRight size={14} color={colors.icon} strokeWidth={1.5} />
+            <ArrowRight size={14} color={colors.icon} strokeWidth={2} />
           </Pressable>
         </Link>
       </View>
