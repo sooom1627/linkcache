@@ -86,7 +86,7 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
     isError: isCollectionsError,
   } = useCollections({ orderBy: "items_count" });
   const { linkedCollectionIds, isLoading: isLinkedCollectionsLoading } =
-    useCollectionsForLink(link?.link_id ?? "");
+    useCollectionsForLink(linkId);
   const { addLinkToCollection } = useAddLinkToCollection();
   const { removeLinkFromCollection } = useRemoveLinkFromCollection();
 

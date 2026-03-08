@@ -1,4 +1,4 @@
-import { ActivityIndicator, Pressable, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 
 import { useRouter } from "expo-router";
 
@@ -13,6 +13,7 @@ import {
 import { useTranslation } from "react-i18next";
 
 import { CollectionListItem } from "@/src/features/links/components/CollectionListItem";
+import { CollectionListSkeleton } from "@/src/features/links/components/CollectionListSkeleton";
 import { useCollections } from "@/src/features/links/hooks/useCollections";
 import { useUncollectedLinksCount } from "@/src/features/links/hooks/useUncollectedLinksCount";
 import { colors } from "@/src/shared/constants/colors";
@@ -158,9 +159,7 @@ export function LinksOverViewScreen() {
           href="/links/un-collectioned"
         />
         {isCollectionsLoading ? (
-          <View className="items-center py-4">
-            <ActivityIndicator size="small" color="#6B7280" />
-          </View>
+          <CollectionListSkeleton count={5} />
         ) : isCollectionsError ? (
           <View className="items-center py-4">
             <Text className="text-sm text-slate-400">

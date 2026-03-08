@@ -1,4 +1,4 @@
-import { ActivityIndicator, Pressable, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 
 import * as Haptics from "expo-haptics";
 
@@ -6,6 +6,7 @@ import { FolderOpen, Plus } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 
 import { CollectionListItem } from "@/src/features/links/components/CollectionListItem";
+import { CollectionListSkeleton } from "@/src/features/links/components/CollectionListSkeleton";
 import { useCollections } from "@/src/features/links/hooks/useCollections";
 import { useUncollectedLinksCount } from "@/src/features/links/hooks/useUncollectedLinksCount";
 import { CollectionCreateModal } from "@/src/features/links/screens/CollectionCreateModal";
@@ -60,9 +61,7 @@ export function CollectionListScreen() {
         </Text>
 
         {isLoading ? (
-          <View className="items-center py-12">
-            <ActivityIndicator size="large" color="#6B7280" />
-          </View>
+          <CollectionListSkeleton />
         ) : isError ? (
           <View className="items-center py-12">
             <Text className="text-center text-base text-slate-500">
