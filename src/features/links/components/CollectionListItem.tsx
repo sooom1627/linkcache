@@ -40,6 +40,10 @@ export function CollectionListItem({
   const itemsLabel = t("links.collection_detail.items_count", {
     defaultValue: "items",
   });
+  const accessibilityLabel = t("links.collection_detail.accessibility_label", {
+    title,
+    count: itemsCount,
+  });
 
   const pressableContent = (
     <>
@@ -86,7 +90,7 @@ export function CollectionListItem({
         <Pressable
           className={pressableClassName}
           accessibilityRole="link"
-          accessibilityLabel={`Collection: ${title}, ${itemsCount} items`}
+          accessibilityLabel={accessibilityLabel}
         >
           {pressableContent}
         </Pressable>

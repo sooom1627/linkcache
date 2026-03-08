@@ -276,6 +276,7 @@
       "empty_title": "No links in this collection",
       "empty_description": "Add links to this collection from the link detail screen",
       "items_count": "items",
+      "accessibility_label": "Collection: {{title}}, {{count}} items",
       "not_found": "Collection not found",
       "header_edit": "Edit",
       "header_delete": "Delete",

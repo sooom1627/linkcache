@@ -1,15 +1,19 @@
 import { renderHook, waitFor } from "@testing-library/react-native";
 
-import { fetchUserLinks } from "../../api/fetchLinks.api";
+import { supabase } from "@/src/shared/lib/supabase";
+
 import { linkQueryKeys } from "../../constants/queryKeys";
 import { useUncollectedLinksCount } from "../../hooks/useUncollectedLinksCount";
 import { clearQueryCache, testQueryClient, wrapper } from "../test-utils";
 
-jest.mock("../../api/fetchLinks.api", () => ({
-  fetchUserLinks: jest.fn(),
+// Mock only the external Supabase boundary
+jest.mock("@/src/shared/lib/supabase", () => ({
+  supabase: {
+    rpc: jest.fn(),
+  },
 }));
 
-const mockFetchUserLinks = jest.mocked(fetchUserLinks);
+const mockRpc = supabase.rpc as jest.Mock;
 
 describe("useUncollectedLinksCount", () => {
   beforeEach(() => {
@@ -22,10 +26,13 @@ describe("useUncollectedLinksCount", () => {
   });
 
   it("uncollected件数だけを取得して返す", async () => {
-    mockFetchUserLinks.mockResolvedValueOnce({
-      data: [],
-      hasMore: false,
-      totalCount: 7,
+    mockRpc.mockResolvedValueOnce({
+      data: {
+        data: [],
+        hasMore: false,
+        totalCount: 7,
+      },
+      error: null,
     });
 
     const { result } = renderHook(() => useUncollectedLinksCount(), {
@@ -38,9 +45,16 @@ describe("useUncollectedLinksCount", () => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    expect(mockFetchUserLinks).toHaveBeenCalledWith({
-      uncollectedOnly: true,
-      pageSize: 1,
+    // Verify fetchUserLinks was called with correct params via the Supabase RPC
+    expect(mockRpc).toHaveBeenCalledWith("get_user_links", {
+      p_page_size: 1,
+      p_page: 0,
+      p_status: null,
+      p_is_read: null,
+      p_limit: null,
+      p_order_by: null,
+      p_collection_id: null,
+      p_uncollected_only: true,
     });
     expect(result.current.count).toBe(7);
 
@@ -52,7 +66,10 @@ describe("useUncollectedLinksCount", () => {
 
   it("エラー時にisErrorとerrorを返す", async () => {
     const mockError = new Error("API Error");
-    mockFetchUserLinks.mockRejectedValueOnce(mockError);
+    mockRpc.mockResolvedValueOnce({
+      data: null,
+      error: mockError,
+    });
 
     const { result } = renderHook(() => useUncollectedLinksCount(), {
       wrapper,

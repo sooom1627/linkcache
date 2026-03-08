@@ -275,6 +275,7 @@
       "empty_title": "このコレクションにはリンクがありません",
       "empty_description": "リンク詳細画面からコレクションに追加できます",
       "items_count": "件",
+      "accessibility_label": "コレクション: {{title}}、{{count}}件",
       "not_found": "コレクションが見つかりません",
       "header_edit": "編集",
       "header_delete": "削除",

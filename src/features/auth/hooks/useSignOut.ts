@@ -18,6 +18,8 @@ import { authQueryKeys } from "../constants/queryKeys";
  * 2. React Queryキャッシュの選択的クリア（セキュリティとプライバシー保護）
  *    - 認証関連キャッシュ（authQueryKeys.all）
  *    - ユーザー関連キャッシュ（userQueryKeys.all）
+ *    - リンク関連キャッシュ（linkQueryKeys.all）
+ *    - コレクション関連キャッシュ（collectionQueryKeys.all）
  *
  * @example
  * ```tsx

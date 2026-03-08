@@ -22,6 +22,7 @@ import {
 import { useTranslation } from "react-i18next";
 
 import { EmptyState } from "@/src/shared/components/EmptyState";
+import { ErrorStateView } from "@/src/shared/components/ErrorStateView";
 import type { ToggleMenuItem } from "@/src/shared/components/ToggleMenu";
 import { ToggleMenu } from "@/src/shared/components/ToggleMenu";
 import { colors } from "@/src/shared/constants/colors";
@@ -114,8 +115,11 @@ function CollectionDetailScreenContent({
     isLoading: isLinksLoading,
     isFetchingNextPage,
     isError: isLinksError,
+    error: linksError,
     hasNextPage,
+    totalCount,
     fetchNextPage,
+    refetch: refetchLinks,
   } = useCollectionLinks(collectionId, filterParams);
 
   const handleEndReached = useCallback(() => {
@@ -234,7 +238,9 @@ function CollectionDetailScreenContent({
                   style={{ fontVariant: ["tabular-nums"] }}
                   selectable
                 >
-                  {collection.itemsCount}{" "}
+                  {hasActiveFilters
+                    ? (totalCount ?? links.length ?? 0)
+                    : collection.itemsCount}{" "}
                   {t("links.collection_detail.items_count")}
                 </Text>
               </View>
@@ -256,7 +262,14 @@ function CollectionDetailScreenContent({
           </View>
         </View>
       ) : null,
-    [collection, t, handleToggleMenu],
+    [
+      collection,
+      t,
+      handleToggleMenu,
+      hasActiveFilters,
+      totalCount,
+      links.length,
+    ],
   );
 
   const renderFooter = useCallback(
@@ -270,6 +283,17 @@ function CollectionDetailScreenContent({
         <View className="items-center py-12">
           <ActivityIndicator size="large" color="#6B7280" />
         </View>
+      );
+    }
+    if (isLinksError) {
+      return (
+        <ErrorStateView
+          message={
+            linksError?.message || t("links.dashboard.error_load_failed")
+          }
+          actionLabel={t("common.retry")}
+          onAction={refetchLinks}
+        />
       );
     }
     if (hasActiveFilters) {
@@ -295,7 +319,15 @@ function CollectionDetailScreenContent({
         variant="compact"
       />
     );
-  }, [t, isLinksLoading, hasActiveFilters, resetFilters]);
+  }, [
+    t,
+    isLinksLoading,
+    isLinksError,
+    linksError,
+    refetchLinks,
+    hasActiveFilters,
+    resetFilters,
+  ]);
 
   if (!collection && isCollectionLoading) {
     return (

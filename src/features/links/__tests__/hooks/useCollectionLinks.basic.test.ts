@@ -120,27 +120,46 @@ describe("useCollectionLinks - basic", () => {
   });
 
   it("filterParams指定時はクエリキーにfilterParamsが含まれる", async () => {
-    mockFetchUserLinks.mockResolvedValueOnce({
-      data: [],
-      hasMore: false,
-      totalCount: 0,
+    const emptyResponse = { data: [], hasMore: false, totalCount: 0 };
+    mockFetchUserLinks
+      .mockResolvedValueOnce(emptyResponse)
+      .mockResolvedValueOnce(emptyResponse);
+
+    const { result: result1 } = renderHook(
+      () => useCollectionLinks(MOCK_COLLECTION_ID),
+      { wrapper },
+    );
+
+    await waitFor(() => {
+      expect(result1.current.isLoading).toBe(false);
     });
 
     const filterParams = { status: "done" as const, isRead: true };
-    const { result } = renderHook(
+    const { result: result2 } = renderHook(
       () => useCollectionLinks(MOCK_COLLECTION_ID, filterParams),
       { wrapper },
     );
 
     await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
+      expect(result2.current.isLoading).toBe(false);
     });
 
     const queryCache = testQueryClient.getQueryCache();
-    const queries = queryCache.findAll({
-      queryKey: collectionQueryKeys.links(MOCK_COLLECTION_ID, filterParams),
-    });
-    expect(queries).toHaveLength(1);
+    const allQueries = queryCache.getAll();
+    const linksQueries = allQueries.filter(
+      (q) =>
+        Array.isArray(q.queryKey) &&
+        q.queryKey[0] === "collections" &&
+        q.queryKey[1] === "detail" &&
+        q.queryKey[2] === MOCK_COLLECTION_ID &&
+        q.queryKey[3] === "links",
+    );
+
+    expect(linksQueries).toHaveLength(2);
+    const [keyWithoutParams, keyWithParams] = linksQueries.map(
+      (q) => q.queryKey,
+    );
+    expect(keyWithoutParams).not.toEqual(keyWithParams);
   });
 
   it("selectを経由してlink_created_atが返される", async () => {

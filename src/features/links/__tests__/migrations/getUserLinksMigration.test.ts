@@ -10,9 +10,17 @@ describe("get_user_links migration regression", () => {
     const migration = readFileSync(migrationPath, "utf-8");
 
     expect(migration).toContain(
-      "DROP FUNCTION IF EXISTS public.get_user_links(",
+      [
+        "DROP FUNCTION IF EXISTS public.get_user_links(",
+        "  integer,",
+        "  integer,",
+        "  triage_status,",
+        "  boolean,",
+        "  integer,",
+        "  text,",
+        "  uuid",
+        ");",
+      ].join("\n"),
     );
-    expect(migration).toContain("triage_status");
-    expect(migration).toContain("uuid");
   });
 });

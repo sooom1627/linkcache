@@ -20,6 +20,7 @@ export interface UseUncollectedLinksCountReturn {
 export function useUncollectedLinksCount(): UseUncollectedLinksCountReturn {
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: linkQueryKeys.uncollectedCount(),
+    staleTime: 1_800_000,
     queryFn: async () => {
       const response = await fetchUserLinks({
         uncollectedOnly: true,

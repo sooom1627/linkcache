@@ -59,10 +59,11 @@ const THUMBNAIL_SIZE = 72;
 const THUMBNAIL_WIDTH = Math.round(THUMBNAIL_SIZE * 1.91);
 
 /**
- * リンク概要画面（仮UI）
+ * リンク概要画面
  *
- * 統計カード、コレクションリスト、要対応リンクリストを表示。
- * モックデータのみ。既存コンポーネントは使用せずインライン実装。
+ * ステータス一覧、コレクションリスト、要対応リンクリストを表示。
+ * コレクションセクションは CollectionListItem / useCollections / useUncollectedLinksCount を使用。
+ * ステータス・要対応セクションは仮のモックデータ。
  */
 export function LinksOverViewScreen() {
   const { t } = useTranslation();

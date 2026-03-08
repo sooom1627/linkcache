@@ -75,6 +75,7 @@ BEGIN
         AND EXISTS (
           SELECT 1
           FROM public.collection_links cl
+          JOIN public.collections c ON c.id = cl.collection_id AND c.user_id = v_user_id
           WHERE cl.collection_id = p_collection_id
             AND cl.link_id = ulv.link_id
         )
@@ -84,6 +85,7 @@ BEGIN
         AND NOT EXISTS (
           SELECT 1
           FROM public.collection_links cl
+          JOIN public.collections c ON c.id = cl.collection_id AND c.user_id = v_user_id
           WHERE cl.link_id = ulv.link_id
         )
       )
@@ -119,6 +121,7 @@ BEGIN
             AND EXISTS (
               SELECT 1
               FROM public.collection_links cl
+              JOIN public.collections c ON c.id = cl.collection_id AND c.user_id = $1
               WHERE cl.collection_id = $6::uuid
                 AND cl.link_id = ulv.link_id
             )
@@ -128,6 +131,7 @@ BEGIN
             AND NOT EXISTS (
               SELECT 1
               FROM public.collection_links cl
+              JOIN public.collections c ON c.id = cl.collection_id AND c.user_id = $1
               WHERE cl.link_id = ulv.link_id
             )
           )
