@@ -91,6 +91,12 @@ describe("useRemoveLinkFromCollection", () => {
     expect(invalidateSpy).toHaveBeenCalledWith({
       queryKey: linkQueryKeys.detail(MOCK_LINK_ID),
     });
+    expect(invalidateSpy).toHaveBeenCalledWith({
+      queryKey: linkQueryKeys.uncollectedList(),
+    });
+    expect(invalidateSpy).toHaveBeenCalledWith({
+      queryKey: linkQueryKeys.uncollectedCount(),
+    });
 
     invalidateSpy.mockRestore();
   });

@@ -62,6 +62,12 @@ export function useAddLinkToCollection() {
       queryClient.invalidateQueries({
         queryKey: linkQueryKeys.detail(linkId),
       });
+      queryClient.invalidateQueries({
+        queryKey: linkQueryKeys.uncollectedList(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: linkQueryKeys.uncollectedCount(),
+      });
     },
   });
 

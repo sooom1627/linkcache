@@ -173,8 +173,8 @@ function LinkListScreenContent() {
   }
 
   return (
-    <View className="relative flex-1 ">
-      <View className="absolute right-0 z-50 mt-[12px] flex-row items-center gap-2">
+    <View className="relative flex-1">
+      <View className="absolute bottom-16 right-4 z-50">
         <LinkListFilterMenu
           isDisabled={
             isLoading ||
@@ -188,7 +188,7 @@ function LinkListScreenContent() {
         data={links}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
-        contentContainerClassName="mt-2 pb-32"
+        contentContainerClassName="mt-2 pb-28"
         ListHeaderComponent={renderTopMarginComponent}
         showsVerticalScrollIndicator={false}
         onEndReached={handleEndReached}

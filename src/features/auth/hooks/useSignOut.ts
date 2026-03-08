@@ -1,6 +1,10 @@
 import type { AuthError } from "@supabase/supabase-js";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
+import {
+  collectionQueryKeys,
+  linkQueryKeys,
+} from "@/src/features/links/constants/queryKeys";
 import { userQueryKeys } from "@/src/features/users/constants/queryKeys";
 
 import { signOut } from "../api";
@@ -14,6 +18,8 @@ import { authQueryKeys } from "../constants/queryKeys";
  * 2. React Queryキャッシュの選択的クリア（セキュリティとプライバシー保護）
  *    - 認証関連キャッシュ（authQueryKeys.all）
  *    - ユーザー関連キャッシュ（userQueryKeys.all）
+ *    - リンク関連キャッシュ（linkQueryKeys.all）
+ *    - コレクション関連キャッシュ（collectionQueryKeys.all）
  *
  * @example
  * ```tsx
@@ -43,6 +49,8 @@ export function useSignOut(options?: {
       // セキュリティ: 前のユーザーのデータが次のユーザーに見えないようにする
       queryClient.removeQueries({ queryKey: authQueryKeys.all });
       queryClient.removeQueries({ queryKey: userQueryKeys.all });
+      queryClient.removeQueries({ queryKey: linkQueryKeys.all });
+      queryClient.removeQueries({ queryKey: collectionQueryKeys.all });
 
       options?.onSuccess?.();
     },

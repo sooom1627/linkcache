@@ -35,16 +35,18 @@ export const LinkListFilterModal = forwardRef<
   const handleStatusSelect = useCallback(
     (status: StatusFilterOption) => {
       setStatus(status);
+      onClose?.();
     },
-    [setStatus],
+    [setStatus, onClose],
   );
 
   // 既読状態フィルターの選択
   const handleReadStatusSelect = useCallback(
     (readStatus: ReadStatusFilterOption) => {
       setReadStatus(readStatus);
+      onClose?.();
     },
-    [setReadStatus],
+    [setReadStatus, onClose],
   );
 
   // ステータスオプションのリスト

@@ -40,6 +40,21 @@ export const linkQueryKeys = {
       : ([...linkQueryKeys.lists(), "infinite"] as const),
 
   /**
+   * コレクション未所属リンク一覧のクエリキー
+   * @param params - フィルタパラメータ（status, isRead）
+   */
+  uncollectedList: (params?: Pick<LinkFilterParams, "status" | "isRead">) =>
+    params
+      ? ([...linkQueryKeys.lists(), "uncollected", "infinite", params] as const)
+      : ([...linkQueryKeys.lists(), "uncollected", "infinite"] as const),
+
+  /**
+   * コレクション未所属リンク件数のクエリキー
+   */
+  uncollectedCount: () =>
+    [...linkQueryKeys.lists(), "uncollected", "count"] as const,
+
+  /**
    * 制限付きリンク一覧のクエリキー（単一ページ取得用）
    * @param params - フィルタパラメータ（status, isRead, limit）
    */
@@ -99,10 +114,19 @@ export const collectionQueryKeys = {
    * useAddLinkToCollection の onSettled でも invalidate される。
    *
    * @param collectionId - コレクションID
-   * @returns ["collections", "detail", collectionId, "links"]
+   * @param filterParams - フィルタパラメータ（status, isRead）
    */
-  links: (collectionId: string) =>
-    [...collectionQueryKeys.detail(collectionId), "links"] as const,
+  links: (
+    collectionId: string,
+    filterParams?: Pick<LinkFilterParams, "status" | "isRead">,
+  ) =>
+    filterParams
+      ? ([
+          ...collectionQueryKeys.detail(collectionId),
+          "links",
+          filterParams,
+        ] as const)
+      : ([...collectionQueryKeys.detail(collectionId), "links"] as const),
 
   /**
    * リンクに紐づくコレクションID一覧のクエリキー

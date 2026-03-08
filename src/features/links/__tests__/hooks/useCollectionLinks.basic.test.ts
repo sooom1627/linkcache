@@ -90,6 +90,78 @@ describe("useCollectionLinks - basic", () => {
     expect(queries).toHaveLength(1);
   });
 
+  it("filterParamsを指定するとfetchUserLinksにstatusとisReadが渡される", async () => {
+    mockFetchUserLinks.mockResolvedValueOnce({
+      data: [],
+      hasMore: false,
+      totalCount: 0,
+    });
+
+    const { result } = renderHook(
+      () =>
+        useCollectionLinks(MOCK_COLLECTION_ID, {
+          status: "read_soon",
+          isRead: false,
+        }),
+      { wrapper },
+    );
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    expect(mockFetchUserLinks).toHaveBeenCalledWith({
+      collectionId: MOCK_COLLECTION_ID,
+      pageSize: 20,
+      page: 0,
+      status: "read_soon",
+      isRead: false,
+    });
+  });
+
+  it("filterParams指定時はクエリキーにfilterParamsが含まれる", async () => {
+    const emptyResponse = { data: [], hasMore: false, totalCount: 0 };
+    mockFetchUserLinks
+      .mockResolvedValueOnce(emptyResponse)
+      .mockResolvedValueOnce(emptyResponse);
+
+    const { result: result1 } = renderHook(
+      () => useCollectionLinks(MOCK_COLLECTION_ID),
+      { wrapper },
+    );
+
+    await waitFor(() => {
+      expect(result1.current.isLoading).toBe(false);
+    });
+
+    const filterParams = { status: "done" as const, isRead: true };
+    const { result: result2 } = renderHook(
+      () => useCollectionLinks(MOCK_COLLECTION_ID, filterParams),
+      { wrapper },
+    );
+
+    await waitFor(() => {
+      expect(result2.current.isLoading).toBe(false);
+    });
+
+    const queryCache = testQueryClient.getQueryCache();
+    const allQueries = queryCache.getAll();
+    const linksQueries = allQueries.filter(
+      (q) =>
+        Array.isArray(q.queryKey) &&
+        q.queryKey[0] === "collections" &&
+        q.queryKey[1] === "detail" &&
+        q.queryKey[2] === MOCK_COLLECTION_ID &&
+        q.queryKey[3] === "links",
+    );
+
+    expect(linksQueries).toHaveLength(2);
+    const [keyWithoutParams, keyWithParams] = linksQueries.map(
+      (q) => q.queryKey,
+    );
+    expect(keyWithoutParams).not.toEqual(keyWithParams);
+  });
+
   it("selectを経由してlink_created_atが返される", async () => {
     mockFetchUserLinks.mockResolvedValueOnce({
       data: [createMockLink(1)],

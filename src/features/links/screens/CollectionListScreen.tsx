@@ -1,27 +1,17 @@
-import {
-  ActivityIndicator,
-  FlatList,
-  Pressable,
-  Text,
-  View,
-} from "react-native";
+import { ActivityIndicator, Pressable, Text, View } from "react-native";
 
 import * as Haptics from "expo-haptics";
 
 import { FolderOpen, Plus } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 
-import { CollectionCard } from "@/src/features/links/components/CollectionCard";
+import { CollectionListItem } from "@/src/features/links/components/CollectionListItem";
 import { useCollections } from "@/src/features/links/hooks/useCollections";
+import { useUncollectedLinksCount } from "@/src/features/links/hooks/useUncollectedLinksCount";
 import { CollectionCreateModal } from "@/src/features/links/screens/CollectionCreateModal";
 import { EmptyState } from "@/src/shared/components/EmptyState";
 import { colors } from "@/src/shared/constants/colors";
 import { useBottomSheetModal } from "@/src/shared/hooks/useBottomSheetModal";
-
-const CARD_STYLE = { borderCurve: "continuous" as const };
-
-/** モック: Un Collectioned のリンク数 */
-const MOCK_UN_COLLECTIONED_COUNT = 8;
 
 /**
  * コレクション一覧画面
@@ -45,6 +35,7 @@ export function CollectionListScreen() {
   const { collections, isLoading, isError } = useCollections({
     orderBy: "items_count",
   });
+  const { count: uncollectedCount } = useUncollectedLinksCount();
   const isEmpty = !isLoading && !isError && collections.length === 0;
 
   return (
@@ -54,17 +45,15 @@ export function CollectionListScreen() {
         <Text className="text-sm font-semibold uppercase tracking-wider text-slate-500">
           {t("links.overview.collections_section")}
         </Text>
-        <View className="min-h-28 min-w-0">
-          <CollectionCard
-            emoji="📂"
-            title={t("links.overview.un_collectioned")}
-            itemsCount={MOCK_UN_COLLECTIONED_COUNT}
-            href="/links/un-collectioned"
-          />
-        </View>
+        <CollectionListItem
+          emoji="📂"
+          title={t("links.overview.un_collectioned")}
+          itemsCount={uncollectedCount}
+          href="/links/un-collectioned"
+        />
       </View>
 
-      {/* コレクション一覧（2カラムグリッド） */}
+      {/* コレクション一覧（縦リスト） */}
       <View className="gap-2">
         <Text className="text-sm font-semibold uppercase tracking-wider text-slate-500">
           {t("links.collection_list.my_collections")}
@@ -104,38 +93,27 @@ export function CollectionListScreen() {
             />
           </View>
         ) : (
-          <View className="gap-2">
-            <FlatList
-              data={collections}
-              numColumns={2}
-              scrollEnabled={false}
-              keyExtractor={(col) => col.id}
-              columnWrapperStyle={{ gap: 8, marginBottom: 8 }}
-              renderItem={({ item }) => (
-                <View className="min-h-28 min-w-0 flex-1">
-                  <CollectionCard
-                    emoji={item.emoji ?? undefined}
-                    title={item.name}
-                    itemsCount={item.itemsCount}
-                    href={`/collections/${item.id}`}
-                  />
-                </View>
-              )}
-              ListFooterComponent={
-                <Pressable
-                  onPress={handleNewCollectionPress}
-                  className="flex-row items-center justify-center gap-2 rounded-xl border border-dashed border-slate-300 bg-slate-50/50 py-3 active:bg-slate-100"
-                  style={CARD_STYLE}
-                  accessibilityRole="button"
-                  accessibilityLabel={t("links.overview.new_collection")}
-                >
-                  <Plus size={20} color={colors.iconMuted} strokeWidth={2} />
-                  <Text className="text-sm font-medium text-slate-600">
-                    {t("links.overview.new_collection")}
-                  </Text>
-                </Pressable>
-              }
-            />
+          <View className="gap-1.5">
+            {collections.map((col) => (
+              <CollectionListItem
+                key={col.id}
+                emoji={col.emoji ?? undefined}
+                title={col.name}
+                itemsCount={col.itemsCount}
+                href={`/collections/${col.id}`}
+              />
+            ))}
+            <Pressable
+              onPress={handleNewCollectionPress}
+              className="flex-row items-center justify-center gap-2 rounded-xl bg-slate-100/50 py-3 active:opacity-80"
+              accessibilityRole="button"
+              accessibilityLabel={t("links.overview.new_collection")}
+            >
+              <Plus size={18} color={colors.iconMuted} strokeWidth={2} />
+              <Text className="text-sm font-medium text-slate-500">
+                {t("links.overview.new_collection")}
+              </Text>
+            </Pressable>
           </View>
         )}
       </View>
