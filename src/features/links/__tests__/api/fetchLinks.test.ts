@@ -54,6 +54,7 @@ describe("fetchUserLinks", () => {
         p_limit: null,
         p_order_by: null,
         p_collection_id: null,
+        p_uncollected_only: false,
       });
       expect(result.data).toHaveLength(1);
       expect(result.hasMore).toBe(false);
@@ -82,6 +83,7 @@ describe("fetchUserLinks", () => {
         p_limit: null,
         p_order_by: null,
         p_collection_id: null,
+        p_uncollected_only: false,
       });
       expect(result.hasMore).toBe(true);
       expect(result.totalCount).toBe(50);
@@ -109,6 +111,7 @@ describe("fetchUserLinks", () => {
         p_limit: null,
         p_order_by: null,
         p_collection_id: null,
+        p_uncollected_only: false,
       });
       expect(result.totalCount).toBe(5);
     });
@@ -135,6 +138,7 @@ describe("fetchUserLinks", () => {
         p_limit: null,
         p_order_by: null,
         p_collection_id: null,
+        p_uncollected_only: false,
       });
       expect(result.totalCount).toBe(3);
     });
@@ -161,6 +165,7 @@ describe("fetchUserLinks", () => {
         p_limit: 5,
         p_order_by: null,
         p_collection_id: null,
+        p_uncollected_only: false,
       });
       expect(result.hasMore).toBe(false);
     });
@@ -191,6 +196,7 @@ describe("fetchUserLinks", () => {
         p_limit: 5,
         p_order_by: null,
         p_collection_id: null,
+        p_uncollected_only: false,
       });
       expect(result.totalCount).toBe(2);
     });
@@ -220,6 +226,7 @@ describe("fetchUserLinks", () => {
         p_limit: null,
         p_order_by: "triaged_at_asc",
         p_collection_id: null,
+        p_uncollected_only: false,
       });
       expect(result.totalCount).toBe(3);
     });
@@ -248,6 +255,7 @@ describe("fetchUserLinks", () => {
         p_limit: null,
         p_order_by: "created_at_desc",
         p_collection_id: null,
+        p_uncollected_only: false,
       });
       expect(result.totalCount).toBe(5);
     });
@@ -274,6 +282,7 @@ describe("fetchUserLinks", () => {
         p_limit: null,
         p_order_by: null,
         p_collection_id: null,
+        p_uncollected_only: false,
       });
       expect(result.totalCount).toBe(1);
     });
@@ -316,6 +325,50 @@ describe("fetchUserLinks", () => {
         p_limit: null,
         p_order_by: null,
         p_collection_id: collectionId,
+        p_uncollected_only: false,
+      });
+      expect(result.data).toHaveLength(1);
+      expect(result.totalCount).toBe(1);
+    });
+
+    it("uncollectedOnlyを指定して未所属リンクを取得できる", async () => {
+      const mockResponse = {
+        data: {
+          data: [
+            {
+              status_id: "550e8400-e29b-41d4-a716-446655440010",
+              user_id: "550e8400-e29b-41d4-a716-446655440011",
+              status: "stock",
+              triaged_at: "2024-01-02T00:00:00Z",
+              read_at: null,
+              link_id: "550e8400-e29b-41d4-a716-446655440012",
+              url: "https://uncollected.example.com",
+              title: "Uncollected",
+              image_url: null,
+              favicon_url: null,
+              site_name: "Example Site",
+              link_created_at: "2024-01-01T00:00:00Z",
+            },
+          ],
+          hasMore: false,
+          totalCount: 1,
+        },
+        error: null,
+      };
+
+      mockRpc.mockResolvedValueOnce(mockResponse);
+
+      const result = await fetchUserLinks({ uncollectedOnly: true });
+
+      expect(mockRpc).toHaveBeenCalledWith("get_user_links", {
+        p_page_size: 20,
+        p_page: 0,
+        p_status: null,
+        p_is_read: null,
+        p_limit: null,
+        p_order_by: null,
+        p_collection_id: null,
+        p_uncollected_only: true,
       });
       expect(result.data).toHaveLength(1);
       expect(result.totalCount).toBe(1);
@@ -378,6 +431,17 @@ describe("fetchUserLinks", () => {
       await expect(
         fetchUserLinks({ orderBy: "invalid_order_by" }),
       ).rejects.toThrow();
+    });
+
+    it("collectionIdとuncollectedOnlyを同時指定した場合はエラーをスローする", async () => {
+      await expect(
+        fetchUserLinks({
+          collectionId: "550e8400-e29b-41d4-a716-446655440099",
+          uncollectedOnly: true,
+        }),
+      ).rejects.toThrow(
+        "collectionId and uncollectedOnly cannot be used together",
+      );
     });
   });
 });

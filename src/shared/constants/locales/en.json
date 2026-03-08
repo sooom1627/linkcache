@@ -257,6 +257,8 @@
       "added_days_ago": "Added {{daysAgo}} days ago",
       "un_collectioned": "Uncollected",
       "un_collectioned_description": "Links not in any collection",
+      "un_collectioned_empty_title": "No uncollected links",
+      "un_collectioned_empty_description": "All links are already assigned to collections",
       "un_collectioned_todo": "Links not in any collection will appear here.",
       "new_collection": "New Collection",
       "collections_section": "Collections",

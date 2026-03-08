@@ -40,6 +40,15 @@ export const linkQueryKeys = {
       : ([...linkQueryKeys.lists(), "infinite"] as const),
 
   /**
+   * コレクション未所属リンク一覧のクエリキー
+   * @param params - フィルタパラメータ（status, isRead）
+   */
+  uncollectedList: (params?: Pick<LinkFilterParams, "status" | "isRead">) =>
+    params
+      ? ([...linkQueryKeys.lists(), "uncollected", "infinite", params] as const)
+      : ([...linkQueryKeys.lists(), "uncollected", "infinite"] as const),
+
+  /**
    * 制限付きリンク一覧のクエリキー（単一ページ取得用）
    * @param params - フィルタパラメータ（status, isRead, limit）
    */

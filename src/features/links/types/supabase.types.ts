@@ -256,6 +256,7 @@ export type Database = {
           p_page?: number;
           p_page_size?: number;
           p_status?: Database["public"]["Enums"]["triage_status"];
+          p_uncollected_only?: boolean;
         };
         Returns: Json;
       };

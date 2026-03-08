@@ -1,6 +1,10 @@
 import type { AuthError } from "@supabase/supabase-js";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
+import {
+  collectionQueryKeys,
+  linkQueryKeys,
+} from "@/src/features/links/constants/queryKeys";
 import { userQueryKeys } from "@/src/features/users/constants/queryKeys";
 
 import { signOut } from "../api";
@@ -43,6 +47,8 @@ export function useSignOut(options?: {
       // セキュリティ: 前のユーザーのデータが次のユーザーに見えないようにする
       queryClient.removeQueries({ queryKey: authQueryKeys.all });
       queryClient.removeQueries({ queryKey: userQueryKeys.all });
+      queryClient.removeQueries({ queryKey: linkQueryKeys.all });
+      queryClient.removeQueries({ queryKey: collectionQueryKeys.all });
 
       options?.onSuccess?.();
     },

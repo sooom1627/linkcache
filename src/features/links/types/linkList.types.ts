@@ -78,6 +78,8 @@ export interface GetUserLinksParams extends LinkFilterParams {
   orderBy?: string | null;
   /** コレクションIDでフィルタ（指定時はそのコレクション内のリンクのみ取得） */
   collectionId?: string;
+  /** コレクション未所属リンクのみ取得 */
+  uncollectedOnly?: boolean;
 }
 
 /**

@@ -22,6 +22,7 @@ import {
  * @param params.limit - 件数制限（ページング無視）
  * @param params.orderBy - ソート順（triaged_at_asc | created_at_desc | null。null 時は link_status.created_at 降順）
  * @param params.collectionId - コレクションIDでフィルタ（指定時はそのコレクション内のリンクのみ）
+ * @param params.uncollectedOnly - コレクション未所属リンクのみ取得
  * @returns ページング情報付きのリンク一覧
  * @throws Supabaseエラー（認証エラー、DBエラーなど）
  *
@@ -48,10 +49,15 @@ export async function fetchUserLinks(
     limit,
     orderBy,
     collectionId,
+    uncollectedOnly = false,
   } = params;
 
   // orderBy を許可リストで検証
   const validatedOrderBy = orderBySchema.parse(orderBy ?? null);
+
+  if (collectionId != null && uncollectedOnly) {
+    throw new Error("collectionId and uncollectedOnly cannot be used together");
+  }
 
   const response = await supabase.rpc("get_user_links", {
     p_page_size: pageSize,
@@ -61,6 +67,7 @@ export async function fetchUserLinks(
     p_limit: limit ?? null,
     p_order_by: validatedOrderBy,
     p_collection_id: collectionId ?? null,
+    p_uncollected_only: uncollectedOnly,
   });
 
   if (response.error) {
