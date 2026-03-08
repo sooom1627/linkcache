@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 
 import { CollectionListItem } from "@/src/features/links/components/CollectionListItem";
 import { useCollections } from "@/src/features/links/hooks/useCollections";
+import { useUncollectedLinksCount } from "@/src/features/links/hooks/useUncollectedLinksCount";
 import { colors } from "@/src/shared/constants/colors";
 
 /** モック: 統計 */
@@ -47,9 +48,6 @@ const STATUS_ITEMS = [
   },
 ] as const;
 
-// TODO: replace MOCK_UN_COLLECTIONED_COUNT with real un-collected count when useUncollectedLinksCount (or similar API) is implemented
-const MOCK_UN_COLLECTIONED_COUNT = 8;
-
 /** モック: 要対応リンク */
 const MOCK_NEED_ATTENTION = [
   { title: "Optimizing UI for High Latency", daysAgo: 45 },
@@ -74,6 +72,7 @@ export function LinksOverViewScreen() {
     isLoading: isCollectionsLoading,
     isError: isCollectionsError,
   } = useCollections({ orderBy: "items_count", limit: 5 });
+  const { count: uncollectedCount } = useUncollectedLinksCount();
 
   const handleStatusPress = (statusParam: string) => {
     const params = statusParam === "all" ? {} : { status: statusParam };
@@ -154,7 +153,7 @@ export function LinksOverViewScreen() {
         <CollectionListItem
           emoji="📂"
           title={t("links.overview.un_collectioned")}
-          itemsCount={MOCK_UN_COLLECTIONED_COUNT}
+          itemsCount={uncollectedCount}
           href="/links/un-collectioned"
         />
         {isCollectionsLoading ? (

@@ -17,6 +17,8 @@ export { useLinks } from "./hooks/useLinks";
 export type { UseLinksReturn } from "./hooks/useLinks";
 export { useOgpMetadata } from "./hooks/useOgpMetadata";
 export type { UseOgpMetadataOptions } from "./hooks/useOgpMetadata";
+export { useUncollectedLinksCount } from "./hooks/useUncollectedLinksCount";
+export type { UseUncollectedLinksCountReturn } from "./hooks/useUncollectedLinksCount";
 export { useUpdateLinkReadStatus } from "./hooks/useUpdateLinkReadStatus";
 export type { UseUpdateLinkReadStatusReturn } from "./hooks/useUpdateLinkReadStatus";
 

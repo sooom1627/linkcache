@@ -49,6 +49,12 @@ export const linkQueryKeys = {
       : ([...linkQueryKeys.lists(), "uncollected", "infinite"] as const),
 
   /**
+   * コレクション未所属リンク件数のクエリキー
+   */
+  uncollectedCount: () =>
+    [...linkQueryKeys.lists(), "uncollected", "count"] as const,
+
+  /**
    * 制限付きリンク一覧のクエリキー（単一ページ取得用）
    * @param params - フィルタパラメータ（status, isRead, limit）
    */

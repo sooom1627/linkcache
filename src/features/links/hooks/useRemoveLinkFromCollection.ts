@@ -69,6 +69,9 @@ export function useRemoveLinkFromCollection() {
       queryClient.invalidateQueries({
         queryKey: linkQueryKeys.uncollectedList(),
       });
+      queryClient.invalidateQueries({
+        queryKey: linkQueryKeys.uncollectedCount(),
+      });
     },
   });
 

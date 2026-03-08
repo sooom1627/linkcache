@@ -7,13 +7,11 @@ import { useTranslation } from "react-i18next";
 
 import { CollectionListItem } from "@/src/features/links/components/CollectionListItem";
 import { useCollections } from "@/src/features/links/hooks/useCollections";
+import { useUncollectedLinksCount } from "@/src/features/links/hooks/useUncollectedLinksCount";
 import { CollectionCreateModal } from "@/src/features/links/screens/CollectionCreateModal";
 import { EmptyState } from "@/src/shared/components/EmptyState";
 import { colors } from "@/src/shared/constants/colors";
 import { useBottomSheetModal } from "@/src/shared/hooks/useBottomSheetModal";
-
-/** モック: Un Collectioned のリンク数 */
-const MOCK_UN_COLLECTIONED_COUNT = 8;
 
 /**
  * コレクション一覧画面
@@ -37,6 +35,7 @@ export function CollectionListScreen() {
   const { collections, isLoading, isError } = useCollections({
     orderBy: "items_count",
   });
+  const { count: uncollectedCount } = useUncollectedLinksCount();
   const isEmpty = !isLoading && !isError && collections.length === 0;
 
   return (
@@ -49,7 +48,7 @@ export function CollectionListScreen() {
         <CollectionListItem
           emoji="📂"
           title={t("links.overview.un_collectioned")}
-          itemsCount={MOCK_UN_COLLECTIONED_COUNT}
+          itemsCount={uncollectedCount}
           href="/links/un-collectioned"
         />
       </View>

@@ -89,6 +89,9 @@ describe("useAddLinkToCollection", () => {
     expect(invalidateSpy).toHaveBeenCalledWith({
       queryKey: linkQueryKeys.uncollectedList(),
     });
+    expect(invalidateSpy).toHaveBeenCalledWith({
+      queryKey: linkQueryKeys.uncollectedCount(),
+    });
 
     invalidateSpy.mockRestore();
   });
@@ -167,6 +170,9 @@ describe("useAddLinkToCollection", () => {
     });
     expect(invalidateSpy).toHaveBeenCalledWith({
       queryKey: linkQueryKeys.uncollectedList(),
+    });
+    expect(invalidateSpy).toHaveBeenCalledWith({
+      queryKey: linkQueryKeys.uncollectedCount(),
     });
 
     invalidateSpy.mockRestore();
