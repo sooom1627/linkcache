@@ -1,4 +1,4 @@
-import { memo, useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useMemo, useRef, useState } from "react";
 
 import { ActivityIndicator, Alert, ScrollView, Text, View } from "react-native";
 
@@ -148,24 +148,52 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
     ],
   );
 
+  const displayOrderRef = useRef<string[]>([]);
+  const prevLinkIdRef = useRef<string>(linkId);
+
   const sortedCollections = useMemo(() => {
-    type Element = (typeof collections)[number];
-    const { linked, unlinked } = collections.reduce<{
-      linked: Element[];
-      unlinked: Element[];
-    }>(
-      (acc, c) => {
-        if (linkedCollectionIds.has(c.id)) {
-          acc.linked.push(c);
-        } else {
-          acc.unlinked.push(c);
-        }
-        return acc;
-      },
-      { linked: [] as Element[], unlinked: [] as Element[] },
+    if (prevLinkIdRef.current !== linkId) {
+      displayOrderRef.current = [];
+      prevLinkIdRef.current = linkId;
+    }
+
+    // データ未取得時は空配列を返し、ref を設定しない
+    if (collections.length === 0 || isLinkedCollectionsLoading) {
+      return [];
+    }
+
+    const collectionMap = new Map(collections.map((c) => [c.id, c]));
+
+    if (displayOrderRef.current.length === 0) {
+      // 初回: linked(サーバー順) → unlinked(サーバー順)
+      const linked = collections.filter((c) => linkedCollectionIds.has(c.id));
+      const unlinked = collections.filter(
+        (c) => !linkedCollectionIds.has(c.id),
+      );
+      const ordered = [...linked, ...unlinked];
+      displayOrderRef.current = ordered.map((c) => c.id);
+      return ordered;
+    }
+
+    // 既存の順序を維持、削除されたコレクションを除外
+    const existingIds = new Set(collections.map((c) => c.id));
+    const orderedIds = displayOrderRef.current.filter((id) =>
+      existingIds.has(id),
     );
-    return [...linked, ...unlinked];
-  }, [collections, linkedCollectionIds]);
+
+    // 新規コレクションを末尾に追加
+    const orderedSet = new Set(orderedIds);
+    for (const c of collections) {
+      if (!orderedSet.has(c.id)) {
+        orderedIds.push(c.id);
+      }
+    }
+
+    displayOrderRef.current = orderedIds;
+    return orderedIds
+      .map((id) => collectionMap.get(id))
+      .filter((c): c is NonNullable<typeof c> => c != null);
+  }, [collections, linkedCollectionIds, linkId, isLinkedCollectionsLoading]);
 
   const handleBack = useCallback(() => {
     router.back();
