@@ -15,6 +15,7 @@ import { FlashList } from "@shopify/flash-list";
 import { Ellipsis, FolderOpen, Pencil, Trash2 } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 
+import { EmptyState } from "@/src/shared/components/EmptyState";
 import type { ToggleMenuItem } from "@/src/shared/components/ToggleMenu";
 import { ToggleMenu } from "@/src/shared/components/ToggleMenu";
 import { colors } from "@/src/shared/constants/colors";
@@ -228,17 +229,14 @@ export function CollectionDetailScreen({ rawId }: CollectionDetailScreenProps) {
       );
     }
     return (
-      <View className="items-center px-8 py-12">
-        <View className="mb-6 rounded-full bg-slate-50 p-6">
-          <FolderOpen size={48} color={colors.iconMuted} strokeWidth={1} />
-        </View>
-        <Text className="mb-2 text-center text-lg font-semibold text-slate-800">
-          {t("links.collection_detail.empty_title")}
-        </Text>
-        <Text className="text-center text-sm leading-5 text-slate-500">
-          {t("links.collection_detail.empty_description")}
-        </Text>
-      </View>
+      <EmptyState
+        icon={
+          <FolderOpen size={40} color={colors.iconMuted} strokeWidth={1.5} />
+        }
+        title={t("links.collection_detail.empty_title")}
+        description={t("links.collection_detail.empty_description")}
+        variant="compact"
+      />
     );
   }, [t, isLinksLoading]);
 

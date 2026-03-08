@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import { CollectionCard } from "@/src/features/links/components/CollectionCard";
 import { useCollections } from "@/src/features/links/hooks/useCollections";
 import { CollectionCreateModal } from "@/src/features/links/screens/CollectionCreateModal";
+import { EmptyState } from "@/src/shared/components/EmptyState";
 import { colors } from "@/src/shared/constants/colors";
 import { useBottomSheetModal } from "@/src/shared/hooks/useBottomSheetModal";
 
@@ -82,27 +83,25 @@ export function CollectionListScreen() {
             </Text>
           </View>
         ) : isEmpty ? (
-          <View className="mt-12 items-center px-8">
-            <View className="mb-6 rounded-full bg-slate-50 p-6">
-              <FolderOpen size={48} color={colors.iconMuted} strokeWidth={1} />
-            </View>
-            <Text className="mb-2 text-center text-lg font-semibold text-slate-800">
-              {t("links.collection_list.empty_title")}
-            </Text>
-            <Text className="mb-8 text-center text-sm leading-5 text-slate-500">
-              {t("links.collection_list.empty_description")}
-            </Text>
-            <Pressable
-              onPress={handleNewCollectionPress}
-              className="flex-row items-center gap-2 rounded-full bg-mainDark px-6 py-3 shadow-sm active:bg-mainHover"
-              accessibilityRole="button"
-              accessibilityLabel={t("links.overview.new_collection")}
-            >
-              <Plus size={20} color={colors.accent} strokeWidth={2.5} />
-              <Text className="font-semibold text-white">
-                {t("links.overview.new_collection")}
-              </Text>
-            </Pressable>
+          <View className="mt-12">
+            <EmptyState
+              icon={
+                <FolderOpen
+                  size={40}
+                  color={colors.iconMuted}
+                  strokeWidth={1.5}
+                />
+              }
+              title={t("links.collection_list.empty_title")}
+              description={t("links.collection_list.empty_description")}
+              actionLabel={t("links.overview.new_collection")}
+              onAction={handleNewCollectionPress}
+              actionIcon={
+                <Plus size={20} color={colors.accent} strokeWidth={2.5} />
+              }
+              ctaVariant="primary"
+              variant="compact"
+            />
           </View>
         ) : (
           <View className="gap-2">

@@ -1,22 +1,33 @@
-import { memo, useCallback } from "react";
+import { memo, useCallback, useMemo } from "react";
 
-import { ActivityIndicator, Pressable, Text, View } from "react-native";
-
-import { Link, useRouter } from "expo-router";
+import { View } from "react-native";
 
 import { FlashList } from "@shopify/flash-list";
-import { ArrowRight, Layers2 } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ErrorStateView } from "@/src/shared/components/ErrorStateView";
-import { colors } from "@/src/shared/constants/colors";
 
 import type { useLinks } from "../hooks/useLinks";
-import type { TabType, UserLink } from "../types/linkList.types";
+import type { TabType, TriageStatus, UserLink } from "../types/linkList.types";
 
 import { LinkListCard } from "./LinkListCard";
-import { LinkListEmpty } from "./LinkListEmpty";
+import {
+  EmptyDone,
+  EmptyLatest,
+  EmptyReadSoon,
+  EmptyStock,
+} from "./LinkListEmptyStates";
+import { LinkListSkeleton } from "./LinkListSkeleton";
+import { LinkListViewAllFooter } from "./LinkListViewAllFooter";
+
+/** タブごとの View All 遷移先の status パラメータ */
+const TAB_VIEW_ALL_STATUS: Record<TabType, TriageStatus> = {
+  read_soon: "read_soon",
+  latest: "new",
+  stock: "stock",
+  done: "done",
+};
 
 interface LinkListTabContentProps {
   isLoading: boolean;
@@ -24,38 +35,6 @@ interface LinkListTabContentProps {
   error: Error | null;
   links: ReturnType<typeof useLinks>["links"];
   tabType: TabType;
-}
-
-/**
- * Read Soon タブ用の空状態（Triage へ誘導）
- */
-function EmptyReadSoon() {
-  const { t } = useTranslation();
-  const router = useRouter();
-
-  return (
-    <View className="flex-1 items-center justify-center p-8">
-      <View className="mb-6 rounded-full bg-slate-50 p-6">
-        <Layers2 size={48} color={colors.accent} strokeWidth={1} />
-      </View>
-      <Text className="mb-2 text-center text-lg font-semibold text-slate-900">
-        {t("links.dashboard.empty_read_soon.title")}
-      </Text>
-      <Text className="mb-8 text-center text-sm leading-5 text-slate-600">
-        {t("links.dashboard.empty_read_soon.description")}
-      </Text>
-
-      <Pressable
-        onPress={() => router.push("/swipes")}
-        className="flex-row items-center gap-2 rounded-full bg-mainDark px-6 py-3 shadow-sm active:bg-mainHover"
-      >
-        <Text className="font-semibold text-white">
-          {t("links.dashboard.empty_read_soon.go_to_triage")}
-        </Text>
-        <ArrowRight size={20} color={colors.accent} strokeWidth={1.5} />
-      </Pressable>
-    </View>
-  );
 }
 
 /**
@@ -87,49 +66,39 @@ export const LinkListTabContent = memo(function LinkListTabContent({
 
   const keyExtractor = useCallback((item: UserLink) => item.status_id, []);
 
-  const viewAllHref =
-    tabType === "read_soon"
-      ? "/links?status=read_soon"
-      : tabType === "latest"
-        ? "/links?status=new"
-        : "/links";
-
-  const ListFooterComponent = useCallback(
-    () => (
-      <View className="flex-row items-center justify-center py-4">
-        <Link
-          href={viewAllHref}
-          className="rounded-full border border-slate-200 px-4 py-2"
-        >
-          <View className="flex-row items-center justify-center gap-2">
-            <Text className="text-center text-sm text-slate-500">
-              {t("links.dashboard.view_all")}
-            </Text>
-            <ArrowRight size={14} color={colors.icon} strokeWidth={1.5} />
-          </View>
-        </Link>
-      </View>
-    ),
-    [viewAllHref, t],
-  );
-
-  const ListEmptyComponent = useCallback(
-    () =>
-      tabType === "read_soon" ? (
-        <EmptyReadSoon />
-      ) : (
-        <View className="flex-1 items-center justify-center py-8">
-          <LinkListEmpty />
-        </View>
-      ),
+  const viewAllHref = useMemo(
+    () => ({
+      pathname: "/links" as const,
+      params: { status: TAB_VIEW_ALL_STATUS[tabType] },
+    }),
     [tabType],
   );
 
+  const ListFooterComponent = useCallback(
+    () => <LinkListViewAllFooter viewAllHref={viewAllHref} />,
+    [viewAllHref],
+  );
+
+  const ListEmptyComponent = useCallback(() => {
+    switch (tabType) {
+      case "read_soon":
+        return <EmptyReadSoon />;
+      case "latest":
+        return <EmptyLatest />;
+      case "stock":
+        return <EmptyStock />;
+      case "done":
+        return <EmptyDone />;
+    }
+  }, [tabType]);
+
   if (isLoading) {
     return (
-      <View className="flex-1 items-center justify-center py-8">
-        <ActivityIndicator size="large" color={colors.icon} />
-      </View>
+      <LinkListSkeleton
+        contentContainerStyle={{
+          paddingBottom: insets.bottom + TAB_BAR_HEIGHT,
+        }}
+      />
     );
   }
 
@@ -148,7 +117,7 @@ export const LinkListTabContent = memo(function LinkListTabContent({
       data={links}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
-      ListFooterComponent={ListFooterComponent}
+      ListFooterComponent={links.length > 0 ? ListFooterComponent : undefined}
       ListEmptyComponent={ListEmptyComponent}
       contentContainerStyle={{ paddingBottom: insets.bottom + TAB_BAR_HEIGHT }}
       showsVerticalScrollIndicator={false}

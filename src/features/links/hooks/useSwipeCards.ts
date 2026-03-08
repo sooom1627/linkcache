@@ -9,6 +9,7 @@ import i18n from "@/src/shared/utils/i18n";
 import { showToastError } from "@/src/shared/utils/toast";
 
 import { updateLinkStatus } from "../api/updateLinkStatus.api";
+import { listTabsLimit } from "../constants/listTabs";
 import { linkQueryKeys } from "../constants/queryKeys";
 import type { TriageStatus, UserLink } from "../types/linkList.types";
 
@@ -147,7 +148,34 @@ export function useSwipeCards(
     setSwipeHistory((prev) => prev.slice(0, -1));
   }, []);
 
-  // ステータス更新Mutation（invalidateQueriesを呼び出さない）
+  // スワイプ/Undo完了後にLinkListTabsとLinkListScreenのクエリを無効化
+  const refreshTabsAfterSwipe = useCallback(() => {
+    void queryClient.invalidateQueries({
+      queryKey: linkQueryKeys.listLimited({
+        status: "read_soon",
+        isRead: false,
+        limit: listTabsLimit,
+      }),
+    });
+    void queryClient.invalidateQueries({
+      queryKey: linkQueryKeys.listLimited({
+        status: "new",
+        isRead: false,
+        limit: listTabsLimit,
+      }),
+    });
+    void queryClient.invalidateQueries({
+      queryKey: linkQueryKeys.listLimited({
+        status: "stock",
+        limit: listTabsLimit,
+      }),
+    });
+    void queryClient.invalidateQueries({
+      queryKey: linkQueryKeys.list(),
+    });
+  }, [queryClient]);
+
+  // ステータス更新Mutation
   const updateMutation = useMutation({
     mutationFn: ({
       linkId,
@@ -158,6 +186,7 @@ export function useSwipeCards(
     }) => updateLinkStatus(linkId, status),
     onSuccess: () => {
       void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      refreshTabsAfterSwipe();
     },
     onError: () => {
       // 失敗時はUIをロールバック
@@ -184,6 +213,7 @@ export function useSwipeCards(
     }) => updateLinkStatus(linkId, status),
     onSuccess: () => {
       void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      refreshTabsAfterSwipe();
     },
     onError: (error, variables) => {
       // Undo失敗時は再度swipeを追加（元の状態に戻す）
@@ -217,31 +247,8 @@ export function useSwipeCards(
       } else {
         updateMutation.mutate({ linkId: item.link_id, status: "stock" });
       }
-
-      // スワイプ後にLinkListTabsとLinkListScreenで使用されるクエリキーを無効化
-      // UIの表示がガタガタしないように、バックグラウンドで再フェッチされる
-      // 次のイベントループで実行して、テスト時のact警告を回避
-      setTimeout(() => {
-        // LinkListTabsで使用されるクエリキー
-        void queryClient.invalidateQueries({
-          queryKey: linkQueryKeys.listLimited({
-            status: "read_soon",
-            isRead: false,
-          }),
-        });
-        void queryClient.invalidateQueries({
-          queryKey: linkQueryKeys.listLimited({
-            status: "new",
-            isRead: false,
-          }),
-        });
-        // LinkListScreenで使用されるクエリキー（フィルタなし）
-        void queryClient.invalidateQueries({
-          queryKey: linkQueryKeys.list(),
-        });
-      }, 0);
     },
-    [updateMutation, queryClient],
+    [updateMutation],
   );
 
   // Undo
@@ -262,24 +269,7 @@ export function useSwipeCards(
       status: sourceType,
       direction: lastSwipe.direction,
     });
-
-    // Undo後もLinkListTabsとLinkListScreenで使用されるクエリキーを無効化
-    // 次のイベントループで実行して、テスト時のact警告を回避
-    setTimeout(() => {
-      void queryClient.invalidateQueries({
-        queryKey: linkQueryKeys.listLimited({
-          status: "read_soon",
-          isRead: false,
-        }),
-      });
-      void queryClient.invalidateQueries({
-        queryKey: linkQueryKeys.listLimited({ status: "new", isRead: false }),
-      });
-      void queryClient.invalidateQueries({
-        queryKey: linkQueryKeys.list(),
-      });
-    }, 0);
-  }, [swipeHistory, sourceType, undoMutation, queryClient]);
+  }, [swipeHistory, sourceType, undoMutation]);
 
   // 再スタート（セッションをリセットして最新データを再取得）
   const restart = useCallback(() => {
