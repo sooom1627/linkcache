@@ -29,20 +29,29 @@ export function LinkListFilterMenu({ isDisabled }: { isDisabled: boolean }) {
     <>
       <Pressable
         onPress={handlePress}
-        className={`flex-row items-center gap-2 rounded-full px-3 py-1.5 ${
+        className={`size-16 items-center justify-center rounded-full ${
           hasActiveFilters
-            ? "bg-mainHover active:bg-main"
-            : "bg-surfaceMuted active:bg-surfaceMutedActive"
+            ? "bg-main active:bg-mainDark"
+            : "bg-white active:bg-slate-100"
         }`}
+        style={[
+          { opacity: isDisabled ? 0.5 : 1 },
+          {
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 6,
+            elevation: 3,
+          },
+        ]}
         accessibilityRole="button"
         accessibilityLabel={`Open filter menu${hasActiveFilters ? `, ${activeFilterCount} filter${activeFilterCount > 1 ? "s" : ""} active` : ""}`}
         accessibilityHint="Tap to filter links by status or read status"
         hitSlop={8}
         disabled={isDisabled}
-        style={{ opacity: isDisabled ? 0.5 : 1 }}
       >
         <SlidersHorizontal
-          size={14}
+          size={22}
           color={
             isDisabled
               ? colors.iconMuted
@@ -50,16 +59,11 @@ export function LinkListFilterMenu({ isDisabled }: { isDisabled: boolean }) {
                 ? colors.textOnDark
                 : colors.textSecondary
           }
-          strokeWidth={2.5}
+          strokeWidth={2}
         />
-        <Text
-          className={`text-sm font-medium ${hasActiveFilters ? "text-white" : "text-slate-600"}`}
-        >
-          Filter
-        </Text>
         {hasActiveFilters && (
-          <View className="min-w-[18px] items-center justify-center rounded-full bg-white px-1.5 py-0.5">
-            <Text className="text-xs font-semibold text-slate-700">
+          <View className="absolute -right-0.5 -top-0.5 min-w-[20px] items-center justify-center rounded-full bg-orange-500 px-1.5 py-0.5">
+            <Text className="text-xs font-bold text-white">
               {activeFilterCount}
             </Text>
           </View>

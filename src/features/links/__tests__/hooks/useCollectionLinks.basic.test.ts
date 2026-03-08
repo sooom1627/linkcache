@@ -90,6 +90,59 @@ describe("useCollectionLinks - basic", () => {
     expect(queries).toHaveLength(1);
   });
 
+  it("filterParamsを指定するとfetchUserLinksにstatusとisReadが渡される", async () => {
+    mockFetchUserLinks.mockResolvedValueOnce({
+      data: [],
+      hasMore: false,
+      totalCount: 0,
+    });
+
+    const { result } = renderHook(
+      () =>
+        useCollectionLinks(MOCK_COLLECTION_ID, {
+          status: "read_soon",
+          isRead: false,
+        }),
+      { wrapper },
+    );
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    expect(mockFetchUserLinks).toHaveBeenCalledWith({
+      collectionId: MOCK_COLLECTION_ID,
+      pageSize: 20,
+      page: 0,
+      status: "read_soon",
+      isRead: false,
+    });
+  });
+
+  it("filterParams指定時はクエリキーにfilterParamsが含まれる", async () => {
+    mockFetchUserLinks.mockResolvedValueOnce({
+      data: [],
+      hasMore: false,
+      totalCount: 0,
+    });
+
+    const filterParams = { status: "done" as const, isRead: true };
+    const { result } = renderHook(
+      () => useCollectionLinks(MOCK_COLLECTION_ID, filterParams),
+      { wrapper },
+    );
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    const queryCache = testQueryClient.getQueryCache();
+    const queries = queryCache.findAll({
+      queryKey: collectionQueryKeys.links(MOCK_COLLECTION_ID, filterParams),
+    });
+    expect(queries).toHaveLength(1);
+  });
+
   it("selectを経由してlink_created_atが返される", async () => {
     mockFetchUserLinks.mockResolvedValueOnce({
       data: [createMockLink(1)],

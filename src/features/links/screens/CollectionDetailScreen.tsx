@@ -12,7 +12,13 @@ import {
 import { useRouter } from "expo-router";
 
 import { FlashList } from "@shopify/flash-list";
-import { Ellipsis, FolderOpen, Pencil, Trash2 } from "lucide-react-native";
+import {
+  Ellipsis,
+  Filter,
+  FolderOpen,
+  Pencil,
+  Trash2,
+} from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 
 import { EmptyState } from "@/src/shared/components/EmptyState";
@@ -23,7 +29,12 @@ import { useBottomSheetModal } from "@/src/shared/hooks/useBottomSheetModal";
 import { showToastError } from "@/src/shared/utils/toast";
 
 import { LinkListCard } from "../components/LinkListCard";
+import { LinkListFilterMenu } from "../components/LinkListFilterMenu";
 import { LinkListLoadingFooter } from "../components/LinkListLoadingFooter";
+import {
+  LinkListFilterProvider,
+  useLinkListFilterContext,
+} from "../contexts/LinkListFilterContext";
 import { useCollection } from "../hooks/useCollection";
 import { useCollectionLinks } from "../hooks/useCollectionLinks";
 import { useDeleteCollection } from "../hooks/useDeleteCollection";
@@ -47,11 +58,37 @@ function parseCollectionId(
  *
  * コレクション内のリンク一覧を FlashList + LinkListCard で表示。
  * CollectionCard / CollectionChip タップ時の遷移先。
+ * ステータス・既読状態で絞り込み可能。
  *
  * - useCollection: コレクション詳細（名前、emoji、件数）
- * - useCollectionLinks: コレクション内リンク一覧（fetchUserLinks({ collectionId }) 経由）
+ * - useCollectionLinks: コレクション内リンク一覧（fetchUserLinks({ collectionId, status, isRead }) 経由）
  */
 export function CollectionDetailScreen({ rawId }: CollectionDetailScreenProps) {
+  const { t } = useTranslation();
+  const collectionId = parseCollectionId(rawId);
+
+  if (collectionId == null || collectionId === "") {
+    return (
+      <View className="flex-1 items-center justify-center px-6">
+        <Text className="text-center text-base text-slate-500">
+          {t("links.collection_detail.not_found")}
+        </Text>
+      </View>
+    );
+  }
+
+  return (
+    <LinkListFilterProvider>
+      <CollectionDetailScreenContent collectionId={collectionId} />
+    </LinkListFilterProvider>
+  );
+}
+
+function CollectionDetailScreenContent({
+  collectionId,
+}: {
+  collectionId: string;
+}) {
   const { t } = useTranslation();
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -60,19 +97,26 @@ export function CollectionDetailScreen({ rawId }: CollectionDetailScreenProps) {
     present: presentEditModal,
     dismiss: dismissEditModal,
   } = useBottomSheetModal();
+  const { useLinksOptions, hasActiveFilters, resetFilters } =
+    useLinkListFilterContext();
 
-  const collectionId = parseCollectionId(rawId);
   const { deleteCollection, isPending: isDeleting } = useDeleteCollection();
-  const { collection, isLoading: isCollectionLoading } = useCollection(
-    collectionId ?? "",
-  );
+  const { collection, isLoading: isCollectionLoading } =
+    useCollection(collectionId);
+  const filterParams = useMemo(() => {
+    const { status, isRead } = useLinksOptions;
+    return status !== undefined || isRead !== undefined
+      ? { status, isRead }
+      : undefined;
+  }, [useLinksOptions]);
   const {
     links,
     isLoading: isLinksLoading,
     isFetchingNextPage,
+    isError: isLinksError,
     hasNextPage,
     fetchNextPage,
-  } = useCollectionLinks(collectionId ?? "");
+  } = useCollectionLinks(collectionId, filterParams);
 
   const handleEndReached = useCallback(() => {
     if (hasNextPage && !isFetchingNextPage) {
@@ -228,6 +272,19 @@ export function CollectionDetailScreen({ rawId }: CollectionDetailScreenProps) {
         </View>
       );
     }
+    if (hasActiveFilters) {
+      return (
+        <EmptyState
+          icon={<Filter size={40} color={colors.iconMuted} strokeWidth={1.5} />}
+          title={t("links.list.filter_empty_title")}
+          description={t("links.list.filter_empty_description")}
+          actionLabel={t("links.filter.reset")}
+          onAction={resetFilters}
+          ctaVariant="secondary"
+          variant="compact"
+        />
+      );
+    }
     return (
       <EmptyState
         icon={
@@ -238,17 +295,7 @@ export function CollectionDetailScreen({ rawId }: CollectionDetailScreenProps) {
         variant="compact"
       />
     );
-  }, [t, isLinksLoading]);
-
-  if (collectionId == null || collectionId === "") {
-    return (
-      <View className="flex-1 items-center justify-center px-6">
-        <Text className="text-center text-base text-slate-500">
-          {t("links.collection_detail.not_found")}
-        </Text>
-      </View>
-    );
-  }
+  }, [t, isLinksLoading, hasActiveFilters, resetFilters]);
 
   if (!collection && isCollectionLoading) {
     return (
@@ -269,7 +316,17 @@ export function CollectionDetailScreen({ rawId }: CollectionDetailScreenProps) {
   }
 
   return (
-    <View className="flex-1">
+    <View className="relative flex-1">
+      <View className="absolute bottom-16 right-4 z-50">
+        <LinkListFilterMenu
+          isDisabled={
+            isLinksLoading ||
+            isFetchingNextPage ||
+            isLinksError ||
+            (links.length === 0 && !hasActiveFilters)
+          }
+        />
+      </View>
       <FlashList
         data={isLinksLoading ? (links ?? []) : links}
         renderItem={renderItem}

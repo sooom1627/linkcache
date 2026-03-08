@@ -4,7 +4,7 @@ import { dataHelpers } from "@/src/shared/utils/timezone";
 
 import { fetchUserLinks } from "../api/fetchLinks.api";
 import { collectionQueryKeys } from "../constants/queryKeys";
-import type { UserLink } from "../types/linkList.types";
+import type { LinkFilterParams, UserLink } from "../types/linkList.types";
 
 /** コレクション内リンクの1ページあたりの件数 */
 const COLLECTION_PAGE_SIZE = 20;
@@ -26,19 +26,24 @@ export interface UseCollectionLinksReturn {
  *
  * useInfiniteQuery でページング対応。fetchUserLinks({ collectionId, pageSize, page })
  * を呼び出し、hasMore に応じて次のページを取得する。
+ * status, isRead でステータス・既読状態の絞り込みが可能。
  *
  * @param collectionId - コレクションID。空文字の場合はクエリを実行しない
+ * @param filterParams - フィルタパラメータ（status, isRead）
  */
 export function useCollectionLinks(
   collectionId: string,
+  filterParams?: Pick<LinkFilterParams, "status" | "isRead">,
 ): UseCollectionLinksReturn {
   const infiniteQuery = useInfiniteQuery({
-    queryKey: collectionQueryKeys.links(collectionId),
+    queryKey: collectionQueryKeys.links(collectionId, filterParams),
     queryFn: ({ pageParam = 0 }) =>
       fetchUserLinks({
         collectionId,
         pageSize: COLLECTION_PAGE_SIZE,
         page: pageParam,
+        status: filterParams?.status,
+        isRead: filterParams?.isRead,
       }),
     initialPageParam: 0,
     getNextPageParam: (lastPage, _allPages, lastPageParam) => {

@@ -99,10 +99,19 @@ export const collectionQueryKeys = {
    * useAddLinkToCollection の onSettled でも invalidate される。
    *
    * @param collectionId - コレクションID
-   * @returns ["collections", "detail", collectionId, "links"]
+   * @param filterParams - フィルタパラメータ（status, isRead）
    */
-  links: (collectionId: string) =>
-    [...collectionQueryKeys.detail(collectionId), "links"] as const,
+  links: (
+    collectionId: string,
+    filterParams?: Pick<LinkFilterParams, "status" | "isRead">,
+  ) =>
+    filterParams
+      ? ([
+          ...collectionQueryKeys.detail(collectionId),
+          "links",
+          filterParams,
+        ] as const)
+      : ([...collectionQueryKeys.detail(collectionId), "links"] as const),
 
   /**
    * リンクに紐づくコレクションID一覧のクエリキー
