@@ -226,12 +226,12 @@
         "add_link": "Add Link"
       },
       "empty_stock": {
-        "title": "Your interest library",
-        "description": "Stock info here for later. No need to read now",
+        "title": "Saved for later",
+        "description": "Save interesting links here for later. No need to read them now",
         "go_to_triage": "Start Triage"
       },
       "empty_done": {
-        "title": "Nice reading",
+        "title": "Nice work",
         "description": "Keep building your knowledge",
         "go_to_triage": "Start Triage"
       }

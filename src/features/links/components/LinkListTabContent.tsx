@@ -9,7 +9,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ErrorStateView } from "@/src/shared/components/ErrorStateView";
 
 import type { useLinks } from "../hooks/useLinks";
-import type { TabType, UserLink } from "../types/linkList.types";
+import type { TabType, TriageStatus, UserLink } from "../types/linkList.types";
 
 import { LinkListCard } from "./LinkListCard";
 import {
@@ -22,7 +22,7 @@ import { LinkListSkeleton } from "./LinkListSkeleton";
 import { LinkListViewAllFooter } from "./LinkListViewAllFooter";
 
 /** タブごとの View All 遷移先の status パラメータ */
-const TAB_VIEW_ALL_STATUS: Record<TabType, string> = {
+const TAB_VIEW_ALL_STATUS: Record<TabType, TriageStatus> = {
   read_soon: "read_soon",
   latest: "new",
   stock: "stock",

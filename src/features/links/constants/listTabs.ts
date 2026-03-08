@@ -1,2 +1,2 @@
-/** LinkListTabs の各タブ表示件数 */
+/** Number of items displayed per tab in LinkListTabs */
 export const listTabsLimit = 10;

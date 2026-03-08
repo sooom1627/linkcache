@@ -1,28 +1,28 @@
 import { Pressable, Text, View } from "react-native";
 
 export interface EmptyStateProps {
-  /** アイコンまたはイラスト（オプション） */
+  /** Optional icon or illustration. */
   icon?: React.ReactNode;
-  /** 見出し（必須） */
+  /** Required heading text. */
   title: string;
-  /** 補足説明 */
+  /** Supplemental description text. */
   description?: string;
-  /** CTA ラベル */
+  /** Label for the call-to-action button. */
   actionLabel?: string;
-  /** CTA 押下時のコールバック */
+  /** Callback when the CTA button is pressed. */
   onAction?: () => void;
-  /** CTA 内のアイコン（Plus, ArrowRight 等） */
+  /** Icon inside the CTA (e.g. Plus, ArrowRight). */
   actionIcon?: React.ReactNode;
-  /** CTA スタイル: primary=塗り、secondary=枠線のみ */
+  /** CTA style: primary=filled, secondary=outline only. */
   ctaVariant?: "primary" | "secondary";
-  /** コンテナの余白・配置 */
+  /** Container layout: centered=full-height centered, compact=reduced padding. */
   variant?: "centered" | "compact";
 }
 
 /**
- * 汎用空状態コンポーネント
+ * Generic empty state component.
  *
- * Simple & Minimal デザイン: 余白を活かし、装飾を抑え、タイポグラフィで品格を出す。
+ * Simple & minimal design: generous whitespace, minimal decoration, typography-driven.
  */
 export function EmptyState({
   icon,
