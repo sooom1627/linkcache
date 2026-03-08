@@ -167,8 +167,8 @@
       }
     },
     "list": {
-      "empty_title": "リンクがまだありません",
-      "empty_description": "リンクを保存してここに表示しましょう",
+      "empty_title": "まずは興味があるくらいでOK",
+      "empty_description": "気になるものを探してみよう",
       "filter_empty_title": "該当するリンクがありません",
       "filter_empty_description": "フィルターを調整して、他のリンクを表示してみましょう"
     },
@@ -215,8 +215,23 @@
       "view_all": "すべて表示",
       "error_load_failed": "リンクの読み込みに失敗しました",
       "empty_read_soon": {
-        "title": "全て読んでいます！🎉",
-        "description": "新しくTriageしましょう！",
+        "title": "全部読みおわった",
+        "description": "少し休憩しながら、また新しい情報を取り入れていこう",
+        "go_to_triage": "整理を開始"
+      },
+      "empty_latest": {
+        "title": "まずは興味があるくらいでOK",
+        "description": "気になるものを探してみよう",
+        "add_link": "リンクを追加"
+      },
+      "empty_stock": {
+        "title": "興味のライブラリ",
+        "description": "とりあえず溜めておこう。読まなくても大丈夫",
+        "go_to_triage": "整理を開始"
+      },
+      "empty_done": {
+        "title": "あなたの知識ライブラリ",
+        "description": "学びを積み重ねていこう",
         "go_to_triage": "整理を開始"
       }
     },

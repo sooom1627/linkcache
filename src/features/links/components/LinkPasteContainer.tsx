@@ -25,10 +25,9 @@ interface LinkPasteContainerProps {
 }
 
 /**
- * Empty状態のUI
- * ミニマルなペーストボタン
+ * 貼り付けを促すUI（カード全体がCTA）
  */
-function EmptyStateView({ onPaste }: { onPaste: () => void }) {
+function PastePromptView({ onPaste }: { onPaste: () => void }) {
   const { t } = useTranslation();
 
   return (
@@ -243,7 +242,7 @@ export default function LinkPasteContainer({
 }: LinkPasteContainerProps) {
   return (
     <View className="min-h-[200px]">
-      {status === "empty" && <EmptyStateView onPaste={onPaste} />}
+      {status === "empty" && <PastePromptView onPaste={onPaste} />}
       {status === "loading" && <LoadingStateView />}
       {(status === "preview" || status === "noOgp") && preview && (
         <PreviewStateView

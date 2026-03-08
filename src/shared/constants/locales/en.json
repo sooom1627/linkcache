@@ -168,8 +168,8 @@
       }
     },
     "list": {
-      "empty_title": "No links yet",
-      "empty_description": "Start saving links to see them here",
+      "empty_title": "Curiosity is enough to start",
+      "empty_description": "Try finding what interests you",
       "filter_empty_title": "No matching links",
       "filter_empty_description": "Try adjusting your filters to see more links"
     },
@@ -216,8 +216,23 @@
       "view_all": "View All",
       "error_load_failed": "Failed to load links",
       "empty_read_soon": {
-        "title": "You've read everything! 🎉",
-        "description": "Let's Triage new links!",
+        "title": "You've read everything",
+        "description": "Take it easy, then bring in new information",
+        "go_to_triage": "Start Triage"
+      },
+      "empty_latest": {
+        "title": "Curiosity is enough to start",
+        "description": "Try finding what interests you",
+        "add_link": "Add Link"
+      },
+      "empty_stock": {
+        "title": "Your interest library",
+        "description": "Stock info here for later. No need to read now",
+        "go_to_triage": "Start Triage"
+      },
+      "empty_done": {
+        "title": "Nice reading",
+        "description": "Keep building your knowledge",
         "go_to_triage": "Start Triage"
       }
     },

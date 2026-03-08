@@ -1,8 +1,7 @@
-import { Text, TouchableOpacity, View } from "react-native";
-
 import { Filter, Inbox, Plus } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 
+import { EmptyState } from "@/src/shared/components/EmptyState";
 import { colors } from "@/src/shared/constants/colors";
 import { useModal } from "@/src/shared/providers/ModalContext";
 
@@ -25,60 +24,30 @@ export function LinkListEmpty({
   const { t } = useTranslation();
   const { openModal } = useModal();
 
-  // フィルター適用時の空状態
   if (hasActiveFilters) {
     return (
-      <View className="items-center px-8">
-        <View className="mb-6 rounded-full bg-slate-100 p-6">
-          <Filter size={48} color={colors.iconMuted} strokeWidth={1} />
-        </View>
-        <Text className="mb-2 text-center text-lg font-semibold text-slate-800">
-          {t("links.list.filter_empty_title")}
-        </Text>
-        <Text className="mb-8 text-center text-sm leading-5 text-slate-500">
-          {t("links.list.filter_empty_description")}
-        </Text>
-
-        {onResetFilters && (
-          <TouchableOpacity
-            onPress={onResetFilters}
-            className="flex-row items-center gap-2 rounded-full bg-mainDark px-6 py-3 shadow-sm active:bg-mainHover"
-            accessibilityRole="button"
-            accessibilityLabel={t("links.filter.reset")}
-          >
-            <Text className="font-semibold text-white">
-              {t("links.filter.reset")}
-            </Text>
-          </TouchableOpacity>
-        )}
-      </View>
+      <EmptyState
+        icon={<Filter size={40} color={colors.iconMuted} strokeWidth={1.5} />}
+        title={t("links.list.filter_empty_title")}
+        description={t("links.list.filter_empty_description")}
+        actionLabel={onResetFilters ? t("links.filter.reset") : undefined}
+        onAction={onResetFilters}
+        ctaVariant="secondary"
+        variant="compact"
+      />
     );
   }
 
-  // 通常の空状態
   return (
-    <View className="items-center px-8">
-      <View className="mb-6 rounded-full bg-slate-100 p-6">
-        <Inbox size={48} color={colors.iconMuted} strokeWidth={1} />
-      </View>
-      <Text className="mb-2 text-center text-lg font-semibold text-slate-800">
-        {t("links.list.empty_title")}
-      </Text>
-      <Text className="mb-8 text-center text-sm leading-5 text-slate-500">
-        {t("links.list.empty_description")}
-      </Text>
-
-      <TouchableOpacity
-        onPress={() => openModal("linkCreate")}
-        className="flex-row items-center gap-2 rounded-full bg-mainDark px-6 py-3 shadow-sm active:bg-mainHover"
-        accessibilityRole="button"
-        accessibilityLabel={t("links.create.add_button")}
-      >
-        <Plus size={20} color={colors.accent} strokeWidth={2.5} />
-        <Text className="font-semibold text-white">
-          {t("links.create.add_button")}
-        </Text>
-      </TouchableOpacity>
-    </View>
+    <EmptyState
+      icon={<Inbox size={40} color={colors.iconMuted} strokeWidth={1.5} />}
+      title={t("links.list.empty_title")}
+      description={t("links.list.empty_description")}
+      actionLabel={t("links.create.add_button")}
+      onAction={() => openModal("linkCreate")}
+      actionIcon={<Plus size={20} color={colors.accent} strokeWidth={2.5} />}
+      ctaVariant="primary"
+      variant="compact"
+    />
   );
 }
