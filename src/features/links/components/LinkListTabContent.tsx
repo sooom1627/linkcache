@@ -1,4 +1,4 @@
-import { memo, useCallback } from "react";
+import { memo, useCallback, useMemo } from "react";
 
 import { View } from "react-native";
 
@@ -66,10 +66,13 @@ export const LinkListTabContent = memo(function LinkListTabContent({
 
   const keyExtractor = useCallback((item: UserLink) => item.status_id, []);
 
-  const viewAllHref = {
-    pathname: "/links" as const,
-    params: { status: TAB_VIEW_ALL_STATUS[tabType] },
-  };
+  const viewAllHref = useMemo(
+    () => ({
+      pathname: "/links" as const,
+      params: { status: TAB_VIEW_ALL_STATUS[tabType] },
+    }),
+    [tabType],
+  );
 
   const ListFooterComponent = useCallback(
     () => <LinkListViewAllFooter viewAllHref={viewAllHref} />,
