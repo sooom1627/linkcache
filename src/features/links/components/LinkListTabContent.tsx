@@ -1,6 +1,6 @@
 import { memo, useCallback } from "react";
 
-import { ActivityIndicator, Pressable, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 
 import { Link, useRouter } from "expo-router";
 
@@ -17,6 +17,7 @@ import type { TabType, UserLink } from "../types/linkList.types";
 
 import { LinkListCard } from "./LinkListCard";
 import { LinkListEmpty } from "./LinkListEmpty";
+import { LinkListSkeleton } from "./LinkListSkeleton";
 
 /** タブごとの View All 遷移先の status パラメータ */
 const TAB_VIEW_ALL_STATUS: Record<TabType, string> = {
@@ -133,9 +134,11 @@ export const LinkListTabContent = memo(function LinkListTabContent({
 
   if (isLoading) {
     return (
-      <View className="flex-1 items-center justify-center py-8">
-        <ActivityIndicator size="large" color={colors.icon} />
-      </View>
+      <LinkListSkeleton
+        contentContainerStyle={{
+          paddingBottom: insets.bottom + TAB_BAR_HEIGHT,
+        }}
+      />
     );
   }
 
