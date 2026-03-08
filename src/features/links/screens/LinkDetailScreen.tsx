@@ -1,4 +1,4 @@
-import { memo, useCallback, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { ActivityIndicator, Alert, ScrollView, Text, View } from "react-native";
 
@@ -59,9 +59,9 @@ interface LinkDetailScreenProps {
 }
 
 /**
- * リンク詳細画面コンポーネント
+ * Link detail screen component.
  *
- * リンクの詳細情報を表示し、各種アクションを提供します
+ * Displays detailed information about a link and provides various actions.
  */
 export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
   const { t } = useTranslation();
@@ -92,7 +92,7 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
 
   const isDone = link?.status === "done";
 
-  /** スケルトン表示: 画面表示時の初回読み込み時のみ */
+  /** Show skeleton only during the initial load when the screen is first displayed */
   const isCollectionsSectionLoading = isLinkedCollectionsLoading;
 
   const handleToggleCollection = useCallback(
@@ -150,50 +150,60 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
 
   const displayOrderRef = useRef<string[]>([]);
   const prevLinkIdRef = useRef<string>(linkId);
+  const [orderVersion, setOrderVersion] = useState(0);
 
-  const sortedCollections = useMemo(() => {
+  // Maintain stable display order in a ref; bump version to trigger re-render
+  useEffect(() => {
+    // Reset display order when navigating to a different link
     if (prevLinkIdRef.current !== linkId) {
       displayOrderRef.current = [];
       prevLinkIdRef.current = linkId;
     }
 
-    // データ未取得時は空配列を返し、ref を設定しない
+    // Skip while data is still loading
     if (collections.length === 0 || isLinkedCollectionsLoading) {
-      return [];
+      return;
     }
 
-    const collectionMap = new Map(collections.map((c) => [c.id, c]));
-
     if (displayOrderRef.current.length === 0) {
-      // 初回: linked(サーバー順) → unlinked(サーバー順)
+      // Initial ordering: linked (server order) then unlinked (server order)
       const linked = collections.filter((c) => linkedCollectionIds.has(c.id));
       const unlinked = collections.filter(
         (c) => !linkedCollectionIds.has(c.id),
       );
-      const ordered = [...linked, ...unlinked];
-      displayOrderRef.current = ordered.map((c) => c.id);
-      return ordered;
-    }
+      displayOrderRef.current = [...linked, ...unlinked].map((c) => c.id);
+    } else {
+      // Preserve existing order, excluding removed collections
+      const existingIds = new Set(collections.map((c) => c.id));
+      const orderedIds = displayOrderRef.current.filter((id) =>
+        existingIds.has(id),
+      );
 
-    // 既存の順序を維持、削除されたコレクションを除外
-    const existingIds = new Set(collections.map((c) => c.id));
-    const orderedIds = displayOrderRef.current.filter((id) =>
-      existingIds.has(id),
-    );
-
-    // 新規コレクションを末尾に追加
-    const orderedSet = new Set(orderedIds);
-    for (const c of collections) {
-      if (!orderedSet.has(c.id)) {
-        orderedIds.push(c.id);
+      // Append newly added collections to the end
+      const orderedSet = new Set(orderedIds);
+      for (const c of collections) {
+        if (!orderedSet.has(c.id)) {
+          orderedIds.push(c.id);
+        }
       }
+
+      displayOrderRef.current = orderedIds;
     }
 
-    displayOrderRef.current = orderedIds;
-    return orderedIds
+    setOrderVersion((v) => v + 1);
+  }, [linkId, collections, linkedCollectionIds, isLinkedCollectionsLoading]);
+
+  // Pure derivation: map the stable ID order to collection objects
+  const sortedCollections = useMemo(() => {
+    if (displayOrderRef.current.length === 0 || isLinkedCollectionsLoading) {
+      return [];
+    }
+
+    const collectionMap = new Map(collections.map((c) => [c.id, c]));
+    return displayOrderRef.current
       .map((id) => collectionMap.get(id))
       .filter((c): c is NonNullable<typeof c> => c != null);
-  }, [collections, linkedCollectionIds, linkId, isLinkedCollectionsLoading]);
+  }, [collections, isLinkedCollectionsLoading, orderVersion]);
 
   const handleBack = useCallback(() => {
     router.back();
@@ -204,7 +214,7 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
       openLink(link.url);
 
       if (!isDone) {
-        // 500ms後にモーダルを表示
+        // Show modal after 500ms delay
         setTimeout(() => {
           presentStatusModal();
         }, 500);
@@ -262,7 +272,7 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
     );
   }, [link, t, router, deleteLinkAsync]);
 
-  // ローディング状態
+  // Loading state
   if (isLoading) {
     return (
       <View className="flex-1 items-center justify-center bg-slate-50">
@@ -274,7 +284,7 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
     );
   }
 
-  // エラー状態
+  // Error state
   if (error || !link) {
     return (
       <ErrorStateView
@@ -295,7 +305,7 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
           className="flex-1 pt-20"
           showsVerticalScrollIndicator={false}
         >
-          {/* サムネイル画像 */}
+          {/* Thumbnail image */}
           {link.image_url ? (
             <Image
               source={{ uri: link.image_url }}
@@ -313,7 +323,7 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
           )}
 
           <View className="px-2 py-6">
-            {/* メタ情報 */}
+            {/* Meta information */}
             <View className="mb-4 flex-row items-center gap-2">
               {link.favicon_url ? (
                 <Image
@@ -330,29 +340,29 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
               </Text>
             </View>
 
-            {/* タイトル */}
+            {/* Title */}
             <Text className="mb-4 line-clamp-2 text-2xl font-bold leading-tight text-slate-900">
               {link.title || link.url}
             </Text>
 
-            {/* 説明文 */}
+            {/* Description */}
             {link.description && (
               <Text className="mb-6 line-clamp-2 text-base leading-relaxed text-slate-600">
                 {link.description}
               </Text>
             )}
 
-            {/* ステータス情報 */}
+            {/* Status information */}
             <Text className="mb-2 text-sm font-semibold uppercase tracking-wide text-mainDark">
               {t("links.detail.status_label")}
             </Text>
             <View className="mb-6 rounded-2xl bg-white p-4">
-              {/* 現在のステータス */}
+              {/* Current status */}
               <View className="mb-3 flex-row items-center gap-2">
                 <StatusDisplay status={link.status} statusStyle={statusStyle} />
               </View>
 
-              {/* 日時情報 */}
+              {/* Date/time information */}
               <View className="gap-2">
                 {link.link_created_at && (
                   <View className="flex-row items-center gap-2">
@@ -384,7 +394,7 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
               </View>
             </View>
 
-            {/* Collections: 全コレクションを表示、紐づいているものはactive、タップでトグル */}
+            {/* Collections: show all, highlight linked ones as active, tap to toggle */}
             <Text className="mb-2 text-sm font-semibold uppercase tracking-wide text-mainDark">
               {t("links.detail.collections_label")}
             </Text>
@@ -424,7 +434,7 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
           </View>
         </ScrollView>
 
-        {/* アクションボタン */}
+        {/* Action buttons */}
         <LinkDetailActionButtonGroup
           isMoreMenuOpen={isMoreMenuOpen}
           isDeleting={isDeleting}
@@ -437,14 +447,14 @@ export function LinkDetailScreen({ linkId }: LinkDetailScreenProps) {
         />
       </View>
 
-      {/* ステータス変更モーダル */}
+      {/* Status change modal */}
       <LinkReadStatusModal
         ref={statusModalRef}
         link={link}
         onClose={dismissStatusModal}
       />
 
-      {/* コレクション作成モーダル（Add チップから） */}
+      {/* Collection create modal (triggered from Add chip) */}
       <CollectionCreateModal
         ref={collectionCreateModalRef}
         onClose={dismissCollectionCreateModal}

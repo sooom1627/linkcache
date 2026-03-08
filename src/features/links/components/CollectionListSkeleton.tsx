@@ -17,15 +17,15 @@ const DEFAULT_COUNT = 3;
 const ICON_SIZE = 32;
 
 interface CollectionListSkeletonProps {
-  /** スケルトンアイテムの表示件数 */
+  /** Number of skeleton items to display */
   count?: number;
 }
 
 /**
- * コレクションリストのスケルトン
+ * Skeleton placeholder for the collection list.
  *
- * CollectionListItem の形状に合わせたプレースホルダーを複数並べ、
- * パルスアニメーションで読み込み中状態を可視化する。
+ * Renders multiple placeholders matching the shape of CollectionListItem
+ * with a pulse animation to indicate the loading state.
  */
 export function CollectionListSkeleton({
   count = DEFAULT_COUNT,
@@ -52,7 +52,7 @@ export function CollectionListSkeleton({
           style={animatedStyle}
           className="flex-row items-center gap-3 rounded-lg border border-slate-100 bg-white p-2.5"
         >
-          {/* アイコンプレースホルダー */}
+          {/* Icon placeholder */}
           <View
             className="rounded-lg"
             style={{
@@ -61,7 +61,7 @@ export function CollectionListSkeleton({
               backgroundColor: colors.surfaceMutedActive,
             }}
           />
-          {/* タイトルプレースホルダー */}
+          {/* Title placeholder */}
           <View
             className="flex-1 rounded"
             style={{
@@ -70,7 +70,7 @@ export function CollectionListSkeleton({
               backgroundColor: colors.surfaceMutedActive,
             }}
           />
-          {/* カウントプレースホルダー */}
+          {/* Count placeholder */}
           <View
             className="rounded"
             style={{
