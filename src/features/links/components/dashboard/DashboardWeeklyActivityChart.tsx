@@ -3,6 +3,7 @@ import { Pressable, Text, View } from "react-native";
 
 import { useTranslation } from "react-i18next";
 import { BarChart, yAxisSides } from "react-native-gifted-charts";
+import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 
 import type { DashboardChartSeriesMode } from "@/src/features/links/types/dashboard.types";
 import { colors } from "@/src/shared/constants/colors";
@@ -10,6 +11,8 @@ import { colors } from "@/src/shared/constants/colors";
 const CARD_STYLE = { borderCurve: "continuous" as const };
 
 const WEEKLY_CHART_HEIGHT = 128;
+
+const CHART_MODE_FADE_MS = 220;
 
 type ChartPalette = {
   readonly added: string;
@@ -90,55 +93,61 @@ export function DashboardWeeklyActivityChart(props: {
         accessible
         onLayout={onChartLayout}
       >
-        <BarChart
-          width={chartWidth}
-          height={WEEKLY_CHART_HEIGHT}
-          parentWidth={chartWidth}
-          adjustToWidth
-          stackData={stackData}
-          maxValue={weeklyMax}
-          noOfSections={3}
-          hideYAxisText
-          yAxisLabelWidth={8}
-          stackBorderTopLeftRadius={8}
-          stackBorderTopRightRadius={8}
-          xAxisThickness={0}
-          yAxisThickness={0}
-          yAxisSide={yAxisSides.RIGHT}
-          yAxisTextStyle={{ color: colors.textMuted, fontSize: 10 }}
-          xAxisLabelTextStyle={{ color: colors.textMuted, fontSize: 10 }}
-          rulesColor={palette.rule}
-          rulesType="solid"
-          yAxisColor="transparent"
-          xAxisColor="transparent"
-          hideRules={false}
-          isAnimated
-          animationDuration={550}
-          highlightEnabled={chartHighlightActive}
-          highlightedBarIndex={
-            chartHighlightActive && selectedDayIndex !== null
-              ? selectedDayIndex
-              : -1
-          }
-          onPress={hasActiveDayStats ? handleBarPress : undefined}
-          showReferenceLine1
-          referenceLine1Position={avgDailyTotal}
-          referenceLine1Config={{
-            color: palette.avgLine,
-            thickness: 1,
-            type: "dashed",
-            dashWidth: 4,
-            dashGap: 6,
-            labelText: t("links.dashboard.chart_average_label"),
-            labelTextStyle: {
-              position: "absolute",
-              right: 10,
+        <Animated.View
+          key={chartSeriesMode}
+          entering={FadeIn.duration(CHART_MODE_FADE_MS)}
+          exiting={FadeOut.duration(CHART_MODE_FADE_MS)}
+        >
+          <BarChart
+            width={chartWidth}
+            height={WEEKLY_CHART_HEIGHT}
+            parentWidth={chartWidth}
+            adjustToWidth
+            stackData={stackData}
+            maxValue={weeklyMax}
+            noOfSections={3}
+            hideYAxisText
+            yAxisLabelWidth={8}
+            stackBorderTopLeftRadius={8}
+            stackBorderTopRightRadius={8}
+            xAxisThickness={0}
+            yAxisThickness={0}
+            yAxisSide={yAxisSides.RIGHT}
+            yAxisTextStyle={{ color: colors.textMuted, fontSize: 10 }}
+            xAxisLabelTextStyle={{ color: colors.textMuted, fontSize: 10 }}
+            rulesColor={palette.rule}
+            rulesType="solid"
+            yAxisColor="transparent"
+            xAxisColor="transparent"
+            hideRules={false}
+            isAnimated
+            animationDuration={550}
+            highlightEnabled={chartHighlightActive}
+            highlightedBarIndex={
+              chartHighlightActive && selectedDayIndex !== null
+                ? selectedDayIndex
+                : -1
+            }
+            onPress={hasActiveDayStats ? handleBarPress : undefined}
+            showReferenceLine1
+            referenceLine1Position={avgDailyTotal}
+            referenceLine1Config={{
               color: palette.avgLine,
-              fontSize: 10,
-              fontWeight: "600",
-            },
-          }}
-        />
+              thickness: 1,
+              type: "dashed",
+              dashWidth: 4,
+              dashGap: 6,
+              labelText: t("links.dashboard.chart_average_label"),
+              labelTextStyle: {
+                position: "absolute",
+                right: 10,
+                color: palette.avgLine,
+                fontSize: 10,
+                fontWeight: "600",
+              },
+            }}
+          />
+        </Animated.View>
       </View>
 
       <View className="mt-3 flex-row flex-wrap items-center justify-center gap-x-5 gap-y-2">
