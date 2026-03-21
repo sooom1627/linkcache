@@ -18,17 +18,17 @@ Quickly save links and organize them through a **Swipe UI**: Inbox → Read Soon
 
 ## Tech Stack
 
-| Category | Technology |
-|---|---|
-| Framework | Expo (Managed Workflow) |
-| Language | TypeScript (Strict Mode) |
-| Routing | Expo Router (file-based) |
-| Server State | TanStack React Query |
-| Backend / Auth | Supabase (Database, Auth, Storage) |
-| Validation | Zod |
-| Styling | NativeWind v4 (Tailwind CSS) |
-| Testing | Jest + React Native Testing Library |
-| Package Manager | pnpm |
+| Category        | Technology                          |
+| --------------- | ----------------------------------- |
+| Framework       | Expo (Managed Workflow)             |
+| Language        | TypeScript (Strict Mode)            |
+| Routing         | Expo Router (file-based)            |
+| Server State    | TanStack React Query                |
+| Backend / Auth  | Supabase (Database, Auth, Storage)  |
+| Validation      | Zod                                 |
+| Styling         | NativeWind v4 (Tailwind CSS)        |
+| Testing         | Jest + React Native Testing Library |
+| Package Manager | pnpm                                |
 
 ---
 
@@ -67,13 +67,13 @@ pnpm expo start
 
 ## Development Commands
 
-| Command | Description |
-|---|---|
-| `pnpm expo start` | Start the Expo dev server |
-| `pnpm test` | Run the test suite |
-| `pnpm typecheck` | TypeScript type check |
-| `pnpm lint` | ESLint |
-| `pnpm run check` | format:fix + lint + typecheck + test (full verification) |
+| Command           | Description                                              |
+| ----------------- | -------------------------------------------------------- |
+| `pnpm expo start` | Start the Expo dev server                                |
+| `pnpm test`       | Run the test suite                                       |
+| `pnpm typecheck`  | TypeScript type check                                    |
+| `pnpm lint`       | ESLint                                                   |
+| `pnpm run check`  | format:fix + lint + typecheck + test (full verification) |
 
 ---
 
