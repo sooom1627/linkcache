@@ -1,23 +1,22 @@
 import { Text, View } from "react-native";
 
-const DAY_LABELS = ["S", "M", "T", "W", "T", "F", "S"];
+import { useTranslation } from "react-i18next";
+
+import {
+  formatWeekRangeLabel,
+  getEnglishWeekdayLetterLabels,
+  getLocalWeekWindowDates,
+} from "@/src/shared/utils/weekRangeDisplay";
 
 /** アクティビティレベル: 0=なし, 1=低, 2=中, 3=高 */
 type ActivityLevel = 0 | 1 | 2 | 3;
 
-/** 週表示カレンダーウィジェット（デザインのみ） */
+/** 週表示カレンダーウィジェット（デザインのみ）— ダッシュボード週チャートと同一の7日窓・書式 */
 export function WeekCalendarWidget() {
-  const now = new Date();
-  const monthName = now.toLocaleDateString("en-US", { month: "long" });
-  const year = now.getFullYear();
-
-  // 今日を一番右にした週（今日の6日前〜今日）
-  const weekDates: Date[] = [];
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date(now);
-    d.setDate(now.getDate() - i);
-    weekDates.push(d);
-  }
+  const { i18n } = useTranslation();
+  const weekRangeLabel = formatWeekRangeLabel(i18n.language);
+  const weekdayLabels = getEnglishWeekdayLetterLabels();
+  const weekDates = getLocalWeekWindowDates();
 
   // 過去日のアクティビティ（サンプル: 4段階を複数日に分散）
   const activityByIndex: Record<number, ActivityLevel> = {
@@ -33,12 +32,12 @@ export function WeekCalendarWidget() {
   return (
     <View className="rounded-2xl bg-slate-100 p-4">
       <Text className="mb-3 text-center text-base font-semibold text-slate-800">
-        {monthName} {year}
+        {weekRangeLabel}
       </Text>
 
-      {/* 曜日ヘッダー */}
+      {/* 曜日ヘッダー（英語1文字・チャートX軸と同一） */}
       <View className="mb-2 flex-row justify-between">
-        {DAY_LABELS.map((label, i) => (
+        {weekdayLabels.map((label, i) => (
           <View key={i} className="flex-1 items-center">
             <Text className="text-xs font-medium text-slate-600">{label}</Text>
           </View>

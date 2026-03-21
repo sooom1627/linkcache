@@ -35,13 +35,16 @@ export interface UseCollectionsReturn {
 export function useCollections(
   params?: FetchCollectionsParams,
 ): UseCollectionsReturn {
-  const { data, isLoading, isError, error, refetch } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery<
+    CollectionWithCount[],
+    Error
+  >({
     queryKey: collectionQueryKeys.lists(params),
     queryFn: () => fetchCollections(params),
   });
 
   return {
-    collections: data ?? [],
+    collections: data ?? ([] as CollectionWithCount[]),
     isLoading,
     isError,
     error,
