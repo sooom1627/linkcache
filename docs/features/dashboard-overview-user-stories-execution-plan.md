@@ -6,7 +6,7 @@
 
 本書は、同ドキュメントを**ユーザーストーリー（垂直スライス）単位**に分解し、**実行順序・DoD・参照 Skills** を一箇所にまとめた補助資料である。詳細の重複は避け、章立ては [dashboard-overview-api.md](./dashboard-overview-api.md) のセクション番号（§）に対応させる。
 
-**進捗サマリ**: **US-A（グラフ／`daily_totals`）は完了**（T1〜T9・2026-03-22 締め）。実装・検証の一次記録は [dashboard-overview-us-a.md](./dashboard-overview-us-a.md)（ストーリーステータス・§5〜§8）。**US-B** は **B1（RPC `daily_by_collection`）完了**（[dashboard-overview-us-b.md](./dashboard-overview-us-b.md) §4・§5・§6 B1）。**B2〜B7** が残り、ストーリー全体の完了は未。
+**進捗サマリ**: **US-A（グラフ／`daily_totals`）は完了**（T1〜T9・2026-03-22 締め）。実装・検証の一次記録は [dashboard-overview-us-a.md](./dashboard-overview-us-a.md)（ストーリーステータス・§5〜§8）。**US-B** は **B1〜B4 完了**（RPC・型・[`fetchDashboardOverview.api.ts`](../../src/features/links/api/fetchDashboardOverview.api.ts) Zod・[`useDashboardOverviewData`](../../src/features/links/hooks/useDashboardOverviewData.ts) のコレクション内訳接続。詳細は [dashboard-overview-us-b.md](./dashboard-overview-us-b.md) §5・§6）。**B5〜B7**（コレクション loading 合成・fixtures・ストーリー締め）が残り、ストーリー全体の完了は未。
 
 ---
 
@@ -106,7 +106,7 @@ src/features/links/
   │   └── queryKeys.ts                           # T5 済: `linkQueryKeys.dashboardOverview`、T7 済: `dashboardOverviewPrefix()`（§5）
   ├── hooks/
   │   ├── useDashboardOverviewQuery.ts          # T5 済 + T8: `isPending` / `isFetching` 返却（§5）
-  │   ├── useDashboardOverviewData.ts            # T6 済 + T8: `dashboardOverviewPending` / `dashboardOverviewFetching`（§6）
+  │   ├── useDashboardOverviewData.ts            # T6 済 + T8 + US-B B4: チャートは `daily_totals`、コレクション内訳は `daily_by_collection` ピボット（§6）
   │   ├── useDashboardChartUi.tsx               # T8 済: `showEmptyWeekHint`（§7）
   │   └── useDashboardOverviewUi.tsx             # US-X 未: エラー UI 等は別ストーリー（§7）
   ├── screens/
@@ -127,7 +127,7 @@ src/features/links/
       │   └── fetchDashboardOverview.api.test.ts # T4 済: Zod・エラー（§8）
       └── hooks/
           ├── useDashboardOverviewQuery.test.ts  # T5 + T8: queryKey・TZ・staleTime・`isPending`/`isFetching`（§8）
-          ├── useDashboardOverviewData.test.ts   # T6 + T8: `daily_totals`・フラグ透過・内訳モック維持（§8）
+          ├── useDashboardOverviewData.test.ts   # T6 + T8 + US-B B4: `daily_totals`・コレクション RPC ピボット・ドメイン mock 維持・フラグ透過（§8）
           └── useDashboardChartUi.test.ts        # T8: 空週ヒント（§8）
 
 src/shared/components/layout/
@@ -163,8 +163,9 @@ app/(protected)/(tabs)/(dashboard)/
 - [x] API: [`fetchDashboardOverview.api.ts`](../../src/features/links/api/fetchDashboardOverview.api.ts) で RPC + Zod（[§4](./dashboard-overview-api.md)）— **T4 完了**（検証: [dashboard-overview-us-a.md §5](./dashboard-overview-us-a.md#5-実装済みt1t9サマリ)）
 - [x] React Query（T5）: [`linkQueryKeys.dashboardOverview`](../../src/features/links/constants/queryKeys.ts)、[`useDashboardOverviewQuery`](../../src/features/links/hooks/useDashboardOverviewQuery.ts)（[§5](./dashboard-overview-api.md)）— **完了**（検証: [dashboard-overview-us-a.md §5](./dashboard-overview-us-a.md#5-実装済みt1t9サマリ)）
 - [x] React Query（T7）: 各 mutation から `invalidate` 連携（`linkQueryKeys.dashboardOverviewPrefix()`、[§5](./dashboard-overview-api.md)）— **完了**（検証: [dashboard-overview-us-a.md §5・T7](./dashboard-overview-us-a.md#5-実装済みt1t9サマリ)）
-- [x] **T6**: [`useDashboardOverviewData`](../../src/features/links/hooks/useDashboardOverviewData.ts) の **チャート** `addedByDay` / `readByDay` を [`useDashboardOverviewQuery`](../../src/features/links/hooks/useDashboardOverviewQuery.ts) の `daily_totals` に接続（テスト: [`useDashboardOverviewData.test.ts`](../../src/features/links/__tests__/hooks/useDashboardOverviewData.test.ts)）。コレクション／ドメインの日別行列は **引き続き** [`mockAddedByDay` / `mockReadByDay`](../../src/features/links/utils/dashboardStats.ts)（**US-B/C** で除去）
-- [ ] `useDashboardOverviewData` から **内訳用** `mockAddedByDay` / `mockReadByDay` を除去（[§6](./dashboard-overview-api.md)・US-B/C 完了時）
+- [x] **T6**: [`useDashboardOverviewData`](../../src/features/links/hooks/useDashboardOverviewData.ts) の **チャート** `addedByDay` / `readByDay` を [`useDashboardOverviewQuery`](../../src/features/links/hooks/useDashboardOverviewQuery.ts) の `daily_totals` に接続（テスト: [`useDashboardOverviewData.test.ts`](../../src/features/links/__tests__/hooks/useDashboardOverviewData.test.ts)）。
+- [x] **US-B B4**: 同フックの **コレクション** `collectionAddedStatsByDay` / `collectionReadStatsByDay` / `collectionStats` を `daily_by_collection` に接続（ドメイン行列は **引き続き** [`mockAddedByDay` / `mockReadByDay`](../../src/features/links/utils/dashboardStats.ts) — **US-C** で除去）
+- [ ] `useDashboardOverviewData` から **ドメイン内訳用** `mockAddedByDay` / `mockReadByDay` / `splitDayTotalAcrossBuckets` を除去（[§6](./dashboard-overview-api.md)・**US-C** 完了時）
 - [x] UI（T8）: ダッシュクエリの loading 合成（`isPending` スケルトン・`isFetching` 時チャート `opacity`）・7 日すべて 0 のチャート空コピー（`chart_week_empty_hint`）（[§7](./dashboard-overview-api.md)、[dashboard-overview-us-a.md §5・T8](./dashboard-overview-us-a.md#5-実装済みt1t9サマリ)）
 - [x] テスト（API 層）: [`fetchDashboardOverview.api.test.ts`](../../src/features/links/__tests__/api/fetchDashboardOverview.api.test.ts)（[§8](./dashboard-overview-api.md)）— **T4 済**
 - [x] テスト（フック・T5）: [`useDashboardOverviewQuery.test.ts`](../../src/features/links/__tests__/hooks/useDashboardOverviewQuery.test.ts)（[§8](./dashboard-overview-api.md)）
@@ -177,8 +178,9 @@ app/(protected)/(tabs)/(dashboard)/
 一次記録（タスク B1〜B7・DoD・RPC 契約）: [dashboard-overview-us-b.md](./dashboard-overview-us-b.md)。
 
 - [x] **B1 — Supabase**: `daily_by_collection` を RPC で返す；**内訳のみ**複数コレクションで重複計上、**チャートの日次合計はリンク一意**（[§2](./dashboard-overview-api.md)）。DDL: [`20260322074231_get_dashboard_overview_daily_by_collection.sql`](../../supabase/migrations/20260322074231_get_dashboard_overview_daily_by_collection.sql)。適用は **Supabase MCP `apply_migration`** を正とする。
-- [ ] **B2〜B3 — API / Zod**: `daily_by_collection` の厳格スキーマ・テスト（[US-B B3](./dashboard-overview-us-b.md)）
-- [ ] **B4 — データ層**: `collectionAddedStatsByDay` / `collectionReadStatsByDay` をサーバ由来に；仮 `readCount`（`Math.floor(n * 0.45)` 等）削除（[§6](./dashboard-overview-api.md)）
+- [x] **B2 — 型**: [`supabase.types.ts`](../../src/features/links/types/supabase.types.ts) の RPC 戻り（[US-B B2](./dashboard-overview-us-b.md)）
+- [x] **B3 — API / Zod**: `daily_by_collection` の厳格スキーマ・テスト（[US-B B3](./dashboard-overview-us-b.md)、[`fetchDashboardOverview.api.ts`](../../src/features/links/api/fetchDashboardOverview.api.ts)）
+- [x] **B4 — データ層**: `collectionAddedStatsByDay` / `collectionReadStatsByDay` / `collectionStats` をサーバ由来に；仮 `readCount`（`Math.floor(n * 0.45)` 等）削除（[§6](./dashboard-overview-api.md)、[`useDashboardOverviewData.ts`](../../src/features/links/hooks/useDashboardOverviewData.ts)）
 - [ ] **B5 — UI**: 選択日の行、`collectionsLoading` とダッシュ `loading` の合成（[§6](./dashboard-overview-api.md)）
 - [ ] **B6〜B7 — テスト・`pnpm run check`**（ストーリー締めは B7 まで）
 
