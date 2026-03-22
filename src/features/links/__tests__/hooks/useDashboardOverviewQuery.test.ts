@@ -44,7 +44,7 @@ describe("useDashboardOverviewQuery", () => {
     jest.restoreAllMocks();
   });
 
-  it("fetchDashboardOverview を端末 TZ で呼び、data を返す", async () => {
+  it("calls fetchDashboardOverview with device TZ and returns data", async () => {
     mockFetchDashboardOverview.mockResolvedValue(VALID_OVERVIEW);
 
     const { result } = renderHook(() => useDashboardOverviewQuery(), {

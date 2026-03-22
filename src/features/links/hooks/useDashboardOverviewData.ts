@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useCollections } from "@/src/features/links/hooks/useCollections";
+import { useDashboardOverviewQuery } from "@/src/features/links/hooks/useDashboardOverviewQuery";
 import { useLinks } from "@/src/features/links/hooks/useLinks";
 import type { DashboardCollectionStat } from "@/src/features/links/types/dashboard.types";
 import {
@@ -13,6 +14,8 @@ import {
 } from "@/src/features/links/utils/dashboardStats";
 
 type BucketRow = { id: string; name: string; emoji: string | null };
+
+const CHART_PLACEHOLDER_SEVEN = [0, 0, 0, 0, 0, 0, 0];
 
 export interface DashboardOverviewData {
   addedByDay: number[];
@@ -29,11 +32,24 @@ export interface DashboardOverviewData {
 
 export function useDashboardOverviewData(): DashboardOverviewData {
   const { t } = useTranslation();
+  const { data: overviewData } = useDashboardOverviewQuery();
   const { collections, isLoading } = useCollections();
   const { links: linksForDomains, isLoading: domainsLoading } = useLinks({
     limit: 500,
     pageSize: 500,
   });
+
+  const addedByDay = useMemo((): number[] => {
+    const rows = overviewData?.daily_totals;
+    if (!rows) return [...CHART_PLACEHOLDER_SEVEN];
+    return rows.map((r) => r.added_count);
+  }, [overviewData]);
+
+  const readByDay = useMemo((): number[] => {
+    const rows = overviewData?.daily_totals;
+    if (!rows) return [...CHART_PLACEHOLDER_SEVEN];
+    return rows.map((r) => r.read_count);
+  }, [overviewData]);
 
   const collectionStats = useMemo(
     () =>
@@ -105,8 +121,8 @@ export function useDashboardOverviewData(): DashboardOverviewData {
   }, [domainBuckets]);
 
   return {
-    addedByDay: mockAddedByDay,
-    readByDay: mockReadByDay,
+    addedByDay,
+    readByDay,
     collectionStats,
     collectionAddedStatsByDay,
     collectionReadStatsByDay,

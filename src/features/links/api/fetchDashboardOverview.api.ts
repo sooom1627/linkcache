@@ -24,10 +24,13 @@ type GetDashboardOverviewResponse = {
 };
 
 /**
- * Growth Dashboard 用に RPC get_dashboard_overview を呼び、7 日分の daily_totals 等を返す。
+ * Invokes the `get_dashboard_overview` RPC and returns the parsed result,
+ * including seven days of `daily_totals` (and related fields) for the Growth Dashboard.
  *
- * @param pTz - IANA タイムゾーン（例: Asia/Tokyo）。RPC の暦日境界と一致させること。
- * @throws 未認証、Supabase エラー、RPC データなし、Zod 検証失敗時
+ * @param pTz - IANA timezone identifier (e.g. `Asia/Tokyo`). Must match the RPC
+ *   calendar-day boundaries applied to `p_tz`.
+ * @throws {Error} If the user is not authenticated, Supabase reports an error,
+ *   the RPC returns no payload, or Zod validation of the response fails.
  */
 export async function fetchDashboardOverview(
   pTz: string,

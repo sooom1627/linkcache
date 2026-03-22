@@ -4,12 +4,12 @@
 
 一次情報: [dashboard-overview-api.md](./dashboard-overview-api.md) · ストーリー対応: [dashboard-overview-user-stories-execution-plan.md](./dashboard-overview-user-stories-execution-plan.md)
 
-| 項目                                 | 内容                                                 |
-| ------------------------------------ | ---------------------------------------------------- |
-| **推奨実行順**                       | 下記 **T1 → T9**（依存があるため順序を崩さない）     |
-| **1 タスクあたりの完了定義**         | 各タスク末尾の **DoD** を満たすこと                  |
-| **スプリント完了（ストーリー DoD）** | [§ ストーリー完了定義](#ストーリー完了定義story-dod) |
-| **T1〜T5 実装**                      | **完了**（一覧・パスは [§5](#5-実装済みt1t5サマリ)） |
+| 項目                                 | 内容                                                                                                                     |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| **推奨実行順**                       | 下記 **T1 → T9**（依存があるため順序を崩さない）                                                                         |
+| **1 タスクあたりの完了定義**         | 各タスク末尾の **DoD** を満たすこと                                                                                      |
+| **スプリント完了（ストーリー DoD）** | [§ ストーリー完了定義](#ストーリー完了定義story-dod)                                                                     |
+| **T1〜T6 実装**                      | **完了**（一覧・パスは [§5](#5-実装済みt1t6サマリ)；T6 のチェックリストは [§6](#6-実行計画タスク--サブタスク) の T6 節） |
 
 ---
 
@@ -23,7 +23,7 @@
 
 ---
 
-## 2. 事前読了（T6 以降の着手前）
+## 2. 事前読了（T7 以降の着手前）
 
 1. [§1.1 現行スキーマ](dashboard-overview-api.md#11-現行スキーママイグレーション実装rpc-設計前の突合せ)
 2. [§2 プロダクト定義](dashboard-overview-api.md#2-プロダクト定義方針--db-突合せ後に-rpc-で確定)
@@ -35,7 +35,7 @@
 
 ## 3. RPC 契約（確定・参照）
 
-**実装**: [§5](#5-実装済みt1t5サマリ)。T6 以降の取り込みでも次表を正とする（集計の正本は [dashboard-overview-api.md §2](./dashboard-overview-api.md#2-プロダクト定義方針--db-突合せ後に-rpc-で確定)）。
+**実装**: [§5](#5-実装済みt1t6サマリ)。T7 以降の取り込みでも次表を正とする（集計の正本は [dashboard-overview-api.md §2](./dashboard-overview-api.md#2-プロダクト定義方針--db-突合せ後に-rpc-で確定)）。
 
 | 項目           | 内容                                                                                                                               |
 | -------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
@@ -56,7 +56,7 @@
 
 ---
 
-## 5. 実装済み（T1〜T5）サマリ
+## 5. 実装済み（T1〜T6）サマリ
 
 **最終確認目安**: 2026-03-22 — `pnpm run check` / `pnpm test` 通過を前提とする。
 
@@ -65,8 +65,9 @@
 | T1〜T3（RPC・型） | 上記マイグレーション、[`supabase.types.ts`](../../src/features/links/types/supabase.types.ts) の `get_dashboard_overview`                                                                                                                                                                                                |
 | T4（API）         | [`fetchDashboardOverview.api.ts`](../../src/features/links/api/fetchDashboardOverview.api.ts)、[`fetchDashboardOverview.api.test.ts`](../../src/features/links/__tests__/api/fetchDashboardOverview.api.test.ts)                                                                                                         |
 | T5（React Query） | [`queryKeys.ts`](../../src/features/links/constants/queryKeys.ts)（`linkQueryKeys.dashboardOverview`）、[`useDashboardOverviewQuery.ts`](../../src/features/links/hooks/useDashboardOverviewQuery.ts)、[`useDashboardOverviewQuery.test.ts`](../../src/features/links/__tests__/hooks/useDashboardOverviewQuery.test.ts) |
+| T6（データ合成）  | [`useDashboardOverviewData.ts`](../../src/features/links/hooks/useDashboardOverviewData.ts)（チャートの `addedByDay` / `readByDay` を `useDashboardOverviewQuery` の `daily_totals` に接続）、[`useDashboardOverviewData.test.ts`](../../src/features/links/__tests__/hooks/useDashboardOverviewData.test.ts)            |
 
-**未配線**: `useDashboardOverviewData` / 画面は **T6 以降**。T7 の invalidate はプレフィックス `["links","dashboard","overview"]` を利用。
+**未対応（画面・キャッシュ）**: ダッシュ専用クエリの **loading / エラー UI の画面合成**は **T8 / US-X**。[`dashboardOverview.fixtures.ts`](../../src/features/links/testing/dashboardOverview.fixtures.ts) は既定ゼロ列のまま（T6 で変更なし）。T7 の invalidate はプレフィックス `["links","dashboard","overview"]` を利用。
 
 **フォローアップ（US-A 全体・未）**: [dashboard-overview-api.md §3.1](./dashboard-overview-api.md#31-カテゴリ別チェックリストskill-準拠) の **`EXPLAIN (ANALYZE, BUFFERS)`**（データ量に応じて）。`links/api` の `getUser()` 統一は [issue #104](https://github.com/sooom1627/linkcache/issues/104)。
 
@@ -76,23 +77,25 @@
 
 ### T1〜T5（完了）
 
-**状態**: 完了。パス・役割は [§5](#5-実装済みt1t5サマリ) の表を正とする（サブタスクの詳細チェックリストは省略）。
+**状態**: 完了。パス・役割は [§5](#5-実装済みt1t6サマリ) の表を正とする（サブタスクの詳細チェックリストは省略）。
 
 ---
 
 ### T6 — `useDashboardOverviewData` の系列接続
 
-|            |                                                                                                                                                                                                         |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **目的**   | チャート用の `addedByDay` / `readByDay` を **RPC の系列**に差し替える。                                                                                                                                 |
-| **依存**   | T5 完了                                                                                                                                                                                                 |
-| **成果物** | [`useDashboardOverviewData.ts`](../../src/features/links/hooks/useDashboardOverviewData.ts)、必要なら [`dashboardOverview.fixtures.ts`](../../src/features/links/testing/dashboardOverview.fixtures.ts) |
+**状態**: 完了。
 
-- [ ] `addedByDay` / `readByDay` のみ T5 のデータを使用する
-- [ ] コレクション／ドメインの行列は **従来どおり** `mockAddedByDay` / `mockReadByDay` + `splitDayTotalAcrossBuckets` のままにする
-- [ ] fixture / モック日付が §3 の窓と矛盾しないよう更新する
+|            |                                                                                                                                                                                                                                     |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **目的**   | チャート用の `addedByDay` / `readByDay` を **RPC の系列**に差し替える。                                                                                                                                                             |
+| **依存**   | T5 完了                                                                                                                                                                                                                             |
+| **成果物** | [`useDashboardOverviewData.ts`](../../src/features/links/hooks/useDashboardOverviewData.ts)、[`useDashboardOverviewData.test.ts`](../../src/features/links/__tests__/hooks/useDashboardOverviewData.test.ts)（fixtures は変更なし） |
 
-**DoD**: データ層だけ見て、週 7 日の合計が RPC の `daily_totals` と一致する（手動またはログで確認可）。
+- [x] `addedByDay` / `readByDay` のみ T5 のデータを使用する
+- [x] コレクション／ドメインの行列は **従来どおり** `mockAddedByDay` / `mockReadByDay` + `splitDayTotalAcrossBuckets` のままにする
+- [x] fixture / モック日付が §3 の窓と矛盾しないよう更新する（既定の 7 日ゼロ列で整合、追加更新なし）
+
+**DoD**: データ層だけ見て、週 7 日の合計が RPC の `daily_totals` と一致する（[`useDashboardOverviewData.test.ts`](../../src/features/links/__tests__/hooks/useDashboardOverviewData.test.ts) で検証）。
 
 ---
 
@@ -156,10 +159,10 @@
 
 ## 7. 影響ファイル一覧（参照）
 
-| 種別             | パス                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **済（T1〜T5）** | [§5](#5-実装済みt1t5サマリ) の表（マイグレーション・型・API・React Query 一式）                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| **更新（T6〜）** | [`useDashboardOverviewData.ts`](../../src/features/links/hooks/useDashboardOverviewData.ts)、[`DashboardOverview.tsx`](../../src/features/links/screens/DashboardOverview.tsx)、[`DashboardWeeklyActivityChart.tsx`](../../src/features/links/components/dashboard/DashboardWeeklyActivityChart.tsx) または [`useDashboardChartUi.tsx`](../../src/features/links/hooks/useDashboardChartUi.tsx)、[`dashboardOverview.fixtures.ts`](../../src/features/links/testing/dashboardOverview.fixtures.ts)、T7 対象の各 mutation hooks + `__tests__` |
+| 種別             | パス                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **済（T1〜T6）** | [§5](#5-実装済みt1t6サマリ) の表（上記に加え `useDashboardOverviewData` のチャート系列接続・[`useDashboardOverviewData.test.ts`](../../src/features/links/__tests__/hooks/useDashboardOverviewData.test.ts)）                                                                                                                                                                                                                                             |
+| **更新（T7〜）** | [`DashboardOverview.tsx`](../../src/features/links/screens/DashboardOverview.tsx)、[`DashboardWeeklyActivityChart.tsx`](../../src/features/links/components/dashboard/DashboardWeeklyActivityChart.tsx) または [`useDashboardChartUi.tsx`](../../src/features/links/hooks/useDashboardChartUi.tsx)、[`dashboardOverview.fixtures.ts`](../../src/features/links/testing/dashboardOverview.fixtures.ts)（必要時）、T7 対象の各 mutation hooks + `__tests__` |
 
 ---
 
@@ -169,7 +172,7 @@
 
 実務上は **T1〜T9 の DoD をすべて満たす**ことと同等。
 
-**進捗メモ**: **T1〜T5** は完了（[§5](#5-実装済みt1t5サマリ)）。**US-A 全体の Story DoD** には **T6 以降**（`useDashboardOverviewData` 接続・画面・invalidate など）がまだ必要。
+**進捗メモ**: **T1〜T6** は完了（[§5](#5-実装済みt1t6サマリ)）。**US-A 全体の Story DoD** には **T7 以降**（mutation `invalidate`・画面 loading / 空表示・T9 品質ゲートなど）がまだ必要。
 
 ---
 
