@@ -4,14 +4,14 @@
 
 一次情報: [dashboard-overview-api.md](./dashboard-overview-api.md) · ストーリー対応: [dashboard-overview-user-stories-execution-plan.md](./dashboard-overview-user-stories-execution-plan.md) · 先行完了: [dashboard-overview-us-a.md](./dashboard-overview-us-a.md)、[dashboard-overview-us-b.md](./dashboard-overview-us-b.md)
 
-**ストーリーステータス — US-C 進行中**: **C1（RPC `daily_by_domain`）は完了**（§5・§6 参照）。**C2〜C7** は未。**US-X**（エラー UI・RefreshControl 等）は別ストーリー。
+**ストーリーステータス — US-C 進行中**: **C1（RPC）・C2（型）・C3（API / Zod）は完了**（§5・§6 参照）。**C4〜C7** は未。**US-X**（エラー UI・RefreshControl 等）は別ストーリー。
 
 | 項目                                 | 内容                                                    |
 | ------------------------------------ | ------------------------------------------------------- |
 | **推奨実行順**                       | 下記 **C1 → C7**（依存があるため順序を崩さない）        |
 | **1 タスクあたりの完了定義**         | 各タスク末尾の **DoD** を満たすこと                     |
 | **スプリント完了（ストーリー DoD）** | [§8 ストーリー完了定義](#8-ストーリー完了定義story-dod) |
-| **C1〜C7 実装**                      | **C1 済** / C2〜C7 未（§5・§6 を随時更新）              |
+| **C1〜C7 実装**                      | **C1〜C3 済** / C4〜C7 未（§5・§6 を随時更新）          |
 
 **開発原則**（垂直スライス・TDD・品質ゲート）: [dashboard-overview-user-stories-execution-plan.md § 開発原則](./dashboard-overview-user-stories-execution-plan.md#開発原則) に従う。各タスクは **red → green → refactor** と **`pnpm run check`** を回してから次へ進める。
 
@@ -86,8 +86,8 @@
 | 範囲              | 状態 | 予定コード（代表）                                                                                                                                                                                                                                                                               |
 | ----------------- | ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | C1（RPC）         | ✅   | [`20260322103614_get_dashboard_overview_daily_by_domain.sql`](../../supabase/migrations/20260322103614_get_dashboard_overview_daily_by_domain.sql) — `extract_domain_for_dashboard`、`daily_by_domain`、N=15・`__other__`、部分インデックス 2 本                                                 |
-| C2（型）          | ⬜   | [`supabase.types.ts`](../../src/features/links/types/supabase.types.ts) の `get_dashboard_overview` 戻り                                                                                                                                                                                         |
-| C3（API）         | ⬜   | [`fetchDashboardOverview.api.ts`](../../src/features/links/api/fetchDashboardOverview.api.ts)、[`fetchDashboardOverview.api.test.ts`](../../src/features/links/__tests__/api/fetchDashboardOverview.api.test.ts) — `daily_by_domain` 行の Zod 厳格化                                             |
+| C2（型）          | ✅   | [`supabase.types.ts`](../../src/features/links/types/supabase.types.ts) の `DashboardOverviewRpcJson.daily_by_domain` 行型                                                                                                                                                                       |
+| C3（API）         | ✅   | [`fetchDashboardOverview.api.ts`](../../src/features/links/api/fetchDashboardOverview.api.ts)、[`fetchDashboardOverview.api.test.ts`](../../src/features/links/__tests__/api/fetchDashboardOverview.api.test.ts) — `daily_by_domain` 行の Zod 厳格化（`dashboardDailyByDomainRowSchema`）        |
 | C4（データ合成）  | ⬜   | [`useDashboardOverviewData.ts`](../../src/features/links/hooks/useDashboardOverviewData.ts)、[`useDashboardOverviewData.test.ts`](../../src/features/links/__tests__/hooks/useDashboardOverviewData.test.ts) — ドメイン行列・`domainStats` を RPC ピボット、`useLinks` 撤去、モック行列撤去      |
 | C5（UI・loading） | ⬜   | [`useDashboardBreakdownUi.ts`](../../src/features/links/hooks/useDashboardBreakdownUi.ts)、[`useDashboardBreakdownUi.loading.test.ts`](../../src/features/links/__tests__/hooks/useDashboardBreakdownUi.loading.test.ts) 等 — ドメインタブで `dashboardOverviewPending` を合成（US-B B5 と対称） |
 | C6（fixtures）    | ⬜   | [`dashboardOverview.fixtures.ts`](../../src/features/links/testing/dashboardOverview.fixtures.ts)、[`dashboardOverview.fixtures.test.ts`](../../src/features/links/testing/__tests__/dashboardOverview.fixtures.test.ts) — `daily_by_domain` を含む RPC フィクスチャと Zod 整合                  |
@@ -153,7 +153,7 @@ flowchart LR
 | **依存**   | C1                                                                                  |
 | **成果物** | [`supabase.types.ts`](../../src/features/links/types/supabase.types.ts)（該当 RPC） |
 
-- [ ] `get_dashboard_overview` の戻り型が実レスポンスと一致
+- [x] `get_dashboard_overview` の戻り型が実レスポンスと一致（`DashboardOverviewRpcJson`）
 
 **DoD**: 型エラーなく `supabase.rpc('get_dashboard_overview')` 呼び出し可能。
 
@@ -167,8 +167,8 @@ flowchart LR
 | **依存**   | C2（型と Zod を齟齬なく）                                                                                                                                                                                        |
 | **成果物** | [`fetchDashboardOverview.api.ts`](../../src/features/links/api/fetchDashboardOverview.api.ts)、[`fetchDashboardOverview.api.test.ts`](../../src/features/links/__tests__/api/fetchDashboardOverview.api.test.ts) |
 
-- [ ] 成功パース・不正ペイロード拒否のテスト（red → green）
-- [ ] `daily_totals` / `daily_by_collection` の既存検証を壊さない
+- [x] 成功パース・不正ペイロード拒否のテスト（red → green）
+- [x] `daily_totals` / `daily_by_collection` の既存検証を壊さない
 
 **DoD**: API テストが緑。Zod が `daily_by_domain` の形を単一の正として表す。
 
@@ -288,3 +288,4 @@ pnpm test
 | 2026-03-22 | 初版（US-C 垂直分割タスクのドキュメント化）                                                                                                                                                                         |
 | 2026-03-22 | §3・§4・§6 に HTML アンカー（`us-c-rpc-contract` 等）を追加し、[実行プラン](./dashboard-overview-user-stories-execution-plan.md)・[dashboard-overview-api.md](./dashboard-overview-api.md) からの相互リンク用に整理 |
 | 2026-03-22 | **C1 完了**: `20260322103614_get_dashboard_overview_daily_by_domain.sql`、`extract_domain_for_dashboard`、N=15・`__other__`、部分インデックス；§3・§4・§5・§6・実行プランを同期                                     |
+| 2026-03-22 | **C2・C3 完了**: `DashboardOverviewRpcJson.daily_by_domain` 行型、`dashboardDailyByDomainRowSchema` と API テスト；§5・§6・実行プラン・[dashboard-overview-api.md](./dashboard-overview-api.md) を同期              |

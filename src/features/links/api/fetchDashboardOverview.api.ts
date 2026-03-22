@@ -48,10 +48,19 @@ const dashboardDailyByCollectionRowSchema = z
   })
   .strict();
 
+const dashboardDailyByDomainRowSchema = z
+  .object({
+    date: isoCalendarDayString,
+    domain: z.string(),
+    added_count: z.number().int().nonnegative(),
+    read_count: z.number().int().nonnegative(),
+  })
+  .strict();
+
 export const dashboardOverviewRpcSchema = z.object({
   daily_totals: z.array(dashboardDailyTotalRowSchema).length(7),
   daily_by_collection: z.array(dashboardDailyByCollectionRowSchema),
-  daily_by_domain: z.array(z.unknown()),
+  daily_by_domain: z.array(dashboardDailyByDomainRowSchema),
 });
 
 export type DashboardOverviewRpcResult = z.infer<
