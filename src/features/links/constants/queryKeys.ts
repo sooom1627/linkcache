@@ -82,6 +82,15 @@ export const linkQueryKeys = {
    * @param url - 正規化されたURL
    */
   ogpMetadata: (url: string) => [...linkQueryKeys.ogp(), url] as const,
+
+  /**
+   * Growth Dashboard 概要（RPC get_dashboard_overview）のクエリキー
+   *
+   * @param params.tz - IANA タイムゾーン。TZ 変更時にキャッシュを分離する。
+   * T7 の invalidate は `queryKey: [...linkQueryKeys.all, "dashboard", "overview"]` プレフィックスでまとめて可。
+   */
+  dashboardOverview: (params: { tz: string }) =>
+    [...linkQueryKeys.all, "dashboard", "overview", params] as const,
 } as const;
 
 /**
