@@ -1,91 +1,304 @@
 # linkcache
 
-Knowledge Triage & Growth Space のための Expo アプリです。  
-リンクを素早く保存し、**Swipe UI** で「あとで読む」「ストック」「完了」へ整理することを目的にしています。
+A **Knowledge Triage & Growth Space** app built with Expo (React Native).
+Quickly save links and organize them through a **Swipe UI**: Inbox → Read Soon / Stock → Completed.
 
-## 主な機能
+---
 
-- リンクの追加（URL貼り付け / メタデータ取得）
-- スワイプでのトリアージ（Inbox → Read Soon/Stock → Completed）
-- コレクション（分類）管理
-- リンク詳細表示・ステータス更新
-- Supabase Auth を使った認証
-- iOS Share Extension を使ったリンク共有取り込み
+## Features
 
-## 技術スタック
+- Add links via URL paste with automatic OGP metadata fetching
+- Swipe-based triage (Inbox → Read Soon / Stock → Completed)
+- Collections for organizing saved links
+- Link detail view with status tracking and read history
+- Authentication via Supabase Auth (email/password + OAuth)
+- iOS Share Extension — capture links directly from any app
 
-- **Framework**: Expo (React Native)
-- **Routing**: Expo Router
-- **Language**: TypeScript
-- **Server State**: TanStack React Query
-- **Backend/Auth**: Supabase
-- **Validation**: Zod
-- **Styling**: NativeWind (Tailwind)
-- **Testing**: Jest + React Native Testing Library
-- **Package Manager**: pnpm
+---
 
-## セットアップ
+## Tech Stack
 
-### 1. 依存関係のインストール
+| Category        | Technology                          |
+| --------------- | ----------------------------------- |
+| Framework       | Expo (Managed Workflow)             |
+| Language        | TypeScript (Strict Mode)            |
+| Routing         | Expo Router (file-based)            |
+| Server State    | TanStack React Query                |
+| Backend / Auth  | Supabase (Database, Auth, Storage)  |
+| Validation      | Zod                                 |
+| Styling         | NativeWind v4 (Tailwind CSS)        |
+| Testing         | Jest + React Native Testing Library |
+| Package Manager | pnpm                                |
+
+---
+
+## Setup
+
+### 1. Install dependencies
 
 ```bash
 pnpm install
 ```
 
-### 2. 環境変数の準備
+### 2. Configure environment variables
 
-`.env.example` をコピーして `.env.local` を作成し、Supabase の値を設定してください。
+Copy the example file and fill in your Supabase credentials:
 
 ```bash
 cp .env.example .env.local
 ```
 
-必須キー:
+Required keys:
 
 - `EXPO_PUBLIC_SUPABASE_URL`
 - `EXPO_PUBLIC_SUPABASE_ANON_KEY`
 
-必要に応じて開発ビルド向けに以下も設定できます。
+Optional:
 
-- `APP_ENV=dev`
+- `APP_ENV=dev` — switches bundle identifier and URL scheme to the development variant
 
-### 3. アプリ起動
+### 3. Start the app
 
 ```bash
 pnpm expo start
 ```
 
-## 開発コマンド
+---
 
-```bash
-pnpm expo start      # 開発サーバー起動
-pnpm test            # テスト実行
-pnpm typecheck       # TypeScript 型チェック
-pnpm lint            # ESLint
-pnpm run check       # format:fix + lint + typecheck + test
+## Development Commands
+
+| Command           | Description                                              |
+| ----------------- | -------------------------------------------------------- |
+| `pnpm expo start` | Start the Expo dev server                                |
+| `pnpm test`       | Run the test suite                                       |
+| `pnpm typecheck`  | TypeScript type check                                    |
+| `pnpm lint`       | ESLint                                                   |
+| `pnpm run check`  | format:fix + lint + typecheck + test (full verification) |
+
+---
+
+## Architecture
+
+### System Overview
+
+```mermaid
+graph TD
+    User["User (iOS)"]
+    App["Expo App (React Native)"]
+    ShareExt["iOS Share Extension"]
+    AppGroup["App Group\n(AsyncStorage)"]
+    Supabase["Supabase"]
+    SupabaseAuth["Auth"]
+    SupabaseDB["Database\n(PostgreSQL + RLS)"]
+    SupabaseStorage["Storage\n(Avatars)"]
+    OGP["External Websites\n(OGP Metadata)"]
+
+    User -->|"opens app"| App
+    User -->|"shares URL"| ShareExt
+    ShareExt -->|"writes shared item"| AppGroup
+    AppGroup -->|"useSharedLinkSync"| App
+    App -->|"sign in / session"| SupabaseAuth
+    App -->|"RPC / queries"| SupabaseDB
+    App -->|"upload/download"| SupabaseStorage
+    App -->|"fetch metadata"| OGP
+
+    Supabase --- SupabaseAuth
+    Supabase --- SupabaseDB
+    Supabase --- SupabaseStorage
 ```
 
-## ディレクトリ構成（抜粋）
+### Screen Navigation
+
+```mermaid
+graph LR
+    Root["Root Layout\n(_layout.tsx)"]
+    SignIn["sign-in.tsx\n(public)"]
+    CreateAccount["create-account.tsx\n(public)"]
+    Protected["(protected) Layout\nauth guard"]
+    Tabs["(tabs) Layout\nbottom tab bar"]
+    Home["Home\n/(home)"]
+    Swipes["Swipes\n/(swipes)"]
+    LinkList["Link List\n/(list)"]
+    Dashboard["Dashboard\n/(dashboard)"]
+    LinkDetail["Link Detail\n/link/[id]"]
+    LinksIndex["Uncollected Links\n/links/un-collectioned"]
+    CollectionList["Collections\n/collections"]
+    CollectionDetail["Collection Detail\n/collections/[id]"]
+    CreateModal["LinkCreate Modal\n(bottom sheet)"]
+
+    Root --> SignIn
+    Root --> CreateAccount
+    Root --> Protected
+    Protected --> Tabs
+    Tabs --> Home
+    Tabs --> Swipes
+    Tabs --> LinkList
+    Tabs --> Dashboard
+    Tabs -->|"+ button"| CreateModal
+    Protected --> LinkDetail
+    Protected --> LinksIndex
+    Protected --> CollectionList
+    Protected --> CollectionDetail
+```
+
+### Database Schema
+
+```mermaid
+erDiagram
+    auth_users {
+        uuid id PK
+    }
+    users {
+        uuid id PK
+        uuid user_id FK
+        text username
+        text avatar_url
+        timestamp created_at
+        timestamp updated_at
+    }
+    links {
+        uuid id PK
+        text url
+        text title
+        text description
+        text image_url
+        text favicon_url
+        text site_name
+        timestamp created_at
+        timestamp updated_at
+    }
+    link_status {
+        uuid id PK
+        uuid link_id FK
+        uuid user_id FK
+        text status
+        timestamp read_at
+        timestamp triaged_at
+        timestamp created_at
+        timestamp updated_at
+    }
+    collections {
+        uuid id PK
+        uuid user_id FK
+        text name
+        text emoji
+        timestamp created_at
+        timestamp updated_at
+    }
+    collection_links {
+        uuid collection_id FK
+        uuid link_id FK
+    }
+
+    auth_users ||--|| users : "profile"
+    users ||--o{ link_status : "triages"
+    users ||--o{ collections : "creates"
+    links ||--o{ link_status : "tracked by"
+    links ||--o{ collection_links : "belongs to"
+    collections ||--o{ collection_links : "contains"
+```
+
+> `link_status.status` values: `new` | `read_soon` | `stock` | `done`
+
+### Link Triage State Machine
+
+```mermaid
+stateDiagram-v2
+    [*] --> new : Add link (paste URL / Share Extension)
+    new --> read_soon : Swipe right
+    new --> stock : Swipe left
+    new --> done : Mark complete directly
+    read_soon --> done : Mark complete
+    stock --> done : Mark complete
+    done --> [*]
+```
+
+### State Management Layers
+
+```mermaid
+graph TD
+    subgraph "Provider Stack (outermost → innermost)"
+        UI["UIProviders\n(GestureHandler, SafeArea, BottomSheet)"]
+        QC["QueryClientProvider\n(TanStack React Query)"]
+        Auth["AuthProvider\n(Context + useReducer)"]
+        ShareProc["SharedLinkProcessor\n(iOS Share Extension sync)"]
+        Modal["ModalProvider\n(global modal management)"]
+    end
+
+    subgraph "State Layers"
+        Server["Server State\n(React Query)\nLinks, Collections, Profile"]
+        Global["Global State\n(Context + useReducer)\nAuth session, modals"]
+        Local["Local State\n(useState)\nForms, filters, UI toggles"]
+    end
+
+    UI --> QC --> Auth --> ShareProc --> Modal
+    QC --> Server
+    Auth --> Global
+    Modal --> Local
+```
+
+---
+
+## Directory Structure
 
 ```text
-app/                    # Expo Router ルート
-src/
-  features/
-    auth/               # 認証
-    links/              # リンク管理・スワイプ・コレクション
-    users/              # プロフィール/設定
-    share-extension/    # 共有拡張連携
-  shared/               # 共通 components/hooks/utils/lib
+.
+├── app/                        # Expo Router file-based routes
+│   ├── _layout.tsx             # Root layout with all providers
+│   ├── sign-in.tsx             # Public sign-in screen
+│   ├── create-account.tsx      # Public sign-up screen
+│   └── (protected)/            # Auth-guarded routes
+│       ├── _layout.tsx         # Auth guard (redirects if not signed in)
+│       ├── (tabs)/             # Bottom tab navigation (4 tabs)
+│       │   ├── (home)/         # Home screen
+│       │   ├── (swipes)/       # Swipe triage screen
+│       │   ├── (list)/         # Link list screen
+│       │   └── (dashboard)/    # Dashboard / stats
+│       ├── link/[id].tsx       # Link detail (dynamic route)
+│       ├── links/              # Uncollected links sub-routes
+│       └── collections/        # Collection list + detail sub-routes
+│
+├── src/
+│   ├── features/               # Business logic, organized by feature
+│   │   ├── auth/               # Authentication (sign-in, sign-up, OAuth, session)
+│   │   ├── links/              # Link management, swipe triage, collections (core feature)
+│   │   ├── users/              # User profile and settings
+│   │   └── share-extension/    # iOS Share Extension integration
+│   │
+│   └── shared/                 # Shared infrastructure
+│       ├── components/         # Reusable UI components
+│       ├── providers/          # App-level providers (Auth, Query, Modal, UI)
+│       ├── hooks/              # Shared hooks (useDebounce, useDateTime, etc.)
+│       ├── lib/                # Supabase client (with expo-secure-store session)
+│       ├── utils/              # i18n, toast, timezone, file utilities
+│       └── constants/          # Colors, locales, languages
+│
+├── supabase/
+│   └── migrations/             # SQL migration files (Supabase RPC functions, views)
+│
+├── plugins/
+│   └── withShareExtension.ts   # Custom Expo plugin for iOS Share Extension
+│
+└── targets/                    # iOS Share Extension native target
 ```
 
-## アーキテクチャ方針
+Each feature follows this internal structure:
 
-- Feature 単位で `api/`, `hooks/`, `components/`, `screens/`, `types/` を整理
-- API 呼び出しは `src/features/*/api` に集約
-- データ取得・更新は React Query を中心に実装
-- Supabase セッションは `expo-secure-store` 経由で安全に保持
+```text
+features/<name>/
+├── api/          # Supabase/API calls (never called directly from UI)
+├── hooks/        # React Query hooks wrapping the API layer
+├── components/   # Feature-specific UI components
+├── screens/      # Full screen compositions
+├── types/        # TypeScript types and Zod schemas
+└── __tests__/    # Tests (Classical TDD: Jest + RNTL)
+```
 
-## 補足
+---
 
-- iOS Share Extension の設定は `app.config.js` と `plugins/withShareExtension.ts` を参照してください。
-- 本番/開発で bundle identifier や scheme が切り替わるため、`APP_ENV` の設定に注意してください。
+## Notes
+
+- **iOS Share Extension**: Configuration is in `app.config.js` and `plugins/withShareExtension.ts`. The extension communicates with the main app via an App Group.
+- **Build variants**: `APP_ENV=dev` switches the bundle identifier and URL scheme, so be careful when running production builds locally.
+- **Session storage**: Supabase sessions are persisted securely via `expo-secure-store` (not AsyncStorage).
+- **React Query tuning**: `staleTime: 30min`, `gcTime: 60min`, `refetchOnWindowFocus: false` — optimized to minimize Supabase egress on mobile.

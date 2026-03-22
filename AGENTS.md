@@ -57,4 +57,4 @@
 3. **Feature structure:** `api/`, `hooks/`, `components/`, `screens/`, `types/`
 4. **Supabase:** Use MCP; relations → `profiles`; RLS on all tables
 5. **Git:** `prefix: message` — feat, fix, docs, refactor, test, chore
-6. **Language:** Respond to user in Japanese; code in English
+6. **Language:** Respond to user in English; code in English
