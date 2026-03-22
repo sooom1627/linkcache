@@ -132,14 +132,14 @@ app/(protected)/(tabs)/(dashboard)/
 
 ### レイヤとフォルダの対応
 
-| レイヤ（正本 §） | 主なフォルダ・ファイル |
-| --- | --- |
-| Supabase（§3） | `supabase/migrations/*.sql` |
-| API・Zod（§4） | `src/features/links/api/` |
-| Query キー・取得フック（§5） | `src/features/links/constants/queryKeys.ts`、`src/features/links/hooks/` |
-| データ合成・既存フック（§6） | `src/features/links/hooks/useDashboardOverviewData.ts` 等 |
-| 画面・共通レイアウト（§7） | `src/features/links/screens/`、`src/shared/components/layout/` |
-| テスト・fixtures（§8） | `src/features/links/__tests__/api/`、`src/features/links/testing/`、`src/features/links/utils/__tests__/`（ベクトル任意） |
+| レイヤ（正本 §）             | 主なフォルダ・ファイル                                                                                                    |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Supabase（§3）               | `supabase/migrations/*.sql`                                                                                               |
+| API・Zod（§4）               | `src/features/links/api/`                                                                                                 |
+| Query キー・取得フック（§5） | `src/features/links/constants/queryKeys.ts`、`src/features/links/hooks/`                                                  |
+| データ合成・既存フック（§6） | `src/features/links/hooks/useDashboardOverviewData.ts` 等                                                                 |
+| 画面・共通レイアウト（§7）   | `src/features/links/screens/`、`src/shared/components/layout/`                                                            |
+| テスト・fixtures（§8）       | `src/features/links/__tests__/api/`、`src/features/links/testing/`、`src/features/links/utils/__tests__/`（ベクトル任意） |
 
 **ルーティング**: 新規ルートファイルは不要（既存 [`dashboard.tsx`](<../../app/(protected)/(tabs)/(dashboard)/dashboard.tsx>) を継続）。**mutation 側**は [dashboard-overview-api.md §5](./dashboard-overview-api.md) の invalidate 一覧にある既存フックを更新するのみで、新規 `api/` ファイルは増やさない。
 
@@ -255,17 +255,17 @@ flowchart LR
 
 ## 正本セクション対応表
 
-| 本書の主題                      | dashboard-overview-api.md |
-| ------------------------------- | ------------------------- |
+| 本書の主題                      | dashboard-overview-api.md                                                 |
+| ------------------------------- | ------------------------------------------------------------------------- |
 | 作成予定ファイルのフォルダ構成  | 本書「作成予定・更新予定のファイル配置」のみ（正本は層ごと §4〜8 を参照） |
-| 開発原則・Skills                | §0、本文冒頭              |
-| 背景・現状コード                | §1                        |
-| 日付・重複・ドメイン母集団      | §2                        |
-| RPC・インデックス・RLS          | §3                        |
-| `api/`・Zod                     | §4                        |
-| Query キー・invalidate          | §5                        |
-| `useDashboardOverviewData` 置換 | §6                        |
-| エラー・Refresh・空             | §7                        |
-| テスト方針                      | §8                        |
-| データフロー                    | §9                        |
-| 層の安全順                      | §10                       |
+| 開発原則・Skills                | §0、本文冒頭                                                              |
+| 背景・現状コード                | §1                                                                        |
+| 日付・重複・ドメイン母集団      | §2                                                                        |
+| RPC・インデックス・RLS          | §3                                                                        |
+| `api/`・Zod                     | §4                                                                        |
+| Query キー・invalidate          | §5                                                                        |
+| `useDashboardOverviewData` 置換 | §6                                                                        |
+| エラー・Refresh・空             | §7                                                                        |
+| テスト方針                      | §8                                                                        |
+| データフロー                    | §9                                                                        |
+| 層の安全順                      | §10                                                                       |
