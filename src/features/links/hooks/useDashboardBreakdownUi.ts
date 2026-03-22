@@ -20,26 +20,15 @@ import {
   padSeriesToWeek,
 } from "@/src/features/links/utils/dashboardWeek";
 
-function pickAddedDayRows(
+function pickDayRows(
   tableView: DashboardTableViewMode,
   dayIndex: number,
-  collectionAdded: DashboardCollectionStat[][],
-  domainAdded: DashboardCollectionStat[][],
+  collectionRows: DashboardCollectionStat[][],
+  domainRows: DashboardCollectionStat[][],
 ): DashboardCollectionStat[] {
   return tableView === "collection"
-    ? (collectionAdded[dayIndex] ?? [])
-    : (domainAdded[dayIndex] ?? []);
-}
-
-function pickReadDayRows(
-  tableView: DashboardTableViewMode,
-  dayIndex: number,
-  collectionRead: DashboardCollectionStat[][],
-  domainRead: DashboardCollectionStat[][],
-): DashboardCollectionStat[] {
-  return tableView === "collection"
-    ? (collectionRead[dayIndex] ?? [])
-    : (domainRead[dayIndex] ?? []);
+    ? (collectionRows[dayIndex] ?? [])
+    : (domainRows[dayIndex] ?? []);
 }
 
 function compareDayRowsBySeriesMode(
@@ -138,13 +127,13 @@ export function useDashboardBreakdownUi(
     const dayIndex = selectedDayIndex;
 
     if (chartSeriesMode === "both") {
-      const addedDay = pickAddedDayRows(
+      const addedDay = pickDayRows(
         tableView,
         dayIndex,
         collectionAddedStatsByDay,
         domainAddedStatsByDay,
       );
-      const readDay = pickReadDayRows(
+      const readDay = pickDayRows(
         tableView,
         dayIndex,
         collectionReadStatsByDay,
@@ -158,13 +147,13 @@ export function useDashboardBreakdownUi(
 
     const dayRows =
       chartSeriesMode === "added"
-        ? pickAddedDayRows(
+        ? pickDayRows(
             tableView,
             dayIndex,
             collectionAddedStatsByDay,
             domainAddedStatsByDay,
           )
-        : pickReadDayRows(
+        : pickDayRows(
             tableView,
             dayIndex,
             collectionReadStatsByDay,
