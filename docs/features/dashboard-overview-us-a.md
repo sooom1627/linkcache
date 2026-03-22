@@ -193,6 +193,8 @@
 - [`useDashboardOverviewData`](../../src/features/links/hooks/useDashboardOverviewData.ts) の **コレクション／ドメイン日別行列**は引き続きモック系列＋`splitDayTotalAcrossBuckets`。
 - `collectionStats` の仮 `readCount`（`Math.floor(n * 0.45)`）は **US-B** で置換。
 
+**US-B の実行計画・DoD・タスク B1〜B7**は [dashboard-overview-us-b.md](./dashboard-overview-us-b.md) を正とする。
+
 ---
 
 ## 10. 検証コマンド
