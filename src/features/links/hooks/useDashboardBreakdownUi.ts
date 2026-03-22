@@ -76,6 +76,7 @@ export function useDashboardBreakdownUi(
     collectionAddedStatsByDay,
     collectionReadStatsByDay,
     collectionsLoading,
+    dashboardOverviewPending,
     domainStats,
     domainAddedStatsByDay,
     domainReadStatsByDay,
@@ -195,7 +196,9 @@ export function useDashboardBreakdownUi(
     (dayAddedTotal ?? 0) + (dayReadTotal ?? 0) > 0;
 
   const isTableLoading =
-    tableView === "collection" ? collectionsLoading : domainsLoading;
+    tableView === "collection"
+      ? collectionsLoading || dashboardOverviewPending
+      : domainsLoading;
 
   const emptyTableLabel =
     tableView === "collection"

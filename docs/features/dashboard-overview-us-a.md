@@ -192,7 +192,7 @@
 
 - [`useDashboardOverviewData`](../../src/features/links/hooks/useDashboardOverviewData.ts) の **コレクション／ドメイン日別行列**は引き続きモック系列＋`splitDayTotalAcrossBuckets`（**B4 / US-C** で RPC 系列へ）。
 - `collectionStats` の仮 `readCount`（`Math.floor(n * 0.45)`）は **US-B** で置換。
-- **B1 済（参考）**: `get_dashboard_overview` の `daily_by_collection` は DB で実装済み — [dashboard-overview-us-b.md §4](./dashboard-overview-us-b.md)、[`20260322074231_get_dashboard_overview_daily_by_collection.sql`](../../supabase/migrations/20260322074231_get_dashboard_overview_daily_by_collection.sql)。アプリ接続は **US-B B2〜B4**。
+- **B1 済（参考）**: `get_dashboard_overview` の `daily_by_collection` は DB で実装済み — [dashboard-overview-us-b.md §4](./dashboard-overview-us-b.md)、[`20260322074231_get_dashboard_overview_daily_by_collection.sql`](../../supabase/migrations/20260322074231_get_dashboard_overview_daily_by_collection.sql)。アプリ側の型・API・コレクション行列・内訳テーブル loading は **US-B B2〜B5**（[dashboard-overview-us-b.md](./dashboard-overview-us-b.md) §5）。
 
 **US-B の実行計画・DoD・タスク B1〜B7**は [dashboard-overview-us-b.md](./dashboard-overview-us-b.md) を正とする。
 

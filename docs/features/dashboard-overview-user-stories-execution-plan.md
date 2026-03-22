@@ -6,7 +6,7 @@
 
 本書は、同ドキュメントを**ユーザーストーリー（垂直スライス）単位**に分解し、**実行順序・DoD・参照 Skills** を一箇所にまとめた補助資料である。詳細の重複は避け、章立ては [dashboard-overview-api.md](./dashboard-overview-api.md) のセクション番号（§）に対応させる。
 
-**進捗サマリ**: **US-A（グラフ／`daily_totals`）は完了**（T1〜T9・2026-03-22 締め）。実装・検証の一次記録は [dashboard-overview-us-a.md](./dashboard-overview-us-a.md)（ストーリーステータス・§5〜§8）。**US-B** は **B1〜B4 完了**（RPC・型・[`fetchDashboardOverview.api.ts`](../../src/features/links/api/fetchDashboardOverview.api.ts) Zod・[`useDashboardOverviewData`](../../src/features/links/hooks/useDashboardOverviewData.ts) のコレクション内訳接続。詳細は [dashboard-overview-us-b.md](./dashboard-overview-us-b.md) §5・§6）。**B5〜B7**（コレクション loading 合成・fixtures・ストーリー締め）が残り、ストーリー全体の完了は未。
+**進捗サマリ**: **US-A（グラフ／`daily_totals`）は完了**（T1〜T9・2026-03-22 締め）。実装・検証の一次記録は [dashboard-overview-us-a.md](./dashboard-overview-us-a.md)（ストーリーステータス・§5〜§8）。**US-B** は **B1〜B5 完了**（上記に加え [`useDashboardBreakdownUi`](../../src/features/links/hooks/useDashboardBreakdownUi.ts) のコレクション内訳 `isTableLoading` 合成）。詳細は [dashboard-overview-us-b.md](./dashboard-overview-us-b.md) §5・§6）。**B6〜B7**（fixtures・ストーリー締め）が残り、ストーリー全体の完了は未。
 
 ---
 
@@ -181,7 +181,7 @@ app/(protected)/(tabs)/(dashboard)/
 - [x] **B2 — 型**: [`supabase.types.ts`](../../src/features/links/types/supabase.types.ts) の RPC 戻り（[US-B B2](./dashboard-overview-us-b.md)）
 - [x] **B3 — API / Zod**: `daily_by_collection` の厳格スキーマ・テスト（[US-B B3](./dashboard-overview-us-b.md)、[`fetchDashboardOverview.api.ts`](../../src/features/links/api/fetchDashboardOverview.api.ts)）
 - [x] **B4 — データ層**: `collectionAddedStatsByDay` / `collectionReadStatsByDay` / `collectionStats` をサーバ由来に；仮 `readCount`（`Math.floor(n * 0.45)` 等）削除（[§6](./dashboard-overview-api.md)、[`useDashboardOverviewData.ts`](../../src/features/links/hooks/useDashboardOverviewData.ts)）
-- [ ] **B5 — UI**: 選択日の行、`collectionsLoading` とダッシュ `loading` の合成（[§6](./dashboard-overview-api.md)）
+- [x] **B5 — UI**: コレクション内訳の `isTableLoading` に `dashboardOverviewPending` を合成（[`useDashboardBreakdownUi`](../../src/features/links/hooks/useDashboardBreakdownUi.ts)、[§6](./dashboard-overview-api.md)、[US-B B5](./dashboard-overview-us-b.md)）
 - [ ] **B6〜B7 — テスト・`pnpm run check`**（ストーリー締めは B7 まで）
 
 ### US-C：domain_table（`daily_by_domain`）
