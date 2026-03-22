@@ -2,9 +2,36 @@ import { z } from "zod";
 
 import { supabase } from "@/src/shared/lib/supabase";
 
+function isValidIsoCalendarDay(value: string): boolean {
+  const parts = value.split("-");
+  if (parts.length !== 3) {
+    return false;
+  }
+  const year = Number(parts[0]);
+  const month = Number(parts[1]);
+  const day = Number(parts[2]);
+  if (
+    !Number.isInteger(year) ||
+    !Number.isInteger(month) ||
+    !Number.isInteger(day)
+  ) {
+    return false;
+  }
+  const utc = new Date(Date.UTC(year, month - 1, day));
+  if (Number.isNaN(utc.getTime())) {
+    return false;
+  }
+  return (
+    utc.getUTCFullYear() === year &&
+    utc.getUTCMonth() === month - 1 &&
+    utc.getUTCDate() === day
+  );
+}
+
 const isoCalendarDayString = z
   .string()
-  .regex(/^\d{4}-\d{2}-\d{2}$/, "Expected YYYY-MM-DD");
+  .regex(/^\d{4}-\d{2}-\d{2}$/, "Expected YYYY-MM-DD")
+  .refine(isValidIsoCalendarDay, "Invalid calendar date");
 
 const dashboardDailyTotalRowSchema = z.object({
   date: isoCalendarDayString,

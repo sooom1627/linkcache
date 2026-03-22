@@ -141,6 +141,23 @@ describe("fetchDashboardOverview", () => {
     );
   });
 
+  it("throws when daily_totals row has a nonexistent calendar date", async () => {
+    const bad = structuredClone(VALID_OVERVIEW) as Record<string, unknown>;
+    bad.daily_totals = [
+      {
+        date: "2025-02-31",
+        added_count: 0,
+        read_count: 0,
+      },
+      ...VALID_OVERVIEW.daily_totals.slice(1),
+    ];
+    mockRpc.mockResolvedValueOnce({ data: bad, error: null });
+
+    await expect(fetchDashboardOverview("UTC")).rejects.toThrow(
+      /Validation failed:/,
+    );
+  });
+
   it("throws when counts are not non-negative integers", async () => {
     const bad = structuredClone(VALID_OVERVIEW) as Record<string, unknown>;
     bad.daily_totals = [
