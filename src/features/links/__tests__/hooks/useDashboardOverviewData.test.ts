@@ -3,7 +3,10 @@ import { renderHook, waitFor } from "@testing-library/react-native";
 import * as timezoneUtils from "@/src/shared/utils/timezone";
 
 import { fetchCollections } from "../../api/fetchCollections.api";
-import { fetchDashboardOverview } from "../../api/fetchDashboardOverview.api";
+import {
+  fetchDashboardOverview,
+  type DashboardOverviewRpcResult,
+} from "../../api/fetchDashboardOverview.api";
 import { fetchUserLinks } from "../../api/fetchLinks.api";
 import { linkQueryKeys } from "../../constants/queryKeys";
 import { useDashboardOverviewData } from "../../hooks/useDashboardOverviewData";
@@ -26,7 +29,7 @@ const mockFetchCollections = jest.mocked(fetchCollections);
 const mockFetchUserLinks = jest.mocked(fetchUserLinks);
 
 /** useDashboardOverviewQuery.test と同型の RPC 成功ペイロード */
-const VALID_OVERVIEW = {
+const VALID_OVERVIEW: DashboardOverviewRpcResult = {
   daily_totals: [
     { date: "2025-03-16", added_count: 1, read_count: 0 },
     { date: "2025-03-17", added_count: 0, read_count: 2 },
@@ -36,8 +39,8 @@ const VALID_OVERVIEW = {
     { date: "2025-03-21", added_count: 2, read_count: 2 },
     { date: "2025-03-22", added_count: 0, read_count: 1 },
   ],
-  daily_by_collection: [] as unknown[],
-  daily_by_domain: [] as unknown[],
+  daily_by_collection: [],
+  daily_by_domain: [],
 };
 
 const EXPECTED_ADDED_BY_DAY = VALID_OVERVIEW.daily_totals.map(
@@ -137,7 +140,7 @@ describe("useDashboardOverviewData", () => {
     mockFetchDashboardOverview.mockResolvedValue({
       ...VALID_OVERVIEW,
       daily_totals: [],
-    });
+    } as DashboardOverviewRpcResult);
 
     const { result } = renderHook(() => useDashboardOverviewData(), {
       wrapper,
@@ -158,7 +161,7 @@ describe("useDashboardOverviewData", () => {
     mockFetchDashboardOverview.mockResolvedValue({
       ...VALID_OVERVIEW,
       daily_totals: partial,
-    });
+    } as DashboardOverviewRpcResult);
 
     const { result } = renderHook(() => useDashboardOverviewData(), {
       wrapper,
@@ -178,7 +181,7 @@ describe("useDashboardOverviewData", () => {
     mockFetchDashboardOverview.mockResolvedValue({
       ...VALID_OVERVIEW,
       daily_totals: eight,
-    });
+    } as DashboardOverviewRpcResult);
 
     const { result } = renderHook(() => useDashboardOverviewData(), {
       wrapper,
