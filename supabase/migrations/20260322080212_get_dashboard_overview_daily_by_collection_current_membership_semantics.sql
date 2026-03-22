@@ -1,12 +1,5 @@
--- US-B B1: Populate daily_by_collection (per-collection duplicate counting in breakdown only).
--- Same 7-day local window and range predicates as daily_totals (20260322032918).
--- Sparse JSON: omit (date, collection) rows where both added_count and read_count are 0.
---
--- Semantics (current membership, not point-in-time): added_by_collection_current_membership and
--- read_by_collection_current_membership join link_status to collection_links on link_id only.
--- Past bucket dates therefore reflect whichever collection(s) the link belongs to NOW; moving or
--- removing collection membership can change historical rows in daily_by_collection. Totals in
--- daily_totals remain link-unique and unaffected.
+-- Re-apply get_dashboard_overview body after 20260322074231: CTE rename (current-membership semantics unchanged).
+-- Remote DBs that already ran 20260322074231 need this forward migration (edited prior file is not re-run).
 
 CREATE INDEX IF NOT EXISTS idx_collection_links_link_id
   ON public.collection_links (link_id);
