@@ -103,6 +103,51 @@ describe("useDashboardBreakdownUi", () => {
     ]);
   });
 
+  it("週次 Breakdown は added/read とも 0 の行を出さない（both）", () => {
+    const data = createMinimalOverviewData({
+      collectionStats: [row("z", 0, 0), row("a", 1, 1)],
+    });
+
+    const { result } = renderHook(() => useBreakdownHarness(data, "both"), {
+      wrapper,
+    });
+
+    expect(result.current.breakdown.displayRows.map((r) => r.id)).toEqual([
+      "a",
+    ]);
+    expect(result.current.breakdown.sortedRowsLength).toBe(1);
+  });
+
+  it("chartSeriesMode が added のとき read のみある行は週次に出さない", () => {
+    const data = createMinimalOverviewData({
+      collectionStats: [row("onlyRead", 0, 5), row("hasAdded", 1, 0)],
+    });
+
+    const { result } = renderHook(() => useBreakdownHarness(data, "added"), {
+      wrapper,
+    });
+
+    expect(result.current.breakdown.displayRows.map((r) => r.id)).toEqual([
+      "hasAdded",
+    ]);
+    expect(result.current.breakdown.sortedRowsLength).toBe(1);
+  });
+
+  it("chartSeriesMode が read のとき added のみある行は週次に出さない", () => {
+    const data = createMinimalOverviewData({
+      collectionStats: [row("onlyAdded", 5, 0), row("hasRead", 0, 3)],
+    });
+
+    const { result } = renderHook(() => useBreakdownHarness(data, "read"), {
+      wrapper,
+    });
+
+    expect(result.current.breakdown.displayRows.map((r) => r.id)).toEqual([
+      "hasRead",
+    ]);
+    expect(result.current.breakdown.sortedRowsLength).toBe(1);
+  });
+
   it("選択日に加算があるとき displayRows は日別マージ行になる", () => {
     const data = createMinimalOverviewDataForSelectedCollectionDay({
       dayIndex: 1,

@@ -1,5 +1,8 @@
-import { Text, View } from "react-native";
+import { useCallback, useState } from "react";
 
+import { Pressable, Text, View } from "react-native";
+
+import { Info } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 
@@ -10,6 +13,7 @@ import type {
   DashboardCollectionStat,
   DashboardTableViewMode,
 } from "@/src/features/links/types/dashboard.types";
+import { InformationDialog } from "@/src/shared/components/modals";
 import { colors } from "@/src/shared/constants/colors";
 
 const CARD_STYLE = { borderCurve: "continuous" as const };
@@ -44,6 +48,17 @@ export function DashboardBreakdownSection(props: {
     sortedRowsLength,
   } = props;
 
+  const [collectionDuplicateInfoOpen, setCollectionDuplicateInfoOpen] =
+    useState(false);
+
+  const openCollectionDuplicateInfo = useCallback(() => {
+    setCollectionDuplicateInfoOpen(true);
+  }, []);
+
+  const closeCollectionDuplicateInfo = useCallback(() => {
+    setCollectionDuplicateInfoOpen(false);
+  }, []);
+
   if (selectedDayIndex !== null && !showDayBreakdownCard) {
     return null;
   }
@@ -54,14 +69,38 @@ export function DashboardBreakdownSection(props: {
       style={CARD_STYLE}
     >
       <View className="flex-row items-center justify-between pb-2">
-        <Text className="text-base font-semibold text-slate-800">
-          {t("links.dashboard.breakdown_header_title")}
-        </Text>
+        <View className="min-w-0 flex-1 flex-row items-center gap-1.5">
+          <Text className="text-base font-semibold text-slate-800">
+            {t("links.dashboard.breakdown_header_title")}
+          </Text>
+          {tableView === "collection" ? (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t(
+                "links.dashboard.collections_duplicate_count_info_a11y",
+              )}
+              onPress={openCollectionDuplicateInfo}
+              hitSlop={10}
+              className="rounded-full p-0.5"
+            >
+              <Info size={18} color={colors.icon} />
+            </Pressable>
+          ) : null}
+        </View>
         <DashboardBreakdownToggleControls
           tableView={tableView}
           onTableViewChange={onTableViewChange}
         />
       </View>
+
+      <InformationDialog
+        visible={collectionDuplicateInfoOpen}
+        onDismiss={closeCollectionDuplicateInfo}
+        title={t("links.dashboard.collections_duplicate_count_info_title")}
+        message={t("links.dashboard.collections_duplicate_count_info_message")}
+        confirmLabel={t("links.dashboard.collections_duplicate_count_info_ok")}
+        backdropAccessibilityLabel={t("common.close")}
+      />
 
       <View className="mt-3 overflow-hidden rounded-xl border border-slate-200/90 bg-white">
         {selectedDayIndex !== null && showDayBreakdownCard ? (

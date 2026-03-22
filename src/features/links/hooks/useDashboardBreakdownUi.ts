@@ -108,7 +108,7 @@ export function useDashboardBreakdownUi(
     tableView === "collection" ? collectionStats : domainStats;
 
   const sortedRows = useMemo(() => {
-    const rows = [...activeStats];
+    const rows = filterRowsWithActivity([...activeStats], chartSeriesMode);
     rows.sort((a, b) => {
       if (chartSeriesMode === "both") {
         return b.addedCount + b.readCount - (a.addedCount + a.readCount);

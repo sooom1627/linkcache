@@ -103,21 +103,23 @@ function buildCollectionBreakdownFromRpc(
     );
   }
 
-  const collectionStats: DashboardCollectionStat[] = collections.map((c, j) => {
-    let added = 0;
-    let read = 0;
-    for (let day = 0; day < 7; day++) {
-      added += addedByDayAndCollection[day]![j]!;
-      read += readByDayAndCollection[day]![j]!;
-    }
-    return {
-      id: c.id,
-      name: c.name,
-      emoji: c.emoji,
-      addedCount: added,
-      readCount: read,
-    };
-  });
+  const collectionStats: DashboardCollectionStat[] = collections
+    .map((c, j) => {
+      let added = 0;
+      let read = 0;
+      for (let day = 0; day < 7; day++) {
+        added += addedByDayAndCollection[day]![j]!;
+        read += readByDayAndCollection[day]![j]!;
+      }
+      return {
+        id: c.id,
+        name: c.name,
+        emoji: c.emoji,
+        addedCount: added,
+        readCount: read,
+      };
+    })
+    .filter((r) => r.addedCount > 0 || r.readCount > 0);
 
   return {
     collectionAddedStatsByDay,
@@ -161,7 +163,10 @@ export function useDashboardOverviewData(): DashboardOverviewData {
     isPending: dashboardOverviewPending,
     isFetching: dashboardOverviewFetching,
   } = useDashboardOverviewQuery();
-  const { collections, isLoading } = useCollections();
+  /** `orderBy: "items_count"` で一覧画面・モーダルと同一キーにし、タブ復帰時にキャッシュヒットさせる */
+  const { collections, isLoading } = useCollections({
+    orderBy: "items_count",
+  });
   const { links: linksForDomains, isLoading: domainsLoading } = useLinks({
     limit: 500,
     pageSize: 500,

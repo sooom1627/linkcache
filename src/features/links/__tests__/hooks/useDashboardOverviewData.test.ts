@@ -209,7 +209,7 @@ describe("useDashboardOverviewData", () => {
     }
   });
 
-  it("overview pending 中はコレクション日別・collectionStats をゼロで埋める", async () => {
+  it("overview pending 中はコレクション日別をゼロで埋め、collectionStats は活動ゼロ行を除外して空", async () => {
     mockFetchDashboardOverview.mockImplementation(() => new Promise(() => {}));
     mockFetchCollections.mockResolvedValue(COLLECTIONS_TWO);
 
@@ -257,22 +257,7 @@ describe("useDashboardOverviewData", () => {
         },
       ]);
     }
-    expect(result.current.collectionStats).toEqual([
-      {
-        id: C_WORK,
-        name: "Work",
-        emoji: "📁",
-        addedCount: 0,
-        readCount: 0,
-      },
-      {
-        id: C_PERSONAL,
-        name: "Personal",
-        emoji: "✨",
-        addedCount: 0,
-        readCount: 0,
-      },
-    ]);
+    expect(result.current.collectionStats).toEqual([]);
   });
 
   it("overview の data が無い間はチャート系列を 7 日ゼロにする", () => {

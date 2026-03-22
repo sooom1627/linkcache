@@ -242,6 +242,10 @@
       "table_view_info_a11y": "About collection and domain views",
       "table_view_info_title": "Breakdown views",
       "table_view_info_body": "Collections view groups counts by your folders. Domains view groups by each link’s website (e.g. example.com).",
+      "collections_duplicate_count_info_a11y": "About collection counts",
+      "collections_duplicate_count_info_title": "Collection counts",
+      "collections_duplicate_count_info_message": "A link can belong to more than one collection. These numbers are counted per collection, so the same link may appear in multiple rows. Row totals do not equal unique links.",
+      "collections_duplicate_count_info_ok": "OK",
       "breakdown_layout_preview_label": "Breakdown layout (preview)",
       "breakdown_layout_pattern_warm_dual_row": "Labeled columns",
       "breakdown_layout_pattern_warm_split_strip": "Single strip",
@@ -389,6 +393,7 @@
     }
   },
   "common": {
+    "close": "Close",
     "back": "Back",
     "retry": "Try Again",
     "error_title": "Something went wrong",
