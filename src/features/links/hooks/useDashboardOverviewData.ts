@@ -17,6 +17,19 @@ type BucketRow = { id: string; name: string; emoji: string | null };
 
 const CHART_PLACEHOLDER_SEVEN = [0, 0, 0, 0, 0, 0, 0];
 
+function normalizeSevenDaySeries(
+  rows: { added_count: number; read_count: number }[] | null | undefined,
+  field: "added_count" | "read_count",
+): number[] {
+  const list = rows ?? [];
+  const lastUpTo7 = list.slice(-7).map((r) => r[field]);
+  const padCount = 7 - lastUpTo7.length;
+  if (padCount <= 0) {
+    return lastUpTo7;
+  }
+  return [...CHART_PLACEHOLDER_SEVEN.slice(0, padCount), ...lastUpTo7];
+}
+
 export interface DashboardOverviewData {
   addedByDay: number[];
   readByDay: number[];
@@ -45,17 +58,17 @@ export function useDashboardOverviewData(): DashboardOverviewData {
     pageSize: 500,
   });
 
-  const addedByDay = useMemo((): number[] => {
-    const rows = overviewData?.daily_totals;
-    if (!rows) return [...CHART_PLACEHOLDER_SEVEN];
-    return rows.map((r) => r.added_count);
-  }, [overviewData]);
+  const addedByDay = useMemo(
+    (): number[] =>
+      normalizeSevenDaySeries(overviewData?.daily_totals, "added_count"),
+    [overviewData],
+  );
 
-  const readByDay = useMemo((): number[] => {
-    const rows = overviewData?.daily_totals;
-    if (!rows) return [...CHART_PLACEHOLDER_SEVEN];
-    return rows.map((r) => r.read_count);
-  }, [overviewData]);
+  const readByDay = useMemo(
+    (): number[] =>
+      normalizeSevenDaySeries(overviewData?.daily_totals, "read_count"),
+    [overviewData],
+  );
 
   const collectionStats = useMemo(
     () =>

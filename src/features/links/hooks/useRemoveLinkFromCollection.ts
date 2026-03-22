@@ -11,7 +11,8 @@ import { collectionQueryKeys, linkQueryKeys } from "../constants/queryKeys";
  *
  * useMutation で removeLinkFromCollection API を呼び出し、
  * 楽観的更新（onMutate）とロールバック（onError）を実装。
- * onSettled 時に collectionQueryKeys.lists、collectionQueryKeys.links、collectionQueryKeys.forLink、linkQueryKeys.detail を無効化する。
+ * onSettled 時に collectionQueryKeys.lists、collectionQueryKeys.links、collectionQueryKeys.forLink、linkQueryKeys.detail 等を無効化する。
+ * ダッシュボード overview（linkQueryKeys.dashboardOverviewPrefix）は mutation 成功時（error === null）のみ無効化する。
  *
  * @returns removeLinkFromCollection（mutate）、removeLinkFromCollectionAsync（mutateAsync）、
  *   isPending、isError、isSuccess、error、reset
@@ -53,7 +54,7 @@ export function useRemoveLinkFromCollection() {
         );
       }
     },
-    onSettled: (_data, _error, { collectionId, linkId }) => {
+    onSettled: (_data, error, { collectionId, linkId }) => {
       queryClient.invalidateQueries({
         queryKey: collectionQueryKeys.lists(),
       });
@@ -72,9 +73,11 @@ export function useRemoveLinkFromCollection() {
       queryClient.invalidateQueries({
         queryKey: linkQueryKeys.uncollectedCount(),
       });
-      queryClient.invalidateQueries({
-        queryKey: linkQueryKeys.dashboardOverviewPrefix(),
-      });
+      if (error === null) {
+        queryClient.invalidateQueries({
+          queryKey: linkQueryKeys.dashboardOverviewPrefix(),
+        });
+      }
     },
   });
 

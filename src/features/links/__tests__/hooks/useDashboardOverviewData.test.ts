@@ -159,6 +159,54 @@ describe("useDashboardOverviewData", () => {
     expect(result.current.readByDay).toEqual([0, 0, 0, 0, 0, 0, 0]);
   });
 
+  it("daily_totals が空でもチャート系列は長さ 7（先頭ゼロ埋め）", () => {
+    mockUseDashboardOverviewQuery.mockReturnValue(
+      defaultQueryReturn({
+        data: { ...VALID_OVERVIEW, daily_totals: [] },
+      }),
+    );
+
+    const { result } = renderHook(() => useDashboardOverviewData());
+
+    expect(result.current.addedByDay).toEqual([0, 0, 0, 0, 0, 0, 0]);
+    expect(result.current.readByDay).toEqual([0, 0, 0, 0, 0, 0, 0]);
+  });
+
+  it("daily_totals が 7 未満なら末尾最大 7 件を取り先頭をゼロ埋めして長さ 7 にする", () => {
+    const partial = [
+      { date: "2025-03-20", added_count: 5, read_count: 4 },
+      { date: "2025-03-21", added_count: 2, read_count: 2 },
+      { date: "2025-03-22", added_count: 0, read_count: 1 },
+    ];
+    mockUseDashboardOverviewQuery.mockReturnValue(
+      defaultQueryReturn({
+        data: { ...VALID_OVERVIEW, daily_totals: partial },
+      }),
+    );
+
+    const { result } = renderHook(() => useDashboardOverviewData());
+
+    expect(result.current.addedByDay).toEqual([0, 0, 0, 0, 5, 2, 0]);
+    expect(result.current.readByDay).toEqual([0, 0, 0, 0, 4, 2, 1]);
+  });
+
+  it("daily_totals が 7 件を超える場合は末尾 7 件だけを使う", () => {
+    const eight = [
+      ...VALID_OVERVIEW.daily_totals,
+      { date: "2025-03-23", added_count: 9, read_count: 8 },
+    ];
+    mockUseDashboardOverviewQuery.mockReturnValue(
+      defaultQueryReturn({
+        data: { ...VALID_OVERVIEW, daily_totals: eight },
+      }),
+    );
+
+    const { result } = renderHook(() => useDashboardOverviewData());
+
+    expect(result.current.addedByDay).toEqual([0, 3, 0, 5, 2, 0, 9]);
+    expect(result.current.readByDay).toEqual([2, 1, 0, 4, 2, 1, 8]);
+  });
+
   it("ダッシュ overview クエリの isPending / isFetching をそのまま返す", () => {
     mockUseDashboardOverviewQuery.mockReturnValue(
       defaultQueryReturn({
