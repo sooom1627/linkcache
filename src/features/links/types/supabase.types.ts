@@ -7,7 +7,7 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[];
 
-/** JSON payload from `get_dashboard_overview` (US-B §3, US-A `daily_totals`). */
+/** JSON payload from `get_dashboard_overview` (US-A `daily_totals`, US-B `daily_by_collection`, US-C `daily_by_domain`). */
 export type DashboardOverviewRpcJson = {
   daily_totals: {
     date: string;
@@ -20,8 +20,13 @@ export type DashboardOverviewRpcJson = {
     added_count: number;
     read_count: number;
   }[];
-  /** US-C until implemented: server returns `[]`; client keeps `unknown[]` for Zod parity. */
-  daily_by_domain: unknown[];
+  /** US-C C1: sparse rows; `domain` includes rollup key `__other__` when applicable. */
+  daily_by_domain: {
+    date: string;
+    domain: string;
+    added_count: number;
+    read_count: number;
+  }[];
 };
 
 export type Database = {
