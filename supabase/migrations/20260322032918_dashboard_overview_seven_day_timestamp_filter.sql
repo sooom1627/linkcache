@@ -1,14 +1,4 @@
--- US-A: Growth Dashboard 7-day series (daily_totals) in caller IANA timezone.
--- added: link_status.created_at; read: link_status.read_at IS NOT NULL (same local calendar day).
--- daily_by_collection / daily_by_domain: empty arrays until US-B/US-C.
--- Indexes: support user-scoped scans; local-date expressions are per-call — verify with EXPLAIN under load.
-
-CREATE INDEX IF NOT EXISTS idx_link_status_user_id_created_at
-  ON public.link_status (user_id, created_at);
-
-CREATE INDEX IF NOT EXISTS idx_link_status_user_id_read_at_not_null
-  ON public.link_status (user_id, read_at)
-  WHERE read_at IS NOT NULL;
+-- Narrow added/read_counts to 7-day local window before GROUP BY (index-friendly range scan).
 
 CREATE OR REPLACE FUNCTION public.get_dashboard_overview(p_tz text)
 RETURNS json
