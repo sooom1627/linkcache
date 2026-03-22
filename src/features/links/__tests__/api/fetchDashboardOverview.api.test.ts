@@ -1,4 +1,7 @@
-import { fetchDashboardOverview } from "../../api/fetchDashboardOverview.api";
+import {
+  fetchDashboardOverview,
+  type DashboardOverviewRpcResult,
+} from "../../api/fetchDashboardOverview.api";
 
 const mockRpc = jest.fn();
 const mockGetUser = jest.fn();
@@ -10,7 +13,10 @@ jest.mock("@/src/shared/lib/supabase", () => ({
   },
 }));
 
-const VALID_OVERVIEW = {
+const COLLECTION_ID_A = "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11";
+const COLLECTION_ID_B = "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22";
+
+const VALID_OVERVIEW: DashboardOverviewRpcResult = {
   daily_totals: [
     { date: "2025-03-16", added_count: 1, read_count: 0 },
     { date: "2025-03-17", added_count: 0, read_count: 2 },
@@ -22,6 +28,24 @@ const VALID_OVERVIEW = {
   ],
   daily_by_collection: [],
   daily_by_domain: [],
+};
+
+const VALID_OVERVIEW_WITH_COLLECTION_ROWS: DashboardOverviewRpcResult = {
+  ...VALID_OVERVIEW,
+  daily_by_collection: [
+    {
+      date: "2025-03-20",
+      collection_id: COLLECTION_ID_A,
+      added_count: 2,
+      read_count: 1,
+    },
+    {
+      date: "2025-03-21",
+      collection_id: COLLECTION_ID_B,
+      added_count: 0,
+      read_count: 3,
+    },
+  ],
 };
 
 describe("fetchDashboardOverview", () => {
@@ -101,12 +125,32 @@ describe("fetchDashboardOverview", () => {
   });
 
   it("throws when daily_totals row has invalid date format", async () => {
-    const bad = structuredClone(VALID_OVERVIEW);
-    bad.daily_totals[0] = {
-      date: "03/16/2025",
-      added_count: 0,
-      read_count: 0,
-    };
+    const bad = structuredClone(VALID_OVERVIEW) as Record<string, unknown>;
+    bad.daily_totals = [
+      {
+        date: "03/16/2025",
+        added_count: 0,
+        read_count: 0,
+      },
+      ...VALID_OVERVIEW.daily_totals.slice(1),
+    ];
+    mockRpc.mockResolvedValueOnce({ data: bad, error: null });
+
+    await expect(fetchDashboardOverview("UTC")).rejects.toThrow(
+      /Validation failed:/,
+    );
+  });
+
+  it("throws when daily_totals row has a nonexistent calendar date", async () => {
+    const bad = structuredClone(VALID_OVERVIEW) as Record<string, unknown>;
+    bad.daily_totals = [
+      {
+        date: "2025-02-31",
+        added_count: 0,
+        read_count: 0,
+      },
+      ...VALID_OVERVIEW.daily_totals.slice(1),
+    ];
     mockRpc.mockResolvedValueOnce({ data: bad, error: null });
 
     await expect(fetchDashboardOverview("UTC")).rejects.toThrow(
@@ -115,12 +159,15 @@ describe("fetchDashboardOverview", () => {
   });
 
   it("throws when counts are not non-negative integers", async () => {
-    const bad = structuredClone(VALID_OVERVIEW);
-    bad.daily_totals[0] = {
-      date: "2025-03-16",
-      added_count: -1,
-      read_count: 0,
-    };
+    const bad = structuredClone(VALID_OVERVIEW) as Record<string, unknown>;
+    bad.daily_totals = [
+      {
+        date: "2025-03-16",
+        added_count: -1,
+        read_count: 0,
+      },
+      ...VALID_OVERVIEW.daily_totals.slice(1),
+    ];
     mockRpc.mockResolvedValueOnce({ data: bad, error: null });
 
     await expect(fetchDashboardOverview("UTC")).rejects.toThrow(
@@ -136,6 +183,119 @@ describe("fetchDashboardOverview", () => {
       },
       error: null,
     });
+
+    await expect(fetchDashboardOverview("UTC")).rejects.toThrow(
+      /Validation failed:/,
+    );
+  });
+
+  it("returns parsed overview when daily_by_collection has valid rows", async () => {
+    mockRpc.mockResolvedValueOnce({
+      data: VALID_OVERVIEW_WITH_COLLECTION_ROWS,
+      error: null,
+    });
+
+    const result = await fetchDashboardOverview("Asia/Tokyo");
+
+    expect(result).toEqual(VALID_OVERVIEW_WITH_COLLECTION_ROWS);
+  });
+
+  it("throws when daily_by_collection element is not an object", async () => {
+    mockRpc.mockResolvedValueOnce({
+      data: {
+        ...VALID_OVERVIEW,
+        daily_by_collection: ["not-a-row"],
+      },
+      error: null,
+    });
+
+    await expect(fetchDashboardOverview("UTC")).rejects.toThrow(
+      /Validation failed:/,
+    );
+  });
+
+  it("throws when daily_by_collection row has invalid date format", async () => {
+    const bad = structuredClone(VALID_OVERVIEW) as Record<string, unknown>;
+    bad.daily_by_collection = [
+      {
+        date: "03/20/2025",
+        collection_id: COLLECTION_ID_A,
+        added_count: 1,
+        read_count: 0,
+      },
+    ];
+    mockRpc.mockResolvedValueOnce({ data: bad, error: null });
+
+    await expect(fetchDashboardOverview("UTC")).rejects.toThrow(
+      /Validation failed:/,
+    );
+  });
+
+  it("throws when daily_by_collection row has non-uuid collection_id", async () => {
+    const bad = structuredClone(VALID_OVERVIEW) as Record<string, unknown>;
+    bad.daily_by_collection = [
+      {
+        date: "2025-03-20",
+        collection_id: "not-a-uuid",
+        added_count: 1,
+        read_count: 0,
+      },
+    ];
+    mockRpc.mockResolvedValueOnce({ data: bad, error: null });
+
+    await expect(fetchDashboardOverview("UTC")).rejects.toThrow(
+      /Validation failed:/,
+    );
+  });
+
+  it("throws when daily_by_collection row has negative count", async () => {
+    const bad = structuredClone(VALID_OVERVIEW) as Record<string, unknown>;
+    bad.daily_by_collection = [
+      {
+        date: "2025-03-20",
+        collection_id: COLLECTION_ID_A,
+        added_count: -1,
+        read_count: 0,
+      },
+    ];
+    mockRpc.mockResolvedValueOnce({ data: bad, error: null });
+
+    await expect(fetchDashboardOverview("UTC")).rejects.toThrow(
+      /Validation failed:/,
+    );
+  });
+
+  it("throws when daily_by_collection row has non-integer count", async () => {
+    const bad = structuredClone(VALID_OVERVIEW) as Record<string, unknown>;
+    bad.daily_by_collection = [
+      {
+        date: "2025-03-20",
+        collection_id: COLLECTION_ID_A,
+        added_count: 1.5,
+        read_count: 0,
+      },
+    ];
+    mockRpc.mockResolvedValueOnce({ data: bad, error: null });
+
+    await expect(fetchDashboardOverview("UTC")).rejects.toThrow(
+      /Validation failed:/,
+    );
+  });
+
+  it("throws when daily_by_collection row has unknown extra keys", async () => {
+    const bad: Record<string, unknown> = {
+      ...VALID_OVERVIEW,
+      daily_by_collection: [
+        {
+          date: "2025-03-20",
+          collection_id: COLLECTION_ID_A,
+          added_count: 1,
+          read_count: 0,
+          extra_field: true,
+        },
+      ],
+    };
+    mockRpc.mockResolvedValueOnce({ data: bad, error: null });
 
     await expect(fetchDashboardOverview("UTC")).rejects.toThrow(
       /Validation failed:/,

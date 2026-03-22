@@ -20,10 +20,15 @@ export function DashboardOverview() {
   const data = useDashboardOverviewData();
   const { chart, breakdown } = useDashboardOverviewUi(data);
 
-  const isOverviewLoading =
-    data.collectionsLoading ||
-    data.domainsLoading ||
-    data.dashboardOverviewPending;
+  /**
+   * Full-screen skeleton only while the overview RPC has no cached data.
+   * Collections + `useLinks({ limit: 500 })` are gated separately:
+   * - `invalidateQueries({ queryKey: linkQueryKeys.lists() })` also invalidates listLimited,
+   *   so the 500-link query often refetches in the background and would keep the OR-gate true
+   *   or block the chart even when overview + collections are already cached.
+   * Breakdown uses `breakdown.isTableLoading` (collections / domains / overview pending per tab).
+   */
+  const isOverviewLoading = data.dashboardOverviewPending;
 
   const isDashboardRefetching =
     data.dashboardOverviewFetching && !data.dashboardOverviewPending;
@@ -47,13 +52,13 @@ export function DashboardOverview() {
       <Animated.View
         entering={FadeIn.duration(CONTENT_FADE_MS)}
         className="w-full"
-        style={{ opacity: isDashboardRefetching ? 0.65 : 1 }}
       >
         <DashboardWeeklyActivityChart
           {...chartAppearanceForChart}
           {...chart.chartData}
           {...chart.interaction}
           {...chart.accessibility}
+          isRefreshing={isDashboardRefetching}
         />
       </Animated.View>
 

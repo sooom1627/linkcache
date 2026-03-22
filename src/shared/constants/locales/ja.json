@@ -241,6 +241,10 @@
       "table_view_info_a11y": "コレクション表示とドメイン表示について",
       "table_view_info_title": "内訳の見方",
       "table_view_info_body": "コレクションではフォルダごとの件数を表示します。ドメインでは各リンクのURLから取得したサイト（例: example.com）ごとに集計します。",
+      "collections_duplicate_count_info_a11y": "コレクションの集計について",
+      "collections_duplicate_count_info_title": "コレクションの件数について",
+      "collections_duplicate_count_info_message": "1つのリンクは複数のコレクションに所属できます。この内訳はコレクションごとの件数のため、同じリンクが複数行に含まれることがあります。行を合計してもユニークなリンク数とは一致しません。",
+      "collections_duplicate_count_info_ok": "OK",
       "breakdown_layout_preview_label": "内訳レイアウト（試用）",
       "breakdown_layout_pattern_warm_dual_row": "2列ラベル付き",
       "breakdown_layout_pattern_warm_split_strip": "1本のストリップ",
@@ -388,6 +392,7 @@
     }
   },
   "common": {
+    "close": "閉じる",
     "back": "戻る",
     "retry": "再試行",
     "error_title": "エラーが発生しました",

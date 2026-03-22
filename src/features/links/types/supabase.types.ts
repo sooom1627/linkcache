@@ -7,6 +7,23 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[];
 
+/** JSON payload from `get_dashboard_overview` (US-B §3, US-A `daily_totals`). */
+export type DashboardOverviewRpcJson = {
+  daily_totals: {
+    date: string;
+    added_count: number;
+    read_count: number;
+  }[];
+  daily_by_collection: {
+    date: string;
+    collection_id: string;
+    added_count: number;
+    read_count: number;
+  }[];
+  /** US-C until implemented: server returns `[]`; client keeps `unknown[]` for Zod parity. */
+  daily_by_domain: unknown[];
+};
+
 export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
@@ -284,7 +301,7 @@ export type Database = {
         Args: {
           p_tz: string;
         };
-        Returns: Json;
+        Returns: DashboardOverviewRpcJson;
       };
     };
     Enums: {

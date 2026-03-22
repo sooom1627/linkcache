@@ -76,6 +76,7 @@ export function useDashboardBreakdownUi(
     collectionAddedStatsByDay,
     collectionReadStatsByDay,
     collectionsLoading,
+    dashboardOverviewPending,
     domainStats,
     domainAddedStatsByDay,
     domainReadStatsByDay,
@@ -107,7 +108,7 @@ export function useDashboardBreakdownUi(
     tableView === "collection" ? collectionStats : domainStats;
 
   const sortedRows = useMemo(() => {
-    const rows = [...activeStats];
+    const rows = filterRowsWithActivity([...activeStats], chartSeriesMode);
     rows.sort((a, b) => {
       if (chartSeriesMode === "both") {
         return b.addedCount + b.readCount - (a.addedCount + a.readCount);
@@ -195,7 +196,9 @@ export function useDashboardBreakdownUi(
     (dayAddedTotal ?? 0) + (dayReadTotal ?? 0) > 0;
 
   const isTableLoading =
-    tableView === "collection" ? collectionsLoading : domainsLoading;
+    tableView === "collection"
+      ? collectionsLoading || dashboardOverviewPending
+      : domainsLoading;
 
   const emptyTableLabel =
     tableView === "collection"

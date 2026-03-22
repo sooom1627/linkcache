@@ -3,11 +3,24 @@ import { renderHook, waitFor } from "@testing-library/react-native";
 import * as timezoneUtils from "@/src/shared/utils/timezone";
 
 import { fetchCollections } from "../../api/fetchCollections.api";
-import { fetchDashboardOverview } from "../../api/fetchDashboardOverview.api";
+import {
+  fetchDashboardOverview,
+  type DashboardOverviewRpcResult,
+} from "../../api/fetchDashboardOverview.api";
 import { fetchUserLinks } from "../../api/fetchLinks.api";
 import { linkQueryKeys } from "../../constants/queryKeys";
 import { useDashboardOverviewData } from "../../hooks/useDashboardOverviewData";
+import {
+  dashboardTestCollectionPersonalId as C_PERSONAL,
+  dashboardTestCollectionWorkId as C_WORK,
+  dashboardTestCollectionsTwo as COLLECTIONS_TWO,
+  expectedAddedByDayFromValidOverviewFixture as EXPECTED_ADDED_BY_DAY,
+  expectedReadByDayFromValidOverviewFixture as EXPECTED_READ_BY_DAY,
+  dashboardOverviewWithCollectionBreakdownRpcFixture as OVERVIEW_WITH_COLLECTION_BREAKDOWN,
+  dashboardOverviewValidRpcFixture as VALID_OVERVIEW,
+} from "../../testing/dashboardOverview.fixtures";
 import type { DashboardCollectionStat } from "../../types/dashboard.types";
+import type { UserLink } from "../../types/linkList.types";
 import { mockAddedByDay, mockReadByDay } from "../../utils/dashboardStats";
 import { clearQueryCache, testQueryClient, wrapper } from "../test-utils";
 
@@ -25,32 +38,31 @@ const mockFetchDashboardOverview = jest.mocked(fetchDashboardOverview);
 const mockFetchCollections = jest.mocked(fetchCollections);
 const mockFetchUserLinks = jest.mocked(fetchUserLinks);
 
-/** useDashboardOverviewQuery.test と同型の RPC 成功ペイロード */
-const VALID_OVERVIEW = {
-  daily_totals: [
-    { date: "2025-03-16", added_count: 1, read_count: 0 },
-    { date: "2025-03-17", added_count: 0, read_count: 2 },
-    { date: "2025-03-18", added_count: 3, read_count: 1 },
-    { date: "2025-03-19", added_count: 0, read_count: 0 },
-    { date: "2025-03-20", added_count: 5, read_count: 4 },
-    { date: "2025-03-21", added_count: 2, read_count: 2 },
-    { date: "2025-03-22", added_count: 0, read_count: 1 },
-  ],
-  daily_by_collection: [] as unknown[],
-  daily_by_domain: [] as unknown[],
-};
-
-const EXPECTED_ADDED_BY_DAY = VALID_OVERVIEW.daily_totals.map(
-  (r) => r.added_count,
-);
-const EXPECTED_READ_BY_DAY = VALID_OVERVIEW.daily_totals.map(
-  (r) => r.read_count,
-);
-
 const EMPTY_LINKS_PAGE = {
   data: [] as Awaited<ReturnType<typeof fetchUserLinks>>["data"],
   hasMore: false,
   totalCount: 0,
+};
+
+const ONE_DOMAIN_LINK: UserLink = {
+  status_id: "s1",
+  user_id: "u1",
+  status: "new",
+  triaged_at: null,
+  read_at: null,
+  link_id: "l1",
+  url: "https://example.com/article",
+  title: null,
+  image_url: null,
+  favicon_url: null,
+  site_name: null,
+  link_created_at: null,
+};
+
+const ONE_DOMAIN_LINK_PAGE = {
+  data: [ONE_DOMAIN_LINK],
+  hasMore: false,
+  totalCount: 1,
 };
 
 function sumAdded(rows: DashboardCollectionStat[]) {
@@ -59,6 +71,14 @@ function sumAdded(rows: DashboardCollectionStat[]) {
 
 function sumRead(rows: DashboardCollectionStat[]) {
   return rows.reduce((s, r) => s + r.readCount, 0);
+}
+
+function addedFor(rows: DashboardCollectionStat[], id: string) {
+  return rows.find((r) => r.id === id)?.addedCount ?? -1;
+}
+
+function readFor(rows: DashboardCollectionStat[], id: string) {
+  return rows.find((r) => r.id === id)?.readCount ?? -1;
 }
 
 function dashboardOverviewKey() {
@@ -94,15 +114,11 @@ describe("useDashboardOverviewData", () => {
     expect(result.current.readByDay).toEqual(EXPECTED_READ_BY_DAY);
   });
 
-  it("コレクション日別内訳は mock 系列＋ split のまま（RPC 系列と一致しないこともある）", async () => {
-    mockFetchCollections.mockResolvedValue([
-      {
-        id: "c1",
-        name: "Work",
-        emoji: "📁",
-        itemsCount: 10,
-      },
-    ]);
+  it("コレクション日別内訳は daily_by_collection を useCollections 順でピボットする", async () => {
+    mockFetchDashboardOverview.mockResolvedValue(
+      OVERVIEW_WITH_COLLECTION_BREAKDOWN,
+    );
+    mockFetchCollections.mockResolvedValue(COLLECTIONS_TWO);
 
     const { result } = renderHook(() => useDashboardOverviewData(), {
       wrapper,
@@ -112,14 +128,136 @@ describe("useDashboardOverviewData", () => {
       expect(result.current.collectionAddedStatsByDay).toHaveLength(7);
     });
 
+    const added = result.current.collectionAddedStatsByDay;
+    const read = result.current.collectionReadStatsByDay;
+
+    expect(added[0]!.map((r) => r.id)).toEqual([C_WORK, C_PERSONAL]);
+    expect(addedFor(added[0]!, C_WORK)).toBe(2);
+    expect(addedFor(added[0]!, C_PERSONAL)).toBe(0);
+    expect(readFor(read[0]!, C_WORK)).toBe(1);
+    expect(readFor(read[0]!, C_PERSONAL)).toBe(0);
+
+    for (let d = 1; d <= 3; d += 1) {
+      expect(sumAdded(added[d]!)).toBe(0);
+      expect(sumRead(read[d]!)).toBe(0);
+    }
+
+    expect(addedFor(added[4]!, C_WORK)).toBe(1);
+    expect(addedFor(added[4]!, C_PERSONAL)).toBe(3);
+    expect(readFor(read[4]!, C_WORK)).toBe(0);
+    expect(readFor(read[4]!, C_PERSONAL)).toBe(2);
+
+    expect(sumAdded(added[5]!)).toBe(0);
+    expect(sumAdded(added[6]!)).toBe(0);
+  });
+
+  it("collectionStats は 7 日分の daily_by_collection 合計（itemsCount を使わない）", async () => {
+    mockFetchDashboardOverview.mockResolvedValue(
+      OVERVIEW_WITH_COLLECTION_BREAKDOWN,
+    );
+    mockFetchCollections.mockResolvedValue(COLLECTIONS_TWO);
+
+    const { result } = renderHook(() => useDashboardOverviewData(), {
+      wrapper,
+    });
+
+    await waitFor(() => {
+      expect(result.current.collectionStats).toHaveLength(2);
+    });
+
+    const work = result.current.collectionStats.find((r) => r.id === C_WORK);
+    const personal = result.current.collectionStats.find(
+      (r) => r.id === C_PERSONAL,
+    );
+    expect(work).toEqual({
+      id: C_WORK,
+      name: "Work",
+      emoji: "📁",
+      addedCount: 3,
+      readCount: 1,
+    });
+    expect(personal).toEqual({
+      id: C_PERSONAL,
+      name: "Personal",
+      emoji: "✨",
+      addedCount: 3,
+      readCount: 2,
+    });
+  });
+
+  it("ドメイン日別内訳は引き続き mock 系列＋ split（US-C 前）", async () => {
+    mockFetchUserLinks.mockResolvedValue(ONE_DOMAIN_LINK_PAGE);
+    mockFetchCollections.mockResolvedValue([
+      { id: C_WORK, name: "Work", emoji: null, itemsCount: 1 },
+    ]);
+
+    const { result } = renderHook(() => useDashboardOverviewData(), {
+      wrapper,
+    });
+
+    await waitFor(() => {
+      expect(result.current.domainAddedStatsByDay).toHaveLength(7);
+    });
+
     for (let day = 0; day < 7; day += 1) {
-      expect(sumAdded(result.current.collectionAddedStatsByDay[day]!)).toBe(
+      expect(sumAdded(result.current.domainAddedStatsByDay[day]!)).toBe(
         mockAddedByDay[day],
       );
-      expect(sumRead(result.current.collectionReadStatsByDay[day]!)).toBe(
+      expect(sumRead(result.current.domainReadStatsByDay[day]!)).toBe(
         mockReadByDay[day],
       );
     }
+  });
+
+  it("overview pending 中はコレクション日別をゼロで埋め、collectionStats は活動ゼロ行を除外して空", async () => {
+    mockFetchDashboardOverview.mockImplementation(() => new Promise(() => {}));
+    mockFetchCollections.mockResolvedValue(COLLECTIONS_TWO);
+
+    const { result } = renderHook(() => useDashboardOverviewData(), {
+      wrapper,
+    });
+
+    await waitFor(() => {
+      expect(result.current.collectionsLoading).toBe(false);
+    });
+
+    expect(result.current.collectionAddedStatsByDay).toHaveLength(7);
+    expect(result.current.collectionReadStatsByDay).toHaveLength(7);
+    for (let day = 0; day < 7; day += 1) {
+      expect(result.current.collectionAddedStatsByDay[day]).toEqual([
+        {
+          id: C_WORK,
+          name: "Work",
+          emoji: "📁",
+          addedCount: 0,
+          readCount: 0,
+        },
+        {
+          id: C_PERSONAL,
+          name: "Personal",
+          emoji: "✨",
+          addedCount: 0,
+          readCount: 0,
+        },
+      ]);
+      expect(result.current.collectionReadStatsByDay[day]).toEqual([
+        {
+          id: C_WORK,
+          name: "Work",
+          emoji: "📁",
+          addedCount: 0,
+          readCount: 0,
+        },
+        {
+          id: C_PERSONAL,
+          name: "Personal",
+          emoji: "✨",
+          addedCount: 0,
+          readCount: 0,
+        },
+      ]);
+    }
+    expect(result.current.collectionStats).toEqual([]);
   });
 
   it("overview の data が無い間はチャート系列を 7 日ゼロにする", () => {
@@ -137,7 +275,7 @@ describe("useDashboardOverviewData", () => {
     mockFetchDashboardOverview.mockResolvedValue({
       ...VALID_OVERVIEW,
       daily_totals: [],
-    });
+    } as DashboardOverviewRpcResult);
 
     const { result } = renderHook(() => useDashboardOverviewData(), {
       wrapper,
@@ -158,7 +296,7 @@ describe("useDashboardOverviewData", () => {
     mockFetchDashboardOverview.mockResolvedValue({
       ...VALID_OVERVIEW,
       daily_totals: partial,
-    });
+    } as DashboardOverviewRpcResult);
 
     const { result } = renderHook(() => useDashboardOverviewData(), {
       wrapper,
@@ -178,7 +316,7 @@ describe("useDashboardOverviewData", () => {
     mockFetchDashboardOverview.mockResolvedValue({
       ...VALID_OVERVIEW,
       daily_totals: eight,
-    });
+    } as DashboardOverviewRpcResult);
 
     const { result } = renderHook(() => useDashboardOverviewData(), {
       wrapper,

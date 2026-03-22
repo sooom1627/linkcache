@@ -2,7 +2,10 @@ import { renderHook, waitFor } from "@testing-library/react-native";
 
 import * as timezoneUtils from "@/src/shared/utils/timezone";
 
-import { fetchDashboardOverview } from "../../api/fetchDashboardOverview.api";
+import {
+  fetchDashboardOverview,
+  type DashboardOverviewRpcResult,
+} from "../../api/fetchDashboardOverview.api";
 import { linkQueryKeys } from "../../constants/queryKeys";
 import {
   dashboardOverviewStaleTimeMs,
@@ -16,7 +19,7 @@ jest.mock("../../api/fetchDashboardOverview.api", () => ({
 
 const mockFetchDashboardOverview = jest.mocked(fetchDashboardOverview);
 
-const VALID_OVERVIEW = {
+const VALID_OVERVIEW: DashboardOverviewRpcResult = {
   daily_totals: [
     { date: "2025-03-16", added_count: 1, read_count: 0 },
     { date: "2025-03-17", added_count: 0, read_count: 2 },
@@ -26,8 +29,8 @@ const VALID_OVERVIEW = {
     { date: "2025-03-21", added_count: 2, read_count: 2 },
     { date: "2025-03-22", added_count: 0, read_count: 1 },
   ],
-  daily_by_collection: [] as unknown[],
-  daily_by_domain: [] as unknown[],
+  daily_by_collection: [],
+  daily_by_domain: [],
 };
 
 describe("useDashboardOverviewQuery", () => {

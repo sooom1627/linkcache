@@ -44,6 +44,8 @@ export function DashboardWeeklyActivityChart(props: {
   readLegendA11y: string;
   palette: ChartPalette;
   showEmptyWeekHint?: boolean;
+  /** バックグラウンド再取得中（視覚ディムはしないが a11y で busy を付与） */
+  isRefreshing?: boolean;
 }) {
   const { t } = useTranslation();
   const {
@@ -66,12 +68,14 @@ export function DashboardWeeklyActivityChart(props: {
     readLegendA11y,
     palette,
     showEmptyWeekHint = false,
+    isRefreshing = false,
   } = props;
 
   return (
     <View
       className="overflow-hidden rounded-2xl bg-slate-100 p-3"
       style={CARD_STYLE}
+      accessibilityState={{ busy: isRefreshing }}
     >
       <View className="mb-2 flex-row items-start justify-between gap-2">
         <Text className="text-base font-semibold text-slate-800">
