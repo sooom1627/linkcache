@@ -48,6 +48,36 @@ const VALID_OVERVIEW_WITH_COLLECTION_ROWS: DashboardOverviewRpcResult = {
   ],
 };
 
+const VALID_OVERVIEW_WITH_DOMAIN_ROWS: DashboardOverviewRpcResult = {
+  ...VALID_OVERVIEW,
+  daily_by_domain: [
+    {
+      date: "2025-03-20",
+      domain: "example.com",
+      added_count: 2,
+      read_count: 1,
+    },
+    {
+      date: "2025-03-21",
+      domain: "__other__",
+      added_count: 0,
+      read_count: 3,
+    },
+    {
+      date: "2025-03-22",
+      domain: "",
+      added_count: 1,
+      read_count: 0,
+    },
+  ],
+};
+
+const VALID_OVERVIEW_WITH_COLLECTION_AND_DOMAIN_ROWS: DashboardOverviewRpcResult =
+  {
+    ...VALID_OVERVIEW_WITH_COLLECTION_ROWS,
+    daily_by_domain: VALID_OVERVIEW_WITH_DOMAIN_ROWS.daily_by_domain,
+  };
+
 describe("fetchDashboardOverview", () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -289,6 +319,161 @@ describe("fetchDashboardOverview", () => {
         {
           date: "2025-03-20",
           collection_id: COLLECTION_ID_A,
+          added_count: 1,
+          read_count: 0,
+          extra_field: true,
+        },
+      ],
+    };
+    mockRpc.mockResolvedValueOnce({ data: bad, error: null });
+
+    await expect(fetchDashboardOverview("UTC")).rejects.toThrow(
+      /Validation failed:/,
+    );
+  });
+
+  it("returns parsed overview when daily_by_domain has valid rows", async () => {
+    mockRpc.mockResolvedValueOnce({
+      data: VALID_OVERVIEW_WITH_DOMAIN_ROWS,
+      error: null,
+    });
+
+    const result = await fetchDashboardOverview("Asia/Tokyo");
+
+    expect(result).toEqual(VALID_OVERVIEW_WITH_DOMAIN_ROWS);
+  });
+
+  it("returns parsed overview when daily_by_collection and daily_by_domain both have rows", async () => {
+    mockRpc.mockResolvedValueOnce({
+      data: VALID_OVERVIEW_WITH_COLLECTION_AND_DOMAIN_ROWS,
+      error: null,
+    });
+
+    const result = await fetchDashboardOverview("UTC");
+
+    expect(result).toEqual(VALID_OVERVIEW_WITH_COLLECTION_AND_DOMAIN_ROWS);
+  });
+
+  it("throws when daily_by_domain is not an array", async () => {
+    mockRpc.mockResolvedValueOnce({
+      data: {
+        ...VALID_OVERVIEW,
+        daily_by_domain: {},
+      },
+      error: null,
+    });
+
+    await expect(fetchDashboardOverview("UTC")).rejects.toThrow(
+      /Validation failed:/,
+    );
+  });
+
+  it("throws when daily_by_domain element is not an object", async () => {
+    mockRpc.mockResolvedValueOnce({
+      data: {
+        ...VALID_OVERVIEW,
+        daily_by_domain: ["not-a-row"],
+      },
+      error: null,
+    });
+
+    await expect(fetchDashboardOverview("UTC")).rejects.toThrow(
+      /Validation failed:/,
+    );
+  });
+
+  it("throws when daily_by_domain row has invalid date format", async () => {
+    const bad = structuredClone(VALID_OVERVIEW) as Record<string, unknown>;
+    bad.daily_by_domain = [
+      {
+        date: "03/20/2025",
+        domain: "example.com",
+        added_count: 1,
+        read_count: 0,
+      },
+    ];
+    mockRpc.mockResolvedValueOnce({ data: bad, error: null });
+
+    await expect(fetchDashboardOverview("UTC")).rejects.toThrow(
+      /Validation failed:/,
+    );
+  });
+
+  it("throws when daily_by_domain row has nonexistent calendar date", async () => {
+    const bad = structuredClone(VALID_OVERVIEW) as Record<string, unknown>;
+    bad.daily_by_domain = [
+      {
+        date: "2025-02-31",
+        domain: "example.com",
+        added_count: 1,
+        read_count: 0,
+      },
+    ];
+    mockRpc.mockResolvedValueOnce({ data: bad, error: null });
+
+    await expect(fetchDashboardOverview("UTC")).rejects.toThrow(
+      /Validation failed:/,
+    );
+  });
+
+  it("throws when daily_by_domain row has non-string domain", async () => {
+    const bad = structuredClone(VALID_OVERVIEW) as Record<string, unknown>;
+    bad.daily_by_domain = [
+      {
+        date: "2025-03-20",
+        domain: 123,
+        added_count: 1,
+        read_count: 0,
+      },
+    ];
+    mockRpc.mockResolvedValueOnce({ data: bad, error: null });
+
+    await expect(fetchDashboardOverview("UTC")).rejects.toThrow(
+      /Validation failed:/,
+    );
+  });
+
+  it("throws when daily_by_domain row has negative count", async () => {
+    const bad = structuredClone(VALID_OVERVIEW) as Record<string, unknown>;
+    bad.daily_by_domain = [
+      {
+        date: "2025-03-20",
+        domain: "example.com",
+        added_count: -1,
+        read_count: 0,
+      },
+    ];
+    mockRpc.mockResolvedValueOnce({ data: bad, error: null });
+
+    await expect(fetchDashboardOverview("UTC")).rejects.toThrow(
+      /Validation failed:/,
+    );
+  });
+
+  it("throws when daily_by_domain row has non-integer count", async () => {
+    const bad = structuredClone(VALID_OVERVIEW) as Record<string, unknown>;
+    bad.daily_by_domain = [
+      {
+        date: "2025-03-20",
+        domain: "example.com",
+        added_count: 1.5,
+        read_count: 0,
+      },
+    ];
+    mockRpc.mockResolvedValueOnce({ data: bad, error: null });
+
+    await expect(fetchDashboardOverview("UTC")).rejects.toThrow(
+      /Validation failed:/,
+    );
+  });
+
+  it("throws when daily_by_domain row has unknown extra keys", async () => {
+    const bad: Record<string, unknown> = {
+      ...VALID_OVERVIEW,
+      daily_by_domain: [
+        {
+          date: "2025-03-20",
+          domain: "example.com",
           added_count: 1,
           read_count: 0,
           extra_field: true,

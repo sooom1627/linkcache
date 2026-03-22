@@ -1,5 +1,5 @@
 /**
- * Compile-time contract: `get_dashboard_overview` RPC return shape (US-B §3).
+ * Compile-time contract: `get_dashboard_overview` RPC return shape (US-B/US-C).
  * If `Database['public']['Functions']['get_dashboard_overview']['Returns']` drifts
  * from `DashboardOverviewRpcJson`, `tsc` fails on `Assert` below.
  */

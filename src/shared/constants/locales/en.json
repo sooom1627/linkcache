@@ -236,6 +236,7 @@
       "collections_empty_domains": "No domains yet",
       "collections_column_domain": "Domain",
       "domain_unknown": "Unknown",
+      "domain_other": "Other",
       "table_view_collection": "Collections",
       "table_view_domain": "Domains",
       "table_view_picker_a11y": "Choose breakdown: collections or domains",

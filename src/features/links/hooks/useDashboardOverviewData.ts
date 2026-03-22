@@ -4,14 +4,7 @@ import { useTranslation } from "react-i18next";
 
 import { useCollections } from "@/src/features/links/hooks/useCollections";
 import { useDashboardOverviewQuery } from "@/src/features/links/hooks/useDashboardOverviewQuery";
-import { useLinks } from "@/src/features/links/hooks/useLinks";
 import type { DashboardCollectionStat } from "@/src/features/links/types/dashboard.types";
-import {
-  buildDomainStatsFromLinks,
-  mockAddedByDay,
-  mockReadByDay,
-  splitDayTotalAcrossBuckets,
-} from "@/src/features/links/utils/dashboardStats";
 
 type BucketRow = { id: string; name: string; emoji: string | null };
 
@@ -19,6 +12,12 @@ type DailyTotalRow = { date: string; added_count: number; read_count: number };
 type DailyByCollectionRow = {
   date: string;
   collection_id: string;
+  added_count: number;
+  read_count: number;
+};
+type DailyByDomainRow = {
+  date: string;
+  domain: string;
   added_count: number;
   read_count: number;
 };
@@ -38,6 +37,132 @@ function effectiveSevenDayDates(
     () => null,
   );
   return [...leadingNulls, ...dates];
+}
+
+function domainDisplayName(
+  domainKey: string,
+  labels: { unknown: string; other: string },
+): string {
+  if (domainKey === "") {
+    return labels.unknown;
+  }
+  if (domainKey === "__other__") {
+    return labels.other;
+  }
+  return domainKey;
+}
+
+function buildDomainBreakdownFromRpc(
+  dailyTotals: DailyTotalRow[] | null | undefined,
+  dailyByDomain: DailyByDomainRow[] | null | undefined,
+  labels: { unknown: string; other: string },
+): {
+  domainAddedStatsByDay: DashboardCollectionStat[][];
+  domainReadStatsByDay: DashboardCollectionStat[][];
+  domainStats: DashboardCollectionStat[];
+} {
+  const slotDates = effectiveSevenDayDates(dailyTotals);
+  const rows = dailyByDomain ?? [];
+  const dateToIndex = new Map<string, number>();
+  for (let i = 0; i < 7; i++) {
+    const d = slotDates[i];
+    if (d != null) {
+      dateToIndex.set(d, i);
+    }
+  }
+
+  const activityByDomain = new Map<string, { added: number; read: number }>();
+  for (const row of rows) {
+    if (dateToIndex.get(row.date) === undefined) {
+      continue;
+    }
+    const cur = activityByDomain.get(row.domain) ?? { added: 0, read: 0 };
+    cur.added += row.added_count;
+    cur.read += row.read_count;
+    activityByDomain.set(row.domain, cur);
+  }
+
+  const domainKeys = [...activityByDomain.keys()].sort((a, b) => {
+    const ta = activityByDomain.get(a)!;
+    const tb = activityByDomain.get(b)!;
+    const sa = ta.added + ta.read;
+    const sb = tb.added + tb.read;
+    return sb - sa;
+  });
+
+  const domainBuckets: BucketRow[] = domainKeys.map((key) => ({
+    id: key,
+    name: domainDisplayName(key, labels),
+    emoji: null,
+  }));
+
+  const n = domainBuckets.length;
+  const addedByDayAndDomain: number[][] = Array.from({ length: 7 }, () =>
+    Array.from({ length: n }, () => 0),
+  );
+  const readByDayAndDomain: number[][] = Array.from({ length: 7 }, () =>
+    Array.from({ length: n }, () => 0),
+  );
+
+  for (const row of rows) {
+    const dayIdx = dateToIndex.get(row.date);
+    if (dayIdx === undefined) {
+      continue;
+    }
+    const colIdx = domainBuckets.findIndex((c) => c.id === row.domain);
+    if (colIdx === -1) {
+      continue;
+    }
+    addedByDayAndDomain[dayIdx]![colIdx]! += row.added_count;
+    readByDayAndDomain[dayIdx]![colIdx]! += row.read_count;
+  }
+
+  const domainAddedStatsByDay: DashboardCollectionStat[][] = [];
+  const domainReadStatsByDay: DashboardCollectionStat[][] = [];
+  for (let day = 0; day < 7; day++) {
+    domainAddedStatsByDay.push(
+      domainBuckets.map((c, j) => ({
+        id: c.id,
+        name: c.name,
+        emoji: c.emoji,
+        addedCount: addedByDayAndDomain[day]![j]!,
+        readCount: 0,
+      })),
+    );
+    domainReadStatsByDay.push(
+      domainBuckets.map((c, j) => ({
+        id: c.id,
+        name: c.name,
+        emoji: c.emoji,
+        addedCount: 0,
+        readCount: readByDayAndDomain[day]![j]!,
+      })),
+    );
+  }
+
+  const domainStats: DashboardCollectionStat[] = domainBuckets
+    .map((c, j) => {
+      let added = 0;
+      let read = 0;
+      for (let day = 0; day < 7; day++) {
+        added += addedByDayAndDomain[day]![j]!;
+        read += readByDayAndDomain[day]![j]!;
+      }
+      return {
+        id: c.id,
+        name: c.name,
+        emoji: c.emoji,
+        addedCount: added,
+        readCount: read,
+      };
+    })
+    .filter((r) => r.addedCount > 0 || r.readCount > 0);
+
+  return {
+    domainAddedStatsByDay,
+    domainReadStatsByDay,
+    domainStats,
+  };
 }
 
 function buildCollectionBreakdownFromRpc(
@@ -151,7 +276,6 @@ export interface DashboardOverviewData {
   domainStats: DashboardCollectionStat[];
   domainAddedStatsByDay: DashboardCollectionStat[][];
   domainReadStatsByDay: DashboardCollectionStat[][];
-  domainsLoading: boolean;
   dashboardOverviewPending: boolean;
   dashboardOverviewFetching: boolean;
 }
@@ -167,10 +291,14 @@ export function useDashboardOverviewData(): DashboardOverviewData {
   const { collections, isLoading } = useCollections({
     orderBy: "items_count",
   });
-  const { links: linksForDomains, isLoading: domainsLoading } = useLinks({
-    limit: 500,
-    pageSize: 500,
-  });
+
+  const domainLabels = useMemo(
+    () => ({
+      unknown: t("links.dashboard.domain_unknown"),
+      other: t("links.dashboard.domain_other"),
+    }),
+    [t],
+  );
 
   const addedByDay = useMemo(
     (): number[] =>
@@ -184,15 +312,6 @@ export function useDashboardOverviewData(): DashboardOverviewData {
     [overviewData],
   );
 
-  const domainStats = useMemo(
-    () =>
-      buildDomainStatsFromLinks(
-        linksForDomains,
-        t("links.dashboard.domain_unknown"),
-      ),
-    [linksForDomains, t],
-  );
-
   const collectionBuckets = useMemo(
     (): BucketRow[] =>
       collections.map((c) => ({
@@ -201,16 +320,6 @@ export function useDashboardOverviewData(): DashboardOverviewData {
         emoji: c.emoji,
       })),
     [collections],
-  );
-
-  const domainBuckets = useMemo(
-    (): BucketRow[] =>
-      domainStats.map((d) => ({
-        id: d.id,
-        name: d.name,
-        emoji: d.emoji,
-      })),
-    [domainStats],
   );
 
   const {
@@ -231,17 +340,15 @@ export function useDashboardOverviewData(): DashboardOverviewData {
     ],
   );
 
-  const domainAddedStatsByDay = useMemo((): DashboardCollectionStat[][] => {
-    return mockAddedByDay.map((dayTotal): DashboardCollectionStat[] =>
-      splitDayTotalAcrossBuckets(dayTotal, domainBuckets, "added"),
-    );
-  }, [domainBuckets]);
-
-  const domainReadStatsByDay = useMemo((): DashboardCollectionStat[][] => {
-    return mockReadByDay.map((dayTotal): DashboardCollectionStat[] =>
-      splitDayTotalAcrossBuckets(dayTotal, domainBuckets, "read"),
-    );
-  }, [domainBuckets]);
+  const { domainStats, domainAddedStatsByDay, domainReadStatsByDay } = useMemo(
+    () =>
+      buildDomainBreakdownFromRpc(
+        overviewData?.daily_totals,
+        overviewData?.daily_by_domain,
+        domainLabels,
+      ),
+    [overviewData?.daily_totals, overviewData?.daily_by_domain, domainLabels],
+  );
 
   return {
     addedByDay,
@@ -253,7 +360,6 @@ export function useDashboardOverviewData(): DashboardOverviewData {
     domainStats,
     domainAddedStatsByDay,
     domainReadStatsByDay,
-    domainsLoading,
     dashboardOverviewPending,
     dashboardOverviewFetching,
   };
