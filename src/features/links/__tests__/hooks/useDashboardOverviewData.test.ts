@@ -15,6 +15,7 @@ import {
   dashboardTestCollectionsTwo as COLLECTIONS_TWO,
   expectedAddedByDayFromValidOverviewFixture as EXPECTED_ADDED_BY_DAY,
   expectedReadByDayFromValidOverviewFixture as EXPECTED_READ_BY_DAY,
+  dashboardOverviewDomainTotalsAlignedRpcFixture as OVERVIEW_DOMAIN_ALIGNED_WITH_TOTALS,
   dashboardOverviewWithCollectionBreakdownRpcFixture as OVERVIEW_WITH_COLLECTION_BREAKDOWN,
   dashboardOverviewWithDomainBreakdownRpcFixture as OVERVIEW_WITH_DOMAIN_BREAKDOWN,
   dashboardOverviewValidRpcFixture as VALID_OVERVIEW,
@@ -38,6 +39,10 @@ function sumAdded(rows: DashboardCollectionStat[]) {
 
 function sumRead(rows: DashboardCollectionStat[]) {
   return rows.reduce((s, r) => s + r.readCount, 0);
+}
+
+function sumSeries(days: number[]) {
+  return days.reduce((s, n) => s + n, 0);
 }
 
 function addedFor(rows: DashboardCollectionStat[], id: string) {
@@ -78,6 +83,28 @@ describe("useDashboardOverviewData", () => {
       expect(result.current.addedByDay).toEqual(EXPECTED_ADDED_BY_DAY);
     });
     expect(result.current.readByDay).toEqual(EXPECTED_READ_BY_DAY);
+  });
+
+  it("domainStats の added/read 週次合計は daily_totals 系列の合計と一致する（RPC 母集団整合）", async () => {
+    mockFetchDashboardOverview.mockResolvedValue(
+      OVERVIEW_DOMAIN_ALIGNED_WITH_TOTALS,
+    );
+    mockFetchCollections.mockResolvedValue([]);
+
+    const { result } = renderHook(() => useDashboardOverviewData(), {
+      wrapper,
+    });
+
+    await waitFor(() => {
+      expect(result.current.domainStats.length).toBeGreaterThan(0);
+    });
+
+    expect(sumSeries(result.current.addedByDay)).toBe(
+      sumAdded(result.current.domainStats),
+    );
+    expect(sumSeries(result.current.readByDay)).toBe(
+      sumRead(result.current.domainStats),
+    );
   });
 
   it("コレクション日別内訳は daily_by_collection を useCollections 順でピボットする", async () => {

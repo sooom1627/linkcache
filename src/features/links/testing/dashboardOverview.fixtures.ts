@@ -79,6 +79,30 @@ export const dashboardOverviewWithCollectionBreakdownRpcFixture: DashboardOvervi
     ],
   };
 
+/**
+ * `daily_by_domain` added/read 週次合計が `daily_totals` と一致（チャート凡例とドメイン表の整合用インバリアント）。
+ * RPC が `daily_totals` と同一母集団でドメインを集計するときの期待形の例。
+ */
+export const dashboardOverviewDomainTotalsAlignedRpcFixture: DashboardOverviewRpcResult =
+  {
+    ...dashboardOverviewValidRpcFixture,
+    daily_by_domain: [
+      { date: "2025-03-16", domain: "ex.com", added_count: 1, read_count: 0 },
+      { date: "2025-03-17", domain: "ex.com", added_count: 0, read_count: 2 },
+      { date: "2025-03-18", domain: "ex.com", added_count: 2, read_count: 1 },
+      {
+        date: "2025-03-18",
+        domain: "other.com",
+        added_count: 1,
+        read_count: 0,
+      },
+      { date: "2025-03-20", domain: "a.com", added_count: 3, read_count: 4 },
+      { date: "2025-03-20", domain: "b.com", added_count: 2, read_count: 0 },
+      { date: "2025-03-21", domain: "c.com", added_count: 2, read_count: 2 },
+      { date: "2025-03-22", domain: "c.com", added_count: 0, read_count: 1 },
+    ],
+  };
+
 /** US-C: sparse `daily_by_domain` aligned with `dashboardOverviewValidRpcFixture` dates (index 0 = 2025-03-16). */
 export const dashboardOverviewWithDomainBreakdownRpcFixture: DashboardOverviewRpcResult =
   {

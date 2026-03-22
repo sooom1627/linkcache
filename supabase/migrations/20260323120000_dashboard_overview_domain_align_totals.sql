@@ -1,84 +1,10 @@
--- US-C C1: Populate daily_by_domain (extractDomain-equivalent host; top 15 domains by 7-day
--- (added+read) activity with rollup to __other__). daily_totals and daily_by_collection bodies
--- match 20260322080212 (unchanged semantics).
--- NOTE: `new`/`done`-only filters on domain CTEs were removed in 20260323120000_dashboard_overview_domain_align_totals.sql
--- so domain added/read match daily_totals population.
+-- daily_by_domain added/read use the same link_status population as daily_totals
+-- (no triage_status filter). Chart legend and domain breakdown ADDED sums stay consistent.
+-- Partial indexes for new/done-only scans are dropped; use idx_link_status_user_id_created_at
+-- and idx_link_status_user_id_read_at_not_null for the widened predicates.
 
-CREATE OR REPLACE FUNCTION public.extract_domain_for_dashboard(p_url text)
-RETURNS text
-LANGUAGE plpgsql
-IMMUTABLE
-AS $extract$
-DECLARE
-  v_raw text;
-  v_rest text;
-  v_auth text;
-  v_host text;
-  v_m text[];
-BEGIN
-  IF p_url IS NULL THEN
-    RETURN '';
-  END IF;
-
-  v_raw := btrim(p_url);
-  IF v_raw = '' THEN
-    RETURN '';
-  END IF;
-
-  IF v_raw !~* '^[a-z][a-z0-9+.-]*://' THEN
-    RETURN '';
-  END IF;
-
-  v_rest := regexp_replace(v_raw, '^[a-z][a-z0-9+.-]*://', '', 'i');
-
-  v_auth := split_part(v_rest, '/', 1);
-  IF position('?' IN v_auth) > 0 THEN
-    v_auth := split_part(v_auth, '?', 1);
-  END IF;
-  IF position('#' IN v_auth) > 0 THEN
-    v_auth := split_part(v_auth, '#', 1);
-  END IF;
-
-  IF v_auth = '' THEN
-    RETURN '';
-  END IF;
-
-  IF v_auth ~ '@' THEN
-    v_auth := substring(v_auth from '@(.*)$');
-  END IF;
-
-  IF v_auth ~ '^\[' THEN
-    v_m := regexp_match(v_auth, '^\[([^\]]+)\](?::([0-9]+))?$');
-    IF v_m IS NULL THEN
-      RETURN '';
-    END IF;
-    v_host := lower(v_m[1]);
-    RETURN regexp_replace(v_host, '^www\.', '', 'i');
-  END IF;
-
-  v_m := regexp_match(v_auth, '^(.+):([0-9]+)$');
-  IF v_m IS NOT NULL THEN
-    v_host := v_m[1];
-  ELSE
-    v_host := v_auth;
-  END IF;
-
-  IF v_host = '' THEN
-    RETURN '';
-  END IF;
-
-  RETURN regexp_replace(lower(v_host), '^www\.', '', 'i');
-END;
-$extract$;
-
-CREATE INDEX IF NOT EXISTS idx_link_status_dashboard_domain_added
-  ON public.link_status (user_id, created_at)
-  WHERE status IN ('new'::public.triage_status, 'done'::public.triage_status);
-
-CREATE INDEX IF NOT EXISTS idx_link_status_dashboard_domain_read
-  ON public.link_status (user_id, read_at)
-  WHERE status IN ('new'::public.triage_status, 'done'::public.triage_status)
-    AND read_at IS NOT NULL;
+DROP INDEX IF EXISTS public.idx_link_status_dashboard_domain_read;
+DROP INDEX IF EXISTS public.idx_link_status_dashboard_domain_added;
 
 CREATE OR REPLACE FUNCTION public.get_dashboard_overview(p_tz text)
 RETURNS json
@@ -212,7 +138,6 @@ BEGIN
       FROM public.link_status ls
       INNER JOIN public.links l ON l.id = ls.link_id
       WHERE ls.user_id = v_user_id
-        AND ls.status IN ('new'::public.triage_status, 'done'::public.triage_status)
         AND ls.created_at >= ((v_today - 6)::timestamp AT TIME ZONE p_tz)
         AND ls.created_at < ((v_today + 1)::timestamp AT TIME ZONE p_tz)
       GROUP BY 1, 2
@@ -225,7 +150,6 @@ BEGIN
       FROM public.link_status ls
       INNER JOIN public.links l ON l.id = ls.link_id
       WHERE ls.user_id = v_user_id
-        AND ls.status IN ('new'::public.triage_status, 'done'::public.triage_status)
         AND ls.read_at IS NOT NULL
         AND ls.read_at >= ((v_today - 6)::timestamp AT TIME ZONE p_tz)
         AND ls.read_at < ((v_today + 1)::timestamp AT TIME ZONE p_tz)
