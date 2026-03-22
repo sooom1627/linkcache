@@ -2,15 +2,28 @@ import { z } from "zod";
 
 import { supabase } from "@/src/shared/lib/supabase";
 
+const isoCalendarDayString = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, "Expected YYYY-MM-DD");
+
 const dashboardDailyTotalRowSchema = z.object({
-  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  date: isoCalendarDayString,
   added_count: z.number().int().nonnegative(),
   read_count: z.number().int().nonnegative(),
 });
 
+const dashboardDailyByCollectionRowSchema = z
+  .object({
+    date: isoCalendarDayString,
+    collection_id: z.string().uuid(),
+    added_count: z.number().int().nonnegative(),
+    read_count: z.number().int().nonnegative(),
+  })
+  .strict();
+
 export const dashboardOverviewRpcSchema = z.object({
   daily_totals: z.array(dashboardDailyTotalRowSchema).length(7),
-  daily_by_collection: z.array(z.unknown()),
+  daily_by_collection: z.array(dashboardDailyByCollectionRowSchema),
   daily_by_domain: z.array(z.unknown()),
 });
 
