@@ -4,14 +4,14 @@
 
 一次情報: [dashboard-overview-api.md](./dashboard-overview-api.md) · ストーリー対応: [dashboard-overview-user-stories-execution-plan.md](./dashboard-overview-user-stories-execution-plan.md) · 先行完了: [dashboard-overview-us-a.md](./dashboard-overview-us-a.md)
 
-**ストーリーステータス — US-B 未完了（実行計画確定）**: 下記 **B1 → B7** の DoD および [§8 Story DoD](#8-ストーリー完了定義story-dod) を満たした時点でストーリー完了とする。完了後は本書の [§5](#5-実装サマリb1b7・着手後に更新) を [dashboard-overview-us-a.md §5](./dashboard-overview-us-a.md#5-実装済みt1t9サマリ) と同様に「実装済みパス」へ差し替える。**US-X**（エラー UI・RefreshControl 等）は引き続き別ストーリー。
+**ストーリーステータス — US-B 進行中**: **B1（RPC `daily_by_collection`）は完了**（[§4](#4-db-マイグレーションb1)・[§6 B1](#b1--supabase-daily_by_collection-を-rpc-に実装)）。**B2〜B7**（型・Zod・`useDashboardOverviewData`・loading・fixtures・品質ゲート）が未完了のため、ストーリー全体は [§8 Story DoD](#8-ストーリー完了定義story-dod) 未達。完了後は [§5](#5-実装サマリb1b7・着手後に更新) を [dashboard-overview-us-a.md §5](./dashboard-overview-us-a.md#5-実装済みt1t9サマリ) と同様に全面「実装済み」へ差し替える。**US-X**（エラー UI・RefreshControl 等）は別ストーリー。
 
-| 項目                                 | 内容                                                                   |
-| ------------------------------------ | ---------------------------------------------------------------------- |
-| **推奨実行順**                       | 下記 **B1 → B7**（依存があるため順序を崩さない）                       |
-| **1 タスクあたりの完了定義**         | 各タスク末尾の **DoD** を満たすこと                                    |
-| **スプリント完了（ストーリー DoD）** | [§8 ストーリー完了定義](#8-ストーリー完了定義story-dod)                |
-| **B1〜B7 実装**                      | **未着手**（完了後は §5・§6 のチェックを埋め、ステータス行を更新する） |
+| 項目                                 | 内容                                                           |
+| ------------------------------------ | -------------------------------------------------------------- |
+| **推奨実行順**                       | 下記 **B1 → B7**（依存があるため順序を崩さない）               |
+| **1 タスクあたりの完了定義**         | 各タスク末尾の **DoD** を満たすこと                            |
+| **スプリント完了（ストーリー DoD）** | [§8 ストーリー完了定義](#8-ストーリー完了定義story-dod)        |
+| **B1〜B7 実装**                      | **B1 完了** · **B2〜B7 未着手**（§5・§6 のチェックを随時更新） |
 
 ---
 
@@ -43,7 +43,7 @@
 
 ## 3. RPC 契約（US-B 拡張分）
 
-**前提**: 関数名・認証・`daily_totals`・`daily_by_domain === []` は [US-A §3](./dashboard-overview-us-a.md#3-rpc-契約確定参照) と同一。US-B は **`daily_by_collection` のみ**を空配列から実データへ拡張する（**新規マイグレーション**で `CREATE OR REPLACE FUNCTION`）。
+**前提**: 関数名・認証・`daily_totals`・`daily_by_domain === []` は [US-A §3](./dashboard-overview-us-a.md#3-rpc-契約確定参照) と同一。US-B は **`daily_by_collection` のみ**を空配列から実データへ拡張する（**B1 済み**: マイグレーションで `CREATE OR REPLACE FUNCTION`。クライアント型・Zod・画面接続は **B2 以降**）。
 
 **集計の正本**: [dashboard-overview-api.md §2](./dashboard-overview-api.md#2-プロダクト定義方針--db-突合せ後に-rpc-で確定)。
 
@@ -70,15 +70,15 @@
 
 **完了時の作業**: 下表を「実装済みパスで埋め、チェックを付ける」。[US-A §5](./dashboard-overview-us-a.md#5-実装済みt1t9サマリ) と同様に、代表ファイルリンクを正とする。
 
-| 範囲              | 予定コード（代表）                                                                                                                                                                                                                                                                     |
-| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| B1（RPC）         | [`20260322074231_get_dashboard_overview_daily_by_collection.sql`](../../supabase/migrations/20260322074231_get_dashboard_overview_daily_by_collection.sql)（MCP 適用済み想定）                                                                                                         |
-| B2（型）          | [`supabase.types.ts`](../../src/features/links/types/supabase.types.ts) の `get_dashboard_overview` 戻り                                                                                                                                                                               |
-| B3（API）         | [`fetchDashboardOverview.api.ts`](../../src/features/links/api/fetchDashboardOverview.api.ts)、[`fetchDashboardOverview.api.test.ts`](../../src/features/links/__tests__/api/fetchDashboardOverview.api.test.ts)                                                                       |
-| B4（データ合成）  | [`useDashboardOverviewData.ts`](../../src/features/links/hooks/useDashboardOverviewData.ts)、[`useDashboardOverviewData.test.ts`](../../src/features/links/__tests__/hooks/useDashboardOverviewData.test.ts) — コレクション行列・`collectionStats` を RPC 由来に。ドメインはモック継続 |
-| B5（UI・loading） | [`useDashboardBreakdownUi.ts`](../../src/features/links/hooks/useDashboardBreakdownUi.ts) の `isTableLoading`（collection 時に `dashboardOverviewPending` を合成）、必要なら [`DashboardOverview.tsx`](../../src/features/links/screens/DashboardOverview.tsx)                         |
-| B6（fixtures）    | [`dashboardOverview.fixtures.ts`](../../src/features/links/testing/dashboardOverview.fixtures.ts)、必要なら [`useDashboardBreakdownUi.test.ts`](../../src/features/links/__tests__/hooks/useDashboardBreakdownUi.test.ts)                                                              |
-| B7（品質ゲート）  | `pnpm test` / `pnpm run check`、実機確認ログ                                                                                                                                                                                                                                           |
+| 範囲              | 状態 | 予定コード（代表）                                                                                                                                                                                                                                                                     |
+| ----------------- | ---- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| B1（RPC）         | ✅   | [`20260322074231_get_dashboard_overview_daily_by_collection.sql`](../../supabase/migrations/20260322074231_get_dashboard_overview_daily_by_collection.sql)（**Supabase MCP `apply_migration`** で適用。ローカルは同ファイルを `supabase db` で追従）                                   |
+| B2（型）          | ⬜   | [`supabase.types.ts`](../../src/features/links/types/supabase.types.ts) の `get_dashboard_overview` 戻り                                                                                                                                                                               |
+| B3（API）         | ⬜   | [`fetchDashboardOverview.api.ts`](../../src/features/links/api/fetchDashboardOverview.api.ts)、[`fetchDashboardOverview.api.test.ts`](../../src/features/links/__tests__/api/fetchDashboardOverview.api.test.ts)                                                                       |
+| B4（データ合成）  | ⬜   | [`useDashboardOverviewData.ts`](../../src/features/links/hooks/useDashboardOverviewData.ts)、[`useDashboardOverviewData.test.ts`](../../src/features/links/__tests__/hooks/useDashboardOverviewData.test.ts) — コレクション行列・`collectionStats` を RPC 由来に。ドメインはモック継続 |
+| B5（UI・loading） | ⬜   | [`useDashboardBreakdownUi.ts`](../../src/features/links/hooks/useDashboardBreakdownUi.ts) の `isTableLoading`（collection 時に `dashboardOverviewPending` を合成）、必要なら [`DashboardOverview.tsx`](../../src/features/links/screens/DashboardOverview.tsx)                         |
+| B6（fixtures）    | ⬜   | [`dashboardOverview.fixtures.ts`](../../src/features/links/testing/dashboardOverview.fixtures.ts)、必要なら [`useDashboardBreakdownUi.test.ts`](../../src/features/links/__tests__/hooks/useDashboardBreakdownUi.test.ts)                                                              |
+| B7（品質ゲート）  | ⬜   | `pnpm test` / `pnpm run check`、実機確認ログ                                                                                                                                                                                                                                           |
 
 **不要（US-A 済）**: 新規 Query キー、`useDashboardOverviewQuery` の追加オプション、mutation からの `dashboardOverviewPrefix()` invalidate 追加。
 
@@ -119,11 +119,11 @@ flowchart LR
 | **依存**   | §1.1 / §2 の突合せ済みであること                                                                                                                       |
 | **成果物** | 新規マイグレーション（`CREATE OR REPLACE FUNCTION public.get_dashboard_overview`）。`daily_totals` の挙動を壊さない。`daily_by_domain` は `'[]'::json` |
 
-- [ ] 7 日窓・`p_tz` 暦日が `daily_totals` と一致
-- [ ] コレクション内訳のみ §2 の重複計上
-- [ ] `SECURITY DEFINER`・`search_path`・認証エラー方針は既存 RPC と同パターン
+- [x] 7 日窓・`p_tz` 暦日が `daily_totals` と一致
+- [x] コレクション内訳のみ §2 の重複計上
+- [x] `SECURITY DEFINER`・`search_path`・認証エラー方針は既存 RPC と同パターン
 
-**DoD**: 検証 DB で RPC を叩き、手元または SQL テストで期待 JSON になる。`daily_totals` の回帰なし。
+**DoD**: 検証 DB で RPC を叩き、手元または SQL テストで期待 JSON になる。`daily_totals` の回帰なし。 — **B1 完了**（マイグレーション・MCP 適用・ログ確認・`pnpm test` / `pnpm run check` 記録は実施済み想定。詳細は改訂履歴）。
 
 ---
 
@@ -217,12 +217,12 @@ flowchart LR
 
 ## 7. 影響ファイル一覧（参照）
 
-| 種別                    | パス・備考                                                                                                                                                        |
-| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **主に変更（予定）**    | 新規マイグレーション、`supabase.types.ts`、`fetchDashboardOverview.api.ts`、`useDashboardOverviewData.ts`、`useDashboardBreakdownUi.ts`、各 `__tests__`・fixtures |
-| **参照のみ（US-A 済）** | `useDashboardOverviewQuery.ts`、`queryKeys.ts`、mutation 9 本の invalidate、チャート系コンポーネント                                                              |
-| **残（US-C）**          | `daily_by_domain`、ドメイン行列、`extractDomain` SQL 同値                                                                                                         |
-| **残（US-X）**          | [dashboard-overview-api.md §7](dashboard-overview-api.md#7-ui-修正画面コンテナ)（エラー UI・RefreshControl 等）                                                   |
+| 種別                    | パス・備考                                                                                                                                                                                                                                                                                                                          |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **主に変更**            | **B1 済**: [`20260322074231_get_dashboard_overview_daily_by_collection.sql`](../../supabase/migrations/20260322074231_get_dashboard_overview_daily_by_collection.sql)。**B2〜B7 予定**: `supabase.types.ts`、`fetchDashboardOverview.api.ts`、`useDashboardOverviewData.ts`、`useDashboardBreakdownUi.ts`、各 `__tests__`・fixtures |
+| **参照のみ（US-A 済）** | `useDashboardOverviewQuery.ts`、`queryKeys.ts`、mutation 9 本の invalidate、チャート系コンポーネント                                                                                                                                                                                                                                |
+| **残（US-C）**          | `daily_by_domain`、ドメイン行列、`extractDomain` SQL 同値                                                                                                                                                                                                                                                                           |
+| **残（US-X）**          | [dashboard-overview-api.md §7](dashboard-overview-api.md#7-ui-修正画面コンテナ)（エラー UI・RefreshControl 等）                                                                                                                                                                                                                     |
 
 ---
 
@@ -254,6 +254,7 @@ pnpm test
 
 ## 改訂履歴（メモ）
 
-| 日付       | 内容                                        |
-| ---------- | ------------------------------------------- |
-| 2026-03-22 | 初版（US-B 垂直分割タスクのドキュメント化） |
+| 日付       | 内容                                                                 |
+| ---------- | -------------------------------------------------------------------- |
+| 2026-03-22 | 初版（US-B 垂直分割タスクのドキュメント化）                          |
+| 2026-03-22 | B1 完了を反映（ストーリーステータス・§5 状態列・§6 B1 チェック・§7） |
