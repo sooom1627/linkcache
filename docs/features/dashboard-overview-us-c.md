@@ -4,14 +4,14 @@
 
 一次情報: [dashboard-overview-api.md](./dashboard-overview-api.md) · ストーリー対応: [dashboard-overview-user-stories-execution-plan.md](./dashboard-overview-user-stories-execution-plan.md) · 先行完了: [dashboard-overview-us-a.md](./dashboard-overview-us-a.md)、[dashboard-overview-us-b.md](./dashboard-overview-us-b.md)
 
-**ストーリーステータス — US-C 未着手**: 下記 **C1〜C7** はいずれも未完了（§5 の状態列は実装後に更新する）。**US-X**（エラー UI・RefreshControl 等）は別ストーリー。
+**ストーリーステータス — US-C 進行中**: **C1（RPC `daily_by_domain`）は完了**（§5・§6 参照）。**C2〜C7** は未。**US-X**（エラー UI・RefreshControl 等）は別ストーリー。
 
 | 項目                                 | 内容                                                    |
 | ------------------------------------ | ------------------------------------------------------- |
 | **推奨実行順**                       | 下記 **C1 → C7**（依存があるため順序を崩さない）        |
 | **1 タスクあたりの完了定義**         | 各タスク末尾の **DoD** を満たすこと                     |
 | **スプリント完了（ストーリー DoD）** | [§8 ストーリー完了定義](#8-ストーリー完了定義story-dod) |
-| **C1〜C7 実装**                      | **未**（§5・§6 を実装時に更新）                         |
+| **C1〜C7 実装**                      | **C1 済** / C2〜C7 未（§5・§6 を随時更新）              |
 
 **開発原則**（垂直スライス・TDD・品質ゲート）: [dashboard-overview-user-stories-execution-plan.md § 開発原則](./dashboard-overview-user-stories-execution-plan.md#開発原則) に従う。各タスクは **red → green → refactor** と **`pnpm run check`** を回してから次へ進める。
 
@@ -53,16 +53,16 @@
 
 **集計の正本**: [dashboard-overview-api.md §2](./dashboard-overview-api.md#2-プロダクト定義方針--db-突合せ後に-rpc-で確定)。
 
-| 項目                  | 内容                                                                                                                                                                                                                                                                                                            |
-| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `daily_totals`        | **変更しない**                                                                                                                                                                                                                                                                                                  |
-| `daily_by_collection` | **変更しない**                                                                                                                                                                                                                                                                                                  |
-| `daily_by_domain`     | 直近 **7 日**（**index 0 ＝ 6 日前**、**6 ＝ 今日**）のドメイン別 added/read。日境界・タイムゾーン・窓の predicate は `daily_totals` と**同一**（[`20260322032918`](../../supabase/migrations/20260322032918_dashboard_overview_seven_day_timestamp_filter.sql) 系と整合）                                      |
-| 母集団                | `link_status` のうち **`triage_status IN ('new', 'done')`** の行のみ（§2）。`read_soon` / `stock` は集計対象外                                                                                                                                                                                                  |
-| added / read の意味   | **added**: 上記母集団に対し `link_status.created_at` を `p_tz` で暦日化した日バケットでカウント。**read**: 同母集団かつ `read_at IS NOT NULL` の行について、`read_at` を `p_tz` で暦日化してカウント                                                                                                            |
-| ドメインキー          | `links.url`（またはビュー経由の同等列）から抽出し、**`extractDomain` と同じ文字列**（空文字は不正 URL 等に対応）。検証は [§3.2](dashboard-overview-api.md#32-機能要件) のベクトル手順に従う                                                                                                                     |
-| 上位 N ＋その他       | [§3.3](dashboard-overview-api.md#33-性能ダッシュボードモバイルで追加で押さえる点) に従い、RPC 内で **日×ドメイン** または週全体の集約においてドメイン数に上限を設け、超過分を **固定ラベルの「その他」**（例: リテラル `__other__` や合意した表示キー）にrollupする。**N の具体値**は C1 完了時に本表へ追記する |
-| **JSON 形状（案）**   | フラット配列 `{ date, domain, added_count, read_count }[]`。`date` は `YYYY-MM-DD`（`daily_totals` と同じ暦日）。`domain` は **テキスト**（「その他」バケットもこの文字列で識別）。`added_count` / `read_count` は非負整数。**疎行列**: 両方 0 の行は返さない                                                   |
+| 項目                  | 内容                                                                                                                                                                                                                                                                           |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `daily_totals`        | **変更しない**                                                                                                                                                                                                                                                                 |
+| `daily_by_collection` | **変更しない**                                                                                                                                                                                                                                                                 |
+| `daily_by_domain`     | 直近 **7 日**（**index 0 ＝ 6 日前**、**6 ＝ 今日**）のドメイン別 added/read。日境界・タイムゾーン・窓の predicate は `daily_totals` と**同一**（[`20260322032918`](../../supabase/migrations/20260322032918_dashboard_overview_seven_day_timestamp_filter.sql) 系と整合）     |
+| 母集団                | `link_status` のうち **`status IN ('new', 'done')`**（列は `status`、型 `triage_status`）の行のみ（§2 の「`triage_status`」表記と同義）。`read_soon` / `stock` は集計対象外                                                                                                    |
+| added / read の意味   | **added**: 上記母集団に対し `link_status.created_at` を `p_tz` で暦日化した日バケットでカウント。**read**: 同母集団かつ `read_at IS NOT NULL` の行について、`read_at` を `p_tz` で暦日化してカウント                                                                           |
+| ドメインキー          | `links.url`（またはビュー経由の同等列）から抽出し、**`extractDomain` と同じ文字列**（空文字は不正 URL 等に対応）。検証は [§3.2](dashboard-overview-api.md#32-機能要件) のベクトル手順に従う                                                                                    |
+| 上位 N ＋その他       | [§3.3](dashboard-overview-api.md#33-性能ダッシュボードモバイルで追加で押さえる点) に従い、**7 日間の合計活動量**（`added_count + read_count` の行和）でドメインをランクし、**上位 N ＝ 15** を個別キーとして残し、それ以外を **`__other__`** に日別 rollup する（C1 実装済み） |
+| **JSON 形状（案）**   | フラット配列 `{ date, domain, added_count, read_count }[]`。`date` は `YYYY-MM-DD`（`daily_totals` と同じ暦日）。`domain` は **テキスト**（「その他」バケットもこの文字列で識別）。`added_count` / `read_count` は非負整数。**疎行列**: 両方 0 の行は返さない                  |
 
 **クライアント側のバケット順**: コレクションと異なり `useCollections` の並びは使わない。実装では **7 日分の RPC 行からドメイン一覧を導出**し、一覧表示・ピボットの列順を **直近 7 日の合計活動量降順**（現行 `buildDomainStatsFromLinks` のソート意図に近い）など、仕様として一文固定する（C4 の DoD に含める）。
 
@@ -73,9 +73,9 @@
 ## 4. DB マイグレーション（C1）
 
 - **現状（US-B まで）**: [`20260322074231_get_dashboard_overview_daily_by_collection.sql`](../../supabase/migrations/20260322074231_get_dashboard_overview_daily_by_collection.sql) の戻りで `'daily_by_domain', '[]'::json`（スタブ）。
-- **US-C C1（予定）**: 新規マイグレーションで `get_dashboard_overview` を置換し、`daily_by_domain` を §3 どおり生成する。ドメイン抽出用の SQL 関数（例: `extract_domain_for_dashboard(url text) RETURNS text`）を定義し、**IMMUTABLE** 可否は Postgres の制約に合わせて設計する（式が IMMUTABLE でない場合は生成列・別方針を §3.1 の EXPLAIN と合わせて判断）。
+- **US-C C1（実装済み）**: [`20260322103614_get_dashboard_overview_daily_by_domain.sql`](../../supabase/migrations/20260322103614_get_dashboard_overview_daily_by_domain.sql) — `public.extract_domain_for_dashboard(text)`（`IMMUTABLE`）＋`get_dashboard_overview` 置換、`idx_link_status_dashboard_domain_added` / `idx_link_status_dashboard_domain_read`（部分インデックス）。リモート適用は **Supabase MCP `apply_migration`**（記録名 `get_dashboard_overview_daily_by_domain`）。
 - **適用**: **Supabase MCP** の `apply_migration` を正とする（[AGENTS.md](../../AGENTS.md)）。CLI はフォールバック。
-- **インデックス**: `EXPLAIN (ANALYZE, BUFFERS)` の結果に基づき、§3.1 の SKILL に沿って不足があれば同マイグレーションまたはフォローアップで追加する。
+- **インデックス**: `EXPLAIN (ANALYZE, BUFFERS)` でドメイン added 経路が `idx_link_status_dashboard_domain_added` を使用することを確認済み（フォローアップはデータ量に応じて §3.1）。
 
 ---
 
@@ -85,7 +85,7 @@
 
 | 範囲              | 状態 | 予定コード（代表）                                                                                                                                                                                                                                                                               |
 | ----------------- | ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| C1（RPC）         | ⬜   | 新規 `supabase/migrations/*_get_dashboard_overview_daily_by_domain.sql`（仮名）— `daily_by_domain` 生成・ドメイン関数・上位 N＋その他                                                                                                                                                            |
+| C1（RPC）         | ✅   | [`20260322103614_get_dashboard_overview_daily_by_domain.sql`](../../supabase/migrations/20260322103614_get_dashboard_overview_daily_by_domain.sql) — `extract_domain_for_dashboard`、`daily_by_domain`、N=15・`__other__`、部分インデックス 2 本                                                 |
 | C2（型）          | ⬜   | [`supabase.types.ts`](../../src/features/links/types/supabase.types.ts) の `get_dashboard_overview` 戻り                                                                                                                                                                                         |
 | C3（API）         | ⬜   | [`fetchDashboardOverview.api.ts`](../../src/features/links/api/fetchDashboardOverview.api.ts)、[`fetchDashboardOverview.api.test.ts`](../../src/features/links/__tests__/api/fetchDashboardOverview.api.test.ts) — `daily_by_domain` 行の Zod 厳格化                                             |
 | C4（データ合成）  | ⬜   | [`useDashboardOverviewData.ts`](../../src/features/links/hooks/useDashboardOverviewData.ts)、[`useDashboardOverviewData.test.ts`](../../src/features/links/__tests__/hooks/useDashboardOverviewData.test.ts) — ドメイン行列・`domainStats` を RPC ピボット、`useLinks` 撤去、モック行列撤去      |
@@ -136,10 +136,10 @@ flowchart LR
 | **依存**   | §1.1 / §2 / §3.2 の突合せ済みであること                                                                                                                                        |
 | **成果物** | 新規マイグレーション（`CREATE OR REPLACE FUNCTION public.get_dashboard_overview`）。`daily_totals` と `daily_by_collection` の挙動を壊さない。ドメイン抽出関数＋上位 N＋その他 |
 
-- [ ] 7 日窓・`p_tz` 暦日が `daily_totals` と一致
-- [ ] 母集団が §2（`new` / `done` のみ）
-- [ ] `SECURITY DEFINER`・`search_path`・認証エラー方針は既存 RPC と同パターン
-- [ ] §3.2 のベクトルに対し SQL 側検証手順がチームで再現可能（ローカル Postgres / SQL Editor / CI のいずれかに統一）
+- [x] 7 日窓・`p_tz` 暦日が `daily_totals` と一致
+- [x] 母集団が §2（`new` / `done` のみ、`link_status.status`）
+- [x] `SECURITY DEFINER`・`search_path`・認証エラー方針は既存 RPC と同パターン
+- [x] §3.2 の代表ベクトルは SQL で `extract_domain_for_dashboard` を検証可能（例: `example.com` / `localhost` / `a.example.com` / `''`）
 
 **DoD**: 検証 DB で RPC を叩き、期待 JSON 形状・母集団・境界日が仕様どおり。US-A/US-B の回帰なし。
 
@@ -287,3 +287,4 @@ pnpm test
 | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 2026-03-22 | 初版（US-C 垂直分割タスクのドキュメント化）                                                                                                                                                                         |
 | 2026-03-22 | §3・§4・§6 に HTML アンカー（`us-c-rpc-contract` 等）を追加し、[実行プラン](./dashboard-overview-user-stories-execution-plan.md)・[dashboard-overview-api.md](./dashboard-overview-api.md) からの相互リンク用に整理 |
+| 2026-03-22 | **C1 完了**: `20260322103614_get_dashboard_overview_daily_by_domain.sql`、`extract_domain_for_dashboard`、N=15・`__other__`、部分インデックス；§3・§4・§5・§6・実行プランを同期                                     |
