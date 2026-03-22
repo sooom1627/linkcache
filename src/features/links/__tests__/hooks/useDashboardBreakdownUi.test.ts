@@ -4,8 +4,8 @@ import { act, renderHook } from "@testing-library/react-native";
 
 import { useDashboardBreakdownUi } from "@/src/features/links/hooks/useDashboardBreakdownUi";
 import {
-  createEmptySevenDayRowArrays,
   createMinimalOverviewData,
+  createMinimalOverviewDataForSelectedCollectionDay,
 } from "@/src/features/links/testing/dashboardOverview.fixtures";
 import type {
   DashboardChartSeriesMode,
@@ -104,20 +104,24 @@ describe("useDashboardBreakdownUi", () => {
   });
 
   it("選択日に加算があるとき displayRows は日別マージ行になる", () => {
-    const seven = createEmptySevenDayRowArrays();
-    seven[1] = [
-      { id: "c1", name: "C", emoji: null, addedCount: 2, readCount: 0 },
-    ];
-    const sevenRead = createEmptySevenDayRowArrays();
-    sevenRead[1] = [
-      { id: "c1", name: "C", emoji: null, addedCount: 0, readCount: 1 },
-    ];
-
-    const data = createMinimalOverviewData({
+    const data = createMinimalOverviewDataForSelectedCollectionDay({
+      dayIndex: 1,
       addedByDay: [0, 3, 0, 0, 0, 0, 0],
       readByDay: [0, 1, 0, 0, 0, 0, 0],
-      collectionAddedStatsByDay: seven,
-      collectionReadStatsByDay: sevenRead,
+      addedRow: {
+        id: "c1",
+        name: "C",
+        emoji: null,
+        addedCount: 2,
+        readCount: 0,
+      },
+      readRow: {
+        id: "c1",
+        name: "C",
+        emoji: null,
+        addedCount: 0,
+        readCount: 1,
+      },
     });
 
     const { result } = renderHook(() => useBreakdownHarness(data, "both", 1), {

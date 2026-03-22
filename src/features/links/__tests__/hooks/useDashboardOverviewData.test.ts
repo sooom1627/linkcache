@@ -10,6 +10,15 @@ import {
 import { fetchUserLinks } from "../../api/fetchLinks.api";
 import { linkQueryKeys } from "../../constants/queryKeys";
 import { useDashboardOverviewData } from "../../hooks/useDashboardOverviewData";
+import {
+  dashboardTestCollectionPersonalId as C_PERSONAL,
+  dashboardTestCollectionWorkId as C_WORK,
+  dashboardTestCollectionsTwo as COLLECTIONS_TWO,
+  expectedAddedByDayFromValidOverviewFixture as EXPECTED_ADDED_BY_DAY,
+  expectedReadByDayFromValidOverviewFixture as EXPECTED_READ_BY_DAY,
+  dashboardOverviewWithCollectionBreakdownRpcFixture as OVERVIEW_WITH_COLLECTION_BREAKDOWN,
+  dashboardOverviewValidRpcFixture as VALID_OVERVIEW,
+} from "../../testing/dashboardOverview.fixtures";
 import type { DashboardCollectionStat } from "../../types/dashboard.types";
 import type { UserLink } from "../../types/linkList.types";
 import { mockAddedByDay, mockReadByDay } from "../../utils/dashboardStats";
@@ -29,72 +38,10 @@ const mockFetchDashboardOverview = jest.mocked(fetchDashboardOverview);
 const mockFetchCollections = jest.mocked(fetchCollections);
 const mockFetchUserLinks = jest.mocked(fetchUserLinks);
 
-/** useDashboardOverviewQuery.test と同型の RPC 成功ペイロード */
-const VALID_OVERVIEW: DashboardOverviewRpcResult = {
-  daily_totals: [
-    { date: "2025-03-16", added_count: 1, read_count: 0 },
-    { date: "2025-03-17", added_count: 0, read_count: 2 },
-    { date: "2025-03-18", added_count: 3, read_count: 1 },
-    { date: "2025-03-19", added_count: 0, read_count: 0 },
-    { date: "2025-03-20", added_count: 5, read_count: 4 },
-    { date: "2025-03-21", added_count: 2, read_count: 2 },
-    { date: "2025-03-22", added_count: 0, read_count: 1 },
-  ],
-  daily_by_collection: [],
-  daily_by_domain: [],
-};
-
-const EXPECTED_ADDED_BY_DAY = VALID_OVERVIEW.daily_totals.map(
-  (r) => r.added_count,
-);
-const EXPECTED_READ_BY_DAY = VALID_OVERVIEW.daily_totals.map(
-  (r) => r.read_count,
-);
-
 const EMPTY_LINKS_PAGE = {
   data: [] as Awaited<ReturnType<typeof fetchUserLinks>>["data"],
   hasMore: false,
   totalCount: 0,
-};
-
-const C_WORK = "11111111-1111-1111-1111-111111111111";
-const C_PERSONAL = "22222222-2222-2222-2222-222222222222";
-/** Present only in RPC rows — must not appear in UI rows */
-const C_RPC_ONLY = "33333333-3333-3333-3333-333333333333";
-
-const COLLECTIONS_TWO = [
-  { id: C_WORK, name: "Work", emoji: "📁" as const, itemsCount: 10 },
-  { id: C_PERSONAL, name: "Personal", emoji: "✨" as const, itemsCount: 5 },
-];
-
-const OVERVIEW_WITH_COLLECTION_BREAKDOWN: DashboardOverviewRpcResult = {
-  ...VALID_OVERVIEW,
-  daily_by_collection: [
-    {
-      date: "2025-03-16",
-      collection_id: C_WORK,
-      added_count: 2,
-      read_count: 1,
-    },
-    {
-      date: "2025-03-20",
-      collection_id: C_WORK,
-      added_count: 1,
-      read_count: 0,
-    },
-    {
-      date: "2025-03-20",
-      collection_id: C_PERSONAL,
-      added_count: 3,
-      read_count: 2,
-    },
-    {
-      date: "2025-03-18",
-      collection_id: C_RPC_ONLY,
-      added_count: 99,
-      read_count: 99,
-    },
-  ],
 };
 
 const ONE_DOMAIN_LINK: UserLink = {

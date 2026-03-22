@@ -4,14 +4,14 @@
 
 一次情報: [dashboard-overview-api.md](./dashboard-overview-api.md) · ストーリー対応: [dashboard-overview-user-stories-execution-plan.md](./dashboard-overview-user-stories-execution-plan.md) · 先行完了: [dashboard-overview-us-a.md](./dashboard-overview-us-a.md)
 
-**ストーリーステータス — US-B 進行中**: **B1〜B5 は完了** — B5 は [`useDashboardBreakdownUi`](../../src/features/links/hooks/useDashboardBreakdownUi.ts) の `isTableLoading` に `dashboardOverviewPending` を合成（コレクションタブ時）。**B6〜B7**（fixtures 強化・ストーリー締めの品質ゲート）が未完了のため、ストーリー全体は [§8 Story DoD](#8-ストーリー完了定義story-dod) 未達。完了後は [§5](#5-実装サマリb1b7・着手後に更新) を [dashboard-overview-us-a.md §5](./dashboard-overview-us-a.md#5-実装済みt1t9サマリ) と同様に全面「実装済み」へ差し替える。**US-X**（エラー UI・RefreshControl 等）は別ストーリー。
+**ストーリーステータス — US-B 完了**: **B1〜B7 完了**（B6: [`dashboardOverview.fixtures.ts`](../../src/features/links/testing/dashboardOverview.fixtures.ts) に RPC フィクスチャ・Zod 整合テスト [`dashboardOverview.fixtures.test.ts`](../../src/features/links/testing/__tests__/dashboardOverview.fixtures.test.ts)；B7: `pnpm test` / `pnpm run check` 通過）。ストーリー全体は [§8 Story DoD](#8-ストーリー完了定義story-dod) を満たす。**US-X**（エラー UI・RefreshControl 等）は別ストーリー。
 
 | 項目                                 | 内容                                                           |
 | ------------------------------------ | -------------------------------------------------------------- |
 | **推奨実行順**                       | 下記 **B1 → B7**（依存があるため順序を崩さない）               |
 | **1 タスクあたりの完了定義**         | 各タスク末尾の **DoD** を満たすこと                            |
 | **スプリント完了（ストーリー DoD）** | [§8 ストーリー完了定義](#8-ストーリー完了定義story-dod)        |
-| **B1〜B7 実装**                      | **B1〜B5 完了** · **B6〜B7 未**（§5・§6 のチェックを随時更新） |
+| **B1〜B7 実装**                      | **B1〜B7 完了**（§5・§6 参照）                                 |
 
 ---
 
@@ -43,7 +43,7 @@
 
 ## 3. RPC 契約（US-B 拡張分）
 
-**前提**: 関数名・認証・`daily_totals`・`daily_by_domain === []` は [US-A §3](./dashboard-overview-us-a.md#3-rpc-契約確定参照) と同一。US-B は **`daily_by_collection` のみ**を空配列から実データへ拡張する（**B1 済み**: マイグレーションで `CREATE OR REPLACE FUNCTION`）。クライアント型・Zod・[`useDashboardOverviewData`](../../src/features/links/hooks/useDashboardOverviewData.ts) へのコレクション接続は **B2〜B4 済み**。**B5 済**（内訳テーブル loading 合成）。**B6〜B7** は fixtures・ストーリー締め。
+**前提**: 関数名・認証・`daily_totals`・`daily_by_domain === []` は [US-A §3](./dashboard-overview-us-a.md#3-rpc-契約確定参照) と同一。US-B は **`daily_by_collection` のみ**を空配列から実データへ拡張する（**B1 済み**: マイグレーションで `CREATE OR REPLACE FUNCTION`）。クライアント型・Zod・[`useDashboardOverviewData`](../../src/features/links/hooks/useDashboardOverviewData.ts) へのコレクション接続は **B2〜B4 済み**。**B5 済**（内訳テーブル loading 合成）。**B6〜B7 済**（共有 fixtures・品質ゲート）。
 
 **集計の正本**: [dashboard-overview-api.md §2](./dashboard-overview-api.md#2-プロダクト定義方針--db-突合せ後に-rpc-で確定)。
 
@@ -77,8 +77,8 @@
 | B3（API）         | ✅   | [`fetchDashboardOverview.api.ts`](../../src/features/links/api/fetchDashboardOverview.api.ts)（`daily_by_collection` 行スキーマ厳格化）、[`fetchDashboardOverview.api.test.ts`](../../src/features/links/__tests__/api/fetchDashboardOverview.api.test.ts)                                                                                                                                                                                                                |
 | B4（データ合成）  | ✅   | [`useDashboardOverviewData.ts`](../../src/features/links/hooks/useDashboardOverviewData.ts)、[`useDashboardOverviewData.test.ts`](../../src/features/links/__tests__/hooks/useDashboardOverviewData.test.ts) — コレクション行列・`collectionStats` を `daily_by_collection` 由来にピボット。ドメインはモック継続（US-C）                                                                                                                                                  |
 | B5（UI・loading） | ✅   | [`useDashboardBreakdownUi.ts`](../../src/features/links/hooks/useDashboardBreakdownUi.ts) の `isTableLoading`（`tableView === "collection"` 時は `collectionsLoading` と `dashboardOverviewPending` の論理和）。テスト [`useDashboardBreakdownUi.test.ts`](../../src/features/links/__tests__/hooks/useDashboardBreakdownUi.test.ts)。[`DashboardOverview.tsx`](../../src/features/links/screens/DashboardOverview.tsx) は全体スケルトンで既に pending を含むため変更なし |
-| B6（fixtures）    | ⬜   | [`dashboardOverview.fixtures.ts`](../../src/features/links/testing/dashboardOverview.fixtures.ts)、必要なら [`useDashboardBreakdownUi.test.ts`](../../src/features/links/__tests__/hooks/useDashboardBreakdownUi.test.ts)                                                                                                                                                                                                                                                 |
-| B7（品質ゲート）  | ⬜   | `pnpm test` / `pnpm run check`、実機確認ログ                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| B6（fixtures）    | ✅   | [`dashboardOverview.fixtures.ts`](../../src/features/links/testing/dashboardOverview.fixtures.ts)（RPC 定数・`createMinimalOverviewDataForSelectedCollectionDay`）、[`dashboardOverview.fixtures.test.ts`](../../src/features/links/testing/__tests__/dashboardOverview.fixtures.test.ts)、[`useDashboardOverviewData.test.ts`](../../src/features/links/__tests__/hooks/useDashboardOverviewData.test.ts) からフィクスチャ参照、[`useDashboardBreakdownUi.test.ts`](../../src/features/links/__tests__/hooks/useDashboardBreakdownUi.test.ts) |
+| B7（品質ゲート）  | ✅   | `pnpm test` / `pnpm run check` 通過（CI 相当）。実機スモーク（コレクションソート・日選択内訳）はローカルで実施推奨                                                                                                                                                                                                                                                                                                                                                         |
 
 **不要（US-A 済）**: 新規 Query キー、`useDashboardOverviewQuery` の追加オプション、mutation からの `dashboardOverviewPrefix()` invalidate 追加。
 
@@ -193,9 +193,9 @@ flowchart LR
 | **依存**   | B4（B5 と並行可）                                                                                                                                                                                                                                                 |
 | **成果物** | [`dashboardOverview.fixtures.ts`](../../src/features/links/testing/dashboardOverview.fixtures.ts) に `daily_by_collection` 付き最小データ。必要なら [`useDashboardBreakdownUi.test.ts`](../../src/features/links/__tests__/hooks/useDashboardBreakdownUi.test.ts) |
 
-- [ ] `createMinimalOverviewData` 等が型・テストで一貫
+- [x] `createMinimalOverviewData` 等が型・テストで一貫
 
-**DoD**: 関連テストが緑。
+**DoD**: 関連テストが緑。 — **B6 完了**
 
 ---
 
@@ -207,11 +207,11 @@ flowchart LR
 | **依存**   | B3〜B6 完了                    |
 | **成果物** | ローカル確認ログ               |
 
-- [ ] `pnpm test`
-- [ ] `pnpm run check`
-- [ ] 実機またはシミュレータ: 日未選択のコレクション一覧ソート・日選択後の内訳が RPC と矛盾しないこと
+- [x] `pnpm test`
+- [x] `pnpm run check`
+- [ ] 実機またはシミュレータ: 日未選択のコレクション一覧ソート・日選択後の内訳が RPC と矛盾しないこと（ローカル確認推奨）
 
-**DoD**: `pnpm run check` 通過。テストが緑。
+**DoD**: `pnpm run check` 通過。テストが緑。 — **B7 完了**（自動ゲート）
 
 ---
 
@@ -260,3 +260,4 @@ pnpm test
 | 2026-03-22 | B1 完了を反映（ストーリーステータス・§5 状態列・§6 B1 チェック・§7）                                              |
 | 2026-03-22 | B2〜B4 完了を反映（型・Zod・`useDashboardOverviewData` コレクション実データ化・§5・§6・§7・ストーリーステータス） |
 | 2026-03-22 | B5 完了を反映（`useDashboardBreakdownUi` の `isTableLoading` 合成・テスト・§5・§6・§7・ストーリーステータス）     |
+| 2026-03-22 | B6〜B7 完了を反映（`dashboardOverview.fixtures`・Zod 契約テスト・US-B ストーリー完了・§5・§6・§8）              |
