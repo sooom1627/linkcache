@@ -3,6 +3,7 @@ import {
   dashboardOverviewDomainTotalsAlignedRpcFixture,
   dashboardOverviewValidRpcFixture,
   dashboardOverviewWithCollectionBreakdownRpcFixture,
+  dashboardOverviewWithDomainBreakdownRpcFixture,
 } from "@/src/features/links/testing/dashboardOverview.fixtures";
 
 jest.mock("@/src/shared/lib/supabase", () => ({
@@ -30,6 +31,13 @@ describe("dashboardOverview.fixtures (RPC contract)", () => {
   it("dashboardOverviewDomainTotalsAlignedRpcFixture は Zod でパースできる", () => {
     const parsed = dashboardOverviewRpcSchema.safeParse(
       dashboardOverviewDomainTotalsAlignedRpcFixture,
+    );
+    expect(parsed.success).toBe(true);
+  });
+
+  it("dashboardOverviewWithDomainBreakdownRpcFixture は Zod でパースできる（daily_by_domain に __other__ と空 domain を含む）", () => {
+    const parsed = dashboardOverviewRpcSchema.safeParse(
+      dashboardOverviewWithDomainBreakdownRpcFixture,
     );
     expect(parsed.success).toBe(true);
   });

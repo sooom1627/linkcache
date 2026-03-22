@@ -4,14 +4,14 @@
 
 一次情報: [dashboard-overview-api.md](./dashboard-overview-api.md) · ストーリー対応: [dashboard-overview-user-stories-execution-plan.md](./dashboard-overview-user-stories-execution-plan.md) · 先行完了: [dashboard-overview-us-a.md](./dashboard-overview-us-a.md)、[dashboard-overview-us-b.md](./dashboard-overview-us-b.md)
 
-**ストーリーステータス — US-C 進行中**: **C1（RPC）・C2（型）・C3（API / Zod）は完了**（§5・§6 参照）。**C4〜C7** は未。**US-X**（エラー UI・RefreshControl 等）は別ストーリー。
+**ストーリーステータス — US-C 完了**: **C1〜C7 完了**（§5・§6 参照）。**US-X**（エラー UI・RefreshControl 等）は別ストーリー。
 
 | 項目                                 | 内容                                                    |
 | ------------------------------------ | ------------------------------------------------------- |
 | **推奨実行順**                       | 下記 **C1 → C7**（依存があるため順序を崩さない）        |
 | **1 タスクあたりの完了定義**         | 各タスク末尾の **DoD** を満たすこと                     |
 | **スプリント完了（ストーリー DoD）** | [§8 ストーリー完了定義](#8-ストーリー完了定義story-dod) |
-| **C1〜C7 実装**                      | **C1〜C3 済** / C4〜C7 未（§5・§6 を随時更新）          |
+| **C1〜C7 実装**                      | **C1〜C7 済**（§5・§6 を随時更新）                      |
 
 **開発原則**（垂直スライス・TDD・品質ゲート）: [dashboard-overview-user-stories-execution-plan.md § 開発原則](./dashboard-overview-user-stories-execution-plan.md#開発原則) に従う。各タスクは **red → green → refactor** と **`pnpm run check`** を回してから次へ進める。
 
@@ -89,10 +89,10 @@
 | C1（RPC）         | ✅   | [`20260322103614_get_dashboard_overview_daily_by_domain.sql`](../../supabase/migrations/20260322103614_get_dashboard_overview_daily_by_domain.sql) ＋ [`20260323120000_dashboard_overview_domain_align_totals.sql`](../../supabase/migrations/20260323120000_dashboard_overview_domain_align_totals.sql) — `extract_domain_for_dashboard`、`daily_by_domain`、N=15・`__other__`、母集団＝`daily_totals` |
 | C2（型）          | ✅   | [`supabase.types.ts`](../../src/features/links/types/supabase.types.ts) の `DashboardOverviewRpcJson.daily_by_domain` 行型                                                                                                                                                                                                                                                                              |
 | C3（API）         | ✅   | [`fetchDashboardOverview.api.ts`](../../src/features/links/api/fetchDashboardOverview.api.ts)、[`fetchDashboardOverview.api.test.ts`](../../src/features/links/__tests__/api/fetchDashboardOverview.api.test.ts) — `daily_by_domain` 行の Zod 厳格化（`dashboardDailyByDomainRowSchema`）                                                                                                               |
-| C4（データ合成）  | ⬜   | [`useDashboardOverviewData.ts`](../../src/features/links/hooks/useDashboardOverviewData.ts)、[`useDashboardOverviewData.test.ts`](../../src/features/links/__tests__/hooks/useDashboardOverviewData.test.ts) — ドメイン行列・`domainStats` を RPC ピボット、`useLinks` 撤去、モック行列撤去                                                                                                             |
-| C5（UI・loading） | ⬜   | [`useDashboardBreakdownUi.ts`](../../src/features/links/hooks/useDashboardBreakdownUi.ts)、[`useDashboardBreakdownUi.loading.test.ts`](../../src/features/links/__tests__/hooks/useDashboardBreakdownUi.loading.test.ts) 等 — ドメインタブで `dashboardOverviewPending` を合成（US-B B5 と対称）                                                                                                        |
-| C6（fixtures）    | ⬜   | [`dashboardOverview.fixtures.ts`](../../src/features/links/testing/dashboardOverview.fixtures.ts)、[`dashboardOverview.fixtures.test.ts`](../../src/features/links/testing/__tests__/dashboardOverview.fixtures.test.ts) — `daily_by_domain` を含む RPC フィクスチャと Zod 整合                                                                                                                         |
-| C7（品質ゲート）  | ⬜   | `pnpm test` / `pnpm run check`、任意で実機スモーク                                                                                                                                                                                                                                                                                                                                                      |
+| C4（データ合成）  | ✅   | [`useDashboardOverviewData.ts`](../../src/features/links/hooks/useDashboardOverviewData.ts)、[`useDashboardOverviewData.test.ts`](../../src/features/links/__tests__/hooks/useDashboardOverviewData.test.ts) — ドメイン行列・`domainStats` を RPC ピボット、`useLinks` 撤去、モック行列撤去                                                                                                             |
+| C5（UI・loading） | ✅   | [`useDashboardBreakdownUi.ts`](../../src/features/links/hooks/useDashboardBreakdownUi.ts)、[`useDashboardBreakdownUi.loading.test.ts`](../../src/features/links/__tests__/hooks/useDashboardBreakdownUi.loading.test.ts) 等 — ドメインタブで `dashboardOverviewPending` を合成（US-B B5 と対称）                                                                                                        |
+| C6（fixtures）    | ✅   | [`dashboardOverview.fixtures.ts`](../../src/features/links/testing/dashboardOverview.fixtures.ts)、[`dashboardOverview.fixtures.test.ts`](../../src/features/links/testing/__tests__/dashboardOverview.fixtures.test.ts) — `daily_by_domain` を含む RPC フィクスチャと Zod 整合（`dashboardOverviewWithDomainBreakdownRpcFixture` をスキーマ検証）                                                      |
+| C7（品質ゲート）  | ✅   | `pnpm test` / `pnpm run check` 通過（2026-03-22 実施）                                                                                                                                                                                                                                                                                                                                                  |
 
 **不要（US-A / US-B 済）**: 新規 Query キー、`useDashboardOverviewQuery` のシグネチャ拡張（同一 RPC のままなら）、mutation からの `dashboardOverviewPrefix()` invalidate の追加（新規 mutation がなければ不要）。
 
@@ -138,7 +138,7 @@ flowchart LR
 | **成果物** | 新規マイグレーション（`CREATE OR REPLACE FUNCTION public.get_dashboard_overview`）。`daily_totals` と `daily_by_collection` の挙動を壊さない。ドメイン抽出関数＋上位 N＋その他 |
 
 - [x] 7 日窓・`p_tz` 暦日が `daily_totals` と一致
-- [x] 母集団が §2（`new` / `done` のみ、`link_status.status`）
+- [x] 母集団が §2（`daily_totals` と同一・`link_status` 全 `triage_status`）
 - [x] `SECURITY DEFINER`・`search_path`・認証エラー方針は既存 RPC と同パターン
 - [x] §3.2 の代表ベクトルは SQL で `extract_domain_for_dashboard` を検証可能（例: `example.com` / `localhost` / `a.example.com` / `''`）
 
@@ -183,10 +183,10 @@ flowchart LR
 | **依存**   | C3                                                                                                                                                                                                                                                                                                                           |
 | **成果物** | [`useDashboardOverviewData.ts`](../../src/features/links/hooks/useDashboardOverviewData.ts)、[`useDashboardOverviewData.test.ts`](../../src/features/links/__tests__/hooks/useDashboardOverviewData.test.ts)                                                                                                                 |
 
-- [ ] `effectiveSevenDayDates`（既存）とドメインバケット列で 7×ドメインの added/read 行列を 0 埋めできる
-- [ ] `DashboardOverviewData` から **`domainsLoading` を削除**するかどうかを決め、**推奨は削除**（型で寄せ切る）。現行参照は [`useDashboardBreakdownUi.ts`](../../src/features/links/hooks/useDashboardBreakdownUi.ts)、[`dashboardOverview.fixtures.ts`](../../src/features/links/testing/dashboardOverview.fixtures.ts)、loading テストのみ
-- [ ] コレクション RPC ピボットのテストを壊さない
-- [ ] 空ドメイン・「その他」バケット・i18n の unknown ラベル（表示名）の扱いをテストまたはコメントで固定
+- [x] `effectiveSevenDayDates`（既存）とドメインバケット列で 7×ドメインの added/read 行列を 0 埋めできる
+- [x] `DashboardOverviewData` から **`domainsLoading` を削除**（型で寄せ切り済み）
+- [x] コレクション RPC ピボットのテストを壊さない
+- [x] 空ドメイン・「その他」バケット・i18n の unknown ラベル（表示名）の扱いをテストまたはコメントで固定
 
 **DoD**: フックテストで、固定 `daily_by_domain` に対する日別・`domainStats` が仕様どおり。チャート・コレクション系列は従来どおり。
 
@@ -200,8 +200,8 @@ flowchart LR
 | **依存**   | C4（`dashboardOverviewPending` がデータに載る前提）                                                                                                                                                                                                                                                                                              |
 | **成果物** | [`useDashboardBreakdownUi.ts`](../../src/features/links/hooks/useDashboardBreakdownUi.ts)、[`useDashboardBreakdownUi.loading.test.ts`](../../src/features/links/__tests__/hooks/useDashboardBreakdownUi.loading.test.ts)、必要なら [`useDashboardBreakdownUi.test.ts`](../../src/features/links/__tests__/hooks/useDashboardBreakdownUi.test.ts) |
 
-- [ ] `isTableLoading` を **ドメインタブで `dashboardOverviewPending` を含む**形に更新（コレクションタブは従来どおり `collectionsLoading \|\| dashboardOverviewPending`）
-- [ ] `domainsLoading` を C4 で削除した場合、当該分岐を除去済み
+- [x] `isTableLoading` を **ドメインタブで `dashboardOverviewPending` を含む**形に更新（コレクションタブは従来どおり `collectionsLoading \|\| dashboardOverviewPending`）
+- [x] `domainsLoading` 分岐を除去済み
 
 **DoD**: ドメインタブでダッシュ pending 中はテーブルが loading 扱い。`pnpm test` / `pnpm run check` 通過。
 
@@ -215,7 +215,7 @@ flowchart LR
 | **依存**   | C4（C5 と並行可）                                                                                                                                                                                                        |
 | **成果物** | [`dashboardOverview.fixtures.ts`](../../src/features/links/testing/dashboardOverview.fixtures.ts)、[`dashboardOverview.fixtures.test.ts`](../../src/features/links/testing/__tests__/dashboardOverview.fixtures.test.ts) |
 
-- [ ] `createMinimalOverviewData` 等が `daily_by_domain` を含んでも型・テストで一貫
+- [x] RPC フィクスチャ `dashboardOverviewWithDomainBreakdownRpcFixture` を `dashboardOverviewRpcSchema` で検証（`createMinimalOverviewData` は画面合成形状のまま）
 
 **DoD**: 関連テストが緑。
 
@@ -229,8 +229,8 @@ flowchart LR
 | **依存**   | C3〜C6 完了                    |
 | **成果物** | ローカル確認ログ               |
 
-- [ ] `pnpm test`
-- [ ] `pnpm run check`
+- [x] `pnpm test`
+- [x] `pnpm run check`
 - [ ] 任意: 実機またはシミュレータでドメインタブ・日未選択一覧・日選択内訳が RPC と矛盾しないこと
 
 **DoD**: `pnpm run check` 通過。テストが緑。
@@ -251,7 +251,7 @@ flowchart LR
 
 [dashboard-overview-user-stories-execution-plan.md § 完了定義](./dashboard-overview-user-stories-execution-plan.md#完了定義dod) の **US-C** に準拠:
 
-- ドメイン内訳の母集団が **`new` / `done` のみ**で、ドメイン抽出が **`extractDomain` と同値**であることを §3.2 の手順で説明・検証できること。
+- ドメイン内訳の母集団が **`daily_totals` と同一**（`link_status` 全 `triage_status`）で、ドメイン抽出が **`extractDomain` と同値**であることを §3.2 の手順で説明・検証できること。
 - ドメイン日別行列・`domainStats` が **`useLinks` 500 件上限やモック系列に依存しない**こと。
 - **`pnpm run check` が通る**こと。
 - 実務上は **C1〜C7 の DoD をすべて満たす**ことと同等。
@@ -290,3 +290,4 @@ pnpm test
 | 2026-03-22 | §3・§4・§6 に HTML アンカー（`us-c-rpc-contract` 等）を追加し、[実行プラン](./dashboard-overview-user-stories-execution-plan.md)・[dashboard-overview-api.md](./dashboard-overview-api.md) からの相互リンク用に整理 |
 | 2026-03-22 | **C1 完了**: `20260322103614_get_dashboard_overview_daily_by_domain.sql`、`extract_domain_for_dashboard`、N=15・`__other__`、部分インデックス；§3・§4・§5・§6・実行プランを同期                                     |
 | 2026-03-22 | **C2・C3 完了**: `DashboardOverviewRpcJson.daily_by_domain` 行型、`dashboardDailyByDomainRowSchema` と API テスト；§5・§6・実行プラン・[dashboard-overview-api.md](./dashboard-overview-api.md) を同期              |
+| 2026-03-22 | **C4〜C7 完了**: `useDashboardOverviewData` のドメイン RPC ピボット、内訳 loading 合成、`dashboardOverviewWithDomainBreakdownRpcFixture` の Zod テスト追加、品質ゲート；§5・§6・実行プラン・api 正本を同期          |
