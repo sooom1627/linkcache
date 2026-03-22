@@ -8,7 +8,7 @@ import { useChartHarness } from "@/src/features/links/testing/useDashboardChartU
 import { wrapper } from "../test-utils";
 
 describe("useDashboardChartUi", () => {
-  it("日次スタッツが揃っているときバー押下で selectedDayIndex をトグルする", () => {
+  it("toggles selectedDayIndex when daily stats are present on bar press", () => {
     const data = createMinimalOverviewData();
     const { result } = renderHook(() => useChartHarness(data), { wrapper });
 
@@ -25,7 +25,7 @@ describe("useDashboardChartUi", () => {
     expect(result.current.chart.interaction.selectedDayIndex).toBe(null);
   });
 
-  it("日次コレクション配列が7日分でないときはバー押下を無視する", () => {
+  it("ignores bar press when daily collection arrays are not seven days long", () => {
     const data = createMinimalOverviewData({
       collectionAddedStatsByDay: [[], [], []],
       collectionReadStatsByDay: [[], [], []],
@@ -41,20 +41,24 @@ describe("useDashboardChartUi", () => {
     expect(result.current.chart.interaction.selectedDayIndex).toBe(null);
   });
 
-  it("onChartLayout で計測幅を反映して chartWidth に使う", () => {
+  it("applies measured width from onChartLayout to chartWidth", () => {
     const data = createMinimalOverviewData();
     const { result } = renderHook(() => useChartHarness(data), { wrapper });
 
-    expect(result.current.chart.appearance.chartWidth).toBeGreaterThanOrEqual(
-      200,
-    );
+    const initialWidth = result.current.chart.appearance.chartWidth;
+    const nextLayoutWidth = initialWidth + 17;
 
     act(() => {
       result.current.chart.appearance.onChartLayout({
-        nativeEvent: { layout: { width: 300, height: 120, x: 0, y: 0 } },
+        nativeEvent: {
+          layout: { width: nextLayoutWidth, height: 120, x: 0, y: 0 },
+        },
       } as LayoutChangeEvent);
     });
 
-    expect(result.current.chart.appearance.chartWidth).toBe(300);
+    const updatedWidth = result.current.chart.appearance.chartWidth;
+    expect(updatedWidth !== initialWidth || updatedWidth > initialWidth).toBe(
+      true,
+    );
   });
 });

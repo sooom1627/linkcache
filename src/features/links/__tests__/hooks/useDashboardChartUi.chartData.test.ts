@@ -6,7 +6,7 @@ import { useChartHarness } from "@/src/features/links/testing/useDashboardChartU
 import { wrapper } from "../test-utils";
 
 describe("useDashboardChartUi", () => {
-  it("addedByDay / readByDay を週長にパディングして合計と stackData を導出する", () => {
+  it("pads addedByDay/readByDay to week length and derives totals and stackData", () => {
     const data = createMinimalOverviewData({
       addedByDay: [1, 2, 3],
       readByDay: [0, 1, 0],
