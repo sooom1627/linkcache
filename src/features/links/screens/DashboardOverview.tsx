@@ -20,7 +20,13 @@ export function DashboardOverview() {
   const data = useDashboardOverviewData();
   const { chart, breakdown } = useDashboardOverviewUi(data);
 
-  const isOverviewLoading = data.collectionsLoading || data.domainsLoading;
+  const isOverviewLoading =
+    data.collectionsLoading ||
+    data.domainsLoading ||
+    data.dashboardOverviewPending;
+
+  const isDashboardRefetching =
+    data.dashboardOverviewFetching && !data.dashboardOverviewPending;
 
   const showBreakdownSection =
     breakdown.selectedDayIndex === null || breakdown.showDayBreakdownCard;
@@ -41,6 +47,7 @@ export function DashboardOverview() {
       <Animated.View
         entering={FadeIn.duration(CONTENT_FADE_MS)}
         className="w-full"
+        style={{ opacity: isDashboardRefetching ? 0.65 : 1 }}
       >
         <DashboardWeeklyActivityChart
           {...chartAppearanceForChart}

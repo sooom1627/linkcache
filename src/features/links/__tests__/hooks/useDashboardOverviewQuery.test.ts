@@ -52,10 +52,15 @@ describe("useDashboardOverviewQuery", () => {
     });
 
     expect(result.current.isLoading).toBe(true);
+    expect(result.current.isPending).toBe(true);
+    expect(result.current.isFetching).toBe(true);
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
     });
+
+    expect(result.current.isPending).toBe(false);
+    expect(result.current.isFetching).toBe(false);
 
     expect(mockFetchDashboardOverview).toHaveBeenCalledWith("Asia/Tokyo");
     expect(result.current.data).toEqual(VALID_OVERVIEW);

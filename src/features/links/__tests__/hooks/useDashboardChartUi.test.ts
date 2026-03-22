@@ -53,6 +53,17 @@ describe("useDashboardChartUi", () => {
     expect(result.current.chart.chartData.totalRead).toBe(1);
     expect(result.current.chart.chartData.stackData).toHaveLength(7);
     expect(result.current.chart.chartData.stackData[0]?.stacks).toHaveLength(2);
+    expect(result.current.chart.chartData.showEmptyWeekHint).toBe(false);
+  });
+
+  it("週の added/read がすべて 0 のとき showEmptyWeekHint が true", () => {
+    const data = createMinimalOverviewData();
+
+    const { result } = renderHook(() => useChartHarness(data), { wrapper });
+
+    expect(result.current.chart.chartData.totalAdded).toBe(0);
+    expect(result.current.chart.chartData.totalRead).toBe(0);
+    expect(result.current.chart.chartData.showEmptyWeekHint).toBe(true);
   });
 
   it("toggleLegendSeries で both と単系列を切り替える", () => {

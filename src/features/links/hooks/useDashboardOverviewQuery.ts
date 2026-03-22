@@ -14,6 +14,8 @@ export const dashboardOverviewStaleTimeMs = 30 * 60 * 1000;
 export interface UseDashboardOverviewQueryReturn {
   data: DashboardOverviewRpcResult | undefined;
   isLoading: boolean;
+  isPending: boolean;
+  isFetching: boolean;
   isError: boolean;
   error: Error | null;
   refetch: () => Promise<unknown>;
@@ -26,15 +28,18 @@ export interface UseDashboardOverviewQueryReturn {
 export function useDashboardOverviewQuery(): UseDashboardOverviewQueryReturn {
   const tz = getDeviceTimezone();
 
-  const { data, isLoading, isError, error, refetch } = useQuery({
-    queryKey: linkQueryKeys.dashboardOverview({ tz }),
-    queryFn: () => fetchDashboardOverview(tz),
-    staleTime: dashboardOverviewStaleTimeMs,
-  });
+  const { data, isLoading, isPending, isFetching, isError, error, refetch } =
+    useQuery({
+      queryKey: linkQueryKeys.dashboardOverview({ tz }),
+      queryFn: () => fetchDashboardOverview(tz),
+      staleTime: dashboardOverviewStaleTimeMs,
+    });
 
   return {
     data,
     isLoading,
+    isPending,
+    isFetching,
     isError,
     error:
       error instanceof Error ? error : error ? new Error(String(error)) : null,

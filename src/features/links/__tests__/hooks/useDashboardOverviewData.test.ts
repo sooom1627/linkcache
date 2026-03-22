@@ -74,6 +74,8 @@ function defaultQueryReturn(
   return {
     data: VALID_OVERVIEW,
     isLoading: false,
+    isPending: false,
+    isFetching: false,
     isError: false,
     error: null,
     refetch: jest.fn(),
@@ -146,6 +148,8 @@ describe("useDashboardOverviewData", () => {
       defaultQueryReturn({
         data: undefined,
         isLoading: true,
+        isPending: true,
+        isFetching: true,
       }),
     );
 
@@ -153,5 +157,35 @@ describe("useDashboardOverviewData", () => {
 
     expect(result.current.addedByDay).toEqual([0, 0, 0, 0, 0, 0, 0]);
     expect(result.current.readByDay).toEqual([0, 0, 0, 0, 0, 0, 0]);
+  });
+
+  it("ダッシュ overview クエリの isPending / isFetching をそのまま返す", () => {
+    mockUseDashboardOverviewQuery.mockReturnValue(
+      defaultQueryReturn({
+        isPending: true,
+        isFetching: true,
+        isLoading: true,
+      }),
+    );
+
+    const { result } = renderHook(() => useDashboardOverviewData());
+
+    expect(result.current.dashboardOverviewPending).toBe(true);
+    expect(result.current.dashboardOverviewFetching).toBe(true);
+  });
+
+  it("データ取得済みでバックグラウンド再取得中は isPending false・isFetching true を返しうる", () => {
+    mockUseDashboardOverviewQuery.mockReturnValue(
+      defaultQueryReturn({
+        isPending: false,
+        isFetching: true,
+        isLoading: false,
+      }),
+    );
+
+    const { result } = renderHook(() => useDashboardOverviewData());
+
+    expect(result.current.dashboardOverviewPending).toBe(false);
+    expect(result.current.dashboardOverviewFetching).toBe(true);
   });
 });

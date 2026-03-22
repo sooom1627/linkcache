@@ -216,6 +216,7 @@
       "chart_a11y_read_only": "グラフは完了のみ表示。直近7日間の完了は{{total}}件。",
       "chart_legend_filter_hint": "タップでこの系列だけ表示。もう一度タップで両方表示。",
       "chart_weekly_section": "直近7日間",
+      "chart_week_empty_hint": "直近7日間の追加・完了はありません。",
       "chart_average_label": "平均",
       "chart_added_legend": "追加",
       "chart_read_legend": "完了",

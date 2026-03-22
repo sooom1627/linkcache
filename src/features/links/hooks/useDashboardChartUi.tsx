@@ -93,6 +93,8 @@ export function useDashboardChartUi(
   const totalRead = useMemo(() => read.reduce((s, v) => s + v, 0), [read]);
   const totalAll = totalAdded + totalRead;
 
+  const showEmptyWeekHint = totalAdded === 0 && totalRead === 0;
+
   const avgDailyTotal = useMemo(() => {
     const s = dailyValuesForScale.reduce((a, b) => a + b, 0);
     return s / 7;
@@ -190,6 +192,7 @@ export function useDashboardChartUi(
       avgDailyTotal,
       totalAdded,
       totalRead,
+      showEmptyWeekHint,
     },
     interaction: {
       handleBarPress,

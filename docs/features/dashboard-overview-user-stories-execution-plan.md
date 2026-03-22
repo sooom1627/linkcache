@@ -103,16 +103,17 @@ src/features/links/
   ├── constants/
   │   └── queryKeys.ts                           # T5 済: `linkQueryKeys.dashboardOverview`、T7 済: `dashboardOverviewPrefix()`（§5）
   ├── hooks/
-  │   ├── useDashboardOverviewQuery.ts          # T5 済: useQuery + `fetchDashboardOverview`（§5）
-  │   ├── useDashboardOverviewData.ts            # T6 済: チャート系列を `useDashboardOverviewQuery` / `daily_totals` に接続（内訳はモック継続・§6）
-  │   └── useDashboardOverviewUi.tsx             # 更新の可能性: エラー／loading（§7）
+  │   ├── useDashboardOverviewQuery.ts          # T5 済 + T8: `isPending` / `isFetching` 返却（§5）
+  │   ├── useDashboardOverviewData.ts            # T6 済 + T8: `dashboardOverviewPending` / `dashboardOverviewFetching`（§6）
+  │   ├── useDashboardChartUi.tsx               # T8 済: `showEmptyWeekHint`（§7）
+  │   └── useDashboardOverviewUi.tsx             # US-X 未: エラー UI 等は別ストーリー（§7）
   ├── screens/
-  │   └── DashboardOverview.tsx                  # 更新: エラー UI・RefreshControl・空表示（§7）
+  │   └── DashboardOverview.tsx                  # T8 済: スケルトン・再取得 `opacity`；エラー・RefreshControl は US-X（§7）
   ├── types/
   │   ├── dashboard.types.ts                     # 更新の可能性: RPC 返却型・画面用型の追記
   │   └── supabase.types.ts                      # 更新: マイグレーション後の型再生成（§1.1）
   ├── testing/
-  │   └── dashboardOverview.fixtures.ts          # 更新: `DashboardOverviewData` 形状に追随（§8）
+  │   └── dashboardOverview.fixtures.ts          # T8: pending/fetching デフォルト含む（§8）
   ├── utils/
   │   ├── urlUtils.ts                            # 更新の可能性: extractDomain 自体は既存。SQL 同値テスト用にのみ近傍へテスト追加
   │   └── __tests__/
@@ -123,8 +124,9 @@ src/features/links/
       ├── api/
       │   └── fetchDashboardOverview.api.test.ts # T4 済: Zod・エラー（§8）
       └── hooks/
-          ├── useDashboardOverviewQuery.test.ts  # T5 済: queryKey・TZ・staleTime・エラー（§8）
-          └── useDashboardOverviewData.test.ts   # T6 済: `daily_totals` と added/read 系列・内訳モック維持（§8）
+          ├── useDashboardOverviewQuery.test.ts  # T5 + T8: queryKey・TZ・staleTime・`isPending`/`isFetching`（§8）
+          ├── useDashboardOverviewData.test.ts   # T6 + T8: `daily_totals`・フラグ透過・内訳モック維持（§8）
+          └── useDashboardChartUi.test.ts        # T8: 空週ヒント（§8）
 
 src/shared/components/layout/
   └── ScreenContainer.tsx                        # 更新: US-X、`RefreshControl` 用 props（§7）
@@ -156,15 +158,16 @@ app/(protected)/(tabs)/(dashboard)/
 
 - [x] Supabase: RPC `get_dashboard_overview`（直近 7 日の `daily_totals`；追加日＝`link_status.created_at`、読了＝`read_at`（[§2](./dashboard-overview-api.md)）；`link_status` 用インデックス 2 本）— **T1〜T3 完了**（検証: [dashboard-overview-us-a.md](./dashboard-overview-us-a.md) §5、実装状況表: [dashboard-overview-api.md](./dashboard-overview-api.md) §3.2 付近）
 - [ ] Supabase: 集計クエリの `EXPLAIN (ANALYZE, BUFFERS)` とプラン見直し（[§3.1](./dashboard-overview-api.md#31-カテゴリ別チェックリストskill-準拠)、データ量に応じて実施）
-- [x] API: [`fetchDashboardOverview.api.ts`](../../src/features/links/api/fetchDashboardOverview.api.ts) で RPC + Zod（[§4](./dashboard-overview-api.md)）— **T4 完了**（検証: [dashboard-overview-us-a.md §5](./dashboard-overview-us-a.md#5-実装済みt1t7サマリ)）
-- [x] React Query（T5）: [`linkQueryKeys.dashboardOverview`](../../src/features/links/constants/queryKeys.ts)、[`useDashboardOverviewQuery`](../../src/features/links/hooks/useDashboardOverviewQuery.ts)（[§5](./dashboard-overview-api.md)）— **完了**（検証: 同上 §5）
-- [x] React Query（T7）: 各 mutation から `invalidate` 連携（`linkQueryKeys.dashboardOverviewPrefix()`、[§5](./dashboard-overview-api.md)）— **完了**（検証: [dashboard-overview-us-a.md §5・T7](./dashboard-overview-us-a.md#5-実装済みt1t7サマリ)）
+- [x] API: [`fetchDashboardOverview.api.ts`](../../src/features/links/api/fetchDashboardOverview.api.ts) で RPC + Zod（[§4](./dashboard-overview-api.md)）— **T4 完了**（検証: [dashboard-overview-us-a.md §5](./dashboard-overview-us-a.md#5-実装済みt1t8サマリ)）
+- [x] React Query（T5）: [`linkQueryKeys.dashboardOverview`](../../src/features/links/constants/queryKeys.ts)、[`useDashboardOverviewQuery`](../../src/features/links/hooks/useDashboardOverviewQuery.ts)（[§5](./dashboard-overview-api.md)）— **完了**（検証: [dashboard-overview-us-a.md §5](./dashboard-overview-us-a.md#5-実装済みt1t8サマリ)）
+- [x] React Query（T7）: 各 mutation から `invalidate` 連携（`linkQueryKeys.dashboardOverviewPrefix()`、[§5](./dashboard-overview-api.md)）— **完了**（検証: [dashboard-overview-us-a.md §5・T7](./dashboard-overview-us-a.md#5-実装済みt1t8サマリ)）
 - [x] **T6**: [`useDashboardOverviewData`](../../src/features/links/hooks/useDashboardOverviewData.ts) の **チャート** `addedByDay` / `readByDay` を [`useDashboardOverviewQuery`](../../src/features/links/hooks/useDashboardOverviewQuery.ts) の `daily_totals` に接続（テスト: [`useDashboardOverviewData.test.ts`](../../src/features/links/__tests__/hooks/useDashboardOverviewData.test.ts)）。コレクション／ドメインの日別行列は **引き続き** [`mockAddedByDay` / `mockReadByDay`](../../src/features/links/utils/dashboardStats.ts)（**US-B/C** で除去）
 - [ ] `useDashboardOverviewData` から **内訳用** `mockAddedByDay` / `mockReadByDay` を除去（[§6](./dashboard-overview-api.md)・US-B/C 完了時）
-- [ ] UI: ダッシュクエリの loading 合成・7 日すべて 0 の空表示コピーなど（[§7](./dashboard-overview-api.md)；チャートデータ自体は T6 で RPC 系列）
+- [x] UI（T8）: ダッシュクエリの loading 合成（`isPending` スケルトン・`isFetching` 時チャート `opacity`）・7 日すべて 0 のチャート空コピー（`chart_week_empty_hint`）（[§7](./dashboard-overview-api.md)、[dashboard-overview-us-a.md §5・T8](./dashboard-overview-us-a.md#5-実装済みt1t8サマリ)）
 - [x] テスト（API 層）: [`fetchDashboardOverview.api.test.ts`](../../src/features/links/__tests__/api/fetchDashboardOverview.api.test.ts)（[§8](./dashboard-overview-api.md)）— **T4 済**
 - [x] テスト（フック・T5）: [`useDashboardOverviewQuery.test.ts`](../../src/features/links/__tests__/hooks/useDashboardOverviewQuery.test.ts)（[§8](./dashboard-overview-api.md)）
-- [x] テスト（T6）: [`useDashboardOverviewData.test.ts`](../../src/features/links/__tests__/hooks/useDashboardOverviewData.test.ts)（[§8](./dashboard-overview-api.md)）。fixtures は既定ゼロ列のまま（[§8](./dashboard-overview-api.md)）
+- [x] テスト（T6・T8）: [`useDashboardOverviewData.test.ts`](../../src/features/links/__tests__/hooks/useDashboardOverviewData.test.ts)（[§8](./dashboard-overview-api.md)）。[`dashboardOverview.fixtures.ts`](../../src/features/links/testing/dashboardOverview.fixtures.ts) に T8 で `dashboardOverviewPending` / `dashboardOverviewFetching` を追加
+- [x] テスト（T8・チャート UI）: [`useDashboardChartUi.test.ts`](../../src/features/links/__tests__/hooks/useDashboardChartUi.test.ts)（[§8](./dashboard-overview-api.md)）
 
 ### US-B：collection_table（`daily_by_collection`）
 

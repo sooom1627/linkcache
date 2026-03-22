@@ -28,11 +28,17 @@ export interface DashboardOverviewData {
   domainAddedStatsByDay: DashboardCollectionStat[][];
   domainReadStatsByDay: DashboardCollectionStat[][];
   domainsLoading: boolean;
+  dashboardOverviewPending: boolean;
+  dashboardOverviewFetching: boolean;
 }
 
 export function useDashboardOverviewData(): DashboardOverviewData {
   const { t } = useTranslation();
-  const { data: overviewData } = useDashboardOverviewQuery();
+  const {
+    data: overviewData,
+    isPending: dashboardOverviewPending,
+    isFetching: dashboardOverviewFetching,
+  } = useDashboardOverviewQuery();
   const { collections, isLoading } = useCollections();
   const { links: linksForDomains, isLoading: domainsLoading } = useLinks({
     limit: 500,
@@ -131,5 +137,7 @@ export function useDashboardOverviewData(): DashboardOverviewData {
     domainAddedStatsByDay,
     domainReadStatsByDay,
     domainsLoading,
+    dashboardOverviewPending,
+    dashboardOverviewFetching,
   };
 }
