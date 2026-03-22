@@ -1,51 +1,50 @@
 import { Text, View } from "react-native";
 
-const DAY_LABELS = ["S", "M", "T", "W", "T", "F", "S"];
+import { useTranslation } from "react-i18next";
 
-/** アクティビティレベル: 0=なし, 1=低, 2=中, 3=高 */
+import {
+  formatWeekRangeLabel,
+  getEnglishWeekdayLetterLabels,
+  getLocalWeekWindowDates,
+} from "@/src/shared/utils/weekRangeDisplay";
+
+/** Activity level: 0=none, 1=low, 2=medium, 3=high */
 type ActivityLevel = 0 | 1 | 2 | 3;
 
-/** 週表示カレンダーウィジェット（デザインのみ） */
+/** Week view calendar widget (design only) — same 7-day window and format as dashboard week chart */
 export function WeekCalendarWidget() {
-  const now = new Date();
-  const monthName = now.toLocaleDateString("en-US", { month: "long" });
-  const year = now.getFullYear();
+  const { i18n } = useTranslation();
+  const weekRangeLabel = formatWeekRangeLabel(i18n.language);
+  const weekdayLabels = getEnglishWeekdayLetterLabels();
+  const weekDates = getLocalWeekWindowDates();
 
-  // 今日を一番右にした週（今日の6日前〜今日）
-  const weekDates: Date[] = [];
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date(now);
-    d.setDate(now.getDate() - i);
-    weekDates.push(d);
-  }
-
-  // 過去日のアクティビティ（サンプル: 4段階を複数日に分散）
+  // Sample activity for past days (four levels spread across multiple days)
   const activityByIndex: Record<number, ActivityLevel> = {
-    0: 1, // 6日前: 低
-    1: 0, // 5日前: なし
-    2: 3, // 4日前: 高
-    3: 2, // 3日前: 中
-    4: 1, // 2日前: 低
-    5: 3, // 1日前: 高
-    // 6 = 今日（選択中、アクティビティは未確定）
+    0: 1, // 6 days ago: low
+    1: 0, // 5 days ago: none
+    2: 3, // 4 days ago: high
+    3: 2, // 3 days ago: medium
+    4: 1, // 2 days ago: low
+    5: 3, // 1 day ago: high
+    // 6 = today (selected, activity TBD)
   };
 
   return (
     <View className="rounded-2xl bg-slate-100 p-4">
       <Text className="mb-3 text-center text-base font-semibold text-slate-800">
-        {monthName} {year}
+        {weekRangeLabel}
       </Text>
 
-      {/* 曜日ヘッダー */}
+      {/* Weekday header (single English letter, same as chart X-axis) */}
       <View className="mb-2 flex-row justify-between">
-        {DAY_LABELS.map((label, i) => (
+        {weekdayLabels.map((label, i) => (
           <View key={i} className="flex-1 items-center">
             <Text className="text-xs font-medium text-slate-600">{label}</Text>
           </View>
         ))}
       </View>
 
-      {/* 日付 */}
+      {/* Dates */}
       <View className="flex-row justify-between">
         {weekDates.map((date, index) => {
           const isToday = index === 6;
@@ -66,7 +65,7 @@ export function WeekCalendarWidget() {
                   {date.getDate()}
                 </Text>
               </View>
-              {/* アクティビティインジケーター（4段階） */}
+              {/* Activity indicator (four levels) */}
               <View className="mt-1.5 flex-row items-center justify-center gap-0.5">
                 {[1, 2, 3].map((level) => (
                   <View

@@ -7,6 +7,7 @@ import { Globe, Link2 } from "lucide-react-native";
 import { colors } from "@/src/shared/constants/colors";
 
 import type { UserLink } from "../types/linkList.types";
+import { extractDomain } from "../utils/urlUtils";
 
 const CARD_WIDTH = Dimensions.get("window").width - 40;
 
@@ -14,18 +15,6 @@ interface SwipeCardProps {
   link: UserLink;
   /** カードのインデックス（0: top, 1: next, 2: queued） */
   index?: number;
-}
-
-/**
- * URLからドメインを抽出する
- */
-function extractDomain(url: string): string {
-  try {
-    const urlObj = new URL(url);
-    return urlObj.hostname.replace(/^www\./, "");
-  } catch {
-    return "";
-  }
 }
 
 /**

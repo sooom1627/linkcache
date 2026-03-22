@@ -12,10 +12,10 @@ import { useTranslation } from "react-i18next";
 import { colors } from "@/src/shared/constants/colors";
 import { useBottomSheetModal } from "@/src/shared/hooks/useBottomSheetModal";
 
-import { extractDomain } from "../hooks/useLinkPaste";
 import { useOpenLink } from "../hooks/useOpenLink";
 import type { UserLink } from "../types/linkList.types";
 import { getStatusStyle } from "../utils/statusStyles";
+import { extractDomain } from "../utils/urlUtils";
 
 import { LinkReadStatusModal } from "./LinkReadStatusModal";
 

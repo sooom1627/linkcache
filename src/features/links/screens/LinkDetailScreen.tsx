@@ -22,11 +22,11 @@ import { useCollections } from "../hooks/useCollections";
 import { useCollectionsForLink } from "../hooks/useCollectionsForLink";
 import { useDeleteLink } from "../hooks/useDeleteLink";
 import { useLinkDetail } from "../hooks/useLinkDetail";
-import { extractDomain } from "../hooks/useLinkPaste";
 import { useOpenLink } from "../hooks/useOpenLink";
 import { useRemoveLinkFromCollection } from "../hooks/useRemoveLinkFromCollection";
 import { shareLink } from "../utils/share";
 import { getStatusStyle } from "../utils/statusStyles";
+import { extractDomain } from "../utils/urlUtils";
 
 import { CollectionCreateModal } from "./CollectionCreateModal";
 
