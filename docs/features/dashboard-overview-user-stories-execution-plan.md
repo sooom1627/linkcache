@@ -151,7 +151,8 @@ app/(protected)/(tabs)/(dashboard)/
 
 ### US-A：グラフ（`daily_totals`）
 
-- [ ] Supabase: 直近 7 日の `daily_totals`；追加日＝`link_status.created_at`、読了＝`read_at`（[§2](./dashboard-overview-api.md)）；`EXPLAIN`・インデックス（[§3.1](./dashboard-overview-api.md)）
+- [x] Supabase: RPC `get_dashboard_overview`（直近 7 日の `daily_totals`；追加日＝`link_status.created_at`、読了＝`read_at`（[§2](./dashboard-overview-api.md)）；`link_status` 用インデックス 2 本）— **T1〜T3 完了**（検証: [dashboard-overview-us-a.md](./dashboard-overview-us-a.md) §5、実装状況表: [dashboard-overview-api.md](./dashboard-overview-api.md) §3.2 付近）
+- [ ] Supabase: 集計クエリの `EXPLAIN (ANALYZE, BUFFERS)` とプラン見直し（[§3.1](./dashboard-overview-api.md#31-カテゴリ別チェックリストskill-準拠)、データ量に応じて実施）
 - [ ] API: `fetchDashboardOverview.api.ts`（仮称）で RPC + Zod（[§4](./dashboard-overview-api.md)）
 - [ ] React Query: `queryKeys` に overview、`useDashboardOverviewQuery`、`invalidate` 連携（[§5](./dashboard-overview-api.md)）
 - [ ] `useDashboardOverviewData` から `mockAddedByDay` / `mockReadByDay` を除去（[§6](./dashboard-overview-api.md)）
