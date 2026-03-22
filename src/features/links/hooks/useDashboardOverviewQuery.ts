@@ -8,7 +8,7 @@ import {
 } from "../api/fetchDashboardOverview.api";
 import { linkQueryKeys } from "../constants/queryKeys";
 
-/** ダッシュ overview の React Query staleTime（30 分キャッシュ。鮮度は mutation の invalidate に依存） */
+/** React Query staleTime for dashboard overview (30 min cache; freshness controlled by mutation invalidation). */
 export const dashboardOverviewStaleTimeMs = 30 * 60 * 1000;
 
 export interface UseDashboardOverviewQueryReturn {
@@ -22,8 +22,8 @@ export interface UseDashboardOverviewQueryReturn {
 }
 
 /**
- * Growth Dashboard 用に get_dashboard_overview の結果を React Query でキャッシュする。
- * 暦日境界は端末 IANA TZ と RPC の p_tz を一致させる（queryKey に tz を含める）。
+ * Caches get_dashboard_overview via React Query for the Growth Dashboard.
+ * Calendar-day boundaries align device IANA timezone with RPC p_tz (tz is part of the query key).
  */
 export function useDashboardOverviewQuery(): UseDashboardOverviewQueryReturn {
   const tz = getDeviceTimezone();
