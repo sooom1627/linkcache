@@ -1,7 +1,7 @@
 import { act, renderHook, waitFor } from "@testing-library/react-native";
 
 import { updateCollection } from "../../api/updateCollection.api";
-import { collectionQueryKeys } from "../../constants/queryKeys";
+import { collectionQueryKeys, linkQueryKeys } from "../../constants/queryKeys";
 import { useUpdateCollection } from "../../hooks/useUpdateCollection";
 import type { Collection } from "../../types/links.types";
 import { clearQueryCache, testQueryClient, wrapper } from "../test-utils";
@@ -51,6 +51,9 @@ describe("useUpdateCollection", () => {
     expect(invalidateQueriesSpy).toHaveBeenCalledWith({
       queryKey: collectionQueryKeys.lists(),
     });
+    expect(invalidateQueriesSpy).toHaveBeenCalledWith({
+      queryKey: linkQueryKeys.dashboardOverviewPrefix(),
+    });
   });
 
   it("mutate 成功時に collections.detail(id) を invalidate する", async () => {
@@ -71,6 +74,9 @@ describe("useUpdateCollection", () => {
 
     expect(invalidateQueriesSpy).toHaveBeenCalledWith({
       queryKey: collectionQueryKeys.detail("col-1"),
+    });
+    expect(invalidateQueriesSpy).toHaveBeenCalledWith({
+      queryKey: linkQueryKeys.dashboardOverviewPrefix(),
     });
   });
 

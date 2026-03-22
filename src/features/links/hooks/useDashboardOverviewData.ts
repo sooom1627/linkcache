@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useCollections } from "@/src/features/links/hooks/useCollections";
+import { useDashboardOverviewQuery } from "@/src/features/links/hooks/useDashboardOverviewQuery";
 import { useLinks } from "@/src/features/links/hooks/useLinks";
 import type { DashboardCollectionStat } from "@/src/features/links/types/dashboard.types";
 import {
@@ -13,6 +14,21 @@ import {
 } from "@/src/features/links/utils/dashboardStats";
 
 type BucketRow = { id: string; name: string; emoji: string | null };
+
+const CHART_PLACEHOLDER_SEVEN = [0, 0, 0, 0, 0, 0, 0];
+
+function normalizeSevenDaySeries(
+  rows: { added_count: number; read_count: number }[] | null | undefined,
+  field: "added_count" | "read_count",
+): number[] {
+  const list = rows ?? [];
+  const lastUpTo7 = list.slice(-7).map((r) => r[field]);
+  const padCount = 7 - lastUpTo7.length;
+  if (padCount <= 0) {
+    return lastUpTo7;
+  }
+  return [...CHART_PLACEHOLDER_SEVEN.slice(0, padCount), ...lastUpTo7];
+}
 
 export interface DashboardOverviewData {
   addedByDay: number[];
@@ -25,15 +41,34 @@ export interface DashboardOverviewData {
   domainAddedStatsByDay: DashboardCollectionStat[][];
   domainReadStatsByDay: DashboardCollectionStat[][];
   domainsLoading: boolean;
+  dashboardOverviewPending: boolean;
+  dashboardOverviewFetching: boolean;
 }
 
 export function useDashboardOverviewData(): DashboardOverviewData {
   const { t } = useTranslation();
+  const {
+    data: overviewData,
+    isPending: dashboardOverviewPending,
+    isFetching: dashboardOverviewFetching,
+  } = useDashboardOverviewQuery();
   const { collections, isLoading } = useCollections();
   const { links: linksForDomains, isLoading: domainsLoading } = useLinks({
     limit: 500,
     pageSize: 500,
   });
+
+  const addedByDay = useMemo(
+    (): number[] =>
+      normalizeSevenDaySeries(overviewData?.daily_totals, "added_count"),
+    [overviewData],
+  );
+
+  const readByDay = useMemo(
+    (): number[] =>
+      normalizeSevenDaySeries(overviewData?.daily_totals, "read_count"),
+    [overviewData],
+  );
 
   const collectionStats = useMemo(
     () =>
@@ -105,8 +140,8 @@ export function useDashboardOverviewData(): DashboardOverviewData {
   }, [domainBuckets]);
 
   return {
-    addedByDay: mockAddedByDay,
-    readByDay: mockReadByDay,
+    addedByDay,
+    readByDay,
     collectionStats,
     collectionAddedStatsByDay,
     collectionReadStatsByDay,
@@ -115,5 +150,7 @@ export function useDashboardOverviewData(): DashboardOverviewData {
     domainAddedStatsByDay,
     domainReadStatsByDay,
     domainsLoading,
+    dashboardOverviewPending,
+    dashboardOverviewFetching,
   };
 }

@@ -12,6 +12,11 @@ export type { UseCreateCollectionReturn } from "./hooks/useCreateCollection";
 export { useCreateLink } from "./hooks/useCreateLink";
 export { useDeleteLink } from "./hooks/useDeleteLink";
 export type { UseDeleteLinkReturn } from "./hooks/useDeleteLink";
+export {
+  dashboardOverviewStaleTimeMs,
+  useDashboardOverviewQuery,
+} from "./hooks/useDashboardOverviewQuery";
+export type { UseDashboardOverviewQueryReturn } from "./hooks/useDashboardOverviewQuery";
 export { useLinkPaste } from "./hooks/useLinkPaste";
 export { useLinks } from "./hooks/useLinks";
 export type { UseLinksReturn } from "./hooks/useLinks";

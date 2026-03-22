@@ -173,6 +173,9 @@ export function useSwipeCards(
     void queryClient.invalidateQueries({
       queryKey: linkQueryKeys.list(),
     });
+    void queryClient.invalidateQueries({
+      queryKey: linkQueryKeys.dashboardOverviewPrefix(),
+    });
   }, [queryClient]);
 
   // ステータス更新Mutation

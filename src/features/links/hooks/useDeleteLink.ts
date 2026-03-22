@@ -58,6 +58,9 @@ export function useDeleteLink(): UseDeleteLinkReturn {
       queryClient.invalidateQueries({
         queryKey: collectionQueryKeys.lists(),
       });
+      queryClient.invalidateQueries({
+        queryKey: linkQueryKeys.dashboardOverviewPrefix(),
+      });
     },
   });
 

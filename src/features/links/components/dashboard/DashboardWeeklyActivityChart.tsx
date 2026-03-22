@@ -43,6 +43,7 @@ export function DashboardWeeklyActivityChart(props: {
   addedLegendA11y: string;
   readLegendA11y: string;
   palette: ChartPalette;
+  showEmptyWeekHint?: boolean;
 }) {
   const { t } = useTranslation();
   const {
@@ -64,6 +65,7 @@ export function DashboardWeeklyActivityChart(props: {
     addedLegendA11y,
     readLegendA11y,
     palette,
+    showEmptyWeekHint = false,
   } = props;
 
   return (
@@ -86,6 +88,11 @@ export function DashboardWeeklyActivityChart(props: {
       <Text className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-slate-600">
         {t("links.dashboard.chart_weekly_section")}
       </Text>
+      {showEmptyWeekHint ? (
+        <Text className="mb-2 text-xs text-slate-500">
+          {t("links.dashboard.chart_week_empty_hint")}
+        </Text>
+      ) : null}
       <View
         className="w-full"
         accessibilityLabel={chartAccessibilityLabel}

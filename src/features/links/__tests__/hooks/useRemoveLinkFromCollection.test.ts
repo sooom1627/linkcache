@@ -97,6 +97,9 @@ describe("useRemoveLinkFromCollection", () => {
     expect(invalidateSpy).toHaveBeenCalledWith({
       queryKey: linkQueryKeys.uncollectedCount(),
     });
+    expect(invalidateSpy).toHaveBeenCalledWith({
+      queryKey: linkQueryKeys.dashboardOverviewPrefix(),
+    });
 
     invalidateSpy.mockRestore();
   });
@@ -193,5 +196,33 @@ describe("useRemoveLinkFromCollection", () => {
     });
 
     expect(result.current.error).toBe(mockError);
+  });
+
+  it("does not invalidate dashboard overview on API failure", async () => {
+    const mockError = new Error("API Error");
+    (removeLinkFromCollection as jest.Mock).mockRejectedValueOnce(mockError);
+
+    const invalidateSpy = jest.spyOn(testQueryClient, "invalidateQueries");
+
+    const { result } = renderHook(() => useRemoveLinkFromCollection(), {
+      wrapper,
+    });
+
+    act(() => {
+      result.current.removeLinkFromCollection({
+        collectionId: MOCK_COLLECTION_ID,
+        linkId: MOCK_LINK_ID,
+      });
+    });
+
+    await waitFor(() => {
+      expect(result.current.isError).toBe(true);
+    });
+
+    expect(invalidateSpy).not.toHaveBeenCalledWith({
+      queryKey: linkQueryKeys.dashboardOverviewPrefix(),
+    });
+
+    invalidateSpy.mockRestore();
   });
 });

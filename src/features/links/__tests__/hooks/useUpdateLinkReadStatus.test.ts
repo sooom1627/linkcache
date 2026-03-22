@@ -190,6 +190,9 @@ describe("useUpdateLinkReadStatus", () => {
     expect(invalidateQueriesSpy).toHaveBeenCalledWith({
       queryKey: linkQueryKeys.detail(MOCK_LINK_ID),
     });
+    expect(invalidateQueriesSpy).toHaveBeenCalledWith({
+      queryKey: linkQueryKeys.dashboardOverviewPrefix(),
+    });
 
     invalidateQueriesSpy.mockRestore();
   });

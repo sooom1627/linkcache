@@ -280,6 +280,12 @@ export type Database = {
         };
         Returns: number;
       };
+      get_dashboard_overview: {
+        Args: {
+          p_tz: string;
+        };
+        Returns: Json;
+      };
     };
     Enums: {
       triage_status: "new" | "read_soon" | "stock" | "done";

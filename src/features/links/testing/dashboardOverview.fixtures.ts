@@ -19,6 +19,8 @@ export function createMinimalOverviewData(
     domainAddedStatsByDay: createEmptySevenDayRowArrays(),
     domainReadStatsByDay: createEmptySevenDayRowArrays(),
     domainsLoading: false,
+    dashboardOverviewPending: false,
+    dashboardOverviewFetching: false,
     ...overrides,
   };
 }

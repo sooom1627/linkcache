@@ -217,6 +217,7 @@
       "chart_a11y_read_only": "Chart shows done links only. Total done in the last 7 days: {{total}}.",
       "chart_legend_filter_hint": "Tap to show this series only. Tap again to show both.",
       "chart_weekly_section": "Last 7 days",
+      "chart_week_empty_hint": "No activity in the last 7 days.",
       "chart_average_label": "Avg",
       "chart_added_legend": "Added",
       "chart_read_legend": "Done",

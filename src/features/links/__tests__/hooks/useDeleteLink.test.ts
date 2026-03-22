@@ -132,6 +132,9 @@ describe("useDeleteLink", () => {
     expect(invalidateQueriesSpy).toHaveBeenCalledWith({
       queryKey: collectionQueryKeys.lists(),
     });
+    expect(invalidateQueriesSpy).toHaveBeenCalledWith({
+      queryKey: linkQueryKeys.dashboardOverviewPrefix(),
+    });
 
     invalidateQueriesSpy.mockRestore();
   });
