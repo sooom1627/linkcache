@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { UseMutateFunction } from "@tanstack/react-query";
 
 import { updateCollection } from "../api/updateCollection.api";
-import { collectionQueryKeys } from "../constants/queryKeys";
+import { collectionQueryKeys, linkQueryKeys } from "../constants/queryKeys";
 import type { UpdateCollectionParams } from "../types/collections.types";
 import type { Collection } from "../types/links.types";
 
@@ -52,6 +52,9 @@ export function useUpdateCollection(): UseUpdateCollectionReturn {
       });
       queryClient.invalidateQueries({
         queryKey: collectionQueryKeys.detail(data.id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: linkQueryKeys.dashboardOverviewPrefix(),
       });
     },
   });

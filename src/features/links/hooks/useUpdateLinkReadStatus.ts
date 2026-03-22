@@ -74,6 +74,9 @@ export function useUpdateLinkReadStatus(): UseUpdateLinkReadStatusReturn {
       queryClient.invalidateQueries({
         queryKey: linkQueryKeys.detail(linkId),
       });
+      queryClient.invalidateQueries({
+        queryKey: linkQueryKeys.dashboardOverviewPrefix(),
+      });
     },
   });
 

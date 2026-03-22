@@ -9,7 +9,7 @@
 | **推奨実行順**                       | 下記 **T1 → T9**（依存があるため順序を崩さない）                                                                         |
 | **1 タスクあたりの完了定義**         | 各タスク末尾の **DoD** を満たすこと                                                                                      |
 | **スプリント完了（ストーリー DoD）** | [§ ストーリー完了定義](#ストーリー完了定義story-dod)                                                                     |
-| **T1〜T6 実装**                      | **完了**（一覧・パスは [§5](#5-実装済みt1t6サマリ)；T6 のチェックリストは [§6](#6-実行計画タスク--サブタスク) の T6 節） |
+| **T1〜T7 実装**                      | **完了**（一覧・パスは [§5](#5-実装済みt1t7サマリ)；T7 のチェックリストは [§6](#6-実行計画タスク--サブタスク) の T7 節） |
 
 ---
 
@@ -23,7 +23,7 @@
 
 ---
 
-## 2. 事前読了（T7 以降の着手前）
+## 2. 事前読了（T8 以降の着手前）
 
 1. [§1.1 現行スキーマ](dashboard-overview-api.md#11-現行スキーママイグレーション実装rpc-設計前の突合せ)
 2. [§2 プロダクト定義](dashboard-overview-api.md#2-プロダクト定義方針--db-突合せ後に-rpc-で確定)
@@ -35,7 +35,7 @@
 
 ## 3. RPC 契約（確定・参照）
 
-**実装**: [§5](#5-実装済みt1t6サマリ)。T7 以降の取り込みでも次表を正とする（集計の正本は [dashboard-overview-api.md §2](./dashboard-overview-api.md#2-プロダクト定義方針--db-突合せ後に-rpc-で確定)）。
+**実装**: [§5](#5-実装済みt1t7サマリ)。T8 以降の取り込みでも次表を正とする（集計の正本は [dashboard-overview-api.md §2](./dashboard-overview-api.md#2-プロダクト定義方針--db-突合せ後に-rpc-で確定)）。
 
 | 項目           | 内容                                                                                                                               |
 | -------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
@@ -56,18 +56,19 @@
 
 ---
 
-## 5. 実装済み（T1〜T6）サマリ
+## 5. 実装済み（T1〜T7）サマリ
 
 **最終確認目安**: 2026-03-22 — `pnpm run check` / `pnpm test` 通過を前提とする。
 
-| 範囲              | コード（代表）                                                                                                                                                                                                                                                                                                           |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| T1〜T3（RPC・型） | 上記マイグレーション、[`supabase.types.ts`](../../src/features/links/types/supabase.types.ts) の `get_dashboard_overview`                                                                                                                                                                                                |
-| T4（API）         | [`fetchDashboardOverview.api.ts`](../../src/features/links/api/fetchDashboardOverview.api.ts)、[`fetchDashboardOverview.api.test.ts`](../../src/features/links/__tests__/api/fetchDashboardOverview.api.test.ts)                                                                                                         |
-| T5（React Query） | [`queryKeys.ts`](../../src/features/links/constants/queryKeys.ts)（`linkQueryKeys.dashboardOverview`）、[`useDashboardOverviewQuery.ts`](../../src/features/links/hooks/useDashboardOverviewQuery.ts)、[`useDashboardOverviewQuery.test.ts`](../../src/features/links/__tests__/hooks/useDashboardOverviewQuery.test.ts) |
-| T6（データ合成）  | [`useDashboardOverviewData.ts`](../../src/features/links/hooks/useDashboardOverviewData.ts)（チャートの `addedByDay` / `readByDay` を `useDashboardOverviewQuery` の `daily_totals` に接続）、[`useDashboardOverviewData.test.ts`](../../src/features/links/__tests__/hooks/useDashboardOverviewData.test.ts)            |
+| 範囲              | コード（代表）                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| T1〜T3（RPC・型） | 上記マイグレーション、[`supabase.types.ts`](../../src/features/links/types/supabase.types.ts) の `get_dashboard_overview`                                                                                                                                                                                                                                                                                                                                                                                 |
+| T4（API）         | [`fetchDashboardOverview.api.ts`](../../src/features/links/api/fetchDashboardOverview.api.ts)、[`fetchDashboardOverview.api.test.ts`](../../src/features/links/__tests__/api/fetchDashboardOverview.api.test.ts)                                                                                                                                                                                                                                                                                          |
+| T5（React Query） | [`queryKeys.ts`](../../src/features/links/constants/queryKeys.ts)（`linkQueryKeys.dashboardOverview`・**`dashboardOverviewPrefix()`**（T7 無効化用））、[`useDashboardOverviewQuery.ts`](../../src/features/links/hooks/useDashboardOverviewQuery.ts)、[`useDashboardOverviewQuery.test.ts`](../../src/features/links/__tests__/hooks/useDashboardOverviewQuery.test.ts)                                                                                                                                  |
+| T6（データ合成）  | [`useDashboardOverviewData.ts`](../../src/features/links/hooks/useDashboardOverviewData.ts)（チャートの `addedByDay` / `readByDay` を `useDashboardOverviewQuery` の `daily_totals` に接続）、[`useDashboardOverviewData.test.ts`](../../src/features/links/__tests__/hooks/useDashboardOverviewData.test.ts)                                                                                                                                                                                             |
+| T7（invalidate）  | リンク／コレクション系 mutation 9 本で `queryClient.invalidateQueries({ queryKey: linkQueryKeys.dashboardOverviewPrefix() })`（[`useCreateLink` / `useDeleteLink` / `useUpdateLinkReadStatus` / `useSwipeCards`（`refreshTabsAfterSwipe` 内）/ `useAddLinkToCollection` / `useRemoveLinkFromCollection` / `useCreateCollection` / `useUpdateCollection` / `useDeleteCollection`](../../src/features/links/hooks/)）。各対応 [`__tests__/hooks`](../../src/features/links/__tests__/hooks/) でスパイ検証。 |
 
-**未対応（画面・キャッシュ）**: ダッシュ専用クエリの **loading / エラー UI の画面合成**は **T8 / US-X**。[`dashboardOverview.fixtures.ts`](../../src/features/links/testing/dashboardOverview.fixtures.ts) は既定ゼロ列のまま（T6 で変更なし）。T7 の invalidate はプレフィックス `["links","dashboard","overview"]` を利用。
+**未対応（画面）**: ダッシュ専用クエリの **loading / エラー UI の画面合成**は **T8 / US-X**。[`dashboardOverview.fixtures.ts`](../../src/features/links/testing/dashboardOverview.fixtures.ts) は既定ゼロ列のまま（T6 で変更なし）。
 
 **フォローアップ（US-A 全体・未）**: [dashboard-overview-api.md §3.1](./dashboard-overview-api.md#31-カテゴリ別チェックリストskill-準拠) の **`EXPLAIN (ANALYZE, BUFFERS)`**（データ量に応じて）。`links/api` の `getUser()` 統一は [issue #104](https://github.com/sooom1627/linkcache/issues/104)。
 
@@ -77,7 +78,7 @@
 
 ### T1〜T5（完了）
 
-**状態**: 完了。パス・役割は [§5](#5-実装済みt1t6サマリ) の表を正とする（サブタスクの詳細チェックリストは省略）。
+**状態**: 完了。パス・役割は [§5](#5-実装済みt1t7サマリ) の表を正とする（サブタスクの詳細チェックリストは省略）。
 
 ---
 
@@ -101,24 +102,26 @@
 
 ### T7 — キャッシュ無効化（mutation 横断）
 
+**状態**: 完了。
+
 |            |                                                                      |
 | ---------- | -------------------------------------------------------------------- |
 | **目的**   | リンク／コレクション操作後にダッシュボードが古くならないようにする。 |
 | **依存**   | T5 完了（T6 と並行可だが、invalidate は queryKey 必須のため T5 後）  |
 | **成果物** | 各 mutation フック + 該当 `__tests__`                                |
 
-各フックで `queryClient.invalidateQueries` に `linkQueryKeys.dashboardOverview` のプレフィックスを追加する。
+各フックで `queryClient.invalidateQueries` に **`linkQueryKeys.dashboardOverviewPrefix()`**（`['links','dashboard','overview']` プレフィックス・全 `tz` 一括）を追加する。
 
-- [ ] [`useCreateLink.ts`](../../src/features/links/hooks/useCreateLink.ts)
-- [ ] [`useDeleteLink.ts`](../../src/features/links/hooks/useDeleteLink.ts)
-- [ ] [`useUpdateLinkReadStatus.ts`](../../src/features/links/hooks/useUpdateLinkReadStatus.ts)
-- [ ] [`useSwipeCards.ts`](../../src/features/links/hooks/useSwipeCards.ts)
-- [ ] [`useAddLinkToCollection.ts`](../../src/features/links/hooks/useAddLinkToCollection.ts)
-- [ ] [`useRemoveLinkFromCollection.ts`](../../src/features/links/hooks/useRemoveLinkFromCollection.ts)
-- [ ] [`useCreateCollection.ts`](../../src/features/links/hooks/useCreateCollection.ts)
-- [ ] [`useUpdateCollection.ts`](../../src/features/links/hooks/useUpdateCollection.ts)
-- [ ] [`useDeleteCollection.ts`](../../src/features/links/hooks/useDeleteCollection.ts)
-- [ ] 変更した各フックのテストで invalidate が期待どおりか確認する（既存パターンに合わせる）
+- [x] [`useCreateLink.ts`](../../src/features/links/hooks/useCreateLink.ts)
+- [x] [`useDeleteLink.ts`](../../src/features/links/hooks/useDeleteLink.ts)
+- [x] [`useUpdateLinkReadStatus.ts`](../../src/features/links/hooks/useUpdateLinkReadStatus.ts)
+- [x] [`useSwipeCards.ts`](../../src/features/links/hooks/useSwipeCards.ts)（`refreshTabsAfterSwipe` 内のみ）
+- [x] [`useAddLinkToCollection.ts`](../../src/features/links/hooks/useAddLinkToCollection.ts)
+- [x] [`useRemoveLinkFromCollection.ts`](../../src/features/links/hooks/useRemoveLinkFromCollection.ts)
+- [x] [`useCreateCollection.ts`](../../src/features/links/hooks/useCreateCollection.ts)
+- [x] [`useUpdateCollection.ts`](../../src/features/links/hooks/useUpdateCollection.ts)
+- [x] [`useDeleteCollection.ts`](../../src/features/links/hooks/useDeleteCollection.ts)
+- [x] 変更した各フックのテストで invalidate が期待どおりか確認する（既存パターンに合わせる）
 
 **DoD**: 上記すべてにチェック。関連テストが緑。
 
@@ -159,10 +162,10 @@
 
 ## 7. 影響ファイル一覧（参照）
 
-| 種別             | パス                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **済（T1〜T6）** | [§5](#5-実装済みt1t6サマリ) の表（上記に加え `useDashboardOverviewData` のチャート系列接続・[`useDashboardOverviewData.test.ts`](../../src/features/links/__tests__/hooks/useDashboardOverviewData.test.ts)）                                                                                                                                                                                                                                             |
-| **更新（T7〜）** | [`DashboardOverview.tsx`](../../src/features/links/screens/DashboardOverview.tsx)、[`DashboardWeeklyActivityChart.tsx`](../../src/features/links/components/dashboard/DashboardWeeklyActivityChart.tsx) または [`useDashboardChartUi.tsx`](../../src/features/links/hooks/useDashboardChartUi.tsx)、[`dashboardOverview.fixtures.ts`](../../src/features/links/testing/dashboardOverview.fixtures.ts)（必要時）、T7 対象の各 mutation hooks + `__tests__` |
+| 種別             | パス                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **済（T1〜T7）** | [§5](#5-実装済みt1t7サマリ) の表（チャート系列・mutation invalidate・対応テストを含む）                                                                                                                                                                                                                                                                                                                         |
+| **更新（T8〜）** | [`DashboardOverview.tsx`](../../src/features/links/screens/DashboardOverview.tsx)、[`DashboardWeeklyActivityChart.tsx`](../../src/features/links/components/dashboard/DashboardWeeklyActivityChart.tsx) または [`useDashboardChartUi.tsx`](../../src/features/links/hooks/useDashboardChartUi.tsx)、[`dashboardOverview.fixtures.ts`](../../src/features/links/testing/dashboardOverview.fixtures.ts)（必要時） |
 
 ---
 
@@ -172,7 +175,7 @@
 
 実務上は **T1〜T9 の DoD をすべて満たす**ことと同等。
 
-**進捗メモ**: **T1〜T6** は完了（[§5](#5-実装済みt1t6サマリ)）。**US-A 全体の Story DoD** には **T7 以降**（mutation `invalidate`・画面 loading / 空表示・T9 品質ゲートなど）がまだ必要。
+**進捗メモ**: **T1〜T7** は完了（[§5](#5-実装済みt1t7サマリ)）。**US-A 全体の Story DoD** には **T8 以降**（画面 loading / 空表示・T9 品質ゲートなど）がまだ必要。
 
 ---
 

@@ -3,8 +3,9 @@ import { act, renderHook, waitFor } from "@testing-library/react-native";
 import { createMockLink } from "../../__mocks__/linkHelpers";
 import { fetchUserLinks } from "../../api/fetchLinks.api";
 import { updateLinkStatus } from "../../api/updateLinkStatus.api";
+import { linkQueryKeys } from "../../constants/queryKeys";
 import { useSwipeCards } from "../../hooks/useSwipeCards";
-import { clearQueryCache, wrapper } from "../test-utils";
+import { clearQueryCache, testQueryClient, wrapper } from "../test-utils";
 
 jest.mock("../../api/fetchLinks.api", () => ({
   fetchUserLinks: jest.fn(),
@@ -134,5 +135,48 @@ describe("useSwipeCards - handleSwipe", () => {
     await waitFor(() => {
       expect(result.current.swipes).toEqual(["left"]);
     });
+  });
+});
+
+describe("useSwipeCards - cache invalidation", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    clearQueryCache();
+  });
+
+  afterEach(() => {
+    clearQueryCache();
+  });
+
+  it("スワイプ成功時に dashboard 概要クエリのプレフィックスを invalidate する", async () => {
+    const mockLink = createMockLink(1);
+    mockFetchUserLinks.mockResolvedValue({
+      data: [mockLink, createMockLink(2)],
+      hasMore: false,
+      totalCount: 2,
+    });
+    mockUpdateLinkStatus.mockResolvedValueOnce(undefined);
+
+    const invalidateSpy = jest.spyOn(testQueryClient, "invalidateQueries");
+
+    const { result } = renderHook(() => useSwipeCards(), { wrapper });
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    await act(async () => {
+      result.current.handleSwipe(mockLink, "right");
+    });
+
+    await waitFor(() => {
+      expect(mockUpdateLinkStatus).toHaveBeenCalled();
+    });
+
+    expect(invalidateSpy).toHaveBeenCalledWith({
+      queryKey: linkQueryKeys.dashboardOverviewPrefix(),
+    });
+
+    invalidateSpy.mockRestore();
   });
 });

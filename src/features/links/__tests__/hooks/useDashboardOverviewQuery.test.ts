@@ -82,7 +82,7 @@ describe("useDashboardOverviewQuery", () => {
     expect(result.current.error?.message).toBe("RPC failed");
   });
 
-  it("overview クエリの staleTime が 5 分（仕様: ダッシュは数分キャッシュ）", async () => {
+  it("overview クエリの staleTime が 30 分", async () => {
     mockFetchDashboardOverview.mockResolvedValue(VALID_OVERVIEW);
 
     renderHook(() => useDashboardOverviewQuery(), { wrapper });

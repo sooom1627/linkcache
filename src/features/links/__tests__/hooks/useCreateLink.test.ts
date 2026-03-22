@@ -228,6 +228,9 @@ describe("useCreateLink", () => {
     expect(invalidateQueriesSpy).toHaveBeenCalledWith({
       queryKey: linkQueryKeys.lists(),
     });
+    expect(invalidateQueriesSpy).toHaveBeenCalledWith({
+      queryKey: linkQueryKeys.dashboardOverviewPrefix(),
+    });
 
     invalidateQueriesSpy.mockRestore();
   });

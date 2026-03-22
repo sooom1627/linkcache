@@ -73,6 +73,9 @@ export function useCreateLink(): UseCreateLinkReturn {
       queryClient.invalidateQueries({
         queryKey: linkQueryKeys.lists(),
       });
+      queryClient.invalidateQueries({
+        queryKey: linkQueryKeys.dashboardOverviewPrefix(),
+      });
     },
   });
 

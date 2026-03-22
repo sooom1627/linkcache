@@ -87,10 +87,16 @@ export const linkQueryKeys = {
    * Growth Dashboard 概要（RPC get_dashboard_overview）のクエリキー
    *
    * @param params.tz - IANA タイムゾーン。TZ 変更時にキャッシュを分離する。
-   * T7 の invalidate は `queryKey: [...linkQueryKeys.all, "dashboard", "overview"]` プレフィックスでまとめて可。
+   * 無効化は dashboardOverviewPrefix() を使用する。
    */
   dashboardOverview: (params: { tz: string }) =>
     [...linkQueryKeys.all, "dashboard", "overview", params] as const,
+
+  /**
+   * Growth Dashboard 概要の invalidate 用プレフィックス（全 tz バリアントをまとめて無効化）
+   */
+  dashboardOverviewPrefix: () =>
+    [...linkQueryKeys.all, "dashboard", "overview"] as const,
 } as const;
 
 /**

@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { UseMutateFunction } from "@tanstack/react-query";
 
 import { deleteCollection } from "../api/deleteCollection.api";
-import { collectionQueryKeys } from "../constants/queryKeys";
+import { collectionQueryKeys, linkQueryKeys } from "../constants/queryKeys";
 
 /** useDeleteCollection フックの戻り値 */
 export interface UseDeleteCollectionReturn {
@@ -41,6 +41,9 @@ export function useDeleteCollection(): UseDeleteCollectionReturn {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: collectionQueryKeys.all,
+      });
+      queryClient.invalidateQueries({
+        queryKey: linkQueryKeys.dashboardOverviewPrefix(),
       });
     },
   });

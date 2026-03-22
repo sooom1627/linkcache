@@ -72,6 +72,9 @@ export function useRemoveLinkFromCollection() {
       queryClient.invalidateQueries({
         queryKey: linkQueryKeys.uncollectedCount(),
       });
+      queryClient.invalidateQueries({
+        queryKey: linkQueryKeys.dashboardOverviewPrefix(),
+      });
     },
   });
 

@@ -8,8 +8,8 @@ import {
 } from "../api/fetchDashboardOverview.api";
 import { linkQueryKeys } from "../constants/queryKeys";
 
-/** ダッシュ overview の React Query staleTime（仕様: 数分キャッシュ） */
-export const dashboardOverviewStaleTimeMs = 5 * 60 * 1000;
+/** ダッシュ overview の React Query staleTime（30 分キャッシュ。鮮度は mutation の invalidate に依存） */
+export const dashboardOverviewStaleTimeMs = 30 * 60 * 1000;
 
 export interface UseDashboardOverviewQueryReturn {
   data: DashboardOverviewRpcResult | undefined;

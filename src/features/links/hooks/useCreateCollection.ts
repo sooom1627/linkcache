@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { createCollection } from "../api/createCollection.api";
-import { collectionQueryKeys } from "../constants/queryKeys";
+import { collectionQueryKeys, linkQueryKeys } from "../constants/queryKeys";
 import type { Collection } from "../types/links.types";
 
 /**
@@ -39,6 +39,9 @@ export function useCreateCollection(): UseCreateCollectionReturn {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: collectionQueryKeys.lists(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: linkQueryKeys.dashboardOverviewPrefix(),
       });
     },
   });

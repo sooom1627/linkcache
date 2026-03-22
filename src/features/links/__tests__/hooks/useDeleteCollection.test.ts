@@ -1,7 +1,7 @@
 import { act, renderHook, waitFor } from "@testing-library/react-native";
 
 import { deleteCollection } from "../../api/deleteCollection.api";
-import { collectionQueryKeys } from "../../constants/queryKeys";
+import { collectionQueryKeys, linkQueryKeys } from "../../constants/queryKeys";
 import { useDeleteCollection } from "../../hooks/useDeleteCollection";
 import { clearQueryCache, testQueryClient, wrapper } from "../test-utils";
 
@@ -38,6 +38,9 @@ describe("useDeleteCollection", () => {
 
     expect(invalidateQueriesSpy).toHaveBeenCalledWith({
       queryKey: collectionQueryKeys.all,
+    });
+    expect(invalidateQueriesSpy).toHaveBeenCalledWith({
+      queryKey: linkQueryKeys.dashboardOverviewPrefix(),
     });
 
     invalidateQueriesSpy.mockRestore();
