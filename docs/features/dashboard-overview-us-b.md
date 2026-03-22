@@ -47,23 +47,22 @@
 
 **集計の正本**: [dashboard-overview-api.md §2](./dashboard-overview-api.md#2-プロダクト定義方針--db-突合せ後に-rpc-で確定)。
 
-| 項目                  | 内容                                                                                                                                                                                                                    |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `daily_totals`        | **変更しない**（7 日・リンク一意・`created_at` / `read_at` 暦日・`p_tz`）                                                                                                                                               |
-| `daily_by_domain`     | **`[]` のまま**（US-C）                                                                                                                                                                                                 |
-| `daily_by_collection` | 直近 **7 日**（**index 0 ＝ 6 日前**、**6 ＝ 今日**）のコレクション別 added/read。日境界・タイムゾーンは `daily_totals` と同じ窓・式に合わせる                                                                          |
-| 重複計上              | **内訳のみ**: 同一 `link` が複数コレクションに属する場合、**コレクションごとに** added/read を計上。チャート上の日次合計は `daily_totals` が正で、内訳行の合計がその日のチャート棒と一致する必要はない（§2）            |
-| added / read の意味   | **added**: `link_status.created_at` を `p_tz` で暦日化し、そのリンクが当該コレクションに属する行としてカウント（`collection_links` 等で結合）。**read**: `read_at IS NOT NULL` を同様に暦日化しコレクション別にカウント |
-
-**JSON 形状（B1 着手時に 1 案に固定）**: [dashboard-overview-api.md §3.2](dashboard-overview-api.md#32-機能要件) にあるとおり **フラット行**（例: `{ date, collection_id, added_count, read_count }[]`）か、**7 要素配列**（各日にサブ行配列）かを選ぶ。選定後、本節の表に **確定行**を追記し、[dashboard-overview-api.md §3.2 実装状況表](dashboard-overview-api.md#32-機能要件) にも 1 行追加する。
+| 項目                      | 内容                                                                                                                                                                                                                                                                                                              |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `daily_totals`            | **変更しない**（7 日・リンク一意・`created_at` / `read_at` 暦日・`p_tz`）                                                                                                                                                                                                                                         |
+| `daily_by_domain`         | **`[]` のまま**（US-C）                                                                                                                                                                                                                                                                                           |
+| `daily_by_collection`     | 直近 **7 日**（**index 0 ＝ 6 日前**、**6 ＝ 今日**）のコレクション別 added/read。日境界・タイムゾーンは `daily_totals` と同じ窓・式に合わせる                                                                                                                                                                    |
+| 重複計上                  | **内訳のみ**: 同一 `link` が複数コレクションに属する場合、**コレクションごとに** added/read を計上。チャート上の日次合計は `daily_totals` が正で、内訳行の合計がその日のチャート棒と一致する必要はない（§2）                                                                                                      |
+| added / read の意味       | **added**: `link_status.created_at` を `p_tz` で暦日化し、そのリンクが当該コレクションに属する行としてカウント（`collection_links` 等で結合）。**read**: `read_at IS NOT NULL` を同様に暦日化しコレクション別にカウント                                                                                           |
+| **JSON 形状（確定・B1）** | **`daily_by_collection`**: フラット配列 `{ date, collection_id, added_count, read_count }[]`。`date` は `YYYY-MM-DD`（`daily_totals` と同じ暦日）。`collection_id` は **UUID 文字列**。`added_count` / `read_count` は非負整数。**疎行列**: 両方 0 の `(日, コレクション)` 行は返さない（B4 で 0 埋めピボット）。 |
 
 ---
 
 ## 4. DB マイグレーション（B1）
 
-- **現状（US-A）**: [`20260322000000_get_dashboard_overview.sql`](../../supabase/migrations/20260322000000_get_dashboard_overview.sql) で `daily_by_collection` は `'[]'::json`。
-- **US-B**: **新規タイムスタンプ**のマイグレーションで `get_dashboard_overview` を置換し、`daily_by_collection` を §3 の契約どおり生成する。必要なら `collection_links` / `link_status` 向けインデックスを追加（[§3.1](dashboard-overview-api.md#31-カテゴリ別チェックリストskill-準拠)・`EXPLAIN` で確認）。
-- **適用**: MCP / CLI 等は [dashboard-overview-api.md](./dashboard-overview-api.md) の運用に従う。
+- **現状（US-A）**: [`20260322000000_get_dashboard_overview.sql`](../../supabase/migrations/20260322000000_get_dashboard_overview.sql) で `daily_by_collection` は `'[]'::json`（のち [`20260322032918`](../../supabase/migrations/20260322032918_dashboard_overview_seven_day_timestamp_filter.sql) で `daily_totals` のみ更新）。
+- **US-B B1（実装済み）**: [`20260322074231_get_dashboard_overview_daily_by_collection.sql`](../../supabase/migrations/20260322074231_get_dashboard_overview_daily_by_collection.sql) で `get_dashboard_overview` を置換し、`daily_by_collection` を §3 どおり生成。`idx_collection_links_link_id`（`collection_links(link_id)`）を追加。
+- **適用**: **Supabase MCP** の `apply_migration` を正とする（[AGENTS.md](../../AGENTS.md)）。CLI はフォールバック。
 
 ---
 
@@ -73,7 +72,7 @@
 
 | 範囲              | 予定コード（代表）                                                                                                                                                                                                                                                                     |
 | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| B1（RPC）         | 新規 `supabase/migrations/<timestamp>_get_dashboard_overview_daily_by_collection.sql`（仮）                                                                                                                                                                                            |
+| B1（RPC）         | [`20260322074231_get_dashboard_overview_daily_by_collection.sql`](../../supabase/migrations/20260322074231_get_dashboard_overview_daily_by_collection.sql)（MCP 適用済み想定）                                                                                                         |
 | B2（型）          | [`supabase.types.ts`](../../src/features/links/types/supabase.types.ts) の `get_dashboard_overview` 戻り                                                                                                                                                                               |
 | B3（API）         | [`fetchDashboardOverview.api.ts`](../../src/features/links/api/fetchDashboardOverview.api.ts)、[`fetchDashboardOverview.api.test.ts`](../../src/features/links/__tests__/api/fetchDashboardOverview.api.test.ts)                                                                       |
 | B4（データ合成）  | [`useDashboardOverviewData.ts`](../../src/features/links/hooks/useDashboardOverviewData.ts)、[`useDashboardOverviewData.test.ts`](../../src/features/links/__tests__/hooks/useDashboardOverviewData.test.ts) — コレクション行列・`collectionStats` を RPC 由来に。ドメインはモック継続 |
