@@ -9,11 +9,11 @@ import {
 import { wrapper } from "../test-utils";
 
 describe("useDashboardBreakdownUi (loading)", () => {
-  it("setTableView でドメイン表示に切り替え isTableLoading が domainsLoading を参照する", () => {
+  it("collection タブは collectionsLoading、domain タブは dashboardOverviewPending で isTableLoading が決まる", () => {
     const data = createMinimalOverviewData({
       domainStats: [row("d1", 1, 1)],
       collectionsLoading: true,
-      domainsLoading: false,
+      dashboardOverviewPending: false,
     });
 
     const { result } = renderHook(() => useBreakdownHarness(data), { wrapper });
@@ -40,11 +40,10 @@ describe("useDashboardBreakdownUi (loading)", () => {
     expect(result.current.breakdown.isTableLoading).toBe(true);
   });
 
-  it("domain タブでは isTableLoading が domainsLoading のみ（dashboardOverviewPending は無視）", () => {
+  it("domain タブで dashboardOverviewPending のとき isTableLoading が true（RPC 未確定）", () => {
     const data = createMinimalOverviewData({
       domainStats: [row("d1", 1, 1)],
       dashboardOverviewPending: true,
-      domainsLoading: false,
       collectionsLoading: false,
     });
 
@@ -54,6 +53,6 @@ describe("useDashboardBreakdownUi (loading)", () => {
       result.current.breakdown.setTableView("domain");
     });
 
-    expect(result.current.breakdown.isTableLoading).toBe(false);
+    expect(result.current.breakdown.isTableLoading).toBe(true);
   });
 });

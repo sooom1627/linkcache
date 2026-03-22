@@ -22,7 +22,7 @@ export function DashboardOverview() {
 
   /**
    * Full-screen skeleton only while the overview RPC has no cached data.
-   * Collections + `useLinks({ limit: 500 })` are gated separately:
+   * Collections are gated separately from the overview RPC:
    * - `invalidateQueries({ queryKey: linkQueryKeys.lists() })` also invalidates listLimited,
    *   so the 500-link query often refetches in the background and would keep the OR-gate true
    *   or block the chart even when overview + collections are already cached.

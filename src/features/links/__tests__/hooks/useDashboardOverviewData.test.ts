@@ -7,7 +7,6 @@ import {
   fetchDashboardOverview,
   type DashboardOverviewRpcResult,
 } from "../../api/fetchDashboardOverview.api";
-import { fetchUserLinks } from "../../api/fetchLinks.api";
 import { linkQueryKeys } from "../../constants/queryKeys";
 import { useDashboardOverviewData } from "../../hooks/useDashboardOverviewData";
 import {
@@ -17,11 +16,10 @@ import {
   expectedAddedByDayFromValidOverviewFixture as EXPECTED_ADDED_BY_DAY,
   expectedReadByDayFromValidOverviewFixture as EXPECTED_READ_BY_DAY,
   dashboardOverviewWithCollectionBreakdownRpcFixture as OVERVIEW_WITH_COLLECTION_BREAKDOWN,
+  dashboardOverviewWithDomainBreakdownRpcFixture as OVERVIEW_WITH_DOMAIN_BREAKDOWN,
   dashboardOverviewValidRpcFixture as VALID_OVERVIEW,
 } from "../../testing/dashboardOverview.fixtures";
 import type { DashboardCollectionStat } from "../../types/dashboard.types";
-import type { UserLink } from "../../types/linkList.types";
-import { mockAddedByDay, mockReadByDay } from "../../utils/dashboardStats";
 import { clearQueryCache, testQueryClient, wrapper } from "../test-utils";
 
 jest.mock("../../api/fetchDashboardOverview.api", () => ({
@@ -30,40 +28,9 @@ jest.mock("../../api/fetchDashboardOverview.api", () => ({
 jest.mock("../../api/fetchCollections.api", () => ({
   fetchCollections: jest.fn(),
 }));
-jest.mock("../../api/fetchLinks.api", () => ({
-  fetchUserLinks: jest.fn(),
-}));
 
 const mockFetchDashboardOverview = jest.mocked(fetchDashboardOverview);
 const mockFetchCollections = jest.mocked(fetchCollections);
-const mockFetchUserLinks = jest.mocked(fetchUserLinks);
-
-const EMPTY_LINKS_PAGE = {
-  data: [] as Awaited<ReturnType<typeof fetchUserLinks>>["data"],
-  hasMore: false,
-  totalCount: 0,
-};
-
-const ONE_DOMAIN_LINK: UserLink = {
-  status_id: "s1",
-  user_id: "u1",
-  status: "new",
-  triaged_at: null,
-  read_at: null,
-  link_id: "l1",
-  url: "https://example.com/article",
-  title: null,
-  image_url: null,
-  favicon_url: null,
-  site_name: null,
-  link_created_at: null,
-};
-
-const ONE_DOMAIN_LINK_PAGE = {
-  data: [ONE_DOMAIN_LINK],
-  hasMore: false,
-  totalCount: 1,
-};
 
 function sumAdded(rows: DashboardCollectionStat[]) {
   return rows.reduce((s, r) => s + r.addedCount, 0);
@@ -95,7 +62,6 @@ describe("useDashboardOverviewData", () => {
 
     mockFetchDashboardOverview.mockResolvedValue(VALID_OVERVIEW);
     mockFetchCollections.mockResolvedValue([]);
-    mockFetchUserLinks.mockResolvedValue(EMPTY_LINKS_PAGE);
   });
 
   afterEach(() => {
@@ -185,28 +151,75 @@ describe("useDashboardOverviewData", () => {
     });
   });
 
-  it("ドメイン日別内訳は引き続き mock 系列＋ split（US-C 前）", async () => {
-    mockFetchUserLinks.mockResolvedValue(ONE_DOMAIN_LINK_PAGE);
-    mockFetchCollections.mockResolvedValue([
-      { id: C_WORK, name: "Work", emoji: null, itemsCount: 1 },
-    ]);
+  it("ドメイン内訳は daily_by_domain をピボットし 7 日合計活動量降順で列を並べる", async () => {
+    mockFetchDashboardOverview.mockResolvedValue(
+      OVERVIEW_WITH_DOMAIN_BREAKDOWN,
+    );
+    mockFetchCollections.mockResolvedValue([]);
 
     const { result } = renderHook(() => useDashboardOverviewData(), {
       wrapper,
     });
 
     await waitFor(() => {
-      expect(result.current.domainAddedStatsByDay).toHaveLength(7);
+      expect(result.current.domainStats).toHaveLength(4);
     });
 
-    for (let day = 0; day < 7; day += 1) {
-      expect(sumAdded(result.current.domainAddedStatsByDay[day]!)).toBe(
-        mockAddedByDay[day],
-      );
-      expect(sumRead(result.current.domainReadStatsByDay[day]!)).toBe(
-        mockReadByDay[day],
-      );
-    }
+    expect(result.current.domainStats.map((r) => r.id)).toEqual([
+      "a.com",
+      "b.com",
+      "__other__",
+      "",
+    ]);
+
+    const a = result.current.domainStats.find((r) => r.id === "a.com");
+    const b = result.current.domainStats.find((r) => r.id === "b.com");
+    const other = result.current.domainStats.find((r) => r.id === "__other__");
+    const unknown = result.current.domainStats.find((r) => r.id === "");
+    expect(a).toMatchObject({
+      id: "a.com",
+      name: "a.com",
+      addedCount: 10,
+      readCount: 0,
+      emoji: null,
+    });
+    expect(b).toMatchObject({
+      id: "b.com",
+      name: "b.com",
+      addedCount: 3,
+      readCount: 1,
+      emoji: null,
+    });
+    expect(other).toMatchObject({
+      id: "__other__",
+      name: "links.dashboard.domain_other",
+      addedCount: 0,
+      readCount: 2,
+      emoji: null,
+    });
+    expect(unknown).toMatchObject({
+      id: "",
+      name: "links.dashboard.domain_unknown",
+      addedCount: 1,
+      readCount: 0,
+      emoji: null,
+    });
+
+    const added = result.current.domainAddedStatsByDay;
+    const read = result.current.domainReadStatsByDay;
+
+    expect(added[0]!.map((r) => r.id)).toEqual([
+      "a.com",
+      "b.com",
+      "__other__",
+      "",
+    ]);
+    expect(addedFor(added[0]!, "b.com")).toBe(1);
+    expect(addedFor(added[4]!, "a.com")).toBe(10);
+    expect(addedFor(added[4]!, "b.com")).toBe(2);
+    expect(readFor(read[4]!, "b.com")).toBe(1);
+    expect(addedFor(added[5]!, "")).toBe(1);
+    expect(readFor(read[6]!, "__other__")).toBe(2);
   });
 
   it("overview pending 中はコレクション日別をゼロで埋め、collectionStats は活動ゼロ行を除外して空", async () => {
@@ -258,6 +271,25 @@ describe("useDashboardOverviewData", () => {
       ]);
     }
     expect(result.current.collectionStats).toEqual([]);
+    expect(result.current.domainAddedStatsByDay).toEqual([
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+    ]);
+    expect(result.current.domainReadStatsByDay).toEqual([
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+    ]);
+    expect(result.current.domainStats).toEqual([]);
   });
 
   it("overview の data が無い間はチャート系列を 7 日ゼロにする", () => {

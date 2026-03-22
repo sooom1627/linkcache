@@ -79,6 +79,24 @@ export const dashboardOverviewWithCollectionBreakdownRpcFixture: DashboardOvervi
     ],
   };
 
+/** US-C: sparse `daily_by_domain` aligned with `dashboardOverviewValidRpcFixture` dates (index 0 = 2025-03-16). */
+export const dashboardOverviewWithDomainBreakdownRpcFixture: DashboardOverviewRpcResult =
+  {
+    ...dashboardOverviewValidRpcFixture,
+    daily_by_domain: [
+      { date: "2025-03-16", domain: "b.com", added_count: 1, read_count: 0 },
+      { date: "2025-03-20", domain: "a.com", added_count: 10, read_count: 0 },
+      { date: "2025-03-20", domain: "b.com", added_count: 2, read_count: 1 },
+      {
+        date: "2025-03-22",
+        domain: "__other__",
+        added_count: 0,
+        read_count: 2,
+      },
+      { date: "2025-03-21", domain: "", added_count: 1, read_count: 0 },
+    ],
+  };
+
 export function createEmptySevenDayRowArrays(): DashboardCollectionStat[][] {
   return Array.from({ length: 7 }, () => []);
 }
@@ -102,7 +120,6 @@ export function createMinimalOverviewData(
     domainStats: [],
     domainAddedStatsByDay: createEmptySevenDayRowArrays(),
     domainReadStatsByDay: createEmptySevenDayRowArrays(),
-    domainsLoading: false,
     dashboardOverviewPending: false,
     dashboardOverviewFetching: false,
     ...overrides,

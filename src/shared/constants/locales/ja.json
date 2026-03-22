@@ -235,6 +235,7 @@
       "collections_empty_domains": "ドメインがありません",
       "collections_column_domain": "ドメイン",
       "domain_unknown": "不明",
+      "domain_other": "その他",
       "table_view_collection": "コレクション",
       "table_view_domain": "ドメイン",
       "table_view_picker_a11y": "内訳をコレクションまたはドメインで選ぶ",

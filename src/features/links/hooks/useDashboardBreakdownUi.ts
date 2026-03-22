@@ -80,7 +80,6 @@ export function useDashboardBreakdownUi(
     domainStats,
     domainAddedStatsByDay,
     domainReadStatsByDay,
-    domainsLoading,
   } = data;
 
   const handleTableViewChange = useCallback(
@@ -198,7 +197,7 @@ export function useDashboardBreakdownUi(
   const isTableLoading =
     tableView === "collection"
       ? collectionsLoading || dashboardOverviewPending
-      : domainsLoading;
+      : dashboardOverviewPending;
 
   const emptyTableLabel =
     tableView === "collection"
