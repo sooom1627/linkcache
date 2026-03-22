@@ -4,12 +4,14 @@
 
 一次情報: [dashboard-overview-api.md](./dashboard-overview-api.md) · ストーリー対応: [dashboard-overview-user-stories-execution-plan.md](./dashboard-overview-user-stories-execution-plan.md)
 
-| 項目                                 | 内容                                                                       |
-| ------------------------------------ | -------------------------------------------------------------------------- |
-| **推奨実行順**                       | 下記 **T1 → T9**（依存があるため順序を崩さない）                           |
-| **1 タスクあたりの完了定義**         | 各タスク末尾の **DoD** を満たすこと                                        |
-| **スプリント完了（ストーリー DoD）** | [§ ストーリー完了定義](#ストーリー完了定義story-dod)                       |
-| **T1〜T8 実装**                      | **完了**（一覧・パスは [§5](#5-実装済みt1t8サマリ)；未完了は **T9** のみ） |
+**ストーリーステータス — US-A 完了**（2026-03-22）: T1〜T9 のタスク DoD および [§8 Story DoD](#8-ストーリー完了定義story-dod)（7 日系列＝RPC `daily_totals`・`pnpm run check` 通過）を満たす。ダッシュ横断の **US-X**（エラー UI・RefreshControl 等）は未着手。フォローアップは [§5](#5-実装済みt1t9サマリ) 末尾の **EXPLAIN** 等。
+
+| 項目                                 | 内容                                                                                                                   |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| **推奨実行順**                       | 下記 **T1 → T9**（依存があるため順序を崩さない）                                                                       |
+| **1 タスクあたりの完了定義**         | 各タスク末尾の **DoD** を満たすこと                                                                                    |
+| **スプリント完了（ストーリー DoD）** | [§ ストーリー完了定義](#ストーリー完了定義story-dod)                                                                   |
+| **T1〜T9 実装（US-A コードパス）**   | **完了**（一覧・パスは [§5](#5-実装済みt1t9サマリ)・[§6 T9](#t9--回帰テスト品質ゲート)；横断 **US-X** は別ストーリー） |
 
 ---
 
@@ -23,7 +25,7 @@
 
 ---
 
-## 2. 事前読了（T9 以降の着手前）
+## 2. 事前読了（US-B 等・後続ストーリー着手前）
 
 1. [§1.1 現行スキーマ](dashboard-overview-api.md#11-現行スキーママイグレーション実装rpc-設計前の突合せ)
 2. [§2 プロダクト定義](dashboard-overview-api.md#2-プロダクト定義方針--db-突合せ後に-rpc-で確定)
@@ -35,7 +37,7 @@
 
 ## 3. RPC 契約（確定・参照）
 
-**実装**: [§5](#5-実装済みt1t8サマリ)。以降の取り込みでも次表を正とする（集計の正本は [dashboard-overview-api.md §2](./dashboard-overview-api.md#2-プロダクト定義方針--db-突合せ後に-rpc-で確定)）。
+**実装**: [§5](#5-実装済みt1t9サマリ)。以降の取り込みでも次表を正とする（集計の正本は [dashboard-overview-api.md §2](./dashboard-overview-api.md#2-プロダクト定義方針--db-突合せ後に-rpc-で確定)）。
 
 | 項目           | 内容                                                                                                                               |
 | -------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
@@ -56,7 +58,7 @@
 
 ---
 
-## 5. 実装済み（T1〜T8）サマリ
+## 5. 実装済み（T1〜T9）サマリ
 
 **最終確認目安**: 2026-03-22 — `pnpm run check` / `pnpm test` 通過を前提とする。
 
@@ -68,10 +70,11 @@
 | T6（データ合成）        | [`useDashboardOverviewData.ts`](../../src/features/links/hooks/useDashboardOverviewData.ts)（チャートの `addedByDay` / `readByDay` を `useDashboardOverviewQuery` の `daily_totals` に接続）、[`useDashboardOverviewData.test.ts`](../../src/features/links/__tests__/hooks/useDashboardOverviewData.test.ts)                                                                                                                                                                                                                                                                                                                                                                                 |
 | T7（invalidate）        | リンク／コレクション系 mutation 9 本で `queryClient.invalidateQueries({ queryKey: linkQueryKeys.dashboardOverviewPrefix() })`（[`useCreateLink` / `useDeleteLink` / `useUpdateLinkReadStatus` / `useSwipeCards`（`refreshTabsAfterSwipe` 内）/ `useAddLinkToCollection` / `useRemoveLinkFromCollection` / `useCreateCollection` / `useUpdateCollection` / `useDeleteCollection`](../../src/features/links/hooks/)）。各対応 [`__tests__/hooks`](../../src/features/links/__tests__/hooks/) でスパイ検証。                                                                                                                                                                                     |
 | T8（画面・チャート UI） | [`DashboardOverview.tsx`](../../src/features/links/screens/DashboardOverview.tsx)（`dashboardOverviewPending` をスケルトンに OR／再取得時はチャートラッパー `opacity`）、[`useDashboardChartUi.tsx`](../../src/features/links/hooks/useDashboardChartUi.tsx) の `chartData.showEmptyWeekHint`、[`DashboardWeeklyActivityChart.tsx`](../../src/features/links/components/dashboard/DashboardWeeklyActivityChart.tsx)、i18n `links.dashboard.chart_week_empty_hint`（[`en.json`](../../src/shared/constants/locales/en.json) / [`ja.json`](../../src/shared/constants/locales/ja.json)）、[`useDashboardChartUi.test.ts`](../../src/features/links/__tests__/hooks/useDashboardChartUi.test.ts) |
+| T9（品質ゲート）        | 全スイート `pnpm test`・`pnpm run check` 通過、ログ確認 — 手順・DoD は [§6 T9](#t9--回帰テスト品質ゲート)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 
 **未対応（US-X）**: ダッシュの **エラー UI・再試行・RefreshControl** は引き続き未実装。[`dashboardOverview.fixtures.ts`](../../src/features/links/testing/dashboardOverview.fixtures.ts) は T8 で `dashboardOverviewPending` / `dashboardOverviewFetching` のデフォルトを追加。
 
-**フォローアップ（US-A 全体・未）**: **T9**（回帰・`pnpm run check` の締め）。ほか [dashboard-overview-api.md §3.1](./dashboard-overview-api.md#31-カテゴリ別チェックリストskill-準拠) の **`EXPLAIN (ANALYZE, BUFFERS)`**（データ量に応じて）。`links/api` の `getUser()` 統一は [issue #104](https://github.com/sooom1627/linkcache/issues/104)。
+**フォローアップ**: [dashboard-overview-api.md §3.1](./dashboard-overview-api.md#31-カテゴリ別チェックリストskill-準拠) の **`EXPLAIN (ANALYZE, BUFFERS)`**（データ量に応じて）。`links/api` の `getUser()` 統一は [issue #104](https://github.com/sooom1627/linkcache/issues/104)。
 
 ---
 
@@ -79,7 +82,7 @@
 
 ### T1〜T5（完了）
 
-**状態**: 完了。パス・役割は [§5](#5-実装済みt1t8サマリ) の表を正とする（サブタスクの詳細チェックリストは省略）。
+**状態**: 完了。パス・役割は [§5](#5-実装済みt1t9サマリ) の表を正とする（サブタスクの詳細チェックリストは省略）。
 
 ---
 
@@ -149,15 +152,17 @@
 
 ### T9 — 回帰テスト・品質ゲート
 
+**状態**: 完了（2026-03-22: `pnpm test` / `pnpm run check` 通過）。
+
 |            |                                |
 | ---------- | ------------------------------ |
 | **目的**   | ストーリー全体の品質を締める。 |
 | **依存**   | T4–T8 完了                     |
 | **成果物** | CI 相当のローカル確認ログ      |
 
-- [ ] `pnpm test`（変更範囲に関連する失敗がないこと）
-- [ ] `pnpm run check` が通る
-- [ ] 必要なら fixture / スナップショットを更新する
+- [x] `pnpm test`（変更範囲に関連する失敗がないこと）
+- [x] `pnpm run check` が通る
+- [x] 必要なら fixture / スナップショットを更新する（本締めでは更新不要）
 
 **DoD**: `pnpm run check` 通過。テストが緑。
 
@@ -165,10 +170,11 @@
 
 ## 7. 影響ファイル一覧（参照）
 
-| 種別               | パス                                                                                                                                    |
-| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
-| **済（T1〜T8）**   | [§5](#5-実装済みt1t8サマリ) の表（チャート UI・loading・空コピー・fixtures の pending/fetching フラグを含む）                           |
-| **残（T9・US-X）** | T9: 品質ゲート。US-X: エラー UI・RefreshControl 等（[dashboard-overview-api.md §7](./dashboard-overview-api.md#7-ui-修正画面コンテナ)） |
+| 種別             | パス                                                                                                              |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------- |
+| **済（T1〜T9）** | [§5](#5-実装済みt1t9サマリ) の表（T1〜T8 の実装＋T9 品質ゲート。チャート UI・loading・空コピー・fixtures を含む） |
+| **済（T9）**     | 品質ゲート（`pnpm run check`）— [§6 T9](#t9--回帰テスト品質ゲート)                                                |
+| **残（US-X）**   | エラー UI・RefreshControl 等（[dashboard-overview-api.md §7](./dashboard-overview-api.md#7-ui-修正画面コンテナ)） |
 
 ---
 
@@ -178,7 +184,7 @@
 
 実務上は **T1〜T9 の DoD をすべて満たす**ことと同等。
 
-**進捗メモ**: **T1〜T8** は完了（[§5](#5-実装済みt1t8サマリ)）。**US-A 全体の Story DoD** には **T9**（品質ゲート）と、横断の **US-X**（エラー・引っ張り更新など）がまだ必要。
+**進捗メモ**: **US-A はストーリー完了** — T1〜T9 済（[§5](#5-実装済みt1t9サマリ)、[§6 T9](#t9--回帰テスト品質ゲート)）。グラフの 7 日系列は RPC `daily_totals` 由来で **`pnpm run check` 通過**を確認済み。横断 **US-X**（エラー・引っ張り更新など）は別ストーリーで未。
 
 ---
 
