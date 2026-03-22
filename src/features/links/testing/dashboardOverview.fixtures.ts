@@ -3,7 +3,7 @@ import type { DashboardOverviewData } from "@/src/features/links/hooks/useDashbo
 import type { CollectionWithCount } from "@/src/features/links/types/collections.types";
 import type { DashboardCollectionStat } from "@/src/features/links/types/dashboard.types";
 
-/** useDashboardOverviewData / useDashboardOverviewQuery テストと同型の RPC 成功ペイロード（7 日 daily_totals） */
+/** RPC success payload matching useDashboardOverviewData / useDashboardOverviewQuery tests (7-day daily_totals). */
 export const dashboardOverviewValidRpcFixture: DashboardOverviewRpcResult = {
   daily_totals: [
     { date: "2025-03-16", added_count: 1, read_count: 0 },
@@ -23,12 +23,12 @@ export const expectedAddedByDayFromValidOverviewFixture =
 export const expectedReadByDayFromValidOverviewFixture =
   dashboardOverviewValidRpcFixture.daily_totals.map((r) => r.read_count);
 
-/** B4 テスト: useCollections に並ぶ 2 コレクション（Zod `.uuid()` 互換） */
+/** B4 tests: two collections as returned by useCollections (Zod `.uuid()` compatible). */
 export const dashboardTestCollectionWorkId =
   "11111111-1111-4111-8111-111111111111";
 export const dashboardTestCollectionPersonalId =
   "22222222-2222-4222-8222-222222222222";
-/** RPC の daily_by_collection にのみ現れ、UI 行に出てはいけない ID（US-B §3） */
+/** ID that appears only in RPC daily_by_collection and must not appear as a UI row (US-B §3). */
 export const dashboardTestCollectionRpcOnlyId =
   "33333333-3333-4333-a333-333333333333";
 
@@ -47,7 +47,7 @@ export const dashboardTestCollectionsTwo: CollectionWithCount[] = [
   },
 ];
 
-/** `daily_by_collection` 疎行列例（重複計上・RPC-only コレクション行を含む） */
+/** Sparse daily_by_collection example (duplicate counting and RPC-only collection rows). */
 export const dashboardOverviewWithCollectionBreakdownRpcFixture: DashboardOverviewRpcResult =
   {
     ...dashboardOverviewValidRpcFixture,
@@ -84,9 +84,10 @@ export function createEmptySevenDayRowArrays(): DashboardCollectionStat[][] {
 }
 
 /**
- * 画面合成前の最小 `DashboardOverviewData`。コレクション内訳を手で埋める場合は
- * `collectionStats` と日別行列（`collectionAddedStatsByDay` / `collectionReadStatsByDay`）を
- * 同じ意味で揃えること（`useDashboardBreakdownUi` の日選択表示と食い違わないように）。
+ * Minimal `DashboardOverviewData` before screen composition. When filling collection
+ * breakdown by hand, keep `collectionStats` and the per-day matrices
+ * (`collectionAddedStatsByDay` / `collectionReadStatsByDay`) semantically aligned so they
+ * stay consistent with `useDashboardBreakdownUi` day selection.
  */
 export function createMinimalOverviewData(
   overrides: Partial<DashboardOverviewData> = {},
@@ -108,7 +109,7 @@ export function createMinimalOverviewData(
   };
 }
 
-/** 特定インデックスの日だけコレクション内訳行がある `DashboardOverviewData`（内訳 UI テスト用） */
+/** `DashboardOverviewData` with collection breakdown rows on a single day index (breakdown UI tests). */
 export function createMinimalOverviewDataForSelectedCollectionDay(options: {
   dayIndex: number;
   addedByDay: number[];
