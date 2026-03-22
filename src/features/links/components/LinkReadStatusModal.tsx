@@ -12,9 +12,9 @@ import { BaseBottomSheetModal } from "@/src/shared/components/modals";
 import ModalHeader from "@/src/shared/components/modals/ModalHeader";
 import { colors } from "@/src/shared/constants/colors";
 
-import { extractDomain } from "../hooks/useLinkPaste";
 import { useUpdateLinkReadStatus } from "../hooks/useUpdateLinkReadStatus";
 import type { UserLink } from "../types/linkList.types";
+import { extractDomain } from "../utils/urlUtils";
 
 export interface LinkReadStatusModalProps {
   link: UserLink;

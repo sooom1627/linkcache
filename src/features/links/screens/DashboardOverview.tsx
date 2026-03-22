@@ -25,6 +25,13 @@ export function DashboardOverview() {
   const showBreakdownSection =
     breakdown.selectedDayIndex === null || breakdown.showDayBreakdownCard;
 
+  const chartAppearanceForChart = {
+    palette: chart.appearance.palette,
+    weekRangeLabel: chart.appearance.weekRangeLabel,
+    chartWidth: chart.appearance.chartWidth,
+    onChartLayout: chart.appearance.onChartLayout,
+  };
+
   if (isOverviewLoading) {
     return <DashboardOverviewSkeleton />;
   }
@@ -36,24 +43,10 @@ export function DashboardOverview() {
         className="w-full"
       >
         <DashboardWeeklyActivityChart
-          weekRangeLabel={chart.weekRangeLabel}
-          chartWidth={chart.chartWidth}
-          onChartLayout={chart.onChartLayout}
-          stackData={chart.stackData}
-          weeklyMax={chart.weeklyMax}
-          chartHighlightActive={chart.chartHighlightActive}
-          selectedDayIndex={chart.selectedDayIndex}
-          handleBarPress={chart.handleBarPress}
-          hasActiveDayStats={chart.hasActiveDayStats}
-          avgDailyTotal={chart.avgDailyTotal}
-          chartAccessibilityLabel={chart.chartAccessibilityLabel}
-          toggleLegendSeries={chart.toggleLegendSeries}
-          chartSeriesMode={chart.chartSeriesMode}
-          totalAdded={chart.totalAdded}
-          totalRead={chart.totalRead}
-          addedLegendA11y={chart.addedLegendA11y}
-          readLegendA11y={chart.readLegendA11y}
-          palette={chart.palette}
+          {...chartAppearanceForChart}
+          {...chart.chartData}
+          {...chart.interaction}
+          {...chart.accessibility}
         />
       </Animated.View>
 

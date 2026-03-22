@@ -15,7 +15,10 @@ import type {
   DashboardChartSeriesMode,
   DashboardTableViewMode,
 } from "@/src/features/links/types/dashboard.types";
-import { padSeriesToWeek } from "@/src/features/links/utils/dashboardWeek";
+import {
+  isValidAddedReadDayStatsPair,
+  padSeriesToWeek,
+} from "@/src/features/links/utils/dashboardWeek";
 import { colors } from "@/src/shared/constants/colors";
 import {
   formatWeekRangeLabel,
@@ -59,17 +62,15 @@ export function useDashboardChartUi(
 
   const [chartInnerWidth, setChartInnerWidth] = useState(0);
 
-  const hasCollectionDayStats =
-    Array.isArray(collectionAddedStatsByDay) &&
-    collectionAddedStatsByDay.length === 7 &&
-    Array.isArray(collectionReadStatsByDay) &&
-    collectionReadStatsByDay.length === 7;
+  const hasCollectionDayStats = isValidAddedReadDayStatsPair(
+    collectionAddedStatsByDay,
+    collectionReadStatsByDay,
+  );
 
-  const hasDomainDayStats =
-    Array.isArray(domainAddedStatsByDay) &&
-    domainAddedStatsByDay.length === 7 &&
-    Array.isArray(domainReadStatsByDay) &&
-    domainReadStatsByDay.length === 7;
+  const hasDomainDayStats = isValidAddedReadDayStatsPair(
+    domainAddedStatsByDay,
+    domainReadStatsByDay,
+  );
 
   const hasActiveDayStats =
     tableView === "collection" ? hasCollectionDayStats : hasDomainDayStats;
@@ -183,24 +184,32 @@ export function useDashboardChartUi(
   );
 
   return {
-    palette: CHART_COLORS,
-    weekRangeLabel,
-    weekdayLabels,
-    chartWidth,
-    onChartLayout,
-    stackData,
-    weeklyMax,
-    chartHighlightActive,
-    selectedDayIndex,
-    handleBarPress,
-    hasActiveDayStats,
-    avgDailyTotal,
-    chartAccessibilityLabel,
-    toggleLegendSeries,
-    chartSeriesMode,
-    totalAdded,
-    totalRead,
-    addedLegendA11y,
-    readLegendA11y,
+    chartData: {
+      stackData,
+      weeklyMax,
+      avgDailyTotal,
+      totalAdded,
+      totalRead,
+    },
+    interaction: {
+      handleBarPress,
+      chartHighlightActive,
+      selectedDayIndex,
+      toggleLegendSeries,
+      chartSeriesMode,
+      hasActiveDayStats,
+    },
+    accessibility: {
+      chartAccessibilityLabel,
+      addedLegendA11y,
+      readLegendA11y,
+    },
+    appearance: {
+      palette: CHART_COLORS,
+      weekRangeLabel,
+      weekdayLabels,
+      chartWidth,
+      onChartLayout,
+    },
   };
 }

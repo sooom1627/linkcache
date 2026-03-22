@@ -44,7 +44,7 @@ export function DashboardBreakdownSection(props: {
     sortedRowsLength,
   } = props;
 
-  if (!(selectedDayIndex === null || showDayBreakdownCard)) {
+  if (selectedDayIndex !== null && !showDayBreakdownCard) {
     return null;
   }
 

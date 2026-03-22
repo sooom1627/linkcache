@@ -16,8 +16,58 @@ import type {
 import { mergeAddedReadDayRows } from "@/src/features/links/utils/dashboardOverviewMerge";
 import {
   getCalendarDateForDayIndex,
+  isValidAddedReadDayStatsPair,
   padSeriesToWeek,
 } from "@/src/features/links/utils/dashboardWeek";
+
+function pickAddedDayRows(
+  tableView: DashboardTableViewMode,
+  dayIndex: number,
+  collectionAdded: DashboardCollectionStat[][],
+  domainAdded: DashboardCollectionStat[][],
+): DashboardCollectionStat[] {
+  return tableView === "collection"
+    ? (collectionAdded[dayIndex] ?? [])
+    : (domainAdded[dayIndex] ?? []);
+}
+
+function pickReadDayRows(
+  tableView: DashboardTableViewMode,
+  dayIndex: number,
+  collectionRead: DashboardCollectionStat[][],
+  domainRead: DashboardCollectionStat[][],
+): DashboardCollectionStat[] {
+  return tableView === "collection"
+    ? (collectionRead[dayIndex] ?? [])
+    : (domainRead[dayIndex] ?? []);
+}
+
+function compareDayRowsBySeriesMode(
+  a: DashboardCollectionStat,
+  b: DashboardCollectionStat,
+  chartSeriesMode: DashboardChartSeriesMode,
+): number {
+  if (chartSeriesMode === "both") {
+    return b.addedCount + b.readCount - (a.addedCount + a.readCount);
+  }
+  if (chartSeriesMode === "added") {
+    return b.addedCount - a.addedCount;
+  }
+  return b.readCount - a.readCount;
+}
+
+function filterRowsWithActivity(
+  rows: DashboardCollectionStat[],
+  chartSeriesMode: DashboardChartSeriesMode,
+): DashboardCollectionStat[] {
+  if (chartSeriesMode === "both") {
+    return rows.filter((r) => r.addedCount > 0 || r.readCount > 0);
+  }
+  if (chartSeriesMode === "added") {
+    return rows.filter((r) => r.addedCount > 0);
+  }
+  return rows.filter((r) => r.readCount > 0);
+}
 
 type SetTableView = Dispatch<SetStateAction<DashboardTableViewMode>>;
 
@@ -48,17 +98,15 @@ export function useDashboardBreakdownUi(
     [setTableView],
   );
 
-  const hasCollectionDayStats =
-    Array.isArray(collectionAddedStatsByDay) &&
-    collectionAddedStatsByDay.length === 7 &&
-    Array.isArray(collectionReadStatsByDay) &&
-    collectionReadStatsByDay.length === 7;
+  const hasCollectionDayStats = isValidAddedReadDayStatsPair(
+    collectionAddedStatsByDay,
+    collectionReadStatsByDay,
+  );
 
-  const hasDomainDayStats =
-    Array.isArray(domainAddedStatsByDay) &&
-    domainAddedStatsByDay.length === 7 &&
-    Array.isArray(domainReadStatsByDay) &&
-    domainReadStatsByDay.length === 7;
+  const hasDomainDayStats = isValidAddedReadDayStatsPair(
+    domainAddedStatsByDay,
+    domainReadStatsByDay,
+  );
 
   const hasActiveDayStats =
     tableView === "collection" ? hasCollectionDayStats : hasDomainDayStats;
@@ -87,38 +135,45 @@ export function useDashboardBreakdownUi(
     if (selectedDayIndex === null || !hasActiveDayStats) {
       return [] as DashboardCollectionStat[];
     }
+    const dayIndex = selectedDayIndex;
+
     if (chartSeriesMode === "both") {
-      const addedDay =
-        tableView === "collection"
-          ? (collectionAddedStatsByDay[selectedDayIndex] ?? [])
-          : (domainAddedStatsByDay[selectedDayIndex] ?? []);
-      const readDay =
-        tableView === "collection"
-          ? (collectionReadStatsByDay[selectedDayIndex] ?? [])
-          : (domainReadStatsByDay[selectedDayIndex] ?? []);
-      return mergeAddedReadDayRows(addedDay, readDay)
-        .filter((r) => r.addedCount > 0 || r.readCount > 0)
-        .sort(
-          (a, b) => b.addedCount + b.readCount - (a.addedCount + a.readCount),
-        );
-    }
-    const day =
-      chartSeriesMode === "added"
-        ? tableView === "collection"
-          ? (collectionAddedStatsByDay[selectedDayIndex] ?? [])
-          : (domainAddedStatsByDay[selectedDayIndex] ?? [])
-        : tableView === "collection"
-          ? (collectionReadStatsByDay[selectedDayIndex] ?? [])
-          : (domainReadStatsByDay[selectedDayIndex] ?? []);
-    return [...day]
-      .filter((r) =>
-        chartSeriesMode === "added" ? r.addedCount > 0 : r.readCount > 0,
-      )
-      .sort((a, b) =>
-        chartSeriesMode === "added"
-          ? b.addedCount - a.addedCount
-          : b.readCount - a.readCount,
+      const addedDay = pickAddedDayRows(
+        tableView,
+        dayIndex,
+        collectionAddedStatsByDay,
+        domainAddedStatsByDay,
       );
+      const readDay = pickReadDayRows(
+        tableView,
+        dayIndex,
+        collectionReadStatsByDay,
+        domainReadStatsByDay,
+      );
+      return filterRowsWithActivity(
+        mergeAddedReadDayRows(addedDay, readDay),
+        "both",
+      ).sort((a, b) => compareDayRowsBySeriesMode(a, b, "both"));
+    }
+
+    const dayRows =
+      chartSeriesMode === "added"
+        ? pickAddedDayRows(
+            tableView,
+            dayIndex,
+            collectionAddedStatsByDay,
+            domainAddedStatsByDay,
+          )
+        : pickReadDayRows(
+            tableView,
+            dayIndex,
+            collectionReadStatsByDay,
+            domainReadStatsByDay,
+          );
+
+    return filterRowsWithActivity([...dayRows], chartSeriesMode).sort((a, b) =>
+      compareDayRowsBySeriesMode(a, b, chartSeriesMode),
+    );
   }, [
     chartSeriesMode,
     collectionAddedStatsByDay,

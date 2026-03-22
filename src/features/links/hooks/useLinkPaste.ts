@@ -14,19 +14,8 @@ import type {
 import type { OgpMetadata } from "../utils/metadata";
 import { fetchOgpMetadata } from "../utils/metadata";
 import { normalizeUrl } from "../utils/normalizeUrl";
+import { extractDomain } from "../utils/urlUtils";
 import { isValidUrl } from "../utils/urlValidation";
-
-/**
- * URLからドメインを抽出する
- */
-export function extractDomain(url: string): string {
-  try {
-    const urlObj = new URL(url);
-    return urlObj.hostname.replace(/^www\./, "");
-  } catch {
-    return "";
-  }
-}
 
 interface UseLinkPasteOptions {
   /**

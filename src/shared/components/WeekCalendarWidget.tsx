@@ -8,25 +8,25 @@ import {
   getLocalWeekWindowDates,
 } from "@/src/shared/utils/weekRangeDisplay";
 
-/** アクティビティレベル: 0=なし, 1=低, 2=中, 3=高 */
+/** Activity level: 0=none, 1=low, 2=medium, 3=high */
 type ActivityLevel = 0 | 1 | 2 | 3;
 
-/** 週表示カレンダーウィジェット（デザインのみ）— ダッシュボード週チャートと同一の7日窓・書式 */
+/** Week view calendar widget (design only) — same 7-day window and format as dashboard week chart */
 export function WeekCalendarWidget() {
   const { i18n } = useTranslation();
   const weekRangeLabel = formatWeekRangeLabel(i18n.language);
   const weekdayLabels = getEnglishWeekdayLetterLabels();
   const weekDates = getLocalWeekWindowDates();
 
-  // 過去日のアクティビティ（サンプル: 4段階を複数日に分散）
+  // Sample activity for past days (four levels spread across multiple days)
   const activityByIndex: Record<number, ActivityLevel> = {
-    0: 1, // 6日前: 低
-    1: 0, // 5日前: なし
-    2: 3, // 4日前: 高
-    3: 2, // 3日前: 中
-    4: 1, // 2日前: 低
-    5: 3, // 1日前: 高
-    // 6 = 今日（選択中、アクティビティは未確定）
+    0: 1, // 6 days ago: low
+    1: 0, // 5 days ago: none
+    2: 3, // 4 days ago: high
+    3: 2, // 3 days ago: medium
+    4: 1, // 2 days ago: low
+    5: 3, // 1 day ago: high
+    // 6 = today (selected, activity TBD)
   };
 
   return (
@@ -35,7 +35,7 @@ export function WeekCalendarWidget() {
         {weekRangeLabel}
       </Text>
 
-      {/* 曜日ヘッダー（英語1文字・チャートX軸と同一） */}
+      {/* Weekday header (single English letter, same as chart X-axis) */}
       <View className="mb-2 flex-row justify-between">
         {weekdayLabels.map((label, i) => (
           <View key={i} className="flex-1 items-center">
@@ -44,7 +44,7 @@ export function WeekCalendarWidget() {
         ))}
       </View>
 
-      {/* 日付 */}
+      {/* Dates */}
       <View className="flex-row justify-between">
         {weekDates.map((date, index) => {
           const isToday = index === 6;
@@ -65,7 +65,7 @@ export function WeekCalendarWidget() {
                   {date.getDate()}
                 </Text>
               </View>
-              {/* アクティビティインジケーター（4段階） */}
+              {/* Activity indicator (four levels) */}
               <View className="mt-1.5 flex-row items-center justify-center gap-0.5">
                 {[1, 2, 3].map((level) => (
                   <View

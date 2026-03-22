@@ -1,6 +1,6 @@
-import { extractDomain } from "@/src/features/links/hooks/useLinkPaste";
 import type { DashboardCollectionStat } from "@/src/features/links/types/dashboard.types";
 import type { UserLink } from "@/src/features/links/types/linkList.types";
+import { extractDomain } from "@/src/features/links/utils/urlUtils";
 
 /** 直近7日のモック（古い日 → 今日）— 接続後は API の時系列に差し替え */
 export const mockAddedByDay: number[] = [1, 0, 2, 3, 2, 4, 5];

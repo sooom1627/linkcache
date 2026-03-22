@@ -8,17 +8,16 @@ export function createEmptySevenDayRowArrays(): DashboardCollectionStat[][] {
 export function createMinimalOverviewData(
   overrides: Partial<DashboardOverviewData> = {},
 ): DashboardOverviewData {
-  const emptySeven = createEmptySevenDayRowArrays();
   return {
     addedByDay: [0, 0, 0, 0, 0, 0, 0],
     readByDay: [0, 0, 0, 0, 0, 0, 0],
     collectionStats: [],
-    collectionAddedStatsByDay: emptySeven,
-    collectionReadStatsByDay: emptySeven,
+    collectionAddedStatsByDay: createEmptySevenDayRowArrays(),
+    collectionReadStatsByDay: createEmptySevenDayRowArrays(),
     collectionsLoading: false,
     domainStats: [],
-    domainAddedStatsByDay: emptySeven,
-    domainReadStatsByDay: emptySeven,
+    domainAddedStatsByDay: createEmptySevenDayRowArrays(),
+    domainReadStatsByDay: createEmptySevenDayRowArrays(),
     domainsLoading: false,
     ...overrides,
   };
