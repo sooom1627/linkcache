@@ -98,7 +98,7 @@ supabase/migrations/
 
 src/features/links/
   ├── api/
-  │   ├── fetchDashboardOverview.api.ts          # 新規: supabase.rpc + Zod parse（§4）
+  │   ├── fetchDashboardOverview.api.ts          # T4 済: supabase.rpc + Zod parse（§4）
   │   └── …                                      # 既存の各 *.api.ts は変更しない（§5 の invalidate 元フックから参照）
   ├── constants/
   │   └── queryKeys.ts                           # 更新: dashboard / overview 用 queryKey（§5）
@@ -121,7 +121,7 @@ src/features/links/
   │   └── …                                      # 更新の可能性: チャート／内訳（既存コンポーネント。大きく増えない限り新規フォルダは作らない）
   └── __tests__/
       └── api/
-          └── fetchDashboardOverview.api.test.ts # 新規: Zod・エラー（§8）
+          └── fetchDashboardOverview.api.test.ts # T4 済: Zod・エラー（§8）
 
 src/shared/components/layout/
   └── ScreenContainer.tsx                        # 更新: US-X、`RefreshControl` 用 props（§7）
@@ -153,11 +153,12 @@ app/(protected)/(tabs)/(dashboard)/
 
 - [x] Supabase: RPC `get_dashboard_overview`（直近 7 日の `daily_totals`；追加日＝`link_status.created_at`、読了＝`read_at`（[§2](./dashboard-overview-api.md)）；`link_status` 用インデックス 2 本）— **T1〜T3 完了**（検証: [dashboard-overview-us-a.md](./dashboard-overview-us-a.md) §5、実装状況表: [dashboard-overview-api.md](./dashboard-overview-api.md) §3.2 付近）
 - [ ] Supabase: 集計クエリの `EXPLAIN (ANALYZE, BUFFERS)` とプラン見直し（[§3.1](./dashboard-overview-api.md#31-カテゴリ別チェックリストskill-準拠)、データ量に応じて実施）
-- [ ] API: `fetchDashboardOverview.api.ts`（仮称）で RPC + Zod（[§4](./dashboard-overview-api.md)）
+- [x] API: [`fetchDashboardOverview.api.ts`](../../src/features/links/api/fetchDashboardOverview.api.ts) で RPC + Zod（[§4](./dashboard-overview-api.md)）— **T4 完了**（検証: [dashboard-overview-us-a.md](./dashboard-overview-us-a.md) §5.1）
 - [ ] React Query: `queryKeys` に overview、`useDashboardOverviewQuery`、`invalidate` 連携（[§5](./dashboard-overview-api.md)）
 - [ ] `useDashboardOverviewData` から `mockAddedByDay` / `mockReadByDay` を除去（[§6](./dashboard-overview-api.md)）
 - [ ] UI: チャートへ実データ、7 日すべて 0 の空表示（[§7](./dashboard-overview-api.md)）
-- [ ] テスト: API Zod・フック／fixtures（[§8](./dashboard-overview-api.md)）
+- [x] テスト（API 層）: [`fetchDashboardOverview.api.test.ts`](../../src/features/links/__tests__/api/fetchDashboardOverview.api.test.ts)（[§8](./dashboard-overview-api.md)）— **T4 済**
+- [ ] テスト（フック／fixtures）: `useDashboardOverviewQuery` 接続後・データ層差し替えに合わせて拡張（[§8](./dashboard-overview-api.md)）
 
 ### US-B：collection_table（`daily_by_collection`）
 
